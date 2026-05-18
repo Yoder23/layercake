@@ -1,0 +1,21 @@
+{
+  "core": {
+    "d_model": 512,
+    "d_abi": 512,
+    "n_layers": 6,
+    "n_heads": 8,
+    "d_ff": 2048
+  },
+  "description": "LayerCake 48M configuration with fixed d_abi=512 for universal paste",
+  "estimated_params": "48M",
+  "memory_requirements": {
+    "model": "192 MB",
+    "total_training": "~5 GB at batch_size=32, seq_len=256",
+    "safe_for": "RTX 3060+ (8GB)"
+  },
+  "modular_features": {
+    "fixed_abi": 512,
+    "domain_paste_compatible": true,
+    "note": "All models use d_abi=512, enabling lossless domain paste across sizes"
+  }
+}

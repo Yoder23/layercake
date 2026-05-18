@@ -1,0 +1,27 @@
+{
+  "core": {
+    "d_model": 768,
+    "d_abi": 512,
+    "n_layers": 12,
+    "n_heads": 12,
+    "d_ff": 3072,
+    "dropout": 0.1
+  },
+  "description": "LayerCake 150M configuration with fixed d_abi=512 for universal paste",
+  "estimated_params": "156M",
+  "memory_requirements": {
+    "model": "624 MB",
+    "gradients": "624 MB",
+    "optimizer": "1.25 GB",
+    "activations": "1.5 GB (batch=16, seq=256)",
+    "total_training": "~4 GB",
+    "safe_for": "RTX 3080 (10GB)"
+  },
+  "modular_features": {
+    "fixed_abi": 512,
+    "domain_paste_compatible": true,
+    "paste_from": ["48M", "100M", "120M", "150M", "200M"],
+    "paste_to": ["48M", "100M", "120M", "150M", "200M"],
+    "note": "All models use d_abi=512, enabling lossless domain paste across sizes"
+  }
+}

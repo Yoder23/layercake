@@ -1,0 +1,44 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install numpy pytest
+          pip install -e .
+
+      - name: Run paste losslessness test
+        run: pytest tests/test_paste_lossless.py -v
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Lint with ruff
+        run: |
+          pip install ruff
+          ruff check model.py data.py baseline_lm.py paste_domain.py train_core.py train_domain.py

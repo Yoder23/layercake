@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "layercake"
+version = "0.1.0"
+description = "Modular language models via a fixed-dimension ABI bottleneck"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [{name = "Sam Yoder"}]
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.0",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.4",
+]
+tokenizer = [
+    "sentencepiece>=0.1.99",
+]
+
+[project.urls]
+Homepage = "https://github.com/Yoder23/layercake"
+Issues   = "https://github.com/Yoder23/layercake/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["layercake*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

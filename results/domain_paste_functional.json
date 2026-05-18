@@ -1,0 +1,196 @@
+{
+  "experiment": "Functional Domain Paste Proof",
+  "date": "2026-05-18",
+  "device": "cuda",
+  "domain_train_steps": 5000,
+  "source_ckpt": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercakeogwithdecoder\\runs\\c4_48M_1B\\v6_core_seed9000\\core_v6.pt",
+  "target_ckpts": {
+    "seed6000_48M": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercakeogwithdecoder\\runs\\c4_fluent_core\\v6_core_seed6000\\core_v6.pt",
+    "seed7000_48M": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercakeogwithdecoder\\runs\\c4_fluent_core_v7\\v6_core_seed7000\\core_v6.pt",
+    "seed5003_150M": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercakeogwithdecoder\\runs\\paste_test_large\\v5_core_seed5003\\core_v5.pt"
+  },
+  "claim": "Domain modules trained on one model transfer functionally to other models of any size via direct state dict copy",
+  "phase1_domain_training": {
+    "chess": {
+      "ppl_before_training": 45.689135860508436,
+      "ppl_after_training": 2.501991885148515,
+      "ppl_improvement_pct": 94.52388004713585,
+      "train_steps": 5000,
+      "train_time_s": 582.9824743270874,
+      "trainable_params": 6304769,
+      "total_params": 42260481,
+      "param_efficiency_pct": 14.918829248536003,
+      "checksums": {
+        "log_alpha": "7b9d1204399ab11ca12c8ff68429977b",
+        "blocks.0.ln1.weight": "445c635415aea4acdb15dd0ed071ad36",
+        "blocks.0.ln1.bias": "a60cd71f9b73ed099c373d738eaa7072",
+        "blocks.0.attn.in_proj_weight": "d8f8f61b4577ca6e8612198b5f11f289",
+        "blocks.0.attn.in_proj_bias": "730584f225f17527a619a739bc0db941",
+        "blocks.0.attn.out_proj.weight": "160b4fc5f755417bee4a3ecbfc0bb124",
+        "blocks.0.attn.out_proj.bias": "7175b1a0a22dc326eef5596004273395",
+        "blocks.0.ln2.weight": "a64c03e0a7d25d2e8fc804529038711b",
+        "blocks.0.ln2.bias": "828e1957d6d1a20378c5d938aacc3e0f",
+        "blocks.0.ff.0.weight": "97cfc6c2569f197a27f2e06a7e11133e",
+        "blocks.0.ff.0.bias": "60801f437036908266d3b71e871bdfab",
+        "blocks.0.ff.2.weight": "22bfd3ef3d87a68d0f0bb7aafdfd2098",
+        "blocks.0.ff.2.bias": "81017bd081c6be52c89e69624122158f",
+        "blocks.1.ln1.weight": "4d0d7c50d2f72698e041698cf3a198c5",
+        "blocks.1.ln1.bias": "6d66df29b632c6f28fbcff8715cb8ef4",
+        "blocks.1.attn.in_proj_weight": "0fb6a2795bd214dc13d05adf3a670885",
+        "blocks.1.attn.in_proj_bias": "8d89a46addd208887e57e9ed4e6de6b8",
+        "blocks.1.attn.out_proj.weight": "6cafdb564a1b3248b092879a80131b7c",
+        "blocks.1.attn.out_proj.bias": "5a6a0eec41bcc7ee69c43644ab68c867",
+        "blocks.1.ln2.weight": "cba968537a4bc2c324c712027f78e9bb",
+        "blocks.1.ln2.bias": "e90775164ba909888783cea778e582e1",
+        "blocks.1.ff.0.weight": "1a967fa774e38e87cfae16864f9648b7",
+        "blocks.1.ff.0.bias": "56f8b7272d869e8bc1ed52b416821376",
+        "blocks.1.ff.2.weight": "ebad022a327594c1dae2903e9b0ebeb9",
+        "blocks.1.ff.2.bias": "2e008522876c75c63f8b0004f9e5e56d"
+      },
+      "ckpt_path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\runs_experiment\\chess_domain_seed9000.pt"
+    },
+    "python": {
+      "ppl_before_training": 37.46235003615813,
+      "ppl_after_training": 12.963262659432406,
+      "ppl_improvement_pct": 65.39655775219533,
+      "train_steps": 5000,
+      "train_time_s": 557.2628076076508,
+      "trainable_params": 6304769,
+      "total_params": 42260481,
+      "param_efficiency_pct": 14.918829248536003,
+      "checksums": {
+        "log_alpha": "56dc9ed55c7ea7083884e36325cec991",
+        "blocks.0.ln1.weight": "38faa6ca9ccdae741b50d21890931443",
+        "blocks.0.ln1.bias": "6046fd816fadd4b5a98344d736ff3c05",
+        "blocks.0.attn.in_proj_weight": "63dd8a40523424d4712b661351bd7cb7",
+        "blocks.0.attn.in_proj_bias": "9e1af54af34c868d136d3fee7b5ad6ed",
+        "blocks.0.attn.out_proj.weight": "56227f34264d0aeeb0d07abe16e5a3d9",
+        "blocks.0.attn.out_proj.bias": "e496c5544da10433becdf2ed855cab26",
+        "blocks.0.ln2.weight": "571ec51cc8b5620745cced91765ef596",
+        "blocks.0.ln2.bias": "b25cc3af910e232bc2c2da71828cce56",
+        "blocks.0.ff.0.weight": "1b2dbedbeb64747797beb2537e811a3a",
+        "blocks.0.ff.0.bias": "3d4e8643ccc32266e4721ed69be8f698",
+        "blocks.0.ff.2.weight": "da16197cd873254b46532ec9cb331c6f",
+        "blocks.0.ff.2.bias": "7c0cbd5578af6a5ded9cf0895a7459e3",
+        "blocks.1.ln1.weight": "f63d47cd3450901cd60c9acbd04296d9",
+        "blocks.1.ln1.bias": "22c641bbab1e5123ddccea6c9efab51f",
+        "blocks.1.attn.in_proj_weight": "90b8595290f9b1112782d8872f1d00f2",
+        "blocks.1.attn.in_proj_bias": "03d64d2541bc414cdfed3da98d476b86",
+        "blocks.1.attn.out_proj.weight": "c652efd0df3bd045a51121b78469528f",
+        "blocks.1.attn.out_proj.bias": "cee74adc8024e8a39eeb2c2b778823cf",
+        "blocks.1.ln2.weight": "57f0bff4c021406ef5f75a635bc122b2",
+        "blocks.1.ln2.bias": "af543fdc8bbd73fe188dcaa58a85f7ca",
+        "blocks.1.ff.0.weight": "524f108d5be6820218ad720e3269e5fd",
+        "blocks.1.ff.0.bias": "4826d9e1bcfe45c4fed760bc8822fa35",
+        "blocks.1.ff.2.weight": "0efbe92cfddda523ad00aa88d5ac6b93",
+        "blocks.1.ff.2.bias": "2e899594d77bab2cc28b0642b6ffdb1d"
+      },
+      "ckpt_path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\runs_experiment\\python_domain_seed9000.pt"
+    }
+  },
+  "phase2_paste_eval": {
+    "seed6000_48M": {
+      "chess": {
+        "target_ckpt": "c4_fluent_core/v6_core_seed6000",
+        "target_d_model": 512,
+        "target_seed": "c4_fluent_core/v6_core_seed6000",
+        "ppl_no_domain": 31.03632375944452,
+        "ppl_untrained_domain": 45.66034957370337,
+        "ppl_pasted_domain": 2618.8926107470575,
+        "n_tensors_pasted": 25,
+        "checksums_bit_identical": true,
+        "checksum_mismatches": [],
+        "ppl_source_trained": 2.501991885148515,
+        "functional_recovery_pct": -9069.272406265023
+      },
+      "python": {
+        "target_ckpt": "c4_fluent_core/v6_core_seed6000",
+        "target_d_model": 512,
+        "target_seed": "c4_fluent_core/v6_core_seed6000",
+        "ppl_no_domain": 30.209079033847377,
+        "ppl_untrained_domain": 38.89120962425892,
+        "ppl_pasted_domain": 173.86180928320016,
+        "n_tensors_pasted": 25,
+        "checksums_bit_identical": true,
+        "checksum_mismatches": [],
+        "ppl_source_trained": 12.963262659432406,
+        "functional_recovery_pct": -832.9714704748264
+      }
+    },
+    "seed7000_48M": {
+      "chess": {
+        "target_ckpt": "c4_fluent_core_v7/v6_core_seed7000",
+        "target_d_model": 512,
+        "target_seed": "c4_fluent_core_v7/v6_core_seed7000",
+        "ppl_no_domain": 39.860616243838486,
+        "ppl_untrained_domain": 45.365348456476084,
+        "ppl_pasted_domain": 2877.2217589879515,
+        "n_tensors_pasted": 25,
+        "checksums_bit_identical": true,
+        "checksum_mismatches": [],
+        "ppl_source_trained": 2.501991885148515,
+        "functional_recovery_pct": -7594.929394353128
+      },
+      "python": {
+        "target_ckpt": "c4_fluent_core_v7/v6_core_seed7000",
+        "target_d_model": 512,
+        "target_seed": "c4_fluent_core_v7/v6_core_seed7000",
+        "ppl_no_domain": 37.000627701126376,
+        "ppl_untrained_domain": 39.778980779097424,
+        "ppl_pasted_domain": 116.45255094055511,
+        "n_tensors_pasted": 25,
+        "checksums_bit_identical": true,
+        "checksum_mismatches": [],
+        "ppl_source_trained": 12.963262659432406,
+        "functional_recovery_pct": -330.5350777908291
+      }
+    },
+    "seed5003_150M": {
+      "chess": {
+        "target_ckpt": "paste_test_large/v5_core_seed5003",
+        "target_d_model": 768,
+        "target_seed": "paste_test_large/v5_core_seed5003",
+        "ppl_no_domain": 374.3590927609968,
+        "ppl_untrained_domain": 365.27386496613167,
+        "ppl_pasted_domain": 408.3355338341593,
+        "n_tensors_pasted": 25,
+        "checksums_bit_identical": true,
+        "checksum_mismatches": [],
+        "ppl_source_trained": 2.501991885148515,
+        "functional_recovery_pct": -9.136961750397285
+      },
+      "python": {
+        "target_ckpt": "paste_test_large/v5_core_seed5003",
+        "target_d_model": 768,
+        "target_seed": "paste_test_large/v5_core_seed5003",
+        "ppl_no_domain": 649.7015436533668,
+        "ppl_untrained_domain": 655.4054515757215,
+        "ppl_pasted_domain": 612.0276462339274,
+        "n_tensors_pasted": 25,
+        "checksums_bit_identical": true,
+        "checksum_mismatches": [],
+        "ppl_source_trained": 12.963262659432406,
+        "functional_recovery_pct": 5.916700557194597
+      }
+    }
+  },
+  "phase3_efficiency_comparison": {
+    "baseline_full_finetune_chess": {
+      "ppl_before": 31.03632375944452,
+      "ppl_after": 2.418847160293139,
+      "train_steps": 5000,
+      "train_time_s": 648.3591759204865,
+      "trainable_params": 42260481
+    },
+    "summary": {
+      "domain_module_params": 6304769,
+      "full_model_params": 42260481,
+      "efficiency_ratio": 6.702938838837712,
+      "domain_as_pct_of_full": 14.918829248536003,
+      "domain_chess_ppl": 2.501991885148515,
+      "full_finetune_chess_ppl": 2.418847160293139,
+      "domain_train_time_s": 582.9824743270874,
+      "full_finetune_time_s": 648.3591759204865
+    }
+  }
+}
