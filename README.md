@@ -5,6 +5,7 @@
 [![PyTorch 2.0+](https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg)](https://pytorch.org/)
 [![Status: Research Preview](https://img.shields.io/badge/status-research%20preview-yellow.svg)]()
 [![Paste Tests](https://github.com/Yoder23/layercake/actions/workflows/tests.yml/badge.svg)](https://github.com/Yoder23/layercake/actions/workflows/tests.yml)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Yoder23/layercake/blob/master/notebooks/layercake_demo.ipynb)
 
 > **This repository is LayerCake** — the native modular architecture. For post-hoc alignment across independently trained or cross-architecture models, see the companion [ABI repository](https://github.com/Yoder23/abi).
 
@@ -20,11 +21,34 @@ Functional transfer across independently trained cores (different seeds) is a se
 
 ## Start Here
 
+```bash
+# No GPU. No data. No checkpoints. Runs in ~3 seconds.
+git clone https://github.com/Yoder23/layercake
+cd layercake
+pip install -e .
+python verify_paste.py
+```
+
+Expected output:
+```
+  [weight identity — 9 tensors, cross-size 48M → 150M]
+    ✓  9 tensors — max_diff = 0.0 (bit-exact)
+  [forward-pass identity — same core + pasted domain]
+    ✓  logit max_diff = 0.000000e+00 (bit-exact)
+  [generation identity — 50-token autoregressive sequence]
+    ✓  50 tokens generated — zero divergence
+  [cross-size function identity — domain module 48M → 150M]
+    ✓  domain output max_diff = 0.000000e+00 (bit-exact, d_model 512→768)
+
+  ALL CHECKS PASSED  (~3s)
+```
+
+If you want to paste between real trained checkpoints:
+
 ```python
 from paste_domain import paste_domain_brick
 
 # Copy a trained chess domain module from a 48M model to a 150M model.
-# Weights are structurally identical — direct state dict copy, no transformation.
 paste_domain_brick(
     source_path="checkpoints/48M_core.pt",
     target_path="checkpoints/150M_core.pt",
@@ -128,6 +152,21 @@ The core transformer is frozen — only the 6.3M domain module is updated.
 
 Training starting point: untrained domain (PPL 45.7 before, **2.50 after**).
 Full results: [`results/domain_paste_functional.json`](results/domain_paste_functional.json)
+
+### How domain modules compare to LoRA
+
+| | LoRA | LayerCake domain module |
+|---|---|---|
+| Portable across model sizes? | ❌ No — rank matrices are tied to `d_model` | ✅ Yes — operates only in fixed `d_abi=512` |
+| Paste is bit-exact? | ❌ No | ✅ Yes — `max_diff = 0.0` proven |
+| Generation-identical after paste? | ❌ No | ✅ Yes — token-for-token identical |
+| Core stays frozen during domain training? | ✅ Yes | ✅ Yes |
+| Works with independently trained cores? | ✔ Any model | ⚠️ Same-ABI cores only (different seeds require alignment) |
+| Typical trainable params | 0.1–1% of model | ~15% of model (domain module only) |
+
+The key difference: LoRA parameters are shaped `(d_model, rank)` — they cannot move between
+models with different `d_model`. LayerCake domain modules are shaped `(d_abi, d_abi)` with
+`d_abi=512` fixed across all model sizes, so they paste directly with no transformation.
 
 ---
 
