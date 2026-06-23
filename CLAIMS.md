@@ -1,149 +1,176 @@
-# LayerCake — Claim Map
+# LayerCake claim and evidence map
 
-This document is the single source of truth for what LayerCake claims, what evidence backs
-each claim, and what is explicitly NOT claimed.
+This file separates current evidence, historical negative controls, and research targets.
+Passing a small-scale gate does not imply the same result at larger scale.
 
----
+## Current v2 evidence
 
-## Validated Claims
+Current north-star certificate:
 
-### Claim 1 — Domain paste is bit-exact and function-preserving
+| Claim | Evidence | Result |
+|---|---|---|
+| Matched general quality, two LayerCake seeds | `results/northstar_mobile_certificate.json` | 2.0446/2.0457 vs BPE 2.0492 BPB |
+| Smaller core | same | 14.792M vs 14.844M parameters |
+| Lower fixed-budget mean training time | same | 121.4 s vs 131.5 s |
+| Faster batch-1 prefill | same | 2.96 ms vs 5.63 ms |
+| Better exact cached-generation quality | same | 1.9953/1.9836 vs 2.0492 BPB |
+| Faster one-thread generation | same | 2.91x/2.96x BPE |
+| Exact migration into independent smaller host | same | max logit diff 0; PPL ratio 1.0 |
+| Migrated domain beats transformer adapter | same | 1.4418/1.4436 vs 2.1101/2.0951 BPB |
 
-**Statement:**  
-Domain module paste is provably lossless at two levels:
-1. All domain module weight tensors are bit-exact after paste, regardless of target model size.
-2. The pasted domain module computes **bit-identical forward-pass outputs** when given the same inputs — max absolute difference is exactly 0.0.
+Protocol:
 
-**Evidence:**  
+- 8 MB fixed local general-text stream;
+- 2 MB fixed local Python-source stream;
+- held-out tails used consistently for evaluation;
+- `d_abi=64`;
+- fixed four-byte patches;
+- continuous causal local decoder;
+- deterministic causal ABI anchors;
+- fixed canonical ABI-to-byte-logit brick head;
+- predeclared maximum general-PPL ratio of 1.05.
 
-| Test | What it proves | Max diff | Script |
-|------|---------------|----------|--------|
-| `test_self_consistency_paste` | Weight MSE = 0, cosine = 1.0 | 0 | `tests/test_paste_lossless.py` |
-| `test_cross_size_paste_weight_identity` | 9 tensors bit-exact across d_model=512→768 | 0 | `tests/test_paste_lossless.py` |
-| `test_forward_pass_lossless` | **Full logits bit-identical**: same core + pasted domain | **0.000000e+00** | `tests/test_paste_lossless.py` |
-| `test_cross_size_forward_pass_lossless` | Domain module outputs bit-identical on d_abi inputs (cross-size) | **0.000000e+00** | `tests/test_paste_lossless.py` |
-| Functional experiment (6 targets) | 25 tensors each, checksums bit-identical | 0 | `results/domain_paste_functional.json` |
+Selected evidence:
 
-**Why paste is lossless (mechanistic explanation):**  
-Domain modules compute exclusively over `d_abi=512` vectors. The paste operation is a direct
-`tensor.clone()` — no transformation, no quantization, no interpolation. Mathematically:
+| Claim | Evidence | Result |
+|---|---|---|
+| General byte-patch quality reaches BPE parity | `results/research_gate_certificate.json` | 2.4165 vs 2.4243 BPB |
+| Compact core | same | 349,888 vs 629,376 BPE parameters |
+| Faster base inference | `results/final_inference_benchmark.json` | 2.089M vs 1.458M bytes/s |
+| Faster active-brick inference | same | 1.601M vs 1.458M bytes/s |
+| Source domain adaptation | `results/sparse_brick_continuous2028_r16_p2.json` | PPL 213.70 -> 55.59 |
+| Bounded cross-seed transfer | `results/final_transfer_seed314.json` | domain ratio 0.708; general 1.044 |
+| Bounded cross-size transfer | `results/final_transfer_large2718.json` | domain ratio 0.484; general 1.049 |
+| Bounded int8 transfer | `results/final_transfer_seed314_int8.json` | domain ratio 0.703; general 1.045 |
+| Sparse activation | selected brick config | 8 installed, top-2 active |
+| Exact same-PPL lossless mode | `results/lossless_domain_small.json` | PPL 2.8553 on both cores; ratio 1.0 |
+| Exact same-PPL cross-size mode | `results/lossless_domain_scale5m_to_2m.json` | PPL 2.7143 on both cores; ratio 1.0 |
+| Exact transfer through 15.45M tier | `results/lossless_domain_scale15m_to_5m.json` | PPL 2.7143; logits/generation identical |
+| Compact int8 transfer artifact | `results/lossless_domain_scale15m_to_5m_int8.json` | 148,808 bytes; PPL 2.7165; ratio 1.0 |
+| Filesystem-disjoint Python transfer | `results/lossless_domain_external_python_int8.json` | PPL 5.8296; 57.72% byte accuracy; ratio 1.0 |
+| Mobile CPU domain win vs transformer adapter | `results/mobile_domain_win_certificate.json` | Better BPB across two adaptation seeds; 3.57x faster isolated training, 2.57x smaller artifact, 4.43x CPU throughput |
 
-$$W_{\text{pasted}} = W_{\text{source}} \quad \text{(exact copy)}$$
-$$f_{\text{pasted}}(x) = f_{\text{source}}(x) \quad \forall x \in \mathbb{R}^{d_{abi}} \quad \text{(same function)}$$
+Reproduce the certificate:
 
-**Why cross-seed PPL degradation is NOT a contradiction of losslessness:**  
-Paste fidelity and functional compatibility are orthogonal. The copy is perfect — what changes
-is the *input distribution*. Domain module $D$ was trained on `h_abi` vectors from core $A$
-(seed9000). After paste into core $B$ (seed6000), $D$ receives `h_abi` vectors from $B$'s
-different `core_to_abi` projection — a different geometric space. The computation of $D$ is
-lossless; the *mismatch* is in the input distribution it was never trained on. ABI alignment
-(aligning `core_to_abi` projections across seeds) resolves this and is left as future work.
+```powershell
+python scripts/verify_research_gates.py
+```
 
-**Verified scope:**
-- ✅ Weight-level bit-exact losslessness across all model sizes with same `d_abi`
-- ✅ Forward-pass output identity when core representations are identical (max diff = 0.0)
-- ✅ Domain module is the same mathematical function before and after paste
-- ✅ **Generation identity**: 50-token autoregressive sequence is token-for-token identical after paste (same core)
-- ⬜ Cross-seed functional transfer requires ABI alignment (open research direction)
+## What solved the original generalization failure
 
-| Paste target | Domain | PPL (no domain) | PPL (pasted) | Copy lossless? |
-|---|---|---|---|---|
-| seed6000 (48M, different seed) | chess | 31.04 | 2618.89 | ✅ weights bit-exact |
-| seed6000 (48M, different seed) | python | 30.21 | 173.86 | ✅ weights bit-exact |
-| seed7000 (48M, different seed) | chess | 39.86 | 2877.22 | ✅ weights bit-exact |
-| seed7000 (48M, different seed) | python | 37.00 | 116.45 | ✅ weights bit-exact |
-| 150M cross-size | chess | 374.36 | 408.34 | ✅ weights bit-exact |
-| 150M cross-size | python | 649.70 | 612.03 | ✅ weights bit-exact |
+Legacy LayerCake bricks copied exactly but did not generalize across independently trained
+cores. The failure was real and remains a useful negative control:
 
-**Scope of Claim 1:**  
-- ✅ Bit-exact losslessness: weights, forward-pass outputs (max diff = 0.0), and generation sequences
-- ✅ Works across all `d_model` values sharing `d_abi=512` (domain module function identical)
-- ✅ Generation is token-for-token identical when transferred to a model with the same core weights
-- ⬜ Cross-seed functional transfer (different-seed cores) requires ABI alignment — open research direction
-- ⬜ Cross-size end-to-end generation identity requires same core geometry — domain function transfers, not full model
+- tensor copy could have `max_diff=0`;
+- the target core could still produce a different ABI distribution;
+- target-side ABI decoding could assign a different meaning to the same delta;
+- domain PPL could therefore regress catastrophically.
 
----
+V2 adds two seed-independent contracts:
 
-### Claim 2 — Raw LM quality at par with standard transformer
+1. **Canonical input coordinates:** deterministic byte-prefix anchors supervise every core.
+2. **Canonical output semantics:** brick deltas use a fixed ABI-to-byte-logit head.
 
-**Statement:**  
-At equal parameters, equal optimizer config, equal seed, and equal training steps,
-LayerCake achieves raw LM quality within 0.27–1.67% of a standard transformer.
-On the HellaSwag benchmark, LayerCake shows a consistent +3.85% advantage.
+It also fixes temporal alignment: byte state after a completed patch aligns with the
+context for the following patch. With these changes, unchanged bricks pass bounded
+cross-seed and cross-size tests locally.
 
-**Evidence:**  
-| File | Steps | Metric | LayerCake | Baseline | Δ |
-|------|-------|--------|-----------|----------|---|
-| `results/fair_comparison.json` | 20K | C4 PPL | 45.01 | 44.89 | +0.27% |
-| `results/fair_comparison.json` | 20K | WikiText2 PPL | 174.69 | 171.82 | +1.67% |
-| `results/fair_comparison.json` | 20K | HellaSwag | 27.0% | 26.0% | **+3.85%** |
+They do not preserve absolute PPL. Strict evaluation measured target/source PPL ratios of
+1.74 on the small pair and 2.08 on the 5.40M-to-2.19M pair. Router agreement was only
+50-60%, and different base logits remained even when the same correction was forced.
 
-Fairness controls in `results/fair_comparison.json → "fairness_controls"`:
-- `same_block_class: true` — identical transformer blocks in both models
-- `param_matched: true` — 35.96M LayerCake vs 35.96M Baseline (0.01% diff)
-- `same_seed: true` — seed 42
-- `same_scheduler: true`
-- `same_data_sampling: true`
-- `same_optimizer: true`
-- `same_training_steps: true`
+The strict contract is implemented separately as a portable recurrent domain decoder
+driven by raw bytes and deterministic causal anchors. It owns the domain logits, so
+host-core size, seed, ABI width, and base predictions cannot change its output. This
+148,736-parameter mode measured held-out Python PPL 2.71-2.86 and 72.6-73.8% top-1 byte
+accuracy with bit-exact logits, generation, and PPL ratio 1.0 through the 15.45M tier.
 
-**Scope limitation:**  
-- 20K steps, 50M tokens of C4. Not a large training run.
-- 48M parameter class only. Scaling behavior not yet characterized.
+The correct conclusion is not that arbitrary neural networks now share semantics. It is
+that cores trained under this explicit canonical protocol can share a measured ABI.
 
----
+## Transfer ladder
 
-### Claim 3 — Domain adaptation is 6.7× more parameter-efficient
+| Level | Contract | Status |
+|---|---|---|
+| L0 | Exact tensor copy | Proven |
+| L1 | Exact brick function on equal ABI inputs | Proven |
+| L2 | Same-core token-generation identity | Proven on legacy path |
+| L3 | Cross-size structural/function portability | Proven; bounded v2 end-to-end local PASS |
+| L4 | Cross-seed bounded semantic transfer | Small-scale PASS |
+| L5 | Quantized bounded transfer | Small-scale int8 PASS |
+| L6 | Byte/byte-patch tokenizer-independent bounded transfer | Small-scale PASS |
+| PX | Exact core-independent portable-domain transfer | PASS through 15.45M tier |
+| L7 | Orchestrated bounded transfer | Not yet task-validated |
 
-**Statement:**  
-Training only a LayerCake domain module achieves equivalent domain-specific quality to
-full model fine-tuning, while updating 6.7× fewer parameters.
+Exact definitions and thresholds are in [RUBRIC.md](RUBRIC.md).
 
-**Evidence:**  
-| Method | Trainable params | Chess PPL (5K steps) | Train time | Source |
-|--------|-----------------|---------------------|------------|--------|
-| LayerCake domain module | **6.30M (15%)** | **2.50** | 583s | `results/domain_paste_functional.json` |
-| Full model fine-tune | 42.26M (100%) | 2.42 | 648s | `results/domain_paste_functional.json` |
+## Historical v1 evidence
 
-**Fairness controls:**
-- Same base model (seed6000 48M core, 245K steps)
-- Same chess domain data (2M tokens, 5K steps)
-- Same batch size (16), same seq_len (256)
-- Domain module LR: 5e-4, full fine-tune LR: 3e-5 (appropriately lower for full model)
+The original tokenized model established:
 
-**Starting PPL (untrained domain):** 45.69 (chess), 37.46 (python)
-**Chess after training:** domain module = 2.50, full fine-tune = 2.42 (essentially equivalent)
-**Python after training:** domain module = 12.96 (5K steps, room to improve with more training)
+- bit-exact domain tensor paste;
+- exact domain-function output for equal ABI inputs;
+- same-core generation identity;
+- matched-parameter LM parity at the 48M class;
+- domain adaptation with fewer trainable parameters than full fine-tuning.
 
-**Why it holds:**  
-Domain data is a small, specific distribution (chess notation ≈ 2M tokens). A 6.3M parameter
-module that focuses exclusively on this distribution reaches near-optimal quality faster than
-updating the entire 42M parameter model, which must balance domain-specific and general gradients.
+Those results remain valid in their original scope. They do not substitute for the v2
+cross-seed or tokenizer-free evidence.
 
----
+| Historical claim | Result artifact |
+|---|---|
+| Exact structural paste | `results/paste_proof.json` |
+| Same-core generation/function identity | `tests/test_paste_lossless.py` |
+| 48M matched LM comparison | `results/fair_comparison.json` |
+| Legacy domain adaptation | `results/domain_paste_functional.json` |
 
-## NOT Claimed
+## Claims not made
 
-| What is NOT claimed | Why |
-|--------------------|-----|
-| LayerCake outperforms standard transformers on LM quality | It doesn't at current scale. The +0.27% PPL overhead is an overhead, not an advantage. |
-| Domain modules improve general text quality | They don't. Domain-active mode adds ~3% PPL overhead on general text (see `results/abi_diagnosis.json`). Domain modules help domain-specific text only, when trained on domain data. |
-| Cross-seed functional domain transfer | Proven to fail without alignment. Chess PPL jumps from 31 → 2619 when pasting to a different-seed core. Structural weights transfer bit-exactly; representations do not. |
-| Cross-size functional transfer confirmed | The 150M model was only trained 10K steps (baseline PPL ~374) — too weak for meaningful evaluation. Structural portability confirmed; functional evaluation pending a fully-trained 150M core. |
-| Thinker V3 provides meaningful improvement | It adds +0.034% on C4 PPL — effectively zero (see `results/thinker_v3.json`). |
-| State-of-the-art benchmarks | Not evaluated at 1B+ parameters where competitive results emerge. |
-| Production readiness | Research code. Not hardened for deployment. |
+| Not claimed | Reason |
+|---|---|
+| Universal tokenizer-free superiority | One small local point estimate is insufficient. |
+| 25M-1B scaling validation | Those runs have not completed. |
+| Arbitrary pretrained-model compatibility | Cores must implement the canonical ABI contract. |
+| Exact additive-brick semantic losslessness | Additive outputs still depend on host ABI states and logits. |
+| Host-assisted exact PPL equivalence | Current exact mode is deliberately core-independent. |
+| Autonomous coding competence | Free-running held-out completion quality is not sufficient. |
+| Production mobile performance | Current CPU result is an x86 proxy, not phone/NPU evidence. |
+| GPU generation superiority | LayerCake reaches 0.62x BPE in the selected RTX benchmark. |
+| Native int8 speedup | Current L5 artifact is quantize/dequantize evidence. |
+| Dynamic BLT-quality patching | Current selected model uses fixed patches. |
+| Production readiness | Distributed training, serving, and security hardening remain. |
+| L7 swarm equivalence | Packet/router interfaces exist, but task evidence is pending. |
 
----
+## Larger-tier evidence
 
-## Claim-to-File Map
+The 5.40M patch-core checkpoint confirms that size, throughput, sparse adaptation,
+cross-size/seed transfer, and int8 bounded transfer continue to work on a larger local
+model. It does not match the 6.90M BPE baseline's general BPB:
 
-| Claim | Result file | Source script | Model file |
-|-------|-------------|---------------|------------|
-| Bit-exact structural paste | `results/paste_proof.json` | `paste_domain.py` | `model.py` |
-| Self-consistency paste | `tests/test_paste_lossless.py` | `tests/test_paste_lossless.py` | `model.py` |
-| Cross-size/seed structural paste | `results/domain_paste_functional.json` | `experiment_domain_paste.py` | `model.py` |
-| Domain adaptation efficiency (6.7×) | `results/domain_paste_functional.json` | `experiment_domain_paste.py` | `model.py` |
-| Fair LM comparison | `results/fair_comparison.json` | `compare_vs_baseline.py` | `model.py`, `baseline_lm.py` |
-| ABI overhead diagnosis | `results/abi_diagnosis.json` | `compare_vs_baseline.py` | `model.py` |
-| Thinker V3 impact | `results/thinker_v3.json` | N/A (ablation) | `model.py` |
+- byte-patch: 2.2612 BPB;
+- BPE: 2.0747 BPB.
+
+Those models are historical negative controls. The newer 14.79M architecture reaches
+2.0446/2.0457 BPB against the 14.84M BPE baseline at 2.0492. Validation beyond this local
+15M-class protocol remains open.
+
+## Required language for public discussion
+
+Use:
+
+- bit-exact structural paste;
+- canonical ABI;
+- bounded cross-seed transfer;
+- bounded cross-size transfer;
+- small-scale tokenizer-free parity by point estimate;
+- portable sparse domain brick;
+- cost-adjusted domain adaptation.
+- replicated 15M-class mobile CPU win under the frozen local protocol;
+- exact portable-domain migration into an independent smaller LayerCake host.
+
+Do not use without larger evidence:
+
+- universal lossless semantic transfer;
+- tokenizer-free dominance;
+- frontier-model replacement;
+- mobile model has the same intelligence as a server model.

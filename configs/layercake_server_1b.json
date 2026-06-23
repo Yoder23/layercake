@@ -1,0 +1,15 @@
+{
+  "model_size": "server_1b",
+  "estimated_parameters": 1000000000,
+  "d_model": 1536,
+  "n_layers": 28,
+  "n_heads": 24,
+  "d_abi": 512,
+  "abi_version": "lc-abi/2",
+  "input_mode": "byte_patch",
+  "patching": {"mode": "difficulty", "fallback": "whitespace", "max_patch_size": 24},
+  "domain_brick_default": {"type": "sparse_low_rank", "rank": 32, "experts": 64, "top_k": 4},
+  "intended_device_class": "server GPU",
+  "expected_quantization": "fp16/int8",
+  "notes": "Escalation/verifier target; learned difficulty patching is not implemented yet."
+}

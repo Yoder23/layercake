@@ -1,0 +1,15 @@
+{
+  "model_size": "desktop_350m",
+  "estimated_parameters": 350000000,
+  "d_model": 1024,
+  "n_layers": 20,
+  "n_heads": 16,
+  "d_abi": 512,
+  "abi_version": "lc-abi/2",
+  "input_mode": "byte_patch",
+  "patching": {"mode": "whitespace", "max_patch_size": 16},
+  "domain_brick_default": {"type": "sparse_low_rank", "rank": 16, "experts": 32, "top_k": 2},
+  "intended_device_class": "desktop GPU",
+  "expected_quantization": "int8/fp16",
+  "notes": "Verifier and heavier local reasoning node."
+}

@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "gates": {
+    "general_bpb_vs_bpe": true,
+    "core_smaller_than_bpe": true,
+    "core_smaller_than_byte": true,
+    "active_brick_faster_than_byte_base": true,
+    "source_domain_improves": true,
+    "source_general_bounded": true,
+    "cross_seed_bounded": true,
+    "cross_size_bounded": true,
+    "int8_bounded": true,
+    "top_k_sparse": true
+  },
+  "failed": [],
+  "metrics": {
+    "byte_patch_general_bpb": 2.4165337909120796,
+    "bpe_general_bpb": 2.4243116245959597,
+    "byte_patch_parameters": 349888,
+    "bpe_parameters": 629376,
+    "byte_parameters": 693952,
+    "patch_brick_bytes_per_second": 1601154.165342532,
+    "byte_base_bytes_per_second": 1457994.6147075286,
+    "source_domain_ppl_before": 213.70300744811186,
+    "source_domain_ppl_after": 55.58743103466188,
+    "cross_seed_domain_ratio": 0.7083550906270434,
+    "cross_seed_general_ratio": 1.044499022740923,
+    "cross_size_domain_ratio": 0.4837007987662601,
+    "cross_size_general_ratio": 1.0489374635587185,
+    "int8_domain_ratio": 0.7027269295055633,
+    "int8_general_ratio": 1.045035629043739
+  },
+  "scope": "Small-scale local-corpus evidence. This certificate does not prove large-scale or universal tokenizer dominance."
+}

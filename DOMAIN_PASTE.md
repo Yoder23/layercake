@@ -1,5 +1,15 @@
 # Domain Paste Guide
 
+## V2 canonical transfer note
+
+This document primarily describes the original tokenized direct-paste workflow. Exact
+copying in that workflow did not by itself guarantee cross-seed behavior.
+
+The v2 byte-patch path adds deterministic ABI anchors and a fixed canonical brick output
+head. Those contracts produce bounded functional transfer across the tested independent
+seeds and model widths. Use `scripts/eval_portable_brick.py` for v2 artifacts and
+`scripts/verify_research_gates.py` for the selected evidence.
+
 ## What Domain Paste Does
 
 A LayerCake "domain brick" is a small neural module (~1M params) that was trained to

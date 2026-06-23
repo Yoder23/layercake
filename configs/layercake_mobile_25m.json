@@ -1,0 +1,24 @@
+{
+  "model_size": "mobile_25m",
+  "estimated_parameters": 23692216,
+  "d_model": 440,
+  "global_layers": 5,
+  "local_layers": 5,
+  "n_heads": 8,
+  "d_abi": 512,
+  "experimental_core_d_abi": 128,
+  "abi_version": "lc-abi/2",
+  "input_mode": "byte_patch",
+  "patching": {"mode": "fixed", "patch_size": 2},
+  "local_decoder": {
+    "type": "window_transformer",
+    "window_bytes": 16,
+    "modern_swiglu": true,
+    "fused_attention": true,
+    "stateful_cached_generation": true
+  },
+  "domain_brick_default": {"type": "sparse_low_rank", "rank": 8, "experts": 8, "top_k": 1},
+  "intended_device_class": "mobile/NPU",
+  "expected_quantization": "int8",
+  "notes": "Measured 23.69M scaling candidate. It reached 2.0299 BPB in 214.1 s versus the 24.09M BPE comparator at 2.0035 BPB in 158.0 s, so it is a negative control rather than the selected frontier."
+}

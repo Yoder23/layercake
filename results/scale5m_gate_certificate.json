@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "required_gates": {
+    "patch_smaller_than_bpe": true,
+    "patch_smaller_than_byte": true,
+    "patch_base_faster_than_byte": true,
+    "patch_brick_faster_than_byte": true,
+    "source_domain_improves": true,
+    "source_general_bounded": true,
+    "cross_size_seed_transfer": true,
+    "int8_transfer": true
+  },
+  "research_targets": {
+    "general_bpb_parity_with_bpe": false
+  },
+  "failed_required": [],
+  "metrics": {
+    "patch_parameters": 5396608,
+    "byte_parameters": 14566048,
+    "bpe_parameters": 6901760,
+    "patch_general_bpb": 2.261152725660271,
+    "bpe_general_bpb": 2.0746731199154556,
+    "patch_base_bytes_per_second": 243637.76885787802,
+    "patch_brick_bytes_per_second": 231966.37468138305,
+    "byte_base_bytes_per_second": 122127.09258431084,
+    "source_domain_ppl_before": 157.02782147889943,
+    "source_domain_ppl_after": 40.93667244250034,
+    "cross_size_domain_ratio": 0.5326156191368854,
+    "cross_size_general_ratio": 1.0210079570650865,
+    "int8_domain_ratio": 0.5318632796016487,
+    "int8_general_ratio": 1.021443407390983
+  },
+  "scope": "5.40M patch core on 20 MB local general data. Architecture gates pass; matched-update BPE quality parity remains open."
+}

@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "required_gates": {
+    "patch_smaller_than_byte": true,
+    "patch_faster_than_byte": true,
+    "repository_transfer_exact": true,
+    "external_transfer_exact": true,
+    "external_domain_prediction_useful": true
+  },
+  "failed_required": [],
+  "research_targets": {
+    "general_bpb_parity_with_byte": false,
+    "task_level_code_generation": false,
+    "native_mobile_int8_execution": false
+  },
+  "metrics": {
+    "total_paired_steps": 5000,
+    "patch_parameters": 15446784,
+    "byte_parameters": 25745536,
+    "patch_general_bpb": 2.4301177058707353,
+    "byte_general_bpb": 2.2274927799830895,
+    "patch_bytes_per_second": 227583.95300918588,
+    "byte_bytes_per_second": 92999.79043463188,
+    "repository_domain_ppl": 2.7165366480719544,
+    "external_domain_ppl": 5.829552420323808,
+    "external_top1_byte_accuracy": 0.5771875
+  },
+  "scope": "Single-seed 20 MB local-corpus checkpoint and x86/CUDA measurements. The external Python result is filesystem-disjoint, not a contamination audit. Mobile hardware and task-level coding remain open."
+}

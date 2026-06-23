@@ -1,0 +1,15 @@
+{
+  "model_size": "mobile_60m",
+  "estimated_parameters": 60000000,
+  "d_model": 512,
+  "n_layers": 10,
+  "n_heads": 8,
+  "d_abi": 512,
+  "abi_version": "lc-abi/2",
+  "input_mode": "byte_patch",
+  "patching": {"mode": "whitespace", "max_patch_size": 12},
+  "domain_brick_default": {"type": "sparse_low_rank", "rank": 8, "experts": 8, "top_k": 2},
+  "intended_device_class": "high-end mobile/laptop iGPU",
+  "expected_quantization": "int8",
+  "notes": "Small local reasoning and orchestration node."
+}

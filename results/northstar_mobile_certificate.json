@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "claim": "At ~15M parameters, LayerCake beats the matched tokenizer transformer on heldout BPB, mean fixed-budget training time, batch-1 prefill latency, and one-thread cached generation; an unchanged portable Python domain payload then migrates exactly into an independent ~5M LayerCake host and beats the matched transformer domain adapter.",
+  "required_gates": {
+    "core_quality_seed6250": true,
+    "core_quality_seed6263": true,
+    "mean_training_time": true,
+    "equal_or_lower_training_bytes": true,
+    "smaller_model": true,
+    "faster_batch1_prefill": true,
+    "cached_generation_quality_seed6250": true,
+    "cached_generation_quality_seed6263": true,
+    "faster_cpu_generation_seed6250": true,
+    "faster_cpu_generation_seed6263": true,
+    "lossless_migration_seed6250": true,
+    "lossless_migration_seed6263": true,
+    "migrated_domain_quality_seed6250": true,
+    "migrated_domain_quality_seed6263": true,
+    "lower_domain_training_time": true,
+    "smaller_domain_payload": true,
+    "faster_domain_cpu": true
+  },
+  "failed_required": [],
+  "metrics": {
+    "bpe_parameters": 14843840,
+    "layercake_parameters": 14792160,
+    "bpe_general_bpb": 2.049247849357011,
+    "layercake_general_bpb": [
+      2.044625960551962,
+      2.0456837742426237
+    ],
+    "bpe_training_seconds": 131.48440837860107,
+    "layercake_training_seconds": [
+      110.55448293685913,
+      132.31954216957092
+    ],
+    "layercake_mean_training_seconds": 121.43701255321503,
+    "bpe_batch1_prefill_ms": 5.6325000477954745,
+    "layercake_batch1_prefill_ms": 2.958531000185758,
+    "cached_generation_bpb": [
+      1.9952801097441861,
+      1.9836346845497481
+    ],
+    "cpu_generation_speed_ratio": [
+      2.9133087586931468,
+      2.9585247894512507
+    ],
+    "gpu_generation_speed_ratio": 0.6191573063796011,
+    "migrated_domain_bpb": [
+      1.4417685101548379,
+      1.4435710534392248
+    ],
+    "transformer_adapter_domain_bpb": [
+      2.11011393891534,
+      2.0951201146965883
+    ],
+    "migration_max_logit_diff": [
+      0.0,
+      0.0
+    ],
+    "migration_ppl_ratio": [
+      1.0,
+      1.0
+    ],
+    "domain_training_seconds": 51.29266142845154,
+    "adapter_training_seconds": 183.0902979373932,
+    "domain_payload_bytes": 148808,
+    "adapter_payload_bytes": 383008,
+    "domain_cpu_bytes_per_second": 31894.349966981936,
+    "adapter_cpu_bytes_per_second": 7083.493544925631
+  },
+  "limitations": {
+    "gpu_generation_win": false,
+    "gpu_generation_speed_ratio": 0.6191573063796011,
+    "real_phone_measurement": false,
+    "domains_tested": [
+      "python"
+    ],
+    "scale": "approximately 15M source and 5M target parameters"
+  }
+}

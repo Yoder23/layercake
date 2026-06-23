@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "claim": "LayerCake portable domains beat a matched low-rank tokenizer-transformer adapter for this mobile CPU/domain-deployment protocol.",
+  "required_gates": {
+    "better_domain_bpb": true,
+    "lower_training_wall_time": true,
+    "smaller_deployment_artifact": true,
+    "faster_single_thread_cpu": true,
+    "exact_cross_host_transfer": true,
+    "second_seed_quality_replication": true
+  },
+  "failed_required": [],
+  "metrics": {
+    "layercake_domain_bpb": 1.4417685101548379,
+    "transformer_adapter_domain_bpb": 2.11011393891534,
+    "layercake_training_seconds": 51.29266142845154,
+    "transformer_adapter_training_seconds": 183.0902979373932,
+    "layercake_artifact_bytes": 148808,
+    "transformer_adapter_artifact_bytes": 383008,
+    "layercake_cpu_bytes_per_second": 35744.704939635165,
+    "transformer_adapter_cpu_bytes_per_second": 8074.953516334376,
+    "layercake_gpu_bytes_per_second": 153637.25583371747,
+    "transformer_adapter_gpu_bytes_per_second": 214802.5806357234,
+    "transformer_adapter_active_general_bpb_regression": 0.37895139010732715,
+    "layercake_seed2_domain_bpb": 1.4435710534392248,
+    "transformer_adapter_seed2_domain_bpb": 2.0951201146965883
+  },
+  "research_targets": {
+    "general_core_bpb_parity": false,
+    "gpu_prefill_win": false,
+    "task_level_code_generation": false,
+    "real_mobile_hardware": false
+  },
+  "scope": "Single Python domain with two independent adaptation seeds. Isolated timing is from the first seed. Hardware is a desktop x86 one-thread CPU proxy and RTX 3080 Laptop GPU. The baseline is a residual rank-16 adapter, not every possible PEFT method."
+}

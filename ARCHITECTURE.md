@@ -1,5 +1,86 @@
 # LayerCake Architecture
 
+## V2 portable-domain runtime
+
+LayerCake v2 has two domain execution modes:
+
+1. **Additive ABI brick:** a sparse residual uses host ABI states and host logits. It is
+   cheap and compositional, but only bounded transfer is expected across independent cores.
+2. **PX portable domain:** a versioned byte-level decoder uses deterministic causal
+   features and owns the selected domain prediction path. Host weights are not inputs, so
+   a verified unchanged artifact produces identical logits and PPL across hosts.
+
+The PX artifact contains:
+
+- a domain identifier and format version;
+- deterministic byte-feature contract;
+- recurrent decoder architecture metadata;
+- quantization contract;
+- canonical spec hash;
+- payload hash covering every stored tensor;
+- optional training/evaluation metadata.
+
+The runtime rejects modified metadata or tensors. The selected Python artifact has 148,736
+parameters, occupies 594,944 bytes in fp32 or 148,808 bytes with symmetric per-tensor int8
+storage, and is dequantized at load time. Native int8 execution is not yet implemented.
+
+PX should be understood as an installable domain capsule, not as evidence that host cores
+share internal representations or general intelligence.
+
+## v2 canonical ABI and byte-patch path
+
+The v2 research path is additive:
+
+```
+UTF-8 bytes
+  -> byte embeddings
+  -> fixed/heuristic causal patches
+  -> patch-level core
+  -> versioned canonical ABI
+  -> top-k sparse low-rank domain brick
+  -> patch expansion
+  -> byte logits
+```
+
+`ABISpec` binds the coordinate width, normalization, basis, interface contract,
+quantization contract, compatible brick types, and a stable SHA-256 hash. Bricks validate
+this contract before execution. Tokenized and byte-patch interfaces may share an ABI
+version, but that alone does not align independently trained coordinates; paired alignment
+losses and measured PPL gates are required.
+
+### Canonical generalization contract
+
+V2 resolves the legacy cross-seed failure with two deterministic components:
+
+1. `canonical_anchors.py` maps every observed byte prefix to a fixed normalized ABI target.
+   Both byte and byte-patch cores learn against the same target, independent of seed or
+   model width.
+2. `canonical_brick_head()` creates a fixed ABI-to-byte-logit projection. Brick deltas no
+   longer depend on each core's independently initialized ABI decoder.
+
+For patch `n`, the global patch state summarizes completed bytes through patch `n`. It
+aligns to the context used to predict patch `n+1`; aligning it to the current patch's BOS
+context is an off-by-one error and is explicitly avoided.
+
+The selected compact path uses a continuous local GRU state across patch boundaries. The
+global transformer runs at one quarter of byte sequence length while the local decoder
+preserves exact causal byte history.
+
+```text
+bytes [B,T]
+  -> byte embeddings
+  -> fixed patches [B,T/4,4]
+  -> compact global transformer [B,T/4,d_model]
+  -> canonical ABI context [B,T/4,d_abi]
+  -> repeat context over local bytes
+  -> continuous causal GRU [B,T,d_model]
+  -> byte logits
+
+brick(ABI) - ABI
+  -> fixed canonical head
+  -> additive byte-logit correction
+```
+
 ## Overview
 
 LayerCake is a transformer-based language model with a fixed-dimension bottleneck interface

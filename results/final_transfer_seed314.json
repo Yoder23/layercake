@@ -1,0 +1,40 @@
+{
+  "base_domain": {
+    "bpb": 6.819927235682393,
+    "loss": 4.727213335037232,
+    "ppl": 112.98028506472988
+  },
+  "base_general": {
+    "bpb": 3.159825360301208,
+    "loss": 2.1902240395545958,
+    "ppl": 8.937215180127733
+  },
+  "brick_config": {
+    "alpha_init": 0.01,
+    "d_abi": 64,
+    "num_experts": 8,
+    "patch_size": 4,
+    "rank": 16,
+    "top_k": 2,
+    "type": "sparse_low_rank"
+  },
+  "domain_ratio": 0.7083550906270434,
+  "general_ratio": 1.044499022740923,
+  "quantization_max_diff": 0.0,
+  "quantized_int8": false,
+  "source_core": "runs_experiment/canonical_continuous_patch4_seed2028_parity.pt",
+  "source_seed": 2028,
+  "status": "PASS",
+  "target_d_model": 128,
+  "target_seed": 314,
+  "transfer_domain": {
+    "bpb": 6.32247188961064,
+    "loss": 4.382403564453125,
+    "ppl": 80.03016006609593
+  },
+  "transfer_general": {
+    "bpb": 3.2226365028857566,
+    "loss": 2.2337614059448243,
+    "ppl": 9.334912521668759
+  }
+}

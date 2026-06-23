@@ -1,0 +1,37 @@
+{
+  "source_seed": 2028,
+  "target_seed": 314,
+  "source_d_model": 96,
+  "target_d_model": 128,
+  "batches": 20,
+  "metrics": {
+    "abi_cosine": 0.9146464020013809,
+    "abi_relative_l2": 0.41190720349550247,
+    "source_anchor_mse": 0.2139313831925392,
+    "target_anchor_mse": 0.35461403578519823,
+    "delta_cosine": 0.8011565983295441,
+    "delta_relative_l2": 0.6429348230361939,
+    "correction_cosine": 0.7917049467563629,
+    "correction_relative_l2": 0.6563502788543701,
+    "base_logit_cosine": 0.8651169419288636,
+    "base_logit_relative_l2": 0.7062973439693451,
+    "source_base_loss": 5.3645872354507445,
+    "target_base_loss": 4.9184650182724,
+    "source_learned_brick_loss": 4.01795711517334,
+    "target_learned_brick_loss": 4.599193739891052,
+    "source_anchor_brick_loss": 5.132918453216552,
+    "target_anchor_brick_loss": 6.020912098884582
+  },
+  "routing": {
+    "top1_agreement": 0.5731119990348816,
+    "exact_topk_set_agreement": 0.5015625178813934
+  },
+  "ppl_ratios": {
+    "learned_abi_target_over_source": 1.7882484562247483,
+    "shared_anchor_input_target_over_source": 2.4302488163445677
+  },
+  "interpretation": {
+    "shared_anchor_correction_is_identical": true,
+    "remaining_anchor_mode_gap_is_entirely_base_model_dependent": true
+  }
+}

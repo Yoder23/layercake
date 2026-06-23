@@ -1,5 +1,22 @@
 # Skeptics FAQ
 
+## 2026 v2 update
+
+Some objections below describe the original tokenized prototype and remain useful
+historical controls. The statement that cross-seed transfer is simply unsolved no longer
+describes the selected byte-patch architecture.
+
+V2 trains participating cores against deterministic causal ABI anchors and applies brick
+deltas through a fixed canonical byte-logit head. Under the fixed local protocol,
+unchanged bricks pass bounded cross-seed, cross-size, cross-interface, and int8 gates.
+
+This does not make arbitrary models compatible. Cores must implement the same ABI version
+and canonical contracts. Verify the selected evidence with:
+
+```powershell
+python scripts/verify_research_gates.py
+```
+
 Anticipated objections and direct answers.
 
 ---

@@ -1,0 +1,15 @@
+{
+  "model_size": "laptop_150m",
+  "estimated_parameters": 150000000,
+  "d_model": 768,
+  "n_layers": 12,
+  "n_heads": 12,
+  "d_abi": 512,
+  "abi_version": "lc-abi/2",
+  "input_mode": "byte_patch",
+  "patching": {"mode": "whitespace", "max_patch_size": 16},
+  "domain_brick_default": {"type": "sparse_low_rank", "rank": 16, "experts": 16, "top_k": 2},
+  "intended_device_class": "laptop GPU",
+  "expected_quantization": "int8/fp16",
+  "notes": "Primary local development model."
+}
