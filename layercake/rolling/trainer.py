@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import time
+from dataclasses import replace
 
 import torch
 from torch import nn
@@ -10,8 +11,10 @@ from .certificates import SemanticCertificate
 from .commit import ModelCommit
 from .common import stable_hash, write_json
 from .gates import GateResult, run_gates
+from .preview import run_preview
 from .registry import ModuleRegistry
 from .rollback import rollback_failed_stage
+from .syllabus import compile_syllabus
 
 
 class RollingTrainer:
@@ -104,6 +107,89 @@ class RollingTrainer:
         )
         cert.save(certificate_path or Path("results/certificates") / f"{rubric.rubric_id}.json")
         return commit, cert, rollback_report
+
+    def run_preview_guided(
+        self,
+        rubric,
+        dataset_path,
+        *,
+        model=None,
+        parent_commit=None,
+        train_step=None,
+        metrics: dict | None = None,
+        mode: str | None = None,
+        certificate_path: str | Path | None = None,
+    ):
+        preview = run_preview(rubric, dataset_path, model=model, parent_commit=parent_commit)
+        syllabus = compile_syllabus(rubric, preview, mode=mode)
+        loss_history = []
+        early_stop_report = None
+        started = time.perf_counter()
+        for name in syllabus.frozen_modules:
+            if name in self.registry.modules:
+                self.registry.freeze(name)
+        for name in syllabus.trainable_modules:
+            if name in self.registry.modules:
+                self.registry.unfreeze(name)
+        if train_step:
+            from .early_stop import EarlyStopper
+
+            stopper = EarlyStopper(
+                patience=syllabus.early_stop_rules[0].get("patience", 2),
+                min_delta=syllabus.early_stop_rules[0].get("min_delta", 0.0),
+            )
+            for step in range(max(rubric.max_steps, 1)):
+                value = train_step()
+                if value is None:
+                    value = metrics.get("loss", 1.0) if metrics else 1.0
+                loss_history.append(float(value))
+                decision = stopper.update(float(value), step=step)
+                if decision.should_stop:
+                    early_stop_report = decision.__dict__
+                    break
+        elapsed = time.perf_counter() - started
+        merged_metrics = {
+            "preview_id": preview.preview_id,
+            "syllabus_id": syllabus.syllabus_id,
+            "training_seconds": elapsed,
+            "steps": len(loss_history) or max(rubric.max_steps, 1),
+            "loss_history": loss_history,
+            "trainable_params": self.registry.trainable_parameter_count(),
+            "bpb": preview.current_model_bpb if preview.current_model_bpb is not None else 0.0,
+            "preview": preview.to_dict(),
+            "syllabus": syllabus.to_dict(),
+        }
+        if metrics:
+            merged_metrics.update(metrics)
+        commit, cert, rollback_report = self.run_rubric(
+            rubric,
+            parent_commit,
+            train_step=None,
+            metrics=merged_metrics,
+            certificate_path=certificate_path,
+        )
+        if early_stop_report and parent_commit:
+            commit = commit.mark_failed()
+            commit.save(self.root)
+            rollback_report = rollback_failed_stage(commit, parent_commit, self.registry)
+            gate_results = list(cert.gate_results) + [{
+                "gate_name": "early_stop",
+                "passed": False,
+                "metric_name": early_stop_report["metric"],
+                "value": early_stop_report["value"],
+                "threshold": None,
+                "comparison": "triggered",
+                "details": early_stop_report,
+                "artifact_path": None,
+            }]
+            cert = replace(
+                cert,
+                gate_results=gate_results,
+                passed=False,
+                regression_summary={"early_stop": early_stop_report, "rollback": rollback_report},
+            )
+            cert.save(certificate_path or Path("results/certificates") / f"{rubric.rubric_id}.json")
+        return commit, cert, rollback_report, preview, syllabus
 
     def run_sequence(self, rubrics: list, train_steps: list | None = None):
         parent = self.commits[-1] if self.commits else None

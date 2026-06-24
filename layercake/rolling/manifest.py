@@ -51,7 +51,9 @@ class DatasetManifest:
         return cls(**json.loads(text))
 
     def hash(self) -> str:
-        return stable_hash(self.to_dict())
+        data = self.to_dict()
+        data["created_at"] = ""
+        return stable_hash(data)
 
     def compute_hash(self) -> str:
         return self.hash()

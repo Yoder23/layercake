@@ -8,6 +8,7 @@ Current smoke path:
 ```powershell
 python -m layercake.rolling.cli --help
 python scripts/demo_rolling_training.py --smoke
+python scripts/demo_preview_guided_layercake_training.py --smoke
 pytest tests/test_rolling_cli.py tests/test_rolling_rubric.py tests/test_rolling_trainer.py tests/test_model_commit.py tests/test_module_registry.py tests/test_dataset_manifest.py tests/test_gates.py tests/test_rollback.py tests/test_branching.py tests/test_cherrypick.py tests/test_bisect.py -q
 ```
 
@@ -19,3 +20,6 @@ For real LayerCake scale runs, semantic CI should require both:
 1. source/core certificate passes; and
 2. receiver-after-transfer certificate passes with exact transfer and no generation
    degradation.
+
+Preview-guided semantic CI also records `results/previews/`,
+`results/syllabi/`, `results/reports/`, and `results/capability_ledger.jsonl`.

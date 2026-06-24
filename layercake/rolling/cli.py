@@ -10,7 +10,9 @@ from .cherrypick import cherry_pick_module
 from .commit import ModelCommit
 from .common import load_structured
 from .diff import diff_commits
+from .preview import RubricPreview, run_preview
 from .rubric import TrainingRubric
+from .syllabus import compile_syllabus
 
 
 def main(argv=None) -> int:
@@ -29,6 +31,22 @@ def main(argv=None) -> int:
     diff.add_argument("commit_b")
     run = sub.add_parser("run-rubric")
     run.add_argument("rubric")
+    preview = sub.add_parser("preview")
+    preview.add_argument("rubric")
+    preview.add_argument("--data", default="data/rolling_preview_smoke.txt")
+    compile_cmd = sub.add_parser("compile-syllabus")
+    compile_cmd.add_argument("rubric")
+    compile_cmd.add_argument("preview")
+    compile_cmd.add_argument("--mode", default=None)
+    rpg = sub.add_parser("run-preview-guided")
+    rpg.add_argument("rubric")
+    bench = sub.add_parser("benchmark-preview")
+    bench.add_argument("rubric")
+    dom = sub.add_parser("dominance-gates")
+    dom.add_argument("config")
+    sub.add_parser("capability-ledger")
+    td = sub.add_parser("training-diff")
+    td.add_argument("commit_id")
     sub.add_parser("run-sequence").add_argument("sequence")
     sub.add_parser("rollback").add_argument("commit_id")
     cp = sub.add_parser("cherry-pick-module")
@@ -62,6 +80,40 @@ def main(argv=None) -> int:
     elif args.cmd == "run-rubric":
         rubric = TrainingRubric.from_file(args.rubric)
         print(json.dumps({"rubric_id": rubric.rubric_id, "hash": rubric.compute_hash()}, indent=2))
+    elif args.cmd == "preview":
+        data = Path(args.data)
+        if not data.exists():
+            data.parent.mkdir(parents=True, exist_ok=True)
+            data.write_text("hello layercake preview\n", encoding="utf-8")
+        rubric = TrainingRubric.from_file(args.rubric)
+        preview_obj = run_preview(rubric, data)
+        print(json.dumps(preview_obj.to_dict(), indent=2))
+    elif args.cmd == "compile-syllabus":
+        rubric = TrainingRubric.from_file(args.rubric)
+        preview_obj = RubricPreview.load(args.preview)
+        syllabus = compile_syllabus(rubric, preview_obj, mode=args.mode)
+        print(json.dumps(syllabus.to_dict(), indent=2))
+    elif args.cmd == "run-preview-guided":
+        from scripts.demo_preview_guided_layercake_training import run_demo
+
+        print(json.dumps(run_demo(smoke=True), indent=2))
+    elif args.cmd == "benchmark-preview":
+        from scripts.benchmark_preview_guided_training import main as benchmark_main
+
+        return benchmark_main()
+    elif args.cmd == "dominance-gates":
+        from .scaling_gates import run_dominance_suite
+
+        config_path = Path(args.config)
+        metrics = load_structured(config_path) if config_path.exists() else {}
+        print(json.dumps(run_dominance_suite(metrics), indent=2))
+    elif args.cmd == "capability-ledger":
+        path = Path("results/capability_ledger.jsonl")
+        lines = path.read_text(encoding="utf-8").splitlines() if path.exists() else []
+        print(json.dumps({"path": str(path), "rows": len(lines)}, indent=2))
+    elif args.cmd == "training-diff":
+        matches = sorted(Path("results/reports").glob(f"{args.commit_id}*_training_diff.json"))
+        print(matches[0].read_text(encoding="utf-8") if matches else json.dumps({"commit_id": args.commit_id, "found": False}))
     elif args.cmd == "run-sequence":
         sequence = load_structured(args.sequence)
         rubrics = []

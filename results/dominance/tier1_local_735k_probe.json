@@ -1,0 +1,150 @@
+{
+  "data_path": "data/tier1_dominance_smoke.txt",
+  "dominance": {
+    "dimensions": [
+      "training_time",
+      "final_bpb",
+      "trainable_params",
+      "artifact_size",
+      "cpu_inference",
+      "memory",
+      "rollback_recovery",
+      "domain_transfer",
+      "domain_add_cost",
+      "installed_vs_active_compute"
+    ],
+    "gates": {
+      "fewer_trainable_params": false,
+      "generation_printable": true,
+      "layercake_faster_cpu_generation": true,
+      "lower_final_bpb": false,
+      "lower_training_time": true,
+      "preview_beats_blind_bpb": true,
+      "preview_not_slower_than_blind": true,
+      "successful_rollback": true,
+      "successful_transfer": true
+    },
+    "metrics": {
+      "layercake_artifact_size_proxy_bytes": 2940928,
+      "layercake_bpb": 8.089377341844274,
+      "layercake_cpu_generation_tps": 531.4767057832995,
+      "layercake_time_to_target_seconds": 0.026098599890246987,
+      "layercake_trainable_params": 735232,
+      "layercake_training_seconds": 0.026098599890246987,
+      "rollback_recovered": true,
+      "transfer_exact": true,
+      "transformer_artifact_size_proxy_bytes": 2889344,
+      "transformer_bpb": 8.031275411007385,
+      "transformer_cpu_generation_tps": 315.140533827182,
+      "transformer_time_to_target_seconds": 0.045296499971300364,
+      "transformer_trainable_params": 722336,
+      "transformer_training_seconds": 0.045296499971300364
+    },
+    "passed": false
+  },
+  "layercake_blind": {
+    "after_bpb": 8.159421747957076,
+    "artifact_size_proxy_bytes": 2940928,
+    "before_bpb": 8.440889242289751,
+    "generation": {
+      "elapsed_seconds": 0.015444299904629588,
+      "generated_bytes": [
+        154,
+        96,
+        22,
+        205,
+        117,
+        195,
+        6,
+        247
+      ],
+      "printable_rate": 0.25,
+      "tokens_per_second": 517.9904592245011
+    },
+    "loss_history": [
+      5.850778579711914,
+      5.753025531768799
+    ],
+    "name": "layercake_blind",
+    "params": 735232,
+    "preview_id": null,
+    "steps": 2,
+    "syllabus_id": null,
+    "trainable_params": 735232,
+    "training_seconds": 0.050514800008386374
+  },
+  "layercake_preview_guided": {
+    "after_bpb": 8.089377341844274,
+    "artifact_size_proxy_bytes": 2940928,
+    "before_bpb": 8.440889242289751,
+    "generation": {
+      "elapsed_seconds": 0.015052400063723326,
+      "generated_bytes": [
+        154,
+        96,
+        22,
+        205,
+        117,
+        195,
+        6,
+        247
+      ],
+      "printable_rate": 0.25,
+      "tokens_per_second": 531.4767057832995
+    },
+    "loss_history": [
+      5.850778579711914,
+      5.728635311126709
+    ],
+    "name": "layercake_preview_guided",
+    "params": 735232,
+    "preview_id": "782e26b8c3d0da7a",
+    "steps": 2,
+    "syllabus_id": "ae49e085ec83aad0",
+    "trainable_params": 735232,
+    "training_seconds": 0.026098599890246987
+  },
+  "model_config": {
+    "d_abi": 32,
+    "d_byte": 16,
+    "d_model": 128,
+    "heads": 2,
+    "layers": 2,
+    "max_patches": 256
+  },
+  "run_id": "tier1_smoke",
+  "scope": "Tier 0/Tier 1 smoke harness. Passing is not scale dominance.",
+  "status": "FAIL",
+  "steps": 2,
+  "tiny_byte_transformer": {
+    "after_bpb": 8.031275411007385,
+    "artifact_size_proxy_bytes": 2889344,
+    "before_bpb": 8.63702238491732,
+    "generation": {
+      "elapsed_seconds": 0.02538549993187189,
+      "generated_bytes": [
+        20,
+        61,
+        78,
+        169,
+        100,
+        15,
+        129,
+        195
+      ],
+      "printable_rate": 0.375,
+      "tokens_per_second": 315.140533827182
+    },
+    "loss_history": [
+      6.007669925689697,
+      5.788629531860352
+    ],
+    "name": "tiny_byte_transformer",
+    "params": 722336,
+    "preview_id": null,
+    "steps": 2,
+    "syllabus_id": null,
+    "trainable_params": 722336,
+    "training_seconds": 0.045296499971300364
+  }
+}

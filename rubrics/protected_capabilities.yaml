@@ -7,6 +7,15 @@ capabilities:
   - cpu_generation
   - rollback_exactness
   - cherry_pick_compatibility
+protected_metrics:
+  protected.general_bpb: 20.0
+  protected.byte_reconstruction: 1.0
+  protected.abi_stability: 1.0
+  protected.prior_domain_bpb: 20.0
+  protected.latency: 999999.0
+  protected.memory: 999999999.0
+  protected.transfer_exactness: 0.0
+  protected.px_exactness: 0.0
 policy:
   promotion_requires_all_gates: true
   failed_commits_are_preserved: true

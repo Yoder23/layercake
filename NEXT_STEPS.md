@@ -199,3 +199,34 @@ This does not change the evidence boundary above: dense block reshuffling remain
 exhausted, the sparse-state 20M branch remains a failed cost/quality gate, and no public
 scale-dominance claim should be promoted until source/core and receiver-after-transfer
 certificates both pass at the relevant scale.
+
+## Preview-guided scaling experiments
+
+The next serious experiments should use the new Rubric Preview path instead of blind
+launches:
+
+1. Tier 1 local: 1M-5M parameter LayerCake blind versus preview-guided versus matched
+   byte transformer on the same byte budget.
+2. Tier 1 receiver: repeat with a receiver-after-transfer stage and require exact PX
+   behavior after rollback/cherry-pick.
+3. Tier 2 serious: 5M-25M, multiple seeds, 100M-1B bytes, source/core and receiver
+   certificates both required.
+4. Only after Tier 2 passes: reopen 60M rematch with preview-guided curriculum,
+   training-diff reports, and dominance gates.
+
+Use:
+
+```powershell
+python scripts/benchmark_preview_guided_training.py
+python scripts/benchmark_curriculum_modes.py
+python scripts/run_dominance_gates.py --run-id smoke
+python scripts/benchmark_tier1_dominance.py --steps 4
+python scripts/verify_tier1_dominance.py
+python scripts/benchmark_tier1_dominance.py --steps 4 --d-model 64 --layers 2 --heads 2 --d-byte 16 --d-abi 32 --max-patches 256 --output results/dominance/tier1_local_276k_probe.json
+python scripts/verify_tier1_local_frontier.py
+```
+
+The immediate scaling blocker is now concrete: the 276k local probe passes, while
+474k/735k/1.15M probes expose quality, printability, or parameter-count misses. The next
+architecture/training loop should target printable cached generation and quality retention
+at 474k+ before moving to 1M-5M.

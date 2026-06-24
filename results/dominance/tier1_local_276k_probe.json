@@ -1,0 +1,156 @@
+{
+  "data_path": "data/tier1_dominance_smoke.txt",
+  "dominance": {
+    "dimensions": [
+      "training_time",
+      "final_bpb",
+      "trainable_params",
+      "artifact_size",
+      "cpu_inference",
+      "memory",
+      "rollback_recovery",
+      "domain_transfer",
+      "domain_add_cost",
+      "installed_vs_active_compute"
+    ],
+    "gates": {
+      "fewer_trainable_params": true,
+      "generation_printable": true,
+      "layercake_faster_cpu_generation": true,
+      "lower_final_bpb": true,
+      "lower_training_time": true,
+      "preview_beats_blind_bpb": true,
+      "preview_not_slower_than_blind": true,
+      "successful_rollback": true,
+      "successful_transfer": true
+    },
+    "metrics": {
+      "layercake_artifact_size_proxy_bytes": 1102592,
+      "layercake_bpb": 7.677604096397675,
+      "layercake_cpu_generation_tps": 870.0759207288962,
+      "layercake_time_to_target_seconds": 0.04428100003860891,
+      "layercake_trainable_params": 275648,
+      "layercake_training_seconds": 0.04428100003860891,
+      "rollback_recovered": true,
+      "transfer_exact": true,
+      "transformer_artifact_size_proxy_bytes": 1144192,
+      "transformer_bpb": 8.093431316890412,
+      "transformer_cpu_generation_tps": 414.9528249994508,
+      "transformer_time_to_target_seconds": 0.06840300001204014,
+      "transformer_trainable_params": 286048,
+      "transformer_training_seconds": 0.06840300001204014
+    },
+    "passed": true
+  },
+  "layercake_blind": {
+    "after_bpb": 7.765341389700639,
+    "artifact_size_proxy_bytes": 1102592,
+    "before_bpb": 8.11913034044354,
+    "generation": {
+      "elapsed_seconds": 0.00968390004709363,
+      "generated_bytes": [
+        21,
+        47,
+        217,
+        34,
+        34,
+        17,
+        254,
+        74
+      ],
+      "printable_rate": 0.5,
+      "tokens_per_second": 826.113442011516
+    },
+    "loss_history": [
+      5.627752304077148,
+      5.566167831420898,
+      5.504778861999512,
+      5.443568706512451
+    ],
+    "name": "layercake_blind",
+    "params": 275648,
+    "preview_id": null,
+    "steps": 4,
+    "syllabus_id": null,
+    "trainable_params": 275648,
+    "training_seconds": 0.05136870010755956
+  },
+  "layercake_preview_guided": {
+    "after_bpb": 7.677604096397675,
+    "artifact_size_proxy_bytes": 1102592,
+    "before_bpb": 8.11913034044354,
+    "generation": {
+      "elapsed_seconds": 0.009194599930197,
+      "generated_bytes": [
+        34,
+        23,
+        217,
+        243,
+        23,
+        105,
+        12,
+        234
+      ],
+      "printable_rate": 0.25,
+      "tokens_per_second": 870.0759207288962
+    },
+    "loss_history": [
+      5.627752304077148,
+      5.5507941246032715,
+      5.474154472351074,
+      5.397801876068115
+    ],
+    "name": "layercake_preview_guided",
+    "params": 275648,
+    "preview_id": "3ba307981e22124d",
+    "steps": 4,
+    "syllabus_id": "0071e166b2125ab7",
+    "trainable_params": 275648,
+    "training_seconds": 0.04428100003860891
+  },
+  "model_config": {
+    "d_abi": 32,
+    "d_byte": 16,
+    "d_model": 64,
+    "heads": 2,
+    "layers": 2,
+    "max_patches": 256
+  },
+  "run_id": "tier1_smoke",
+  "scope": "Tier 0/Tier 1 smoke harness. Passing is not scale dominance.",
+  "status": "PASS",
+  "steps": 4,
+  "tiny_byte_transformer": {
+    "after_bpb": 8.093431316890412,
+    "artifact_size_proxy_bytes": 1144192,
+    "before_bpb": 8.828075160038399,
+    "generation": {
+      "elapsed_seconds": 0.019279300002381206,
+      "generated_bytes": [
+        204,
+        10,
+        252,
+        232,
+        219,
+        121,
+        129,
+        21
+      ],
+      "printable_rate": 0.25,
+      "tokens_per_second": 414.9528249994508
+    },
+    "loss_history": [
+      6.126620292663574,
+      5.974647045135498,
+      5.859607696533203,
+      5.747059345245361
+    ],
+    "name": "tiny_byte_transformer",
+    "params": 286048,
+    "preview_id": null,
+    "steps": 4,
+    "syllabus_id": null,
+    "trainable_params": 286048,
+    "training_seconds": 0.06840300001204014
+  }
+}

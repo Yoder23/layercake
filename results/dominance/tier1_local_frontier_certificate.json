@@ -1,0 +1,32 @@
+{
+  "available_probes": [
+    "1m",
+    "276k",
+    "474k",
+    "735k"
+  ],
+  "failures": {
+    "1m": [
+      "fewer_trainable_params",
+      "generation_printable",
+      "lower_final_bpb"
+    ],
+    "474k": [
+      "fewer_trainable_params",
+      "generation_printable"
+    ],
+    "735k": [
+      "fewer_trainable_params",
+      "lower_final_bpb"
+    ]
+  },
+  "next_blocker": "Improve quality/printable generation while preserving CPU speed and trainable-parameter advantage at 474k+.",
+  "passed": {
+    "1m": false,
+    "276k": true,
+    "474k": false,
+    "735k": false
+  },
+  "scope": "Local Tier-1-style scaling frontier. 276k currently passes; larger probes are retained as scaling blockers when present.",
+  "status": "PASS"
+}

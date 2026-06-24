@@ -141,6 +141,8 @@ cross-seed or tokenizer-free evidence.
 | Production readiness | Distributed training, serving, and security hardening remain. |
 | L7 swarm equivalence | Packet/router interfaces exist, but task evidence is pending. |
 | Rolling-training substrate proves scale dominance | It only proves rollbackable training mechanics and auditability. |
+| Preview-guided smoke demo proves transformer dominance | It only proves preview artifact generation, syllabus compilation, tiny CPU training, baseline harness execution, and rollback mechanics. |
+| Tier-1 smoke dominance proves scale dominance | It is a tiny deterministic methodology gate; Tier 1 local and Tier 2 serious runs are still required. |
 
 ## Larger-tier evidence
 
@@ -169,6 +171,8 @@ Use:
 - replicated 15M-class mobile CPU win under the frozen local protocol;
 - exact portable-domain migration into an independent smaller LayerCake host.
 - rollbackable model commits and semantic CI for future architecture experiments.
+- preview-guided rolling-training smoke path with tiny LayerCake and tiny byte-transformer comparison harness.
+- Tier 0/Tier 1 smoke dominance certificate against a closest matched-parameter tiny byte transformer.
 
 Do not use without larger evidence:
 

@@ -1,4 +1,4 @@
-.PHONY: test smoke-train smoke-transfer smoke-byte-patch smoke-infer benchmark docs-check rolling-demo rolling-smoke rolling-benchmark verify-research verify-scale verify-scale15 verify-lossless verify-mobile-domain verify-general-frontier
+.PHONY: test smoke-train smoke-transfer smoke-byte-patch smoke-infer benchmark docs-check rolling-demo rolling-smoke rolling-benchmark preview-demo preview-benchmark dominance-smoke verify verify-research verify-scale verify-scale15 verify-lossless verify-mobile-domain verify-general-frontier
 
 test:
 	pytest -q
@@ -31,8 +31,24 @@ rolling-benchmark:
 	python scripts/benchmark_rollback_cost.py
 	python scripts/benchmark_cherrypick_transfer.py
 
+preview-demo:
+	python scripts/demo_preview_guided_layercake_training.py --smoke
+
+preview-benchmark:
+	python scripts/benchmark_preview_guided_training.py
+	python scripts/benchmark_curriculum_modes.py
+
+dominance-smoke:
+	python scripts/run_dominance_gates.py --run-id smoke
+	python scripts/benchmark_tier1_dominance.py --steps 4
+	python scripts/verify_tier1_dominance.py
+	python scripts/verify_tier1_local_frontier.py
+
+verify:
+	python scripts/verify_northstar_mobile.py
+
 docs-check:
-	python -c "from pathlib import Path; required=['RUBRIC.md','BYTE_PATCH_LAYERCAKE.md','BENCHMARKS.md','ORCHESTRATION.md','TOKENIZER_FREE.md','ROADMAP.md','NEXT_STEPS.md','ROLLING_TRAINING.md','MODEL_COMMITS.md','RUBRIC_TRAINING.md','SEMANTIC_CI.md','ROLLBACK.md','BRANCHING_AND_CHERRYPICK.md']; assert all(Path(p).exists() for p in required)"
+	python -c "from pathlib import Path; required=['RUBRIC.md','BYTE_PATCH_LAYERCAKE.md','BENCHMARKS.md','ORCHESTRATION.md','TOKENIZER_FREE.md','ROADMAP.md','NEXT_STEPS.md','ROLLING_TRAINING.md','MODEL_COMMITS.md','RUBRIC_TRAINING.md','SEMANTIC_CI.md','ROLLBACK.md','BRANCHING_AND_CHERRYPICK.md','PREVIEW_GUIDED_TRAINING.md','SCALING_PROTOCOL.md','DOMINANCE_GATES.md']; assert all(Path(p).exists() for p in required)"
 
 verify-research:
 	python scripts/verify_research_gates.py

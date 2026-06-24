@@ -1,0 +1,64 @@
+{
+  "created_at": "2026-06-24T02:24:22.781991+00:00",
+  "early_stop_rules": [
+    {
+      "min_delta": 0.0,
+      "patience": 2,
+      "type": "compute_waste"
+    }
+  ],
+  "expected_cost": 0.02190144,
+  "expected_improvement": 0.014279010772705079,
+  "frozen_modules": [],
+  "gate_thresholds": {
+    "bad_bpb_gate": 0.0
+  },
+  "loss_weights": {
+    "abi_stability": 0.1,
+    "lm": 1.0
+  },
+  "optimizer_overrides": {
+    "lr": 0.01
+  },
+  "ordered_data_buckets": [
+    {
+      "byte_count": 15,
+      "difficulty": 3.1395723819732666,
+      "index": 0
+    },
+    {
+      "byte_count": 19,
+      "difficulty": 3.7871437072753906,
+      "index": 2
+    },
+    {
+      "byte_count": 19,
+      "difficulty": 4.2081963388543375,
+      "index": 1
+    }
+  ],
+  "preview_id": "7970c1c813413c93",
+  "rollback_rules": [
+    {
+      "on": "gate_failure",
+      "restore_parent": true
+    }
+  ],
+  "rubric_id": "preview_guided_bad_stage",
+  "sampling_weights": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+  ],
+  "stage_schedule": [
+    {
+      "mode": "easy_to_hard",
+      "steps": 4
+    }
+  ],
+  "syllabus_hash": "6887753f150a7ff6825d81cb80d732d9db35f64fc709328fed915ae5790fd721",
+  "syllabus_id": "c7436e1dae1ac9a9",
+  "trainable_modules": [
+    "layercake_core"
+  ]
+}

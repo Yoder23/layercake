@@ -23,6 +23,27 @@ inside tokenizer-specific or `d_model`-specific weights. A brick should be train
 copied exactly, activated sparsely, quantized, and used by independently trained LayerCake
 cores of different sizes.
 
+The rolling-training branch adds a preview-guided control loop:
+
+```text
+rubric -> non-destructive data/model preview -> syllabus -> staged training
+       -> semantic gates -> model commit or rollback
+```
+
+This is the implementation of "show the model what it is about to train on." The preview
+artifact records byte entropy, fixed byte-patch compression, difficulty buckets, model
+BPB when available, ABI statistics when available, recommended trainable/frozen modules,
+curriculum mode, gates, and warnings before any destructive update runs.
+
+The current smoke dominance harness is:
+
+```powershell
+python scripts/benchmark_tier1_dominance.py --steps 4
+python scripts/verify_tier1_dominance.py
+```
+
+It is a methodology gate, not a public scale-dominance claim.
+
 This repository now contains both:
 
 - the original tokenized fixed-ABI LayerCake prototype; and
@@ -491,9 +512,12 @@ and the same transfer matrix.
 - [Roadmap](ROADMAP.md)
 - [Known blockers](BLOCKERS.md)
 - [Rolling training](ROLLING_TRAINING.md)
+- [Preview-guided training](PREVIEW_GUIDED_TRAINING.md)
 - [Model commits](MODEL_COMMITS.md)
 - [Rubric training](RUBRIC_TRAINING.md)
 - [Semantic CI](SEMANTIC_CI.md)
+- [Scaling protocol](SCALING_PROTOCOL.md)
+- [Dominance gates](DOMINANCE_GATES.md)
 - [Rollback](ROLLBACK.md)
 - [Branching and cherry-pick](BRANCHING_AND_CHERRYPICK.md)
 - [GitHub release checklist](GITHUB_RELEASE_CHECKLIST.md)

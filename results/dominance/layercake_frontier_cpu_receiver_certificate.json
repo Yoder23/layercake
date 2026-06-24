@@ -1,0 +1,50 @@
+{
+  "accelerator_gates": {
+    "source_gpu_generation_faster_than_bpe": false
+  },
+  "claim_scope": "CPU/mobile-proxy source and receiver dominance under existing locked certificates. This is not an all-accelerator win.",
+  "cpu_mobile_required": {
+    "receiver_all_required": true,
+    "receiver_better_general_bpb": true,
+    "receiver_faster_cpu_generation": true,
+    "receiver_faster_training": true,
+    "receiver_lossless_transfer": true,
+    "receiver_smaller": true,
+    "receiver_transferred_domain_beats_transformer": true,
+    "source_all_required": true,
+    "source_better_bpb_all_seeds": true,
+    "source_coherent_norepeat8": true,
+    "source_faster_cpu_generation_all_seeds": true,
+    "source_lossless_transfer_all_seeds": true,
+    "source_mean_faster_training": true,
+    "source_smaller": true
+  },
+  "failed_accelerator_gates": [
+    "source_gpu_generation_faster_than_bpe"
+  ],
+  "failed_cpu_mobile_required": [],
+  "metrics": {
+    "receiver_baseline_bpb": 2.126544988742243,
+    "receiver_baseline_params": 6856704,
+    "receiver_cpu_generation_speed_ratio": 1.4696922589993437,
+    "receiver_general_bpb": 2.125097239097193,
+    "receiver_params": 6804064,
+    "receiver_transfer_max_logit_diff": 0.0,
+    "receiver_transfer_ppl_ratio": 1.0,
+    "source_bpe_bpb": 2.049247849357011,
+    "source_bpe_params": 14843840,
+    "source_cpu_generation_speed_ratio": [
+      2.9133087586931468,
+      2.9585247894512507
+    ],
+    "source_gpu_generation_speed_ratio": 0.6191573063796011,
+    "source_layercake_bpb": [
+      2.044625960551962,
+      2.0456837742426237
+    ],
+    "source_layercake_params": 14792160
+  },
+  "receiver_certificate": "results/receiver_frontier_certificate.json",
+  "source_certificate": "results/northstar_mobile_certificate.json",
+  "status": "PASS"
+}

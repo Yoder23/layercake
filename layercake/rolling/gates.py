@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from typing import Any
+from pathlib import Path
+
+from .common import load_structured
 
 
 @dataclass(frozen=True)
@@ -127,7 +130,37 @@ class SmokeTaskGate(MinMetricGate):
     pass
 
 
+class ProtectedCapabilityGate(Gate):
+    def __init__(self, name: str = "protected_capabilities", config_path: str = "rubrics/protected_capabilities.yaml"):
+        self.name = name
+        self.config_path = config_path
+
+    def run(self, context: dict) -> GateResult:
+        path = Path(self.config_path)
+        if not path.exists():
+            return GateResult(self.name, False, "protected_config_exists", False, True, "==")
+        config = load_structured(path)
+        metrics = config.get("protected_metrics", {})
+        failures = []
+        for metric, threshold in metrics.items():
+            value = _lookup_default(context, metric, None)
+            if value is not None and value > threshold:
+                failures.append({"metric": metric, "value": value, "threshold": threshold})
+        return GateResult(self.name, not failures, "protected_failures", len(failures), 0, "==", {"failures": failures})
+
+
 def gate_from_config(config: dict) -> Gate:
+    from .efficiency import (
+        ComputeWasteGate,
+        PreviewBenefitGate,
+        QualityPerStepGate,
+        QualityPerTrainableParamGate,
+        RollbackRecoveryGate,
+        TimeToMetricGate,
+        TrainingRegressionGate,
+        TransformerBaselineGate,
+    )
+
     kind = config.get("type", "min_metric")
     name = config.get("name", config.get("metric", kind))
     metric = config.get("metric", "score")
@@ -141,6 +174,24 @@ def gate_from_config(config: dict) -> Gate:
         return InputInterfaceCompatibilityGate(name)
     if kind == "byte_patch_hash":
         return BytePatchCompatibilityGate(name)
+    if kind == "time_to_metric":
+        return TimeToMetricGate(name, metric, config.get("target", config.get("threshold", 0.0)), config.get("max_seconds", 60.0), config.get("max_steps"))
+    if kind == "quality_per_step":
+        return QualityPerStepGate(name, config.get("min_gain_per_step", config.get("threshold", 0.0)))
+    if kind == "quality_per_trainable_param":
+        return QualityPerTrainableParamGate(name, config.get("min_gain_per_param", config.get("threshold", 0.0)))
+    if kind == "training_regression":
+        return TrainingRegressionGate(name, config.get("max_regression", config.get("threshold", 0.0)))
+    if kind == "compute_waste":
+        return ComputeWasteGate(name, config.get("patience", 2), config.get("min_improvement", 0.0))
+    if kind == "rollback_recovery":
+        return RollbackRecoveryGate(name)
+    if kind == "preview_benefit":
+        return PreviewBenefitGate(name, metric, config.get("min_delta", 0.0))
+    if kind == "transformer_baseline":
+        return TransformerBaselineGate(name, metric, config.get("max_delta", 0.0))
+    if kind == "protected_capabilities":
+        return ProtectedCapabilityGate(name, config.get("config_path", "rubrics/protected_capabilities.yaml"))
     return MinMetricGate(name, metric, config.get("threshold", 0.0))
 
 
@@ -152,5 +203,14 @@ def run_gates(configs: list[dict], context: dict) -> list[GateResult]:
 def _lookup(context: dict, dotted: str):
     current = context
     for part in dotted.split("."):
+        current = current[part]
+    return current
+
+
+def _lookup_default(context: dict, dotted: str, default=None):
+    current = context
+    for part in dotted.split("."):
+        if not isinstance(current, dict) or part not in current:
+            return default
         current = current[part]
     return current

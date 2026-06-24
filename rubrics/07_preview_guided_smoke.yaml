@@ -1,0 +1,19 @@
+rubric_id: preview_guided_smoke
+name: Preview-guided LayerCake smoke
+branch: preview
+max_steps: 4
+trainable_modules: [layercake_core]
+frozen_modules: []
+protected_capabilities: [general_bpb, abi_stability, rollback_exactness]
+gates:
+  - name: bpb_gate
+    type: max_metric
+    metric: bpb
+    threshold: 20.0
+  - name: qps_gate
+    type: quality_per_step
+    min_gain_per_step: -10.0
+  - name: protected_capability_firewall
+    type: protected_capabilities
+rollback_policy:
+  on_failure: true

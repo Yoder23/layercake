@@ -31,3 +31,6 @@ python scripts/benchmark_cherrypick_transfer.py
 The current demo is intentionally tiny. It proves the mechanics: pass, fail, rollback,
 safe follow-up, semantic certificate emission, capability ledger entry, and module
 cherry-pick under compatible ABI hashes. It does not prove language-model quality.
+
+The next layer is preview-guided rolling training. It inserts a non-destructive preview
+and compiled syllabus before staged training. See [PREVIEW_GUIDED_TRAINING.md](PREVIEW_GUIDED_TRAINING.md).
