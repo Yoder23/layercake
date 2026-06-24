@@ -5,6 +5,8 @@ from layercake.causal_byte_models import (
     CausalByteLM,
     CausalBytePatchLM,
     FusedModernCausalBlock,
+    MixtureOfDepthRefinement,
+    SparseStatePatchBlock,
 )
 from layercake.canonical_anchors import causal_byte_anchors, patch_context_anchors
 
@@ -431,11 +433,95 @@ def test_cached_patch_generation_shape():
     second, logits = model.cached_generation_step(
         state, forced_patch=forced, return_logits=True
     )
+    constrained = model.cached_generation_step(state, no_repeat_ngram=4)
     assert first.shape == (1, 2)
     assert second.shape == (1, 2)
+    assert constrained.shape == (1, 2)
     assert torch.equal(second, forced)
     assert logits.shape == (1, 2, 256)
-    assert state["bytes"].shape == (1, 12)
+    assert state["bytes"].shape == (1, 14)
+
+
+def test_sparse_state_patch_block_shape_grad_and_determinism():
+    block = SparseStatePatchBlock(
+        width=32,
+        heads=4,
+        local_window=4,
+        dilated_offsets=(4, 6),
+        chunk_size=4,
+    )
+    block.eval()
+    h = torch.randn(2, 9, 32, requires_grad=True)
+    first = block(h)
+    second = block(h)
+    assert first.shape == h.shape
+    assert torch.allclose(first, second)
+    first.sum().backward()
+    assert h.grad is not None
+    assert h.grad.abs().sum() > 0
+
+
+def test_sparse_state_patch_block_is_causal():
+    block = SparseStatePatchBlock(
+        width=32,
+        heads=4,
+        local_window=4,
+        dilated_offsets=(4, 6),
+        chunk_size=4,
+    )
+    block.eval()
+    h = torch.randn(1, 10, 32)
+    changed = h.clone()
+    changed[:, 7:] = torch.randn_like(changed[:, 7:])
+    original = block(h)
+    modified = block(changed)
+    assert torch.allclose(original[:, :7], modified[:, :7], atol=1e-5)
+
+
+def test_sparse_state_patch_block_cache_matches_full_forward():
+    block = SparseStatePatchBlock(
+        width=32,
+        heads=4,
+        local_window=4,
+        dilated_offsets=(4, 6),
+        chunk_size=4,
+    )
+    block.eval()
+    prefix = torch.randn(2, 7, 32)
+    token = torch.randn(2, 1, 32)
+    full = block(torch.cat([prefix, token], dim=1))
+    _, cache = block.prefill_with_cache(prefix)
+    decoded, _ = block.decode_with_cache(token, cache)
+    assert torch.allclose(full[:, -1:], decoded, atol=1e-5, rtol=1e-5)
+
+
+def test_sparse_state_patch_model_cached_generation_shape():
+    model = CausalBytePatchLM(
+        patch_size=2,
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=1,
+        heads=4,
+        max_patches=8,
+        direct_global_context=True,
+        local_decoder="window_transformer",
+        local_layers=1,
+        local_window=4,
+        modern_blocks=True,
+        fused_attention=True,
+        patch_prediction=True,
+        global_block="sparse_state_patch",
+        sparse_state_local_window=4,
+        sparse_state_dilated_offsets=(4, 6),
+        sparse_state_chunk_size=4,
+    )
+    model.eval()
+    x = torch.randint(0, 256, (1, 8))
+    state = model.begin_cached_generation(x)
+    generated = model.cached_generation_step(state, no_repeat_ngram=4)
+    assert generated.shape == (1, 2)
+    assert state["bytes"].shape == (1, 10)
 
 
 def test_multiscale_coarse_context_is_causal():
@@ -475,6 +561,199 @@ def test_multiscale_patch_configuration_validation():
             coarse_patch_size=3,
             coarse_layers=1,
         )
+
+
+def test_hybrid_global_convolution_is_causal():
+    model = CausalBytePatchLM(
+        patch_size=2,
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=3,
+        heads=4,
+        max_patches=8,
+        direct_global_context=True,
+        local_decoder="window_transformer",
+        local_layers=1,
+        local_window=4,
+        modern_blocks=True,
+        fused_attention=True,
+        global_conv_layers=2,
+    )
+    model.eval()
+    x = torch.randint(0, 256, (1, 16))
+    changed = x.clone()
+    changed[:, 12:] = torch.randint(0, 256, (1, 4))
+    logits, abi = model(x)
+    changed_logits, changed_abi = model(changed)
+    assert torch.equal(logits[:, :12], changed_logits[:, :12])
+    assert torch.equal(abi[:, :6], changed_abi[:, :6])
+
+
+def test_global_convolution_count_is_validated():
+    with pytest.raises(ValueError):
+        CausalBytePatchLM(layers=2, global_conv_layers=3)
+
+
+def test_hybrid_global_gru_is_causal():
+    model = CausalBytePatchLM(
+        patch_size=2,
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=3,
+        heads=4,
+        max_patches=8,
+        direct_global_context=True,
+        local_decoder="window_transformer",
+        local_layers=1,
+        local_window=4,
+        modern_blocks=True,
+        fused_attention=True,
+        global_gru_layers=1,
+    )
+    model.eval()
+    x = torch.randint(0, 256, (1, 16))
+    changed = x.clone()
+    changed[:, 12:] = torch.randint(0, 256, (1, 4))
+    logits, abi = model(x)
+    changed_logits, changed_abi = model(changed)
+    assert torch.equal(logits[:, :12], changed_logits[:, :12])
+    assert torch.equal(abi[:, :6], changed_abi[:, :6])
+
+
+def test_wider_local_decoder_preserves_shapes_and_causality():
+    model = CausalBytePatchLM(
+        patch_size=2,
+        d_byte=8,
+        d_model=32,
+        local_width=48,
+        d_abi=16,
+        layers=1,
+        heads=4,
+        max_patches=8,
+        direct_global_context=True,
+        local_decoder="window_transformer",
+        local_layers=1,
+        local_window=4,
+        modern_blocks=True,
+        fused_attention=True,
+    )
+    model.eval()
+    x = torch.randint(0, 256, (1, 16))
+    changed = x.clone()
+    changed[:, 12:] = torch.randint(0, 256, (1, 4))
+    logits, abi = model(x)
+    changed_logits, changed_abi = model(changed)
+    assert logits.shape == (1, 16, 256)
+    assert abi.shape == (1, 8, 16)
+    assert torch.equal(logits[:, :12], changed_logits[:, :12])
+    assert torch.equal(abi[:, :6], changed_abi[:, :6])
+
+
+def test_causal_patch_encoder_preserves_future_independence():
+    model = CausalBytePatchLM(
+        patch_size=4,
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=1,
+        heads=4,
+        max_patches=4,
+        direct_global_context=True,
+        local_decoder="window_transformer",
+        local_layers=1,
+        local_window=4,
+        modern_blocks=True,
+        fused_attention=True,
+        patch_encoder_layers=1,
+        patch_encoder_window=4,
+    )
+    model.eval()
+    x = torch.randint(0, 256, (1, 16))
+    changed = x.clone()
+    changed[:, 12:] = torch.randint(0, 256, (1, 4))
+    logits, abi = model(x)
+    changed_logits, changed_abi = model(changed)
+    assert logits.shape == (1, 16, 256)
+    assert abi.shape == (1, 4, 16)
+    assert torch.equal(logits[:, :12], changed_logits[:, :12])
+    assert torch.equal(abi[:, :3], changed_abi[:, :3])
+    assert model.local_in.in_features == 8 + 32 + 32
+
+
+def test_mixture_of_depth_has_fixed_capacity_and_is_deterministic():
+    refinement = MixtureOfDepthRefinement(
+        width=32,
+        heads=4,
+        layers=1,
+        capacity_ratio=0.25,
+        group_size=4,
+    )
+    refinement.eval()
+    h = torch.randn(2, 12, 32)
+    first = refinement.route_mask(h)
+    second = refinement.route_mask(h)
+    assert torch.equal(first, second)
+    assert torch.equal(first.sum(dim=1), torch.tensor([3, 3]))
+
+
+def test_mixture_of_depth_routing_cannot_see_future_groups():
+    refinement = MixtureOfDepthRefinement(
+        width=32,
+        heads=4,
+        layers=1,
+        capacity_ratio=0.5,
+        group_size=4,
+    )
+    refinement.eval()
+    h = torch.randn(1, 12, 32)
+    changed = h.clone()
+    changed[:, 8:] = torch.randn_like(changed[:, 8:])
+    original = refinement.route_mask(h)
+    modified = refinement.route_mask(changed)
+    assert torch.equal(original[:, :8], modified[:, :8])
+
+
+def test_mixture_of_depth_can_share_refinement_weights():
+    refinement = MixtureOfDepthRefinement(
+        width=32,
+        heads=4,
+        layers=3,
+        capacity_ratio=0.5,
+        group_size=4,
+        share_weights=True,
+    )
+    assert refinement.layers == 3
+    assert len(refinement.blocks) == 1
+
+
+def test_mixture_of_depth_model_is_causal():
+    model = CausalBytePatchLM(
+        patch_size=2,
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=1,
+        heads=4,
+        max_patches=8,
+        direct_global_context=True,
+        local_decoder="window_transformer",
+        local_layers=1,
+        local_window=4,
+        modern_blocks=True,
+        fused_attention=True,
+        mod_layers=1,
+        mod_capacity=0.5,
+    )
+    model.eval()
+    x = torch.randint(0, 256, (1, 16))
+    changed = x.clone()
+    changed[:, 12:] = torch.randint(0, 256, (1, 4))
+    logits, abi = model(x)
+    changed_logits, changed_abi = model(changed)
+    assert torch.equal(logits[:, :12], changed_logits[:, :12])
+    assert torch.equal(abi[:, :6], changed_abi[:, :6])
 
 
 def test_tied_byte_input_output_embeddings():

@@ -1,0 +1,29 @@
+{
+  "status": "FAIL",
+  "claim": "Pure-PyTorch sparse-state global patch core at the current 20M scale boundary. It improves LayerCake quality versus dense 20M variants but does not yet beat the matched BPE transformer.",
+  "required_gates": {
+    "smaller_model": true,
+    "better_quality": false,
+    "no_more_training_bytes": true,
+    "faster_training": false,
+    "better_than_dense_layercake_quality": true,
+    "probe_beats_dense_probe_quality": true
+  },
+  "failed_required": [
+    "better_quality",
+    "faster_training"
+  ],
+  "metrics": {
+    "baseline_parameters": 20606656,
+    "baseline_bpb": 2.0153977959627896,
+    "baseline_training_seconds": 113.45620536804199,
+    "sparse_parameters": 20251680,
+    "sparse_bpb": 2.0213588347423395,
+    "sparse_training_seconds": 248.11188578605652,
+    "dense_best_bpb": 2.0256288199979613,
+    "dense_best_training_seconds": 165.07899618148804,
+    "sparse_probe_bpb": 2.2669593357720665,
+    "sparse_probe_training_seconds": 74.05498027801514
+  },
+  "diagnosis": "Structured sparse-state mixing improves the LayerCake 20M BPB frontier from 2.0256 to 2.0214, but pure-PyTorch gathered attention is not training-efficient enough and still trails BPE quality by 0.0060 BPB."
+}

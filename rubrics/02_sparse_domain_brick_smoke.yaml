@@ -1,0 +1,17 @@
+rubric_id: sparse_domain_brick_smoke
+name: Sparse domain brick smoke
+branch: domain-brick
+max_steps: 1
+metric: score
+target: 0.5
+direction: min
+trainable_modules: [fake_domain_brick]
+frozen_modules: [toy_model]
+protected_capabilities: [abi_compatibility, base_model_weights]
+gates:
+  - name: score_gate
+    type: min_metric
+    metric: score
+    threshold: 0.5
+rollback_policy:
+  on_failure: true

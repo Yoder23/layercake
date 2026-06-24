@@ -31,6 +31,15 @@ def build_models(artifact: dict, device: torch.device):
         mtp_depth=args.get("mtp_depth", 0),
         patch_unit_buckets=args.get("patch_unit_buckets", 0),
         local_layers=args.get("local_layers", 2),
+        local_width=args.get("local_width", 0),
+        dropout=args.get("dropout", 0.0),
+        qk_norm=args.get("qk_norm", False),
+        patch_encoder_layers=args.get("patch_encoder_layers", 0),
+        patch_encoder_window=args.get("patch_encoder_window", 16),
+        mod_layers=args.get("mod_layers", 0),
+        mod_capacity=args.get("mod_capacity", 0.5),
+        mod_group_size=args.get("mod_group_size", 8),
+        mod_share_weights=args.get("mod_share_weights", False),
         patch_prediction=args.get("patch_prediction", False),
         patch_prediction_stride=args.get("patch_prediction_stride", 1),
         patch_prediction_mode=args.get(
@@ -55,6 +64,16 @@ def build_models(artifact: dict, device: torch.device):
         local_window=args.get("local_window", 16),
         coarse_patch_size=args.get("coarse_patch_size", 0),
         coarse_layers=args.get("coarse_layers", 0),
+        global_conv_layers=args.get("global_conv_layers", 0),
+        global_gru_layers=args.get("global_gru_layers", 0),
+        global_block=args.get("global_block", "attention"),
+        sparse_state_local_window=args.get(
+            "sparse_state_local_window", 32
+        ),
+        sparse_state_dilated_offsets=tuple(
+            args.get("sparse_state_dilated_offsets", (32, 48, 64, 96))
+        ),
+        sparse_state_chunk_size=args.get("sparse_state_chunk_size", 16),
     ).to(device)
     byte.load_state_dict(artifact["byte_model"])
     patch.load_state_dict(artifact["patch_model"], strict=False)

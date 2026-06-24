@@ -1,0 +1,67 @@
+{
+  "cherry_pick_result": {
+    "abi_match": true,
+    "artifact_path": "artifacts\\cherrypicks\\04dc5275b59d45b9_fake_domain_brick.pt",
+    "input_interface_match": true,
+    "module": "fake_domain_brick",
+    "shape_match": true,
+    "source_commit": "6aaede4832cfe716",
+    "target_commit": "04dc5275b59d45b9"
+  },
+  "failed_commit": "6cd46a4c536ccd4a",
+  "final_commit": "04dc5275b59d45b9",
+  "gate_results": {
+    "stage_fail": [
+      {
+        "artifact_path": null,
+        "comparison": ">=",
+        "details": null,
+        "gate_name": "damage_gate",
+        "metric_name": "score",
+        "passed": false,
+        "threshold": 0.5,
+        "value": 0.0
+      }
+    ],
+    "stage_pass": [
+      {
+        "artifact_path": null,
+        "comparison": ">=",
+        "details": null,
+        "gate_name": "score_gate",
+        "metric_name": "score",
+        "passed": true,
+        "threshold": 0.5,
+        "value": 1.0
+      }
+    ],
+    "stage_safe": [
+      {
+        "artifact_path": null,
+        "comparison": ">=",
+        "details": null,
+        "gate_name": "safe_gate",
+        "metric_name": "score",
+        "passed": true,
+        "threshold": 0.5,
+        "value": 1.0
+      }
+    ]
+  },
+  "hashes": {
+    "final": "53e864095ce3e6e197cafbc32c073cdb9e4de78754944d6d8d66f5aed6a919d7",
+    "initial": "221545589bf4ba12535d64f185597ef3090aa4d4d6d34b25e7eb30c3b87029be"
+  },
+  "initial_commit": "221545589bf4ba12",
+  "rollback_commit": "6aaede4832cfe716",
+  "rollback_exactness_result": {
+    "failed_commit": "6cd46a4c536ccd4a",
+    "restored_commit": "6aaede4832cfe716",
+    "restored_modules": [
+      "fake_domain_brick",
+      "toy_model"
+    ]
+  },
+  "status": "PASS",
+  "successful_commit": "6aaede4832cfe716"
+}

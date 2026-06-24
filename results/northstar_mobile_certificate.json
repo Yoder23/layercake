@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "claim": "At ~15M parameters, LayerCake beats the matched tokenizer transformer on heldout BPB, mean fixed-budget training time, batch-1 prefill latency, and one-thread cached generation; an unchanged portable Python domain payload then migrates exactly into an independent ~5M LayerCake host and beats the matched transformer domain adapter.",
+  "claim": "At ~15M parameters, LayerCake beats the matched tokenizer transformer on heldout BPB, mean fixed-budget training time, batch-1 prefill latency, and one-thread CPU cached generation; an unchanged portable Python domain payload then migrates exactly into an independent ~5M LayerCake host and beats the matched transformer domain adapter on non-GPU CPU throughput.",
   "required_gates": {
     "core_quality_seed6250": true,
     "core_quality_seed6263": true,
@@ -12,6 +12,8 @@
     "cached_generation_quality_seed6263": true,
     "faster_cpu_generation_seed6250": true,
     "faster_cpu_generation_seed6263": true,
+    "coherent_cpu_generation_norepeat8": true,
+    "faster_cpu_generation_norepeat8": true,
     "lossless_migration_seed6250": true,
     "lossless_migration_seed6263": true,
     "migrated_domain_quality_seed6250": true,
@@ -45,6 +47,14 @@
       2.9133087586931468,
       2.9585247894512507
     ],
+    "norepeat8_cpu_generation_speed_ratio": 2.254247200889217,
+    "norepeat8_generation_quality_gates": {
+      "layercake_printable": true,
+      "layercake_distinct_trigram_at_least_bpe": true,
+      "layercake_max_repeat_8gram_no_worse_than_bpe": true
+    },
+    "norepeat8_layercake_utf8": "any of the state of their company to the strength of these proces and control and start of them and the students of there are a ",
+    "norepeat8_bpe_utf8": "istake. Thenalistic is a greatesthelor to the mistake of the mistake. Thenalistic is the most important thing that is the most i",
     "gpu_generation_speed_ratio": 0.6191573063796011,
     "migrated_domain_bpb": [
       1.4417685101548379,
@@ -73,6 +83,7 @@
     "gpu_generation_win": false,
     "gpu_generation_speed_ratio": 0.6191573063796011,
     "real_phone_measurement": false,
+    "cpu_first_mobile_definition": "mobile means a non-GPU CPU deployment proxy unless a real Android/iOS/ARM measurement is explicitly reported",
     "domains_tested": [
       "python"
     ],

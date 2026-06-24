@@ -1,0 +1,156 @@
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass
+from typing import Any
+
+
+@dataclass(frozen=True)
+class GateResult:
+    gate_name: str
+    passed: bool
+    metric_name: str
+    value: Any
+    threshold: Any = None
+    comparison: str = ""
+    details: dict[str, Any] | None = None
+    artifact_path: str | None = None
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+class Gate:
+    name: str
+
+    def run(self, context: dict) -> GateResult:
+        raise NotImplementedError
+
+
+class MaxMetricGate(Gate):
+    def __init__(self, name: str, metric: str, threshold: float):
+        self.name = name
+        self.metric = metric
+        self.threshold = threshold
+
+    def run(self, context: dict) -> GateResult:
+        value = _lookup(context, self.metric)
+        return GateResult(self.name, value <= self.threshold, self.metric, value, self.threshold, "<=")
+
+
+class MinMetricGate(Gate):
+    def __init__(self, name: str, metric: str, threshold: float):
+        self.name = name
+        self.metric = metric
+        self.threshold = threshold
+
+    def run(self, context: dict) -> GateResult:
+        value = _lookup(context, self.metric)
+        return GateResult(self.name, value >= self.threshold, self.metric, value, self.threshold, ">=")
+
+
+class RegressionGate(Gate):
+    def __init__(self, name: str, metric: str, max_delta: float):
+        self.name = name
+        self.metric = metric
+        self.max_delta = max_delta
+
+    def run(self, context: dict) -> GateResult:
+        value = _lookup(context, self.metric)
+        parent = _lookup(context, f"parent.{self.metric}")
+        delta = value - parent
+        return GateResult(self.name, delta <= self.max_delta, self.metric, delta, self.max_delta, "delta<=", {"value": value, "parent": parent})
+
+
+class ABIHashCompatibilityGate(Gate):
+    def __init__(self, name: str = "abi_hash_compatible"):
+        self.name = name
+
+    def run(self, context: dict) -> GateResult:
+        value = _lookup(context, "commit.abi_hash")
+        parent = _lookup(context, "parent_commit.abi_hash")
+        return GateResult(self.name, value == parent, "abi_hash", value, parent, "==")
+
+
+class InputInterfaceCompatibilityGate(Gate):
+    def __init__(self, name: str = "input_interface_hash_compatible"):
+        self.name = name
+
+    def run(self, context: dict) -> GateResult:
+        value = _lookup(context, "commit.input_interface_hash")
+        parent = _lookup(context, "parent_commit.input_interface_hash")
+        return GateResult(self.name, value == parent, "input_interface_hash", value, parent, "==")
+
+
+class BytePatchCompatibilityGate(Gate):
+    def __init__(self, name: str = "byte_patch_hash_compatible"):
+        self.name = name
+
+    def run(self, context: dict) -> GateResult:
+        value = _lookup(context, "commit.byte_patch_hash")
+        parent = _lookup(context, "parent_commit.byte_patch_hash")
+        return GateResult(self.name, value == parent, "byte_patch_hash", value, parent, "==")
+
+
+class ABIDriftGate(MaxMetricGate):
+    pass
+
+
+class TransferExactnessGate(MaxMetricGate):
+    pass
+
+
+class CrossHostExactnessGate(MaxMetricGate):
+    pass
+
+
+class QuantizationDegradationGate(MaxMetricGate):
+    pass
+
+
+class LatencyRegressionGate(RegressionGate):
+    pass
+
+
+class MemoryRegressionGate(RegressionGate):
+    pass
+
+
+class BytePatchCompressionGate(MinMetricGate):
+    pass
+
+
+class InstalledVsActiveComputeGate(MaxMetricGate):
+    pass
+
+
+class SmokeTaskGate(MinMetricGate):
+    pass
+
+
+def gate_from_config(config: dict) -> Gate:
+    kind = config.get("type", "min_metric")
+    name = config.get("name", config.get("metric", kind))
+    metric = config.get("metric", "score")
+    if kind == "max_metric":
+        return MaxMetricGate(name, metric, config["threshold"])
+    if kind == "regression":
+        return RegressionGate(name, metric, config.get("max_delta", 0.0))
+    if kind == "abi_hash":
+        return ABIHashCompatibilityGate(name)
+    if kind == "input_interface_hash":
+        return InputInterfaceCompatibilityGate(name)
+    if kind == "byte_patch_hash":
+        return BytePatchCompatibilityGate(name)
+    return MinMetricGate(name, metric, config.get("threshold", 0.0))
+
+
+def run_gates(configs: list[dict], context: dict) -> list[GateResult]:
+    gates = [config if isinstance(config, Gate) else gate_from_config(config) for config in configs]
+    return [gate.run(context) for gate in gates]
+
+
+def _lookup(context: dict, dotted: str):
+    current = context
+    for part in dotted.split("."):
+        current = current[part]
+    return current

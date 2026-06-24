@@ -1,0 +1,17 @@
+rubric_id: failed_update_demo
+name: Failed update rollback demo
+branch: rollback-demo
+max_steps: 1
+metric: score
+target: 0.5
+direction: min
+trainable_modules: [toy_model]
+frozen_modules: []
+protected_capabilities: [rollback_exactness]
+gates:
+  - name: intentional_failure_gate
+    type: min_metric
+    metric: score
+    threshold: 0.5
+rollback_policy:
+  on_failure: true

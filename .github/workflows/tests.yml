@@ -31,6 +31,12 @@ jobs:
       - name: Run paste losslessness test
         run: pytest tests/test_paste_lossless.py -v
 
+      - name: Run rolling-training smoke tests
+        run: |
+          python -m layercake.rolling.cli --help
+          python scripts/demo_rolling_training.py --smoke
+          pytest tests/test_rolling_cli.py tests/test_rolling_rubric.py tests/test_rolling_trainer.py tests/test_model_commit.py tests/test_module_registry.py tests/test_dataset_manifest.py tests/test_gates.py tests/test_rollback.py tests/test_branching.py tests/test_cherrypick.py tests/test_bisect.py -q
+
   lint:
     runs-on: ubuntu-latest
     steps:

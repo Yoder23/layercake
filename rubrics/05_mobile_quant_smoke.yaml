@@ -1,0 +1,17 @@
+rubric_id: mobile_quant_smoke
+name: Mobile quantization smoke
+branch: mobile
+max_steps: 1
+metric: cpu_tokens_per_second
+target: 1.0
+direction: min
+trainable_modules: [toy_model]
+frozen_modules: [fake_domain_brick]
+protected_capabilities: [cpu_generation, quantized_path]
+gates:
+  - name: cpu_speed_gate
+    type: min_metric
+    metric: cpu_tokens_per_second
+    threshold: 1.0
+rollback_policy:
+  on_failure: true

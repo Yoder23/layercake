@@ -17,7 +17,11 @@ from run_paired_byte_experiment import load_jsonl_bytes
 
 @torch.no_grad()
 def generate_layercake(
-    model, prompt: torch.Tensor, new_bytes: int, mode: str
+    model,
+    prompt: torch.Tensor,
+    new_bytes: int,
+    mode: str,
+    no_repeat_ngram: int = 0,
 ):
     generated = prompt.clone()
     state = (
@@ -29,7 +33,9 @@ def generate_layercake(
     while generated.shape[1] - prompt.shape[1] < new_bytes:
         context = generated[:, -model.patch_pos.num_embeddings * model.patch_size :]
         if mode == "stateful_cached":
-            next_patch = model.cached_generation_step(state)
+            next_patch = model.cached_generation_step(
+                state, no_repeat_ngram=no_repeat_ngram
+            )
         elif mode == "cached":
             next_patch = model.generate_cached_patch(context)
         elif mode == "verified":
@@ -78,6 +84,7 @@ def main() -> None:
         "--device", choices=["cuda", "cpu"], default="cuda"
     )
     parser.add_argument("--cpu-threads", type=int, default=1)
+    parser.add_argument("--no-repeat-ngram", type=int, default=0)
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
 
@@ -123,10 +130,16 @@ def main() -> None:
     ).unsqueeze(0)
 
     # Warm both paths.
-    generate_layercake(layercake, prompt, 4, args.layercake_mode)
+    generate_layercake(
+        layercake, prompt, 4, args.layercake_mode, args.no_repeat_ngram
+    )
     generate_bpe(bpe, tokenizer, prompt_text, 4, device)
     layercake_bytes, layercake_seconds = generate_layercake(
-        layercake, prompt, args.new_bytes, args.layercake_mode
+        layercake,
+        prompt,
+        args.new_bytes,
+        args.layercake_mode,
+        args.no_repeat_ngram,
     )
     bpe_bytes, bpe_seconds = generate_bpe(
         bpe, tokenizer, prompt_text, args.new_bytes, device
@@ -140,6 +153,7 @@ def main() -> None:
             args.cpu_threads if device.type == "cpu" else None
         ),
         "layercake_mode": args.layercake_mode,
+        "no_repeat_ngram": args.no_repeat_ngram,
         "layercake": {
             "seconds": layercake_seconds,
             "bytes_per_second": args.new_bytes / layercake_seconds,

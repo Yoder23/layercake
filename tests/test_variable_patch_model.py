@@ -1,6 +1,9 @@
 import torch
 
-from layercake.causal_byte_models import CausalVariableBytePatchLM
+from layercake.causal_byte_models import (
+    CausalAdaptiveBytePatchLM,
+    CausalVariableBytePatchLM,
+)
 
 
 def test_variable_patch_model_shapes_and_compression():
@@ -55,3 +58,29 @@ def test_transition_difficulty_table_adds_boundaries():
     x = torch.tensor([list(b"zabcz")], dtype=torch.long)
     _, _, metadata = model(x)
     assert metadata["valid_patches"].sum().item() == 2
+
+
+def test_adaptive_two_four_layout_is_causal_and_compressed():
+    model = CausalAdaptiveBytePatchLM(
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=1,
+        local_layers=1,
+        heads=4,
+        max_patches=8,
+        local_window=4,
+    )
+    model.eval()
+    x = torch.tensor([list(b"abcd efghijklmno")], dtype=torch.long)
+    logits, abi, metadata = model(x)
+    assert logits.shape == (1, 16, 256)
+    assert metadata["patch_lengths"].sum().item() == 16
+    lengths = metadata["patch_lengths"][metadata["valid_patches"]]
+    assert set(lengths.tolist()) <= {2, 4}
+    assert 16 / metadata["valid_patches"].sum().item() > 2
+    changed = x.clone()
+    changed[:, 12:] = torch.tensor([list(b"WXYZ")])
+    changed_logits, changed_abi, _ = model(changed)
+    assert torch.equal(logits[:, :12], changed_logits[:, :12])
+    assert torch.equal(abi[:, :3], changed_abi[:, :3])

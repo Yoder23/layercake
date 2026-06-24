@@ -1,0 +1,82 @@
+{
+  "status": "FAIL",
+  "claim": "Intermediate width-448 LayerCake scale-up versus a matched 20.6M BPE transformer. This certificate is expected to fail until the general-core scale bottleneck is resolved.",
+  "required_gates": {
+    "w32_qk_smaller_model": true,
+    "w32_qk_better_quality": false,
+    "w32_qk_no_more_training_bytes": true,
+    "w32_qk_faster_training": false,
+    "w32_qk_batch24_smaller_model": true,
+    "w32_qk_batch24_better_quality": false,
+    "w32_qk_batch24_no_more_training_bytes": true,
+    "w32_qk_batch24_faster_training": false,
+    "w32_qk_5g3l_smaller_model": true,
+    "w32_qk_5g3l_better_quality": false,
+    "w32_qk_5g3l_no_more_training_bytes": true,
+    "w32_qk_5g3l_faster_training": false,
+    "w16_qk_smaller_model": true,
+    "w16_qk_better_quality": false,
+    "w16_qk_no_more_training_bytes": true,
+    "w16_qk_faster_training": false,
+    "w16_qk_batch24_smaller_model": true,
+    "w16_qk_batch24_better_quality": false,
+    "w16_qk_batch24_no_more_training_bytes": true,
+    "w16_qk_batch24_faster_training": false
+  },
+  "failed_required": [
+    "w32_qk_better_quality",
+    "w32_qk_faster_training",
+    "w32_qk_batch24_better_quality",
+    "w32_qk_batch24_faster_training",
+    "w32_qk_5g3l_better_quality",
+    "w32_qk_5g3l_faster_training",
+    "w16_qk_better_quality",
+    "w16_qk_faster_training",
+    "w16_qk_batch24_better_quality",
+    "w16_qk_batch24_faster_training"
+  ],
+  "metrics": {
+    "baseline_parameters": 20606656,
+    "baseline_bpb": 2.0153977959627896,
+    "baseline_training_seconds": 113.45620536804199,
+    "best_quality_candidate": "w32_qk",
+    "best_quality_bpb": 2.0256288199979613,
+    "best_quality_training_seconds": 165.07899618148804,
+    "fastest_candidate": "w32_qk_batch24",
+    "fastest_bpb": 2.035624319812742,
+    "fastest_training_seconds": 135.13188529014587,
+    "candidates": {
+      "w32_qk": {
+        "parameters": 20246304,
+        "bpb": 2.0256288199979613,
+        "training_seconds": 165.07899618148804,
+        "training_bytes": 10240000
+      },
+      "w32_qk_batch24": {
+        "parameters": 20246304,
+        "bpb": 2.035624319812742,
+        "training_seconds": 135.13188529014587,
+        "training_bytes": 10242048
+      },
+      "w32_qk_5g3l": {
+        "parameters": 20246304,
+        "bpb": 2.0321208325682405,
+        "training_seconds": 157.007061958313,
+        "training_bytes": 10240000
+      },
+      "w16_qk": {
+        "parameters": 20246304,
+        "bpb": 2.0306272492368227,
+        "training_seconds": 169.38029408454895,
+        "training_bytes": 10240000
+      },
+      "w16_qk_batch24": {
+        "parameters": 20246304,
+        "bpb": 2.047173436369602,
+        "training_seconds": 145.5061354637146,
+        "training_bytes": 10242048
+      }
+    }
+  },
+  "diagnosis": "Width scaling from the passing 15M architecture reduces the quality gap versus the prior 26M run but still loses to BPE. Batch compression, shorter local windows, and shifting one block between local/global depth do not close the quality or training-time gates."
+}

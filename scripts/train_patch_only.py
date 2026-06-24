@@ -48,9 +48,31 @@ def main() -> None:
     )
     parser.add_argument("--conv-layers", type=int, default=4)
     parser.add_argument("--local-layers", type=int, default=2)
+    parser.add_argument("--local-width", type=int, default=0)
+    parser.add_argument("--dropout", type=float, default=0.0)
+    parser.add_argument("--qk-norm", action="store_true")
+    parser.add_argument("--patch-encoder-layers", type=int, default=0)
+    parser.add_argument("--patch-encoder-window", type=int, default=16)
+    parser.add_argument("--mod-layers", type=int, default=0)
+    parser.add_argument("--mod-capacity", type=float, default=0.5)
+    parser.add_argument("--mod-group-size", type=int, default=8)
+    parser.add_argument("--mod-share-weights", action="store_true")
     parser.add_argument("--local-window", type=int, default=16)
     parser.add_argument("--coarse-patch-size", type=int, default=0)
     parser.add_argument("--coarse-layers", type=int, default=0)
+    parser.add_argument("--global-conv-layers", type=int, default=0)
+    parser.add_argument("--global-gru-layers", type=int, default=0)
+    parser.add_argument(
+        "--global-block",
+        choices=["attention", "sparse_state_patch"],
+        default="attention",
+    )
+    parser.add_argument("--sparse-state-local-window", type=int, default=32)
+    parser.add_argument(
+        "--sparse-state-dilated-offsets",
+        default="32,48,64,96",
+    )
+    parser.add_argument("--sparse-state-chunk-size", type=int, default=16)
     parser.add_argument("--mtp-depth", type=int, default=0)
     parser.add_argument("--mtp-weight", type=float, default=0.2)
     parser.add_argument("--empirical-transition-head", action="store_true")
@@ -58,6 +80,25 @@ def main() -> None:
     parser.add_argument("--patch-prediction", action="store_true")
     parser.add_argument("--patch-prediction-weight", type=float, default=0.5)
     parser.add_argument("--patch-prediction-stride", type=int, default=1)
+    parser.add_argument(
+        "--patch-prediction-step-interval",
+        type=int,
+        default=1,
+        help=(
+            "Only compute the patch-prediction auxiliary every N optimizer "
+            "steps. The main byte LM, anchor loss, and MTP losses still run "
+            "on every step."
+        ),
+    )
+    parser.add_argument(
+        "--patch-prediction-until-step",
+        type=int,
+        default=0,
+        help=(
+            "Disable patch-prediction auxiliary after this optimizer step. "
+            "Zero keeps it enabled for the full run."
+        ),
+    )
     parser.add_argument(
         "--patch-prediction-mode",
         choices=["factorized", "autoregressive"],
@@ -96,7 +137,13 @@ def main() -> None:
     parser.add_argument("--artifact", required=True)
     parser.add_argument("--resume")
     parser.add_argument("--output", required=True)
+    parser.add_argument("--profile-timing", action="store_true")
     args = parser.parse_args()
+    sparse_state_dilated_offsets = tuple(
+        int(part)
+        for part in args.sparse_state_dilated_offsets.split(",")
+        if part
+    )
 
     torch.manual_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -154,6 +201,15 @@ def main() -> None:
         transition_logits=transition_logits,
         patch_unit_buckets=args.patch_unit_buckets,
         local_layers=args.local_layers,
+        local_width=args.local_width,
+        dropout=args.dropout,
+        qk_norm=args.qk_norm,
+        patch_encoder_layers=args.patch_encoder_layers,
+        patch_encoder_window=args.patch_encoder_window,
+        mod_layers=args.mod_layers,
+        mod_capacity=args.mod_capacity,
+        mod_group_size=args.mod_group_size,
+        mod_share_weights=args.mod_share_weights,
         patch_prediction=args.patch_prediction,
         patch_prediction_stride=args.patch_prediction_stride,
         patch_prediction_mode=args.patch_prediction_mode,
@@ -173,7 +229,14 @@ def main() -> None:
         local_window=args.local_window,
         coarse_patch_size=args.coarse_patch_size,
         coarse_layers=args.coarse_layers,
+        global_conv_layers=args.global_conv_layers,
+        global_gru_layers=args.global_gru_layers,
+        global_block=args.global_block,
+        sparse_state_local_window=args.sparse_state_local_window,
+        sparse_state_dilated_offsets=sparse_state_dilated_offsets,
+        sparse_state_chunk_size=args.sparse_state_chunk_size,
     ).to(device)
+    patch.profile_timing = args.profile_timing
     if args.resume:
         resumed = torch.load(args.resume, map_location="cpu")
         patch.load_state_dict(resumed["patch_model"])
@@ -210,16 +273,25 @@ def main() -> None:
     generator = torch.Generator().manual_seed(args.seed)
     started = time.time()
     history = []
+    profile_totals = {}
     for step in range(1, args.steps + 1):
         x, y = batch(general_train, args.seq, args.batch, generator, device)
         optimizer.zero_grad(set_to_none=True)
+        use_patch_prediction = args.patch_prediction and (
+            step % max(args.patch_prediction_step_interval, 1) == 0
+        )
+        if args.patch_prediction_until_step:
+            use_patch_prediction = (
+                use_patch_prediction
+                and step <= args.patch_prediction_until_step
+            )
         with torch.amp.autocast("cuda", enabled=device.type == "cuda"):
             output = patch(
                 x,
                 return_aux=True,
-                return_patch_prediction=args.patch_prediction,
+                return_patch_prediction=use_patch_prediction,
             )
-            if args.patch_prediction:
+            if use_patch_prediction:
                 logits, abi, aux_logits, patch_predictions = output
             else:
                 logits, abi, aux_logits = output
@@ -299,6 +371,9 @@ def main() -> None:
         scaler.step(optimizer)
         scaler.update()
         scheduler.step()
+        if args.profile_timing:
+            for key, value in patch.last_profile.items():
+                profile_totals[key] = profile_totals.get(key, 0.0) + value
         if step == 1 or step % 500 == 0:
             item = {
                 "step": step,
@@ -309,6 +384,11 @@ def main() -> None:
                 "patch_prediction_loss": patch_prediction_loss.item(),
                 "patch_distill_loss": patch_distill_loss.item(),
             }
+            if args.profile_timing:
+                item["profile_seconds_per_step"] = {
+                    key: value / step
+                    for key, value in sorted(profile_totals.items())
+                }
             history.append(item)
             print(item, flush=True)
     if device.type == "cuda":
@@ -340,6 +420,10 @@ def main() -> None:
         "patch_unit_buckets": args.patch_unit_buckets,
         "patch_prediction": args.patch_prediction,
         "patch_prediction_stride": args.patch_prediction_stride,
+        "patch_prediction_step_interval": (
+            args.patch_prediction_step_interval
+        ),
+        "patch_prediction_until_step": args.patch_prediction_until_step,
         "patch_prediction_mode": args.patch_prediction_mode,
         "patch_generation_width": args.patch_generation_width,
         "patch_generation_context": args.patch_generation_context,
@@ -355,8 +439,24 @@ def main() -> None:
         "fused_attention": args.fused_attention,
         "local_window": args.local_window,
         "local_layers": args.local_layers,
+        "local_width": args.local_width,
+        "dropout": args.dropout,
+        "qk_norm": args.qk_norm,
+        "patch_encoder_layers": args.patch_encoder_layers,
+        "patch_encoder_window": args.patch_encoder_window,
+        "mod_layers": args.mod_layers,
+        "mod_capacity": args.mod_capacity,
+        "mod_group_size": args.mod_group_size,
+        "mod_share_weights": args.mod_share_weights,
         "coarse_patch_size": args.coarse_patch_size,
         "coarse_layers": args.coarse_layers,
+        "global_conv_layers": args.global_conv_layers,
+        "global_gru_layers": args.global_gru_layers,
+        "global_block": args.global_block,
+        "sparse_state_local_window": args.sparse_state_local_window,
+        "sparse_state_dilated_offsets": sparse_state_dilated_offsets,
+        "sparse_state_chunk_size": args.sparse_state_chunk_size,
+        "profile_timing": args.profile_timing,
     }
     artifact_path = Path(args.artifact)
     artifact_path.parent.mkdir(parents=True, exist_ok=True)
@@ -381,6 +481,11 @@ def main() -> None:
         "estimated_total_training_bytes": args.steps * args.batch * args.seq,
         "parameters": sum(p.numel() for p in patch.parameters()),
         "history": history,
+        "profile_seconds_total": profile_totals,
+        "profile_seconds_per_step": {
+            key: value / max(args.steps, 1)
+            for key, value in sorted(profile_totals.items())
+        },
         "general": evaluate(
             patch, general_eval, args.seq, args.batch, 30, device
         ),

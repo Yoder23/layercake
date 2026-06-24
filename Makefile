@@ -1,4 +1,4 @@
-.PHONY: test smoke-train smoke-transfer smoke-byte-patch smoke-infer benchmark docs-check verify-research verify-scale verify-scale15 verify-lossless verify-mobile-domain verify-general-frontier
+.PHONY: test smoke-train smoke-transfer smoke-byte-patch smoke-infer benchmark docs-check rolling-demo rolling-smoke rolling-benchmark verify-research verify-scale verify-scale15 verify-lossless verify-mobile-domain verify-general-frontier
 
 test:
 	pytest -q
@@ -19,8 +19,20 @@ benchmark:
 	python scripts/benchmark_training_cost.py
 	python scripts/benchmark_domain_routing.py
 
+rolling-demo:
+	python scripts/demo_rolling_training.py --smoke
+
+rolling-smoke:
+	python -m layercake.rolling.cli --help
+	pytest tests/test_rolling_cli.py tests/test_rolling_rubric.py tests/test_rolling_trainer.py tests/test_model_commit.py tests/test_module_registry.py tests/test_dataset_manifest.py tests/test_gates.py tests/test_rollback.py tests/test_branching.py tests/test_cherrypick.py tests/test_bisect.py -q
+
+rolling-benchmark:
+	python scripts/benchmark_rolling_training.py
+	python scripts/benchmark_rollback_cost.py
+	python scripts/benchmark_cherrypick_transfer.py
+
 docs-check:
-	python -c "from pathlib import Path; required=['RUBRIC.md','BYTE_PATCH_LAYERCAKE.md','BENCHMARKS.md','ORCHESTRATION.md','TOKENIZER_FREE.md','ROADMAP.md','NEXT_STEPS.md']; assert all(Path(p).exists() for p in required)"
+	python -c "from pathlib import Path; required=['RUBRIC.md','BYTE_PATCH_LAYERCAKE.md','BENCHMARKS.md','ORCHESTRATION.md','TOKENIZER_FREE.md','ROADMAP.md','NEXT_STEPS.md','ROLLING_TRAINING.md','MODEL_COMMITS.md','RUBRIC_TRAINING.md','SEMANTIC_CI.md','ROLLBACK.md','BRANCHING_AND_CHERRYPICK.md']; assert all(Path(p).exists() for p in required)"
 
 verify-research:
 	python scripts/verify_research_gates.py

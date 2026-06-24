@@ -1,4 +1,9 @@
-"""Machine-checkable acceptance contracts for LayerCake scale candidates."""
+"""Machine-checkable acceptance contracts for LayerCake scale candidates.
+
+The deployment target is CPU-first: "mobile" is treated as a constrained
+single-thread/non-GPU proxy and "desktop" as a broader CPU-class deployment
+gate. GPU measurements are tracked separately as accelerator gates.
+"""
 
 from __future__ import annotations
 
@@ -36,12 +41,12 @@ class NorthStarMetrics:
             "faster_training": (
                 self.training_seconds < self.baseline_training_seconds
             ),
-            "faster_mobile_prefill": self.mobile_prefill_ratio > 1.0,
-            "faster_mobile_generation": (
+            "faster_mobile_cpu_prefill": self.mobile_prefill_ratio > 1.0,
+            "faster_mobile_cpu_generation": (
                 self.mobile_generation_ratio > 1.0
             ),
-            "faster_desktop_prefill": self.desktop_prefill_ratio > 1.0,
-            "faster_desktop_generation": (
+            "faster_desktop_cpu_prefill": self.desktop_prefill_ratio > 1.0,
+            "faster_desktop_cpu_generation": (
                 self.desktop_generation_ratio > 1.0
             ),
             "faster_gpu_prefill": self.gpu_prefill_ratio > 1.0,

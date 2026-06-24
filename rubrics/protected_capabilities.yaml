@@ -1,0 +1,14 @@
+capabilities:
+  - abi_hash
+  - input_interface_hash
+  - byte_patch_hash
+  - transfer_exactness
+  - no_repeat_generation
+  - cpu_generation
+  - rollback_exactness
+  - cherry_pick_compatibility
+policy:
+  promotion_requires_all_gates: true
+  failed_commits_are_preserved: true
+  rollback_restores_parent_artifacts: true
+  domain_transfer_claims_require_source_and_receiver_pass: true

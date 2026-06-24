@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "required_gates": {
+    "receiver_smaller": true,
+    "receiver_better_general_bpb": true,
+    "receiver_faster_training": true,
+    "receiver_faster_cpu_generation": true,
+    "lossless_transfer_ppl": true,
+    "lossless_transfer_logits": true,
+    "lossless_transfer_generation": true,
+    "transferred_domain_beats_transformer": true
+  },
+  "failed_required": [],
+  "metrics": {
+    "receiver_parameters": 6804064,
+    "baseline_parameters": 6856704,
+    "receiver_general_bpb": 2.125097239097193,
+    "baseline_general_bpb": 2.126544988742243,
+    "receiver_training_seconds": 77.0489273071289,
+    "baseline_training_seconds": 81.45081853866577,
+    "receiver_cpu_generation_speed_ratio": 1.4696922589993437,
+    "receiver_cpu_generation_bytes_per_second": 511.4084025418021,
+    "baseline_cpu_generation_bytes_per_second": 347.96971910976805,
+    "transfer_ppl_ratio": 1.0,
+    "transfer_max_logit_diff": 0.0,
+    "receiver_transferred_domain_bpb": 1.4691134455129056,
+    "transformer_adapter_domain_bpb": 2.11011393891534
+  }
+}

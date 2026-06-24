@@ -38,6 +38,14 @@ def test_northstar_rejects_gpu_only_regression():
     assert certificate["failed_required"] == ["faster_gpu_generation"]
 
 
+def test_northstar_names_cpu_deployment_gates_explicitly():
+    certificate = complete_metrics(mobile_generation_ratio=0.99).certificate()
+    assert certificate["status"] == "FAIL"
+    assert certificate["failed_required"] == [
+        "faster_mobile_cpu_generation"
+    ]
+
+
 def test_northstar_rejects_non_lossless_migration():
     certificate = complete_metrics(migration_ppl_ratio=1.000001).certificate()
     assert certificate["status"] == "FAIL"

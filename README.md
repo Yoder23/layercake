@@ -45,15 +45,25 @@ byte generation.
 | Batch-1 prefill latency | **2.96 ms** | BPE: 5.63 ms | PASS |
 | Exact cached-generation BPB | **1.9953 / 1.9836** | BPE: 2.0492 | PASS |
 | One-thread CPU generation | **2.91x / 2.96x BPE** | ratio > 1 | PASS |
+| One-thread CPU no-repeat-8 generation | **2.25x BPE** | coherence gates pass | PASS |
 | RTX 3080 Laptop generation | 0.62x BPE | ratio > 1 | **FAIL** |
 
 Cached generation is numerically equivalent to the trained full-forward path: the selected
 logit comparison differs by at most `1.9e-6` and has identical argmaxes. Local attention
 caches reset at the same 16-byte boundaries used during training.
 
+Unconstrained greedy generation is not good enough: the selected 15M model loops on
+phrases such as "state of the state". The current certificate therefore includes a
+separate no-repeat-8 cached-generation gate. With that decoding constraint, LayerCake
+keeps a 2.25x one-thread CPU speed ratio over the matched BPE transformer and passes the
+tracked printable, distinct-trigram, and repeated-8-gram gates. This is a coherence
+improvement, not a claim of human-level long-form generation.
+
 This is a replicated local-corpus result, not evidence of universal tokenizer-free
-dominance. The CPU result is a one-thread x86 mobile proxy, not a phone, NPU, battery, or
-thermal measurement. GPU generation remains an open optimization target.
+dominance. In this repository, **mobile-capable means CPU-first** unless a real device is
+named: non-GPU desktop CPUs and one-thread x86/ARM-style mobile proxies are required
+deployment gates. The current CPU result is not yet a phone, NPU, battery, or thermal
+measurement. GPU generation remains a separate accelerator optimization target.
 
 Raw evidence: [EXPERIMENT_RESULTS.md](EXPERIMENT_RESULTS.md)
 
@@ -107,13 +117,13 @@ The evidence now supports this precise positioning:
 
 The tested artifact preserves its logits, PPL, byte accuracy, and deterministic output
 across 2.19M, 5.40M, and 15.45M LayerCake hosts. This is the mechanism LayerCake is
-developing for mobile domain deployment: a smaller general core plus installable,
-domain-specific prediction payloads.
+developing for mobile and non-GPU desktop deployment: a smaller CPU-capable general core
+plus installable, domain-specific prediction payloads.
 
 It is not evidence that a mobile core has the same general intelligence as a larger core.
 PX transfers the domain capsule's behavior exactly because that capsule owns the selected
-domain prediction path. Routing, task-level code quality, native mobile kernels, memory,
-battery, and thermal behavior remain separate gates.
+domain prediction path. Routing, task-level code quality, native CPU/mobile kernels,
+memory, battery, and thermal behavior remain separate gates.
 
 ### Measured mobile domain-deployment win
 
@@ -159,11 +169,65 @@ model reached 2.0376 BPB in 204.6 seconds. The matched 24.09M BPE transformer re
 2.0035 BPB in 158.0 seconds. The next scale step therefore requires better patch
 compression and fused training, not simply more dense blocks.
 
+An intermediate 20M scale check narrows the boundary but does not clear it. A 20.25M
+width-448 LayerCake with 32-byte local windows and QK-normalized attention reached 2.0256
+BPB in 165.1 seconds. Its matched 20.61M BPE transformer reached 2.0154 BPB in 113.5
+seconds. Same-byte batch-24 compression, 16-byte local windows, and shifting one block
+from local byte decoding into the global patch core all improved neither gate. The best
+20M LayerCake candidate remains 2.0256 BPB and 165.1 seconds; the fastest retained 20M
+candidate remains slower than BPE at 135.1 seconds and worse at 2.0356 BPB. The retained
+certificate is intentionally FAIL:
+
+```powershell
+python scripts/verify_scale20m_frontier.py
+```
+
 A subsequent additive multi-scale experiment also failed its early rejection gate:
 four-byte coarse summaries combined with a two-byte fine stream reached 2.4216/2.4188 BPB
 at 750 steps versus 2.3180 for the fixed two-byte reference, with no training-speed gain.
 The implementation remains available as an experimental path, but the next full run will
 require content-dependent patch boundaries rather than additive fixed-scale summaries.
+
+That content-dependent 2/4-byte follow-up was implemented and tested as well. It reached
+2.514-2.524 BPB across 2.42-3.43 mean bytes per patch, versus 2.318 for the fixed two-byte
+probe. The vectorized path was fast, but changing patch positions damaged quality. It is
+therefore another documented negative control, not a selected architecture.
+
+The strongest later scale candidate uses hardware-aligned width 512, 32-byte local
+windows, and QK-normalized attention. It reaches 2.0204 BPB at 25.77M parameters, but the
+matched 26.30M BPE transformer reaches 1.9940 BPB and trains faster. The result is recorded
+as progress, not a win. Exact portable-domain migration remains independent of this core
+quality result and continues to pass without PPL or generation changes.
+
+The first pure-PyTorch sparse-state global patch core has also been tested at the 20M
+boundary. It preserves fixed two-byte ABI positions and cached generation support. The
+reduced-fan-in variant improved the LayerCake 20M quality frontier from 2.0256 to 2.0214
+BPB while remaining smaller than the 20.61M BPE comparator, but it still lost to BPE
+quality and training time: BPE reached 2.0154 BPB in 113.5 seconds, while sparse-state
+LayerCake reached 2.0214 BPB in 248.1 seconds. The retained sparse-state certificate is
+therefore intentionally FAIL:
+
+```powershell
+python scripts/verify_scale20m_sparse_state_frontier.py
+```
+
+The receiving-core comparison has also been rebuilt with the current fused architecture
+and a retained matched transformer artifact. The selected 6.804M receiver is still
+smaller than the 6.857M BPE transformer, trains faster, and beats it on general quality.
+The unchanged transferred domain remains exact and beats the transformer adapter.
+
+| Receiver-frontier gate | LayerCake receiver | Matched transformer | Status |
+|---|---:|---:|---|
+| Parameters | **6.804M** | 6.857M | PASS |
+| General BPB | **2.1251** | 2.1265 | PASS |
+| Training time | **77.05 s** | 81.45 s | PASS |
+| One-thread CPU generation | **1.47x BPE** | ratio > 1 | PASS |
+| Transferred-domain BPB | **1.4691** | adapter: 2.1101 | PASS |
+| Transfer invariance | PPL ratio 1.0; max logit diff 0; identical generation | n/a | PASS |
+
+```powershell
+python scripts/verify_receiver_frontier.py
+```
 
 The next tier increases the patch core from 0.35M to 5.40M parameters and the ABI from
 64 to 96 dimensions. It uses 20 MB of general text and 256-byte contexts.
@@ -377,6 +441,7 @@ layercake/
   byte_patch.py           codecs, patchers, and metadata
   domain_bricks.py        low-rank and top-k sparse portable operators
   portable_domain.py      exact core-independent domain prediction payload
+  rolling/                rollbackable model-commit training substrate
   orchestration.py        CorticalSwarm-style handoff packet and router
   transfer.py             copy, PPL, and degradation contracts
 
@@ -387,10 +452,15 @@ scripts/
   eval_lossless_domain_decoder.py
   benchmark_bpe_baseline.py
   benchmark_canonical_artifact.py
+  demo_rolling_training.py
+  benchmark_rolling_training.py
+  benchmark_rollback_cost.py
+  benchmark_cherrypick_transfer.py
   verify_research_gates.py
 
 results/
   research_gate_certificate.json
+  certificates/rolling_demo_certificate.json
   selected raw benchmark and transfer artifacts
 ```
 
@@ -420,6 +490,12 @@ and the same transfer matrix.
 - [Benchmarks](BENCHMARKS.md)
 - [Roadmap](ROADMAP.md)
 - [Known blockers](BLOCKERS.md)
+- [Rolling training](ROLLING_TRAINING.md)
+- [Model commits](MODEL_COMMITS.md)
+- [Rubric training](RUBRIC_TRAINING.md)
+- [Semantic CI](SEMANTIC_CI.md)
+- [Rollback](ROLLBACK.md)
+- [Branching and cherry-pick](BRANCHING_AND_CHERRYPICK.md)
 - [GitHub release checklist](GITHUB_RELEASE_CHECKLIST.md)
 
 ## Citation

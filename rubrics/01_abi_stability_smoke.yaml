@@ -1,0 +1,19 @@
+rubric_id: abi_stability_smoke
+name: ABI stability smoke
+branch: main
+max_steps: 1
+metric: score
+target: 0.5
+direction: min
+trainable_modules: [toy_model]
+frozen_modules: [fake_domain_brick]
+protected_capabilities: [abi_hash, input_interface_hash, byte_patch_hash]
+gates:
+  - name: abi_hash_gate
+    type: abi_hash
+  - name: input_interface_gate
+    type: input_interface_hash
+  - name: byte_patch_gate
+    type: byte_patch_hash
+rollback_policy:
+  on_failure: true

@@ -1,0 +1,21 @@
+rubric_id: px_payload_smoke
+name: PX payload smoke
+branch: px-payload
+max_steps: 1
+metric: score
+target: 0.5
+direction: min
+trainable_modules: [fake_domain_brick]
+frozen_modules: [toy_model]
+protected_capabilities: [abi_compatibility, transfer_exactness]
+gates:
+  - name: transfer_ratio_gate
+    type: max_metric
+    metric: transfer.ppl_ratio
+    threshold: 1.0
+  - name: logit_diff_gate
+    type: max_metric
+    metric: transfer.max_logit_diff
+    threshold: 0.0
+rollback_policy:
+  on_failure: true

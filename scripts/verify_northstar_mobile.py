@@ -30,6 +30,10 @@ def main() -> None:
     speed2 = load(
         "scale15m_northstar_arpatch2_seed6263_generation_cpu1.json"
     )
+    norepeat_quality = load("scale15m_generation_quality_norepeat8_cpu1.json")
+    norepeat_speed = load(
+        "scale15m_northstar_arpatch2_stateful_cached_generation_cpu1_norepeat8.json"
+    )
     gpu_speed = load(
         "scale15m_northstar_arpatch2_stateful_cached_generation_gpu_exact.json"
     )
@@ -79,6 +83,12 @@ def main() -> None:
         "faster_cpu_generation_seed6263": (
             speed2["speed_ratio"] > 1.0
         ),
+        "coherent_cpu_generation_norepeat8": all(
+            norepeat_quality["quality_gates"].values()
+        ),
+        "faster_cpu_generation_norepeat8": (
+            norepeat_speed["speed_ratio"] > 1.0
+        ),
         "lossless_migration_seed6250": (
             transfer1["status"] == "PASS"
             and transfer1["max_logit_diff"] == 0.0
@@ -115,10 +125,10 @@ def main() -> None:
         "claim": (
             "At ~15M parameters, LayerCake beats the matched tokenizer "
             "transformer on heldout BPB, mean fixed-budget training time, "
-            "batch-1 prefill latency, and one-thread cached generation; an "
-            "unchanged portable Python domain payload then migrates exactly "
-            "into an independent ~5M LayerCake host and beats the matched "
-            "transformer domain adapter."
+            "batch-1 prefill latency, and one-thread CPU cached generation; "
+            "an unchanged portable Python domain payload then migrates "
+            "exactly into an independent ~5M LayerCake host and beats the "
+            "matched transformer domain adapter on non-GPU CPU throughput."
         ),
         "required_gates": gates,
         "failed_required": failed,
@@ -146,6 +156,16 @@ def main() -> None:
                 speed1["speed_ratio"],
                 speed2["speed_ratio"],
             ],
+            "norepeat8_cpu_generation_speed_ratio": (
+                norepeat_speed["speed_ratio"]
+            ),
+            "norepeat8_generation_quality_gates": (
+                norepeat_quality["quality_gates"]
+            ),
+            "norepeat8_layercake_utf8": norepeat_quality["layercake"][
+                "utf8"
+            ],
+            "norepeat8_bpe_utf8": norepeat_quality["bpe"]["utf8"],
             "gpu_generation_speed_ratio": gpu_speed["speed_ratio"],
             "migrated_domain_bpb": [
                 transfer1["target"]["bpb"],
@@ -180,6 +200,10 @@ def main() -> None:
             "gpu_generation_win": False,
             "gpu_generation_speed_ratio": gpu_speed["speed_ratio"],
             "real_phone_measurement": False,
+            "cpu_first_mobile_definition": (
+                "mobile means a non-GPU CPU deployment proxy unless a real "
+                "Android/iOS/ARM measurement is explicitly reported"
+            ),
             "domains_tested": ["python"],
             "scale": "approximately 15M source and 5M target parameters",
         },

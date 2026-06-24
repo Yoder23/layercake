@@ -1,0 +1,17 @@
+rubric_id: consolidation_smoke
+name: Consolidation smoke
+branch: consolidation
+max_steps: 1
+metric: score
+target: 0.5
+direction: min
+trainable_modules: [toy_model, fake_domain_brick]
+frozen_modules: []
+protected_capabilities: [abi_compatibility, transfer_exactness, cpu_generation]
+gates:
+  - name: score_gate
+    type: min_metric
+    metric: score
+    threshold: 0.5
+rollback_policy:
+  on_failure: true

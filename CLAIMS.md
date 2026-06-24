@@ -140,6 +140,7 @@ cross-seed or tokenizer-free evidence.
 | Dynamic BLT-quality patching | Current selected model uses fixed patches. |
 | Production readiness | Distributed training, serving, and security hardening remain. |
 | L7 swarm equivalence | Packet/router interfaces exist, but task evidence is pending. |
+| Rolling-training substrate proves scale dominance | It only proves rollbackable training mechanics and auditability. |
 
 ## Larger-tier evidence
 
@@ -167,6 +168,7 @@ Use:
 - cost-adjusted domain adaptation.
 - replicated 15M-class mobile CPU win under the frozen local protocol;
 - exact portable-domain migration into an independent smaller LayerCake host.
+- rollbackable model commits and semantic CI for future architecture experiments.
 
 Do not use without larger evidence:
 
