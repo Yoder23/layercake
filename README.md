@@ -101,6 +101,153 @@ Verify the combined core and migration certificate:
 python scripts/verify_northstar_mobile.py
 ```
 
+### New transition-head 15M frontier
+
+The empirical byte-transition head and narrowed local decoder now produce a stronger
+15M-class source/core result while preserving exact receiver migration:
+
+| Gate | LayerCake transition result | Comparator / threshold | Status |
+|---|---:|---:|---|
+| Parameters | **14.320M** | BPE: 14.844M | PASS |
+| General held-out BPB | **2.0382** | BPE: 2.0492 | PASS |
+| Training time, no profiling | **122.5 s** | BPE: 131.5 s | PASS |
+| Training bytes | **9.42M** | BPE: 10.32M estimated | PASS |
+| One-thread CPU no-repeat-4 generation | **2.78x BPE** | ratio > 1.10 plus diversity gates | PASS |
+| Lossless transfer to 5.40M receiver | PPL ratio 1.0; max logit diff 0; identical generation | exact | PASS |
+| Transferred-domain BPB | **1.4406** | adapter: 2.1101 | PASS |
+
+Verify:
+
+```powershell
+python scripts/verify_scale15m_transition_frontier.py
+python scripts/verify_transformer_dominance_matrix.py
+python scripts/verify_game_ready_mobile_llm.py
+python scripts/benchmark_cpu_deployment_resources.py
+python scripts/verify_cross_backend_quality_scorecard.py
+python scripts/verify_many_domain_game_layers.py
+python scripts/verify_game_domain_training_workflow.py
+python scripts/verify_cross_domain_smoke_frontier.py
+python scripts/verify_cross_domain_adapter_frontier.py
+python scripts/verify_frontier_model_northstar.py
+```
+
+A 15.55M active-compute conv2 transition variant also produced a 20M-comparator quality
+win over the retained 20.61M BPE comparator, 2.0065 BPB versus 2.0154, but it trained in
+134.9 seconds versus the BPE comparator's 113.5 seconds. That is progress, not a 20M
+promotion.
+
+### Game-ready CPU/mobile proxy gate
+
+The current game-deployment thesis is now tracked separately from broad scale dominance:
+a small CPU-first English core plus installable domain payloads for game-specific data.
+
+| Gate | Current evidence | Status |
+|---|---:|---|
+| Core smaller than BPE | 14.32M vs 14.84M params | PASS |
+| General English BPB | 2.0382 vs 2.0492 BPE | PASS |
+| Training time | 122.5 s vs 131.5 s BPE | PASS |
+| One-thread CPU generation | 2.78x BPE | PASS |
+| Domain payload size | 148,808 B vs 383,008 B adapter | PASS |
+| Domain training time | 51.3 s vs 183.1 s adapter | PASS |
+| Domain CPU throughput | 35.7K B/s vs 8.1K B/s adapter | PASS |
+| Lossless domain transfer | PPL ratio 1.0; max logit diff 0; identical generation | PASS |
+| Receiver after transfer | smaller, better BPB, faster training, faster CPU generation | PASS |
+| Pruned CPU deployment artifact | 0.96x BPE artifact size | PASS |
+| Isolated CPU peak RSS | 0.985x BPE peak RSS | PASS |
+| Isolated CPU generation | 2.13x BPE | PASS |
+| Isolated CPU prefill microbench | 0.86x BPE | OPEN |
+
+Verify:
+
+```powershell
+python scripts/benchmark_cpu_deployment_resources.py
+python scripts/verify_game_ready_mobile_llm.py
+```
+
+This is still a desktop CPU/mobile-proxy certificate. Real game shipping still requires
+Android/iOS or target-console latency, battery/thermal, a game-dialogue/domain dataset,
+task-level NPC/game QA evaluation, and a native int8 runtime. Local isolated CPU peak RSS
+is now measured with separate fresh Python processes and passes against the retained BPE
+comparator; the separate isolated prefill microbench remains open.
+
+### Cross-backend quality scorecard
+
+LayerCake now tracks backend and quality dimensions separately so a CPU/mobile win cannot
+hide a GPU loss.
+
+| Dimension | Current result | Status |
+|---|---:|---|
+| Training/quality/cost vs BPE | smaller, lower BPB, faster training, fewer bytes | PASS |
+| CPU generation quality/speed | quality gates pass; 317.1 B/s vs 146.8 B/s | PASS |
+| Batch-1 prefill latency | 2.96 ms vs 5.63 ms BPE | PASS |
+| Domain layers | smaller/faster/better than adapter; exact transfer | PASS |
+| GPU generation quality | quality gates pass | PASS |
+| GPU generation speed | 244.2 B/s vs 840.2 B/s BPE | OPEN |
+
+Verify:
+
+```powershell
+python scripts/verify_cross_backend_quality_scorecard.py
+```
+
+An across-the-board CPU+GPU dominance claim is blocked until GPU generation speed also
+beats the transformer comparator.
+
+### Frontier north-star gate
+
+The master verifier aggregates the current promoted frontier evidence and explicitly
+keeps the larger north-star claim open until every remaining game/deployment gate exists.
+
+```powershell
+python scripts/verify_frontier_model_northstar.py
+```
+
+Current promoted gates:
+
+- base 15M source/core frontier;
+- transformer dominance matrix promoted tiers;
+- cross-backend CPU/mobile-proxy scorecard;
+- game-ready CPU/mobile proxy;
+- receiver-after-transfer frontier;
+- many-domain install/migration/isolation mechanics.
+
+Current open north-star items:
+
+- GPU generation speed;
+- 20M full-corpus training-time dominance;
+- real mobile/device latency;
+- battery and thermal measurements;
+- isolated CPU prefill microbench;
+- native int8 runtime;
+- trained game-dialogue, lore, and quest-state payloads;
+- task-level NPC/game QA evaluation;
+- domain routing policy evaluation.
+
+The many-domain proxy currently installs `game_dialogue`, `game_lore`, and
+`game_quest_state` payloads, verifies exact source/receiver migration for each, and
+checks that installing other domains does not change the selected domain's logits. It uses
+renamed copies of the current portable payload, so it proves install/migration/isolation
+mechanics, not game-domain quality.
+
+The game-domain workflow smoke now trains a byte-GRU portable domain from
+`tests/fixtures/game_dialogue_smoke.txt`, quantizes it to int8, installs it into the
+15M source and 5.40M receiver, and verifies exact migration. Current smoke metrics:
+2.2185 BPB, 73.8% top-1 byte accuracy, PPL ratio 1.0, max logit diff 0.0, and identical
+generated bytes after transfer. This proves the train/quantize/install/migrate workflow
+for game-style text; it is not a production game-dialogue quality claim.
+
+The cross-domain smoke extends that workflow to dialogue, lore, quest/state, and
+technical text. All four payloads train, quantize to int8, transfer exactly, and pass the
+smoke BPB/accuracy/printability gates. Current aggregate: mean BPB 2.2414, minimum top-1
+byte accuracy 71.97%, max transfer logit diff 0.0. This is broader workflow evidence, not
+an all-corpora dominance claim.
+
+The cross-domain adapter frontier compares those four portable payloads against matched
+BPE residual adapters trained on the same fixture files. LayerCake wins all four smoke
+domains on domain BPB, training seconds, payload size, and exact source/receiver transfer.
+Worst BPB margin is narrow on lore, -0.0019 BPB, so this is a smoke win that needs larger
+external corpora and multi-seed replication before any broad domain-dominance claim.
+
 ## Strict same-PPL transfer
 
 The original additive sparse brick does **not** preserve absolute PPL across independent
@@ -151,7 +298,8 @@ plus installable, domain-specific prediction payloads.
 It is not evidence that a mobile core has the same general intelligence as a larger core.
 PX transfers the domain capsule's behavior exactly because that capsule owns the selected
 domain prediction path. Routing, task-level code quality, native CPU/mobile kernels,
-memory, battery, and thermal behavior remain separate gates.
+battery, thermal behavior, and real-device memory/latency remain separate gates. Local
+desktop CPU peak RSS is measured separately in the deployment-resource certificate.
 
 ### Measured mobile domain-deployment win
 

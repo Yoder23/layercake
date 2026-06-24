@@ -18,6 +18,25 @@ from layercake.portable_domain import (
 from run_paired_byte_experiment import batch, load_python_bytes
 
 
+def load_domain_stream(args, root: Path) -> torch.Tensor:
+    if args.domain_file:
+        payload = bytearray()
+        for item in args.domain_file:
+            path = Path(item)
+            if not path.is_absolute():
+                path = root / path
+            payload.extend(path.read_bytes())
+            payload.extend(b"\n")
+        if len(payload) < args.seq * 4:
+            raise ValueError(
+                "domain files are too small for the requested sequence length"
+            )
+        return torch.tensor(list(payload[: args.domain_bytes]), dtype=torch.long)
+    return load_python_bytes(
+        root.parent / "layercakeogwithdecoder", args.domain_bytes
+    )
+
+
 @torch.no_grad()
 def evaluate(model, stream, seq, batch_size, batches, device):
     model.eval()
@@ -42,6 +61,14 @@ def main() -> None:
     )
     parser.add_argument("--embedding-width", type=int, default=64)
     parser.add_argument("--domain-id", default="python")
+    parser.add_argument(
+        "--domain-file",
+        action="append",
+        help=(
+            "Text/JSONL file to train as the portable domain. May be passed "
+            "multiple times. Defaults to the repository Python corpus."
+        ),
+    )
     parser.add_argument("--seq", type=int, default=128)
     parser.add_argument("--batch", type=int, default=32)
     parser.add_argument("--steps", type=int, default=2000)
@@ -56,10 +83,11 @@ def main() -> None:
     torch.manual_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     root = Path(__file__).resolve().parents[1]
-    domain = load_python_bytes(
-        root.parent / "layercakeogwithdecoder", args.domain_bytes
-    )
-    train_stream, eval_stream = domain[:-100_000], domain[-100_000:]
+    domain = load_domain_stream(args, root)
+    eval_bytes = min(100_000, max(args.seq * args.batch * 2, domain.numel() // 10))
+    if domain.numel() <= eval_bytes + args.seq + 1:
+        raise ValueError("domain stream is too small after reserving eval bytes")
+    train_stream, eval_stream = domain[:-eval_bytes], domain[-eval_bytes:]
     model = PortableDomainDecoder(
         feature_width=args.d_abi,
         hidden_width=args.hidden,
@@ -112,6 +140,9 @@ def main() -> None:
         "mode": "core_independent_lossless",
         "parameters": model.parameter_count(),
         "elapsed_seconds": time.time() - started,
+        "domain_files": args.domain_file or [],
+        "train_bytes": int(train_stream.numel()),
+        "eval_bytes": int(eval_stream.numel()),
         "spec_hash": artifact["spec_hash"],
         "payload_hash": artifact["payload_hash"],
         "evaluation": evaluation,

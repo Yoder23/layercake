@@ -868,3 +868,31 @@ def test_fused_modern_attention_is_causal():
     logits, _ = model(x)
     changed_logits, _ = model(changed)
     assert torch.equal(logits[:, :12], changed_logits[:, :12])
+
+
+def test_cached_generation_no_repeat_uses_tensor_mask():
+    model = CausalBytePatchLM(
+        patch_size=2,
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=1,
+        heads=4,
+        max_patches=12,
+        direct_global_context=True,
+        local_decoder="window_transformer",
+        local_layers=1,
+        local_window=4,
+        modern_blocks=True,
+        fused_attention=True,
+    )
+    model.eval()
+    x = torch.tensor([[0, 1, 2, 3, 4, 1, 2, 3]], dtype=torch.long)
+    state = model.begin_cached_generation(x)
+    logits = torch.full((1, 256), -100.0)
+    logits[0, 4] = 100.0
+    logits[0, 5] = 99.0
+    state["next_logits"] = logits
+    patch = model.cached_generation_step(state, no_repeat_ngram=4)
+    assert patch.shape == (1, 2)
+    assert patch[0, 0].item() == 5

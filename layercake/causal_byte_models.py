@@ -1681,8 +1681,19 @@ class CausalBytePatchLM(nn.Module):
         return torch.stack([first, second], dim=-1)
 
     @torch.no_grad()
-    def begin_cached_generation(self, x: torch.Tensor) -> dict:
+    def begin_cached_generation(self, x: torch.Tensor, profile: bool = False) -> dict:
         """Prefill global patch caches for stateful two-byte generation."""
+        profile_times: dict[str, float] = {}
+        profile_start = time.perf_counter() if profile else 0.0
+
+        def mark(name: str) -> None:
+            nonlocal profile_start
+            if not profile:
+                return
+            now = time.perf_counter()
+            profile_times[name] = now - profile_start
+            profile_start = now
+
         if (
             self.patch_size != 2
             or self.local_decoder != "window_transformer"
@@ -1699,6 +1710,7 @@ class CausalBytePatchLM(nn.Module):
             raise ValueError(
                 "prompt must leave at least one patch position for generation"
             )
+        mark("validate_prompt")
         byte_h = self.byte_emb(x).reshape(
             batch, -1, self.patch_size, self.byte_emb.embedding_dim
         )
@@ -1710,16 +1722,22 @@ class CausalBytePatchLM(nn.Module):
             patch_features = torch.cat(
                 [patch_features, self.patch_unit_emb(patch_ids)], dim=-1
             )
+        mark("byte_and_patch_features")
         patch_h = self.patch_proj(patch_features)
         positions = torch.arange(patch_h.shape[1], device=x.device)
         patch_h = patch_h + self.patch_pos(positions)[None]
+        mark("patch_projection")
         global_caches = []
         global_hidden = patch_h
         for block in self.core:
             global_hidden, cache = block.prefill_with_cache(global_hidden)
             global_caches.append(cache)
+        mark("global_core_cache_prefill")
         source_bytes = x[:, -self.local_window :]
         source_patch_count = self.local_window // self.patch_size
+        source_byte_h = byte_h[:, -source_patch_count:].reshape(
+            batch, self.local_window, self.byte_emb.embedding_dim
+        )
         prior_global = torch.cat(
             [
                 global_hidden.new_zeros(
@@ -1734,20 +1752,23 @@ class CausalBytePatchLM(nn.Module):
         ).reshape(batch, self.local_window, -1)
         local_hidden = self.local_in(
             torch.cat(
-                [self.byte_emb(source_bytes), source_context], dim=-1
+                [source_byte_h, source_context], dim=-1
             )
         )
+        mark("local_inputs")
         local_caches = []
         for block in self.local_core:
             local_hidden, cache = block.prefill_with_cache(local_hidden)
             local_caches.append(cache)
+        mark("local_cache_prefill")
         next_logits = self._byte_logits(
             self.local_norm(local_hidden)[:, -1]
         )
         next_logits = next_logits + self.transition_head(
             source_bytes[:, -1]
         )
-        return {
+        mark("next_logits")
+        state = {
             "bytes": x,
             "global_hidden": global_hidden,
             "global_caches": global_caches,
@@ -1756,6 +1777,9 @@ class CausalBytePatchLM(nn.Module):
             "next_logits": next_logits,
             "patch_count": patches.shape[1],
         }
+        if profile:
+            state["profile_seconds"] = profile_times
+        return state
 
     @torch.no_grad()
     def cached_generation_step(
@@ -1773,26 +1797,32 @@ class CausalBytePatchLM(nn.Module):
         def select_byte(logits: torch.Tensor, prefix: torch.Tensor) -> torch.Tensor:
             if no_repeat_ngram <= 1 or prefix.shape[1] < no_repeat_ngram - 1:
                 return logits.argmax(dim=-1)
-            selected = []
-            for row, row_prefix in zip(logits, prefix):
-                prefix_list = row_prefix.tolist()
-                existing = {
-                    tuple(prefix_list[index : index + no_repeat_ngram])
-                    for index in range(
-                        0, len(prefix_list) - no_repeat_ngram + 1
-                    )
-                }
-                choice = row.argmax().item()
-                for candidate in torch.argsort(row, descending=True).tolist():
-                    trial = tuple(
-                        prefix_list[-(no_repeat_ngram - 1) :]
-                        + [int(candidate)]
-                    )
-                    if trial not in existing:
-                        choice = int(candidate)
-                        break
-                selected.append(choice)
-            return torch.tensor(selected, device=logits.device, dtype=torch.long)
+            if prefix.shape[1] < no_repeat_ngram:
+                return logits.argmax(dim=-1)
+            suffix = prefix[:, -(no_repeat_ngram - 1) :]
+            windows = prefix.unfold(1, no_repeat_ngram, 1)
+            matching_prefix = (
+                windows[:, :, : no_repeat_ngram - 1] == suffix[:, None, :]
+            ).all(dim=-1)
+            banned_tokens = windows[:, :, -1]
+            banned_counts = torch.zeros(
+                logits.shape,
+                device=logits.device,
+                dtype=torch.int16,
+            )
+            banned_counts.scatter_reduce_(
+                1,
+                banned_tokens,
+                matching_prefix.to(dtype=torch.int16),
+                reduce="amax",
+                include_self=False,
+            )
+            banned = banned_counts.to(dtype=torch.bool)
+            masked = logits.masked_fill(banned, float("-inf"))
+            all_banned = torch.isneginf(masked).all(dim=-1)
+            selected = masked.argmax(dim=-1)
+            greedy = logits.argmax(dim=-1)
+            return torch.where(all_banned, greedy, selected)
 
         first = (
             forced_patch[:, 0]

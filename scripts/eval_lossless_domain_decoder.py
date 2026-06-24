@@ -15,6 +15,30 @@ from layercake.portable_domain import LayerCakeRuntime, load_portable_artifact
 from run_paired_byte_experiment import batch, load_python_bytes
 
 
+def load_eval_stream(args, root: Path) -> torch.Tensor:
+    if args.eval_file:
+        payload = bytearray()
+        for item in args.eval_file:
+            path = Path(item)
+            if not path.is_absolute():
+                path = root / path
+            payload.extend(path.read_bytes())
+            payload.extend(b"\n")
+        if len(payload) < args.eval_bytes:
+            repeats = args.eval_bytes // max(len(payload), 1) + 1
+            payload = payload * repeats
+        return torch.tensor(list(payload[-args.eval_bytes :]), dtype=torch.long)
+    if args.eval_root:
+        eval_root = Path(args.eval_root)
+        domain_limit = max(args.eval_bytes, 1_000_000)
+    else:
+        eval_root = root.parent / "layercakeogwithdecoder"
+        domain_limit = None
+    return load_python_bytes(eval_root, domain_limit or args.domain_limit)[
+        -args.eval_bytes :
+    ]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Bit-exact logit and PPL gate for a portable domain decoder"
@@ -24,6 +48,11 @@ def main() -> None:
     parser.add_argument("--target-core", required=True)
     parser.add_argument("--eval-bytes", type=int, default=100_000)
     parser.add_argument("--eval-root")
+    parser.add_argument(
+        "--eval-file",
+        action="append",
+        help="Text/JSONL file to evaluate the portable domain against.",
+    )
     parser.add_argument("--eval-source-label", default="repository-heldout-python")
     parser.add_argument("--batches", type=int, default=50)
     parser.add_argument("--generation-bytes", type=int, default=64)
@@ -42,16 +71,11 @@ def main() -> None:
     if source_seq != target_seq:
         raise ValueError("strict gate requires equal evaluation context lengths")
     root = Path(__file__).resolve().parents[1]
-    if args.eval_root:
-        eval_root = Path(args.eval_root)
-        domain_limit = max(args.eval_bytes, 1_000_000)
-    else:
-        eval_root = root.parent / "layercakeogwithdecoder"
-        domain_limit = max(
-            source["args"].get("domain_bytes", 2_000_000),
-            target["args"].get("domain_bytes", 2_000_000),
-        )
-    stream = load_python_bytes(eval_root, domain_limit)[-args.eval_bytes :]
+    args.domain_limit = max(
+        source["args"].get("domain_bytes", 2_000_000),
+        target["args"].get("domain_bytes", 2_000_000),
+    )
+    stream = load_eval_stream(args, root)
     generator = torch.Generator().manual_seed(991)
     batch_size = min(
         source["args"].get("batch", 24),
@@ -86,8 +110,12 @@ def main() -> None:
     target_runtime = LayerCakeRuntime(target_core)
     source_runtime.install_portable_domain(artifact, device)
     target_runtime.install_portable_domain(artifact, device)
-    completion_start = 4096
     completion_context = min(source_seq, 128)
+    required_generation_span = completion_context + args.generation_bytes
+    if stream.numel() < required_generation_span:
+        repeats = required_generation_span // max(stream.numel(), 1) + 1
+        stream = stream.repeat(repeats)
+    completion_start = min(4096, max(stream.numel() - required_generation_span, 0))
     prompt_tensor = stream[
         completion_start : completion_start + completion_context
     ].unsqueeze(0)

@@ -54,3 +54,67 @@ Current local frontier:
 
 The next rematch tier is full-corpus 15M/20M/25M using the same verifier discipline and
 requiring receiver-after-transfer certificates.
+
+Full-corpus transition-head update:
+
+- 14.32M transition-head LayerCake passes the 15M source/core and receiver-transfer gate:
+  2.0382 BPB versus 2.0492 BPE, 122.5 s versus 131.5 s, 2.78x one-thread CPU
+  no-repeat-4 generation, exact transfer into the 5.40M receiver, and transferred-domain
+  BPB 1.4406 versus adapter BPB 2.1101.
+- 15.55M active-compute conv2 transition LayerCake reaches 2.0065 BPB versus the retained
+  20.61M BPE at 2.0154, but trains in 134.9 s versus 113.5 s. This is a quality win and a
+  training-time fail, so it is not promoted.
+
+Verify the promoted transition-head 15M certificate:
+
+```powershell
+python scripts/verify_scale15m_transition_frontier.py
+python scripts/verify_transformer_dominance_matrix.py
+python scripts/benchmark_cpu_deployment_resources.py
+python scripts/verify_game_ready_mobile_llm.py
+python scripts/verify_cross_backend_quality_scorecard.py
+python scripts/verify_many_domain_game_layers.py
+python scripts/verify_game_domain_training_workflow.py
+python scripts/verify_cross_domain_smoke_frontier.py
+python scripts/verify_cross_domain_adapter_frontier.py
+python scripts/verify_frontier_model_northstar.py
+```
+
+The transition verifier requires explicit margins: at least 2% fewer parameters, at least
+0.5% better BPB, at least 1% faster training, at least 10% faster one-thread CPU
+generation, no extra training bytes, printable/alpha-space/diverse generation, no repeated
+4-gram or 8-gram in the checked sample, exact transfer PPL/logit/generation invariance,
+and at least 10% better transferred-domain BPB than the transformer adapter.
+
+The game-ready verifier adds a deployment-oriented CPU/mobile-proxy gate: at least 2x
+one-thread CPU generation versus BPE, smaller/faster/better installable domain payloads
+than transformer adapters, exact receiver transfer, and an isolated local CPU resource
+certificate. The pruned LayerCake deployment artifact now beats the retained BPE on
+artifact size, parameter memory, peak RSS, and generation speed. The isolated CPU prefill
+microbench remains open, and real device latency, battery/thermal, game dialogue data,
+task-level game evaluation, and native int8 runtime are still not promoted.
+
+The cross-backend scorecard separates CPU, GPU, latency, generation quality, training,
+and domain layers. Current CPU, latency, training, and domain gates pass; GPU generation
+quality passes but GPU generation speed remains OPEN, so no across-the-board CPU+GPU
+dominance claim is allowed.
+
+The frontier north-star verifier is the master gate for the repository. It passes only
+when the currently promoted evidence is internally consistent, and separately reports
+open items that block the final claim: GPU generation speed, 20M training time, real
+mobile/device measurements, isolated CPU prefill, native int8 runtime, trained
+game-domain payloads, task-level NPC evaluation, and domain routing policy.
+
+The game-domain workflow smoke proves custom game-style text can train a portable
+byte-GRU payload, quantize to int8, install into separate LayerCake runtimes, and migrate
+with exact PPL/logit/generation invariance. It is a workflow gate, not production
+dialogue-quality evidence.
+
+The cross-domain smoke extends the same portable-payload workflow across dialogue, lore,
+quest/state, and technical prose. It must pass exact transfer and smoke quality gates for
+every domain. It still does not replace large external corpora, matched transformer
+adapter comparisons per domain, multi-seed runs, or task-level quality evaluation.
+
+`verify_cross_domain_adapter_frontier.py` adds the matched-adapter smoke comparison:
+LayerCake must beat a BPE residual adapter on BPB, training seconds, and payload size for
+each domain while preserving exact source/receiver transfer.

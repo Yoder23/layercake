@@ -17,6 +17,25 @@ from layercake.causal_byte_models import causal_mask
 from run_paired_byte_experiment import batch, load_jsonl_bytes, load_python_bytes
 
 
+def load_domain_stream(args, root: Path) -> torch.Tensor:
+    if args.domain_file:
+        payload = bytearray()
+        for item in args.domain_file:
+            path = Path(item)
+            if not path.is_absolute():
+                path = root / path
+            payload.extend(path.read_bytes())
+            payload.extend(b"\n")
+        if len(payload) < args.seq * 4:
+            raise ValueError(
+                "domain files are too small for the requested sequence length"
+            )
+        return torch.tensor(list(payload[: args.domain_bytes]), dtype=torch.long)
+    return load_python_bytes(
+        root.parent / "layercakeogwithdecoder", args.domain_bytes
+    )
+
+
 class ResidualAdapter(nn.Module):
     def __init__(self, width: int, rank: int):
         super().__init__()
@@ -63,7 +82,13 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--seed", type=int, default=6262)
     parser.add_argument("--domain-bytes", type=int, default=2_000_000)
+    parser.add_argument(
+        "--domain-file",
+        action="append",
+        help="Text/JSONL file to use as adapter domain data.",
+    )
     parser.add_argument("--general-bytes", type=int, default=20_000_000)
+    parser.add_argument("--eval-batches", type=int, default=30)
     parser.add_argument("--output-artifact")
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
@@ -88,15 +113,16 @@ def main() -> None:
     tokenizer_path.unlink(missing_ok=True)
 
     root = Path(__file__).resolve().parents[1]
-    domain = load_python_bytes(
-        root.parent / "layercakeogwithdecoder", args.domain_bytes
-    )
+    domain = load_domain_stream(args, root)
     general = load_jsonl_bytes(
         root.parent / "layercakeogwithdecoder/data/v6/redpajama_english_eval.jsonl",
         args.general_bytes,
     )
-    domain_train, domain_eval = domain[:-100_000], domain[-100_000:]
-    general_eval = general[-200_000:]
+    eval_bytes = min(100_000, max(args.seq * args.batch * 2, domain.numel() // 10))
+    if domain.numel() <= eval_bytes + args.seq + 1:
+        raise ValueError("domain stream is too small after reserving eval bytes")
+    domain_train, domain_eval = domain[:-eval_bytes], domain[-eval_bytes:]
+    general_eval = general[-min(200_000, general.numel()):]
 
     def encode(raw: torch.Tensor) -> torch.Tensor:
         text = bytes(raw.tolist()).decode("utf-8", errors="replace")
@@ -109,11 +135,11 @@ def main() -> None:
     before = {
         "domain": evaluate(
             base, domain_eval_tokens, domain_eval.numel(), args.seq,
-            eval_batch, 30, device
+            eval_batch, args.eval_batches, device
         ),
         "general": evaluate(
             base, general_eval_tokens, general_eval.numel(), args.seq,
-            eval_batch, 30, device
+            eval_batch, args.eval_batches, device
         ),
     }
     optimizer = torch.optim.AdamW(model.adapters.parameters(), lr=args.lr)
@@ -141,11 +167,11 @@ def main() -> None:
     after = {
         "domain": evaluate(
             model, domain_eval_tokens, domain_eval.numel(), args.seq,
-            eval_batch, 30, device
+            eval_batch, args.eval_batches, device
         ),
         "general": evaluate(
             model, general_eval_tokens, general_eval.numel(), args.seq,
-            eval_batch, 30, device
+            eval_batch, args.eval_batches, device
         ),
     }
     adapter_state = {
@@ -179,6 +205,9 @@ def main() -> None:
         "estimated_total_training_bytes": (
             args.steps * args.batch * args.seq * bytes_per_token
         ),
+        "domain_files": args.domain_file or [],
+        "train_bytes": int(domain_train.numel()),
+        "eval_bytes": int(domain_eval.numel()),
         "before": before,
         "after": after,
         "general_bpb_regression": (

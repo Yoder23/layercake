@@ -231,3 +231,70 @@ selection now clear the 276k, 474k, 735k, 1.15M, 2.7M, 5.8M, 8.8M, 10.4M, 12.8M,
 19.4M, and 25.6M local probes. The next step is a controlled full-corpus
 15M/20M/25M rematch using the same dominance certificates and receiver-after-transfer
 checks.
+
+The first full-corpus transition-head rematch is now promoted at 15M class:
+
+- 14.32M transition-head LayerCake: 2.0382 BPB, 122.5 s, 9.42M train bytes;
+- 14.84M BPE comparator: 2.0492 BPB, 131.5 s, 10.32M estimated train bytes;
+- one-thread CPU no-repeat-4 generation: 2.78x BPE with stricter diversity gates;
+- transfer into the 5.40M receiver: PPL ratio 1.0, max logit diff 0, identical generation;
+- transferred-domain BPB: 1.4406 versus adapter BPB 2.1101.
+
+The best current 20M-comparator candidate is the 15.55M active-compute conv2 transition
+model. It reaches 2.0065 BPB against the 20.61M BPE's 2.0154, but still misses the
+training-time gate at 134.9 s versus 113.5 s. The next architecture loop should target
+global/local fused training cost or faster convergence, because conv substitution closes
+part of the gap but does not yet win the 20M time gate.
+
+Promotion now requires `python scripts/verify_transformer_dominance_matrix.py`. This
+matrix keeps local-methodology, full-corpus source, and receiver-after-transfer gates
+separate, and records the 20M result as OPEN rather than allowing a partial quality win to
+be marketed as full transformer dominance.
+
+For the game-ready north star, promotion also requires
+`python scripts/verify_game_ready_mobile_llm.py`. It keeps the target concrete:
+CPU/mobile-proxy English generation, installable domain payloads, exact receiver transfer,
+and open requirements for real mobile hardware and task-level game evaluation. The next
+domain-specific step is to replace the current Python-domain payload with a small
+game-dialogue/game-state corpus and add NPC dialogue or game QA task gates.
+
+CPU deployment resources are now measured with
+`python scripts/benchmark_cpu_deployment_resources.py`. The benchmark exports a pruned
+patch-runtime LayerCake artifact, runs LayerCake and BPE in separate fresh Python
+processes, and records artifact size, parameter memory, peak RSS, prefill, and generation.
+The current pruned LayerCake runtime is smaller, has lower peak RSS, and generates faster
+than the retained BPE comparator; the isolated prefill microbench remains open and should
+be treated as a local CPU optimization target.
+
+Across-the-board backend claims require `python scripts/verify_cross_backend_quality_scorecard.py`.
+That scorecard currently passes training/quality/cost, CPU generation quality/speed,
+batch-1 prefill latency, and domain-layer gates, but keeps GPU generation speed OPEN.
+The no-repeat cached decoder now uses a tensorized mask instead of Python `tolist`
+candidate selection, improving the retained GPU no-repeat path while preserving quality.
+The next GPU-specific architecture task is a cached generation fast path that further
+reduces per-byte Python/kernel overhead or emits larger verified chunks without degrading
+the quality gates.
+
+The master frontier gate is `python scripts/verify_frontier_model_northstar.py`. It now
+includes a many-domain proxy via `python scripts/verify_many_domain_game_layers.py`.
+That proxy proves three game-named payloads can be installed, migrated exactly, and kept
+isolated with zero selected-domain logit interference. The next non-proxy game task is to
+train real `game_dialogue`, `game_lore`, and `game_quest_state` payloads and add task-level
+NPC/game QA gates plus a routing-policy evaluator.
+
+The custom game-domain training path is now smoke-tested:
+`train_portable_domain_decoder.py` accepts `--domain-file`, `eval_lossless_domain_decoder.py`
+accepts `--eval-file`, and `verify_game_domain_training_workflow.py` verifies a
+train/quantize/install/migrate loop on a game-dialogue fixture. This makes the repo ready
+to ingest a real game corpus, but the production claim still requires larger held-out
+game data and task-level dialogue/quest evaluation.
+
+`verify_cross_domain_smoke_frontier.py` now broadens that smoke from one fixture to four
+text styles: game dialogue, game lore, game quest/state, and technical prose. The next
+promotion step is not more tiny fixtures; it is larger external corpora, matched
+transformer adapters per domain, multiple seeds, and task-level quality gates.
+
+`verify_cross_domain_adapter_frontier.py` now supplies the first matched-adapter version
+of that check. The four smoke domains beat BPE residual adapters on BPB, training time,
+payload size, and exact transfer. The lore margin is very small, so the next promotion
+still needs external corpora and multi-seed confidence intervals.
