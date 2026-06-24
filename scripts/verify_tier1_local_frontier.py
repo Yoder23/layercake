@@ -10,6 +10,12 @@ PROBES = {
     "735k": "results/dominance/tier1_local_735k_probe.json",
     "1m": "results/dominance/tier1_local_1m_probe.json",
     "2_7m": "results/dominance/tier1_local_27m_probe.json",
+    "5_8m": "results/dominance/tier1_local_58m_probe.json",
+    "8_8m": "results/dominance/tier1_local_9m_probe.json",
+    "10_4m": "results/dominance/tier1_local_10m_probe.json",
+    "12_8m": "results/dominance/tier1_local_128m_probe.json",
+    "19_4m": "results/dominance/tier1_local_20m_probe.json",
+    "25_6m": "results/dominance/tier1_local_25m_probe.json",
 }
 
 
@@ -37,8 +43,8 @@ def main() -> int:
         "passed": passed,
         "failures": failures,
         "next_blocker": (
-            "Advance to 5M/15M/20M rematches with the empirical transition prior "
-            "and equal-or-larger matched transformer baselines."
+            "Advance to full-corpus 15M/20M/25M rematches with the empirical transition prior, "
+            "equal-or-larger matched transformer baselines, and receiver-after-transfer certificates."
             if all(passed.values())
             else "Fix the failed local probes before launching larger rematches."
         ),

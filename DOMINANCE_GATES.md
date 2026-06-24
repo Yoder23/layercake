@@ -45,5 +45,12 @@ Current local frontier:
 - 735k probe: passes after empirical transition-head initialization.
 - 1.15M probe: passes after empirical transition-head initialization.
 - 2.7M probe: passes after empirical transition-head initialization.
+- 5.8M probe: passes after empirical transition-head initialization.
+- 8.8M probe: passes after empirical transition-head initialization.
+- 10.4M probe: passes after empirical transition-head initialization and expanded equal-or-larger transformer matching.
+- 12.8M probe: passes after empirical transition-head initialization and expanded equal-or-larger transformer matching.
+- 19.4M probe: passes after empirical transition-head initialization and expanded equal-or-larger transformer matching.
+- 25.6M probe: passes after empirical transition-head initialization and expanded equal-or-larger transformer matching.
 
-The next rematch tier is 5M/15M/20M using the same verifier discipline.
+The next rematch tier is full-corpus 15M/20M/25M using the same verifier discipline and
+requiring receiver-after-transfer certificates.

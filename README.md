@@ -46,8 +46,10 @@ It is a methodology gate, not a public scale-dominance claim.
 
 Transformer-displacement claims are governed by dominance gates. Current locked evidence
 supports CPU/mobile-proxy wins for the 15M source/core and 6.8M receiver-after-transfer
-certificates. The local 276k/474k/735k/1.15M/2.7M probes now pass after adding an empirical
-byte-transition prior to the LayerCake path. GPU generation remains a blocker.
+certificates. The local 276k/474k/735k/1.15M/2.7M/5.8M/8.8M/10.4M/12.8M/19.4M/25.6M
+probes now pass after adding an empirical byte-transition prior to the LayerCake path and
+expanding the equal-or-larger transformer matcher. These are local harness wins, not
+full-corpus scale-dominance claims. GPU generation remains a blocker.
 
 This repository now contains both:
 

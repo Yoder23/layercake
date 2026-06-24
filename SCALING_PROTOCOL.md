@@ -29,7 +29,7 @@ Metrics:
 Tiers:
 
 - Tier 0 smoke: tiny model, tiny data, CPU, CI-compatible.
-- Tier 1 local: 1M-5M params, local CPU/GPU, minutes.
+- Tier 1 local: 1M-25M params, local CPU/GPU, minutes; methodology evidence only.
 - Tier 2 serious: 5M-25M params, 100M-1B bytes, multiple seeds.
 - Tier 3 research: 25M-150M params, multi-GPU if available.
 - Tier 4 moonshot: 150M+, large byte corpus, multiple domains, multiple seeds.
@@ -43,9 +43,10 @@ python scripts/benchmark_tier1_dominance.py --steps 4
 python scripts/verify_tier1_dominance.py
 ```
 
-The smoke certificate is useful for methodology regressions only. Tier 1 local must move
-from the tiny fixed file to 1M-5M parameters, larger held-out byte streams, and repeated
-seeds before any public efficiency claim is upgraded.
+The smoke certificate is useful for methodology regressions only. Tier 1 local has now
+advanced through 25M-class parameter counts on the tiny fixed file. It must still move to
+larger held-out byte streams and repeated seeds before any public efficiency claim is
+upgraded.
 
 Tier 1 local validation commands:
 
@@ -55,7 +56,14 @@ python scripts/benchmark_tier1_dominance.py --steps 3 --d-model 96 --layers 2 --
 python scripts/benchmark_tier1_dominance.py --steps 2 --d-model 128 --layers 2 --heads 2 --d-byte 16 --d-abi 32 --max-patches 256 --output results/dominance/tier1_local_735k_probe.json
 python scripts/benchmark_tier1_dominance.py --steps 2 --d-model 160 --layers 2 --heads 2 --d-byte 16 --d-abi 32 --max-patches 256 --output results/dominance/tier1_local_1m_probe.json
 python scripts/benchmark_tier1_dominance.py --steps 1 --d-model 256 --layers 2 --heads 4 --d-byte 16 --d-abi 64 --max-patches 256 --output results/dominance/tier1_local_27m_probe.json
+python scripts/benchmark_tier1_dominance.py --steps 1 --d-model 384 --layers 2 --heads 8 --d-byte 24 --d-abi 64 --max-patches 256 --output results/dominance/tier1_local_58m_probe.json
+python scripts/benchmark_tier1_dominance.py --steps 1 --d-model 416 --layers 3 --heads 8 --d-byte 24 --d-abi 64 --max-patches 256 --output results/dominance/tier1_local_9m_probe.json
+python scripts/benchmark_tier1_dominance.py --steps 1 --d-model 448 --layers 3 --heads 8 --d-byte 24 --d-abi 64 --max-patches 256 --output results/dominance/tier1_local_10m_probe.json
+python scripts/benchmark_tier1_dominance.py --steps 1 --d-model 448 --layers 4 --heads 8 --d-byte 24 --d-abi 64 --max-patches 256 --output results/dominance/tier1_local_128m_probe.json
+python scripts/benchmark_tier1_dominance.py --steps 1 --d-model 512 --layers 5 --heads 8 --d-byte 24 --d-abi 64 --max-patches 256 --output results/dominance/tier1_local_20m_probe.json
+python scripts/benchmark_tier1_dominance.py --steps 1 --d-model 512 --layers 7 --heads 8 --d-byte 24 --d-abi 64 --max-patches 256 --output results/dominance/tier1_local_25m_probe.json
 python scripts/verify_tier1_local_frontier.py
+python scripts/verify_source_receiver_dominance.py
 ```
 
 Tier 2 preparation commands:

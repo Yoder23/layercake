@@ -34,8 +34,8 @@ def matched_parameter_count_helper(target_params: int, *, max_len=128) -> TinyBy
     best = TinyByteTransformer(16, 1, 4, max_len)
     best_params = parameter_count(best)
     best_delta = abs(best_params - target_params)
-    for layers in (1, 2, 3, 4, 6, 8):
-        for width in (16, 24, 32, 48, 64, 80, 96, 128, 160, 192, 224, 256, 320, 384):
+    for layers in (1, 2, 3, 4, 6, 8, 10, 12):
+        for width in (16, 24, 32, 48, 64, 80, 96, 128, 160, 192, 224, 256, 320, 384, 448, 512, 640):
             heads = 8 if width % 8 == 0 else 4 if width % 4 == 0 else 2
             candidate = TinyByteTransformer(width, layers, heads, max_len)
             params = parameter_count(candidate)

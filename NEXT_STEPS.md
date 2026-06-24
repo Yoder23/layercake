@@ -226,7 +226,8 @@ python scripts/benchmark_tier1_dominance.py --steps 4 --d-model 64 --layers 2 --
 python scripts/verify_tier1_local_frontier.py
 ```
 
-The empirical transition-head prior and equal-or-larger matched transformer selection now
-clear the 276k, 474k, 735k, 1.15M, and 2.7M local probes. The next step is a controlled
-5M/15M/20M rematch using the same dominance certificates and receiver-after-transfer
+The empirical transition-head prior and expanded equal-or-larger matched transformer
+selection now clear the 276k, 474k, 735k, 1.15M, 2.7M, 5.8M, 8.8M, 10.4M, 12.8M,
+19.4M, and 25.6M local probes. The next step is a controlled full-corpus
+15M/20M/25M rematch using the same dominance certificates and receiver-after-transfer
 checks.

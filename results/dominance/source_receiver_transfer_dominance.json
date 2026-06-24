@@ -1,0 +1,39 @@
+{
+  "failed": [],
+  "gates": {
+    "locked_source_receiver_cpu_frontier_passes": true,
+    "receiver_better_general_bpb": true,
+    "receiver_faster_cpu_generation": true,
+    "receiver_faster_training": true,
+    "receiver_smaller_than_transformer": true,
+    "source_local_frontier_passes": true,
+    "transfer_generation_exact": true,
+    "transfer_max_logit_diff_exact": true,
+    "transfer_ppl_ratio_exact": true,
+    "transferred_domain_beats_transformer": true
+  },
+  "locked_cpu_receiver_certificate": "results/dominance/layercake_frontier_cpu_receiver_certificate.json",
+  "metrics": {
+    "receiver_domain_bpb": 1.4691134455129056,
+    "receiver_transfer_max_logit_diff": 0.0,
+    "receiver_transfer_ppl_ratio": 1.0,
+    "source_local_passed": {
+      "10_4m": true,
+      "12_8m": true,
+      "19_4m": true,
+      "1m": true,
+      "25_6m": true,
+      "276k": true,
+      "2_7m": true,
+      "474k": true,
+      "5_8m": true,
+      "735k": true,
+      "8_8m": true
+    },
+    "transformer_adapter_domain_bpb": 2.11011393891534
+  },
+  "receiver_certificate": "results/receiver_frontier_certificate.json",
+  "scope": "Source dominance plus receiver-after-lossless-transfer dominance. Local frontier probes are smoke/local scale; locked receiver certificate carries exact transfer.",
+  "source_frontier_certificate": "results/dominance/tier1_local_frontier_certificate.json",
+  "status": "PASS"
+}
