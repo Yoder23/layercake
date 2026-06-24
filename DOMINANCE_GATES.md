@@ -40,6 +40,10 @@ not a scale claim.
 
 Current local frontier:
 
-- 276k probe: passes the local dominance smoke gates.
-- 474k/735k/1.15M probes: retained as scaling blockers when generated; the observed
-  misses are quality, printability, or parameter-count advantage depending on config.
+- 276k probe: passes.
+- 474k probe: passes after empirical transition-head initialization.
+- 735k probe: passes after empirical transition-head initialization.
+- 1.15M probe: passes after empirical transition-head initialization.
+- 2.7M probe: passes after empirical transition-head initialization.
+
+The next rematch tier is 5M/15M/20M using the same verifier discipline.

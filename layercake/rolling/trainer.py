@@ -116,6 +116,7 @@ class RollingTrainer:
         model=None,
         parent_commit=None,
         train_step=None,
+        eval_fn=None,
         metrics: dict | None = None,
         mode: str | None = None,
         certificate_path: str | Path | None = None,
@@ -161,6 +162,10 @@ class RollingTrainer:
         }
         if metrics:
             merged_metrics.update(metrics)
+        if eval_fn:
+            post_metrics = eval_fn()
+            merged_metrics.update(post_metrics)
+            merged_metrics["post_training"] = post_metrics
         commit, cert, rollback_report = self.run_rubric(
             rubric,
             parent_commit,

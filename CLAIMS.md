@@ -173,6 +173,7 @@ Use:
 - rollbackable model commits and semantic CI for future architecture experiments.
 - preview-guided rolling-training smoke path with tiny LayerCake and tiny byte-transformer comparison harness.
 - Tier 0/Tier 1 smoke dominance certificate against a closest matched-parameter tiny byte transformer.
+- CPU/mobile-proxy source and receiver dominance under locked 15M/6.8M certificates.
 
 Do not use without larger evidence:
 

@@ -26,6 +26,7 @@ def tiny_layercake_model(
     d_byte: int = 8,
     d_abi: int = 16,
     max_patches: int = 64,
+    transition_logits: torch.Tensor | None = None,
 ) -> CausalBytePatchLM:
     return CausalBytePatchLM(
         patch_size=2,
@@ -42,6 +43,7 @@ def tiny_layercake_model(
         local_window=8,
         modern_blocks=True,
         fused_attention=True,
+        transition_logits=transition_logits,
     )
 
 
@@ -59,6 +61,18 @@ def load_tiny_byte_batch(path: str | Path = "data/tier1_dominance_smoke.txt", *,
     if len(raw) < 8:
         raw = raw + b" " * (8 - len(raw))
     return torch.tensor([list(raw)], dtype=torch.long)
+
+
+def empirical_transition_logits(batch: torch.Tensor) -> torch.Tensor:
+    flat = batch.reshape(-1).cpu()
+    if flat.numel() < 2:
+        return torch.zeros(256, 256)
+    transition_ids = flat[:-1] * 256 + flat[1:]
+    counts = torch.bincount(transition_ids, minlength=65536).reshape(256, 256)
+    probabilities = (counts.float() + 0.1) / (
+        counts.sum(dim=1, keepdim=True).float() + 25.6
+    )
+    return probabilities.log()
 
 
 def eval_bpb(model, batch: torch.Tensor) -> tuple[float, float]:
@@ -158,6 +172,7 @@ def run_tier1_dominance_smoke(
     torch.manual_seed(seed)
     batch = load_tiny_byte_batch(data_path)
     prompt = batch[:, : min(16, batch.shape[1])]
+    transition_logits = empirical_transition_logits(batch)
 
     blind = tiny_layercake_model(
         d_model=d_model,
@@ -166,6 +181,7 @@ def run_tier1_dominance_smoke(
         d_byte=d_byte,
         d_abi=d_abi,
         max_patches=max_patches,
+        transition_logits=transition_logits,
     )
     preview_guided = tiny_layercake_model(
         d_model=d_model,
@@ -174,6 +190,7 @@ def run_tier1_dominance_smoke(
         d_byte=d_byte,
         d_abi=d_abi,
         max_patches=max_patches,
+        transition_logits=transition_logits,
     )
     preview_guided.load_state_dict(blind.state_dict())
     transformer = matched_parameter_count_helper(parameter_count(blind), max_len=max(batch.shape[1] + 16, 128))

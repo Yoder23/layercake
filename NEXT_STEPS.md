@@ -226,7 +226,7 @@ python scripts/benchmark_tier1_dominance.py --steps 4 --d-model 64 --layers 2 --
 python scripts/verify_tier1_local_frontier.py
 ```
 
-The immediate scaling blocker is now concrete: the 276k local probe passes, while
-474k/735k/1.15M probes expose quality, printability, or parameter-count misses. The next
-architecture/training loop should target printable cached generation and quality retention
-at 474k+ before moving to 1M-5M.
+The empirical transition-head prior and equal-or-larger matched transformer selection now
+clear the 276k, 474k, 735k, 1.15M, and 2.7M local probes. The next step is a controlled
+5M/15M/20M rematch using the same dominance certificates and receiver-after-transfer
+checks.

@@ -32,14 +32,21 @@ def parameter_count(model: nn.Module) -> int:
 
 def matched_parameter_count_helper(target_params: int, *, max_len=128) -> TinyByteTransformer:
     best = TinyByteTransformer(16, 1, 4, max_len)
-    best_delta = abs(parameter_count(best) - target_params)
+    best_params = parameter_count(best)
+    best_delta = abs(best_params - target_params)
     for layers in (1, 2, 3, 4, 6, 8):
         for width in (16, 24, 32, 48, 64, 80, 96, 128, 160, 192, 224, 256, 320, 384):
             heads = 8 if width % 8 == 0 else 4 if width % 4 == 0 else 2
             candidate = TinyByteTransformer(width, layers, heads, max_len)
-            delta = abs(parameter_count(candidate) - target_params)
-            if delta < best_delta:
-                best, best_delta = candidate, delta
+            params = parameter_count(candidate)
+            delta = abs(params - target_params)
+            candidate_is_valid = params >= target_params
+            best_is_valid = best_params >= target_params
+            if (
+                (candidate_is_valid and not best_is_valid)
+                or (candidate_is_valid == best_is_valid and delta < best_delta)
+            ):
+                best, best_delta, best_params = candidate, delta, params
     return best
 
 

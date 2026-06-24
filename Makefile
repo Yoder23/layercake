@@ -1,6 +1,13 @@
-.PHONY: test smoke-train smoke-transfer smoke-byte-patch smoke-infer benchmark docs-check rolling-demo rolling-smoke rolling-benchmark preview-demo preview-benchmark dominance-smoke verify verify-research verify-scale verify-scale15 verify-lossless verify-mobile-domain verify-general-frontier
+.PHONY: test ci-smoke smoke-train smoke-transfer smoke-byte-patch smoke-infer benchmark docs-check format rolling-demo rolling-smoke rolling-benchmark preview-demo preview-benchmark dominance-smoke receiver-replication-smoke northstar-replication-smoke verify verify-research verify-scale verify-scale15 verify-lossless verify-mobile-domain verify-general-frontier
 
 test:
+	pytest -q
+
+ci-smoke:
+	python -m layercake.rolling.cli --help
+	python scripts/demo_rolling_training.py --smoke
+	python scripts/demo_preview_guided_layercake_training.py --smoke
+	python scripts/benchmark_tier1_dominance.py --steps 4
 	pytest -q
 
 smoke-train:
@@ -43,12 +50,27 @@ dominance-smoke:
 	python scripts/benchmark_tier1_dominance.py --steps 4
 	python scripts/verify_tier1_dominance.py
 	python scripts/verify_tier1_local_frontier.py
+	python scripts/benchmark_cpu_mobile_proxy.py
+	python scripts/verify_mobile_cpu_result.py
+	python scripts/benchmark_domain_adaptation_dominance.py
+	python scripts/verify_domain_adaptation_dominance.py
+
+receiver-replication-smoke:
+	python scripts/replicate_receiver_frontier.py
+	python scripts/verify_receiver_frontier.py
+
+northstar-replication-smoke:
+	python scripts/replicate_northstar_15m.py
+	python scripts/verify_northstar_15m_replication.py
 
 verify:
 	python scripts/verify_northstar_mobile.py
 
 docs-check:
-	python -c "from pathlib import Path; required=['RUBRIC.md','BYTE_PATCH_LAYERCAKE.md','BENCHMARKS.md','ORCHESTRATION.md','TOKENIZER_FREE.md','ROADMAP.md','NEXT_STEPS.md','ROLLING_TRAINING.md','MODEL_COMMITS.md','RUBRIC_TRAINING.md','SEMANTIC_CI.md','ROLLBACK.md','BRANCHING_AND_CHERRYPICK.md','PREVIEW_GUIDED_TRAINING.md','SCALING_PROTOCOL.md','DOMINANCE_GATES.md']; assert all(Path(p).exists() for p in required)"
+	python -c "from pathlib import Path; required=['RUBRIC.md','BYTE_PATCH_LAYERCAKE.md','BENCHMARKS.md','ORCHESTRATION.md','TOKENIZER_FREE.md','ROADMAP.md','NEXT_STEPS.md','ROLLING_TRAINING.md','MODEL_COMMITS.md','RUBRIC_TRAINING.md','SEMANTIC_CI.md','ROLLBACK.md','BRANCHING_AND_CHERRYPICK.md','PREVIEW_GUIDED_TRAINING.md','SCALING_PROTOCOL.md','DOMINANCE_GATES.md','TRANSFORMER_BASELINES.md']; assert all(Path(p).exists() for p in required)"
+
+format:
+	python -m compileall layercake scripts
 
 verify-research:
 	python scripts/verify_research_gates.py

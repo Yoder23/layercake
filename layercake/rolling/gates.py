@@ -130,6 +130,18 @@ class SmokeTaskGate(MinMetricGate):
     pass
 
 
+class DominanceGate(Gate):
+    def __init__(self, name: str = "dominance", required: list[str] | None = None):
+        self.name = name
+        self.required = required or []
+
+    def run(self, context: dict) -> GateResult:
+        gates = _lookup_default(context, "dominance.gates", {})
+        required = self.required or sorted(gates)
+        failed = [gate for gate in required if not gates.get(gate, False)]
+        return GateResult(self.name, not failed, "failed_dominance_gates", len(failed), 0, "==", {"failed": failed})
+
+
 class ProtectedCapabilityGate(Gate):
     def __init__(self, name: str = "protected_capabilities", config_path: str = "rubrics/protected_capabilities.yaml"):
         self.name = name
@@ -164,16 +176,36 @@ def gate_from_config(config: dict) -> Gate:
     kind = config.get("type", "min_metric")
     name = config.get("name", config.get("metric", kind))
     metric = config.get("metric", "score")
-    if kind == "max_metric":
+    if kind in {"max_metric", "generic_max_metric"}:
         return MaxMetricGate(name, metric, config["threshold"])
+    if kind in {"min_metric", "generic_min_metric"}:
+        return MinMetricGate(name, metric, config.get("threshold", 0.0))
     if kind == "regression":
         return RegressionGate(name, metric, config.get("max_delta", 0.0))
-    if kind == "abi_hash":
+    if kind in {"abi_hash", "abi_hash_compatibility"}:
         return ABIHashCompatibilityGate(name)
-    if kind == "input_interface_hash":
+    if kind in {"input_interface_hash", "input_interface_compatibility"}:
         return InputInterfaceCompatibilityGate(name)
-    if kind == "byte_patch_hash":
+    if kind in {"byte_patch_hash", "byte_patch_compatibility"}:
         return BytePatchCompatibilityGate(name)
+    if kind == "abi_drift":
+        return ABIDriftGate(name, metric, config.get("threshold", config.get("max_delta", 0.0)))
+    if kind == "transfer_exactness":
+        return TransferExactnessGate(name, metric, config.get("threshold", 0.0))
+    if kind == "cross_host_exactness":
+        return CrossHostExactnessGate(name, metric, config.get("threshold", 0.0))
+    if kind == "quantization_degradation":
+        return QuantizationDegradationGate(name, metric, config.get("threshold", 0.0))
+    if kind == "latency_regression":
+        return LatencyRegressionGate(name, metric, config.get("max_delta", config.get("threshold", 0.0)))
+    if kind == "memory_regression":
+        return MemoryRegressionGate(name, metric, config.get("max_delta", config.get("threshold", 0.0)))
+    if kind == "byte_patch_compression":
+        return BytePatchCompressionGate(name, metric, config.get("threshold", 1.0))
+    if kind == "installed_vs_active_compute":
+        return InstalledVsActiveComputeGate(name, metric, config.get("threshold", 1.0))
+    if kind == "smoke_task":
+        return SmokeTaskGate(name, metric, config.get("threshold", 0.0))
     if kind == "time_to_metric":
         return TimeToMetricGate(name, metric, config.get("target", config.get("threshold", 0.0)), config.get("max_seconds", 60.0), config.get("max_steps"))
     if kind == "quality_per_step":
@@ -192,7 +224,9 @@ def gate_from_config(config: dict) -> Gate:
         return TransformerBaselineGate(name, metric, config.get("max_delta", 0.0))
     if kind == "protected_capabilities":
         return ProtectedCapabilityGate(name, config.get("config_path", "rubrics/protected_capabilities.yaml"))
-    return MinMetricGate(name, metric, config.get("threshold", 0.0))
+    if kind == "dominance":
+        return DominanceGate(name, config.get("required"))
+    raise ValueError(f"unknown gate type: {kind}")
 
 
 def run_gates(configs: list[dict], context: dict) -> list[GateResult]:

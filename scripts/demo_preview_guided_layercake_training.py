@@ -105,7 +105,8 @@ def run_demo(*, smoke=True, output="results/certificates/preview_guided_layercak
         model=model,
         parent_commit=initial,
         train_step=train_step,
-        metrics={"parent": {"bpb": before_bpb}, "bpb": before_bpb, "transformer": {"bpb": baseline["after_bpb"]}},
+        eval_fn=lambda: {"bpb": _bpb(model, batch)[0]},
+        metrics={"parent": {"bpb": before_bpb}, "transformer": {"bpb": baseline["after_bpb"]}},
         certificate_path=output,
     )
     after_bpb, _ = _bpb(model, batch)
@@ -129,7 +130,8 @@ def run_demo(*, smoke=True, output="results/certificates/preview_guided_layercak
         model=model,
         parent_commit=commit,
         train_step=bad_step,
-        metrics={"parent": {"bpb": after_bpb}, "bpb": after_bpb},
+        eval_fn=lambda: {"bpb": _bpb(model, batch)[0]},
+        metrics={"parent": {"bpb": after_bpb}},
         certificate_path="results/certificates/preview_guided_bad_stage.json",
     )
     report_path = write_training_diff_report(

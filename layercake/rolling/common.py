@@ -35,8 +35,10 @@ def load_structured(path: str | Path) -> dict:
 
         loaded = yaml.safe_load(text)
         return loaded or {}
-    except Exception:
-        return _simple_yaml(text)
+    except ImportError as exc:
+        raise RuntimeError(
+            "PyYAML is required for YAML rubrics. Install pyyaml or use JSON rubrics."
+        ) from exc
 
 
 def _simple_yaml(text: str) -> dict:

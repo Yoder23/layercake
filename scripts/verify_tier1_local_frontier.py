@@ -9,6 +9,7 @@ PROBES = {
     "474k": "results/dominance/tier1_local_474k_probe.json",
     "735k": "results/dominance/tier1_local_735k_probe.json",
     "1m": "results/dominance/tier1_local_1m_probe.json",
+    "2_7m": "results/dominance/tier1_local_27m_probe.json",
 }
 
 
@@ -31,11 +32,16 @@ def main() -> int:
     }
     result = {
         "status": "PASS" if passed.get("276k", False) else "FAIL",
-        "scope": "Local Tier-1-style scaling frontier. 276k currently passes; larger probes are retained as scaling blockers when present.",
+        "scope": "Local Tier-1-style scaling frontier. Probes are retained as pass/fail evidence for the scale ladder.",
         "available_probes": sorted(available),
         "passed": passed,
         "failures": failures,
-        "next_blocker": "Improve quality/printable generation while preserving CPU speed and trainable-parameter advantage at 474k+.",
+        "next_blocker": (
+            "Advance to 5M/15M/20M rematches with the empirical transition prior "
+            "and equal-or-larger matched transformer baselines."
+            if all(passed.values())
+            else "Fix the failed local probes before launching larger rematches."
+        ),
     }
     output = Path("results/dominance/tier1_local_frontier_certificate.json")
     output.parent.mkdir(parents=True, exist_ok=True)
