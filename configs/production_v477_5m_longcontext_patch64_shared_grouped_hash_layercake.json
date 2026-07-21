@@ -1,0 +1,15 @@
+{
+  "extends": "production_v454_5m_longcontext_patch64_persistent_exact_layercake.json",
+  "name": "production_v477_5m_longcontext_patch64_shared_grouped_hash_layercake",
+  "description": "Exact-parameter 5M candidate with a 304-wide shared eight-group GRU state and sparse byte memory.",
+  "model": {
+    "patch_prediction_mode": "radix_grouped_recurrent_hash",
+    "patch_generation_width": 304,
+    "patch_generation_heads": 8,
+    "patch_generation_ngram_buckets": 12826,
+    "patch_generation_persistent_context": true
+  },
+  "training": {
+    "out_dir": "runs_experiment/production_v477_5m_longcontext_patch64_shared_grouped_hash_layercake"
+  }
+}

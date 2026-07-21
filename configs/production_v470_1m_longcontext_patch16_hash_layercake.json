@@ -1,0 +1,21 @@
+{
+  "extends": "production_v443_1m_longcontext_layercake.json",
+  "name": "production_v470_1m_longcontext_patch16_hash_layercake",
+  "description": "Exact-parameter CPU-native candidate with 16-byte global cakes and sparse local memory.",
+  "model": {
+    "patch_size": 16,
+    "d_model": 168,
+    "heads": 8,
+    "max_patches": 497,
+    "local_width": 168,
+    "local_window": 16,
+    "patch_prediction_mode": "radix_hash",
+    "patch_generation_width": 128,
+    "patch_generation_bytes": 16,
+    "patch_generation_ngram_buckets": 4232
+  },
+  "training": {
+    "seq_len": 7952,
+    "out_dir": "runs_experiment/production_v470_1m_longcontext_patch16_hash_layercake"
+  }
+}

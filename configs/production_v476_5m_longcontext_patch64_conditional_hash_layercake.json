@@ -1,0 +1,11 @@
+{
+  "extends": "production_v475_5m_longcontext_patch64_recurrent_hash_layercake.json",
+  "name": "production_v476_5m_longcontext_patch64_conditional_hash_layercake",
+  "description": "Exact-parameter 5M CPU-gated candidate with a compact GRU, exact conditional byte transitions, and hashed four-byte memory.",
+  "model": {
+    "patch_prediction_mode": "radix_recurrent_conditional_hash"
+  },
+  "training": {
+    "out_dir": "runs_experiment/production_v476_5m_longcontext_patch64_conditional_hash_layercake"
+  }
+}

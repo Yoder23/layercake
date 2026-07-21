@@ -1,0 +1,14 @@
+{
+  "extends": "production_v465_1m_longcontext_patch64_hash_layercake.json",
+  "name": "production_v471_1m_longcontext_patch64_recurrent_hash_layercake",
+  "description": "Exact-parameter CPU-gated compact recurrent candidate with sparse multi-order byte memory.",
+  "model": {
+    "patch_prediction_mode": "radix_recurrent_hash",
+    "patch_generation_width": 71,
+    "patch_generation_ngram_buckets": 6926,
+    "patch_generation_persistent_context": true
+  },
+  "training": {
+    "out_dir": "runs_experiment/production_v471_1m_longcontext_patch64_recurrent_hash_layercake"
+  }
+}

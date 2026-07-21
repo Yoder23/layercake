@@ -1,0 +1,14 @@
+{
+  "extends": "production_v454_5m_longcontext_patch64_persistent_exact_layercake.json",
+  "name": "production_v475_5m_longcontext_patch64_recurrent_hash_layercake",
+  "description": "Exact-parameter 5M CPU-gated candidate with compact GRU and sparse multi-order byte memory.",
+  "model": {
+    "patch_prediction_mode": "radix_recurrent_hash",
+    "patch_generation_width": 199,
+    "patch_generation_ngram_buckets": 10171,
+    "patch_generation_persistent_context": true
+  },
+  "training": {
+    "out_dir": "runs_experiment/production_v475_5m_longcontext_patch64_recurrent_hash_layercake"
+  }
+}

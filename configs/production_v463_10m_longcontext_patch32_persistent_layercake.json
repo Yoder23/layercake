@@ -1,0 +1,16 @@
+{
+  "extends": "production_v456_10m_longcontext_patch64_persistent_layercake.json",
+  "name": "production_v463_10m_longcontext_patch32_persistent_layercake",
+  "description": "Exact 10M architectural revision with 32-byte cakes, twice-frequent global updates, and a wider persistent recurrent decoder.",
+  "model": {
+    "patch_size": 32,
+    "max_patches": 249,
+    "local_window": 32,
+    "patch_generation_bytes": 32,
+    "patch_generation_width": 496
+  },
+  "training": {
+    "seq_len": 7968,
+    "out_dir": "runs_experiment/production_v463_10m_longcontext_patch32_persistent_layercake"
+  }
+}

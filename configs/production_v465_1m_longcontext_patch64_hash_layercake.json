@@ -1,0 +1,14 @@
+{
+  "extends": "production_v446_1m_longcontext_patch64_localwide_layercake.json",
+  "name": "production_v465_1m_longcontext_patch64_hash_layercake",
+  "description": "Exact-parameter CPU-native candidate with parallel four-byte hashed local memory.",
+  "model": {
+    "patch_prediction_mode": "radix_hash",
+    "patch_generation_width": 168,
+    "patch_generation_ngram_buckets": 6656,
+    "patch_generation_persistent_context": false
+  },
+  "training": {
+    "out_dir": "runs_experiment/production_v465_1m_longcontext_patch64_hash_layercake"
+  }
+}

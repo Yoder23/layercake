@@ -1,0 +1,19 @@
+{
+  "extends": "production_v447_1m_longcontext_patch64_exact_layercake.json",
+  "name": "production_v448_5m_longcontext_patch64_layercake",
+  "description": "Exact 5M long-context LayerCake rung with independently optimized CUDA microbatch and equal raw-byte exposure.",
+  "model": {
+    "d_model": 328,
+    "layers": 3,
+    "heads": 8,
+    "local_width": 328,
+    "patch_generation_width": 355
+  },
+  "training": {
+    "micro_batch_size": 32,
+    "steps": 1500,
+    "warmup_steps": 50,
+    "lr_decay_steps": 1500,
+    "out_dir": "runs_experiment/production_v448_5m_longcontext_patch64_layercake"
+  }
+}

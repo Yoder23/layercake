@@ -1,0 +1,14 @@
+{
+  "extends": "production_v442_1m_radix_dilated_layercake.json",
+  "name": "production_v492_1m_radix_attention_layercake",
+  "description": "Matched 1M hierarchy screen with a parallel causal local byte-attention cake and exact radix likelihood.",
+  "model": {
+    "patch_prediction_mode": "radix_attention",
+    "patch_generation_width": 80,
+    "patch_generation_layers": 2,
+    "patch_generation_heads": 4
+  },
+  "training": {
+    "out_dir": "runs_experiment/production_v492_1m_radix_attention_layercake"
+  }
+}

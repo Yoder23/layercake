@@ -1,0 +1,13 @@
+{
+  "extends": "production_v492_1m_radix_attention_layercake.json",
+  "name": "production_v493_1m_wide_single_radix_attention_layercake",
+  "description": "Matched 1M hierarchy screen with one wider full-prefix causal local byte-attention cake for higher throughput.",
+  "model": {
+    "patch_generation_width": 108,
+    "patch_generation_layers": 1,
+    "patch_generation_heads": 4
+  },
+  "training": {
+    "out_dir": "runs_experiment/production_v493_1m_wide_single_radix_attention_layercake"
+  }
+}

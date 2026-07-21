@@ -96,7 +96,6 @@ def _load_bytes_from_files(
             for block in _iter_file_payload(path, read_block_bytes=read_block_bytes):
                 made_progress = True
                 payload.extend(block)
-                payload.append(10)
                 if len(payload) >= max_bytes:
                     return bytes(payload[:max_bytes])
         if not made_progress:

@@ -1,0 +1,16 @@
+{
+  "extends": "production_v402_25m_integrated_context_cake_profile.json",
+  "name": "production_v403_25m_integrated_context_cake_batch_profile",
+  "description": "Large-batch GPU saturation profile for the exact-25M integrated context-cake architecture.",
+  "training": {
+    "micro_batch_size": 256,
+    "steps": 8,
+    "warmup_steps": 2,
+    "lr_decay_steps": 8,
+    "log_interval": 1,
+    "save_interval": 8,
+    "eval_batches": 1,
+    "initialize_byte_priors_from_corpus": false,
+    "out_dir": "runs_experiment/production_v403_25m_integrated_context_cake_batch_profile"
+  }
+}

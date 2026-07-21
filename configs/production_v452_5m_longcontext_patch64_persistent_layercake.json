@@ -1,0 +1,11 @@
+{
+  "extends": "production_v451_5m_longcontext_patch64_layercake_batch32_scaledlr.json",
+  "name": "production_v452_5m_longcontext_patch64_persistent_layercake",
+  "description": "5M architectural screen: inject global cake context into every recurrent byte step so conditioning cannot fade across a 64-byte cake.",
+  "model": {
+    "patch_generation_persistent_context": true
+  },
+  "training": {
+    "out_dir": "runs_experiment/production_v452_5m_longcontext_patch64_persistent_layercake"
+  }
+}

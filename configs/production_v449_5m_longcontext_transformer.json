@@ -1,0 +1,18 @@
+{
+  "extends": "production_v444_1m_longcontext_transformer.json",
+  "name": "production_v449_5m_longcontext_transformer",
+  "description": "Exact 5M long-context tokenizer-Transformer comparator with independently optimized CUDA microbatch and equal raw-byte exposure.",
+  "model": {
+    "d_model": 288,
+    "layers": 2,
+    "heads": 8
+  },
+  "training": {
+    "micro_batch_size": 8,
+    "steps": 6000,
+    "warmup_steps": 200,
+    "lr_decay_steps": 6000,
+    "save_interval": 6000,
+    "out_dir": "runs_experiment/production_v449_5m_longcontext_transformer"
+  }
+}

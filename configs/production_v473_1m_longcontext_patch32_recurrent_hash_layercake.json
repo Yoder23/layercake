@@ -1,0 +1,14 @@
+{
+  "extends": "production_v443_1m_longcontext_layercake.json",
+  "name": "production_v473_1m_longcontext_patch32_recurrent_hash_layercake",
+  "description": "Exact-parameter CPU-native 32-byte cake with compact GRU and sparse multi-order memory.",
+  "model": {
+    "patch_prediction_mode": "radix_recurrent_hash",
+    "patch_generation_width": 64,
+    "patch_generation_ngram_buckets": 3422,
+    "patch_generation_persistent_context": true
+  },
+  "training": {
+    "out_dir": "runs_experiment/production_v473_1m_longcontext_patch32_recurrent_hash_layercake"
+  }
+}

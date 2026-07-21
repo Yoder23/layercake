@@ -1,0 +1,14 @@
+{
+  "extends": "production_v479_25m_longcontext_patch32_persistent_batch8_layercake.json",
+  "name": "production_v480_25m_contextmatched_patch32_persistent_layercake",
+  "description": "25M recurrent patch LayerCake with an 896-byte training window matched to the broad Transformer's measured raw bytes per sequence.",
+  "training": {
+    "seq_len": 896,
+    "micro_batch_size": 128,
+    "steps": 3059,
+    "warmup_steps": 102,
+    "lr_decay_steps": 3059,
+    "save_interval": 3059,
+    "out_dir": "runs_experiment/production_v480_25m_contextmatched_patch32_persistent_layercake"
+  }
+}

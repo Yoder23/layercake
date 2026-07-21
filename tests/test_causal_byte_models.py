@@ -7,6 +7,26 @@ from layercake.causal_byte_models import (
     CausalBytePatchLM,
     FusedModernCausalBlock,
     MixtureOfDepthRefinement,
+    ParallelCausalPatchHead,
+    RadixCausalPatchHead,
+    RadixCumsumPatchHead,
+    RadixCumsumHashPatchHead,
+    RadixAttentionPatchHead,
+    RadixConvPatchHead,
+    RadixDilatedConvPatchHead,
+    RadixDepthwiseHashPatchHead,
+    RadixGroupedRecurrentHashPatchHead,
+    RadixHashPatchHead,
+    RadixLowRankRecurrentHashPatchHead,
+    RadixNgramPatchHead,
+    RadixPrefixPatchHead,
+    RadixRecurrentPatchHead,
+    RadixRecurrentConditionalHashPatchHead,
+    RadixRecurrentHashPatchHead,
+    RadixRotaryHashPatchHead,
+    RadixScanPatchHead,
+    RadixSimpleRecurrentHashPatchHead,
+    RadixWindowPatchHead,
     SelectiveStatePatchBlock,
     SparseStatePatchBlock,
     Top1RoutedCakeBlock,
@@ -1732,3 +1752,818 @@ def test_domain_cake_prediction_can_train_one_selected_context():
         parameter.grad is None
         for parameter in model.core[1].experts[0].parameters()
     )
+
+
+def test_parallel_causal_patch_head_is_teacher_forced_causal():
+    torch.manual_seed(913)
+    embedding = torch.nn.Embedding(256, 8)
+    head = ParallelCausalPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    logits = torch.stack(head(context, target), dim=-2)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+
+    assert logits.shape == (2, 3, 8, 256)
+    assert torch.equal(logits[..., :5, :], changed_logits[..., :5, :])
+
+
+def test_parallel_causal_patch_greedy_matches_teacher_forced_path():
+    torch.manual_seed(914)
+    embedding = torch.nn.Embedding(256, 8)
+    head = ParallelCausalPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+    ).eval()
+    context = torch.randn(2, 16)
+
+    generated = head.greedy(context)
+    logits = torch.stack(head(context, generated), dim=-2)
+
+    assert torch.equal(generated, logits.argmax(dim=-1))
+
+
+def test_parallel_causal_model_trains_all_patch_offsets():
+    model = CausalBytePatchLM(
+        patch_size=8,
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=2,
+        shared_cake_layers=1,
+        heads=4,
+        max_patches=8,
+        direct_global_context=True,
+        local_decoder="routed_window_transformer",
+        local_layers=0,
+        local_width=32,
+        local_window=8,
+        modern_blocks=True,
+        fused_attention=True,
+        routed_cake_experts=5,
+        default_cake_route=0,
+        patch_prediction=True,
+        patch_prediction_mode="parallel_causal",
+        patch_prediction_context="global",
+        patch_generation_width=24,
+    )
+    inputs = torch.randint(0, 256, (2, 32))
+
+    predictions, targets = model.domain_cake_patch_predictions(inputs)
+    logits = torch.stack(predictions, dim=2)
+    loss = torch.nn.functional.cross_entropy(
+        logits.reshape(-1, 256),
+        targets[:, : logits.shape[1], :].reshape(-1),
+    )
+    loss.backward()
+
+    assert logits.shape == (2, 4, 8, 256)
+    assert model.patch_generator.output.weight.grad is not None
+    assert model.core[0].qkv.weight.grad is not None
+    assert model.core[1].experts[0].qkv.weight.grad is not None
+    assert model.core[1].experts[1].qkv.weight.grad is None
+
+
+def test_radix_patch_loss_matches_expanded_byte_log_probability():
+    torch.manual_seed(915)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixCausalPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256),
+        target.reshape(-1),
+        reduction="none",
+    ).view_as(target)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+
+
+def test_radix_patch_greedy_matches_expanded_distribution():
+    torch.manual_seed(916)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixCausalPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+    ).eval()
+    context = torch.randn(2, 16)
+
+    generated = head.greedy(context)
+    expanded = torch.stack(head(context, generated), dim=-2)
+
+    assert torch.equal(generated, expanded.argmax(dim=-1))
+
+
+def test_radix_model_generation_aligned_loss_trains_active_route():
+    model = CausalBytePatchLM(
+        patch_size=8,
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=2,
+        shared_cake_layers=1,
+        heads=4,
+        max_patches=8,
+        direct_global_context=True,
+        local_decoder="routed_window_transformer",
+        local_layers=0,
+        local_width=32,
+        local_window=8,
+        modern_blocks=True,
+        fused_attention=True,
+        routed_cake_experts=5,
+        default_cake_route=0,
+        patch_prediction=True,
+        patch_prediction_mode="radix_causal",
+        patch_prediction_context="global",
+        patch_generation_width=24,
+    )
+    inputs = torch.randint(0, 256, (2, 32))
+
+    loss = model.domain_cake_patch_predictions(inputs, loss_only=True)
+    loss.backward()
+
+    assert loss.ndim == 0
+    assert torch.isfinite(loss)
+    assert model.patch_generator.high_head.weight.grad is not None
+    assert model.patch_generator.low_head.weight.grad is not None
+    assert model.core[0].qkv.weight.grad is not None
+    assert model.core[1].experts[0].qkv.weight.grad is not None
+    assert model.core[1].experts[1].qkv.weight.grad is None
+
+
+def test_radix_recurrent_loss_is_exact_and_strictly_causal():
+    torch.manual_seed(917)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixRecurrentPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256),
+        target.reshape(-1),
+        reduction="none",
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+
+
+@pytest.mark.parametrize(
+    ("persistent_context", "ngram_buckets", "persistent_output_rank"),
+    [(False, 0, 0), (True, 0, 0), (True, 64, 0), (True, 0, 4)],
+)
+def test_radix_recurrent_greedy_matches_teacher_forced_distribution(
+    persistent_context,
+    ngram_buckets,
+    persistent_output_rank,
+):
+    torch.manual_seed(918)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixRecurrentPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        ngram_buckets=ngram_buckets,
+        persistent_context=persistent_context,
+        persistent_output_rank=persistent_output_rank,
+    ).eval()
+    context = torch.randn(2, 16)
+
+    generated = head.greedy(context)
+    expanded = torch.stack(head(context, generated), dim=-2)
+
+    assert torch.equal(generated, expanded.argmax(dim=-1))
+
+
+def test_radix_recurrent_hash_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(933)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixRecurrentHashPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        ngram_buckets=512,
+        persistent_context=True,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256), target.reshape(-1), reduction="none"
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_recurrent_conditional_hash_is_exact_and_generation_aligned():
+    torch.manual_seed(936)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixRecurrentConditionalHashPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        ngram_buckets=2688,
+        persistent_context=True,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256), target.reshape(-1), reduction="none"
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_low_rank_recurrent_hash_is_exact_and_generation_aligned():
+    torch.manual_seed(937)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixLowRankRecurrentHashPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        ngram_buckets=512,
+        persistent_context=True,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256), target.reshape(-1), reduction="none"
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_simple_recurrent_hash_is_generation_aligned():
+    torch.manual_seed(934)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixSimpleRecurrentHashPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        ngram_buckets=512,
+        persistent_context=True,
+    ).eval()
+    context = torch.randn(2, 16)
+    generated = head.greedy(context)
+    expanded = torch.stack(head(context, generated), dim=-2)
+
+    assert torch.equal(generated, expanded.argmax(dim=-1))
+
+
+def test_radix_grouped_recurrent_hash_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(935)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixGroupedRecurrentHashPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        ngram_buckets=512,
+        groups=4,
+        persistent_context=True,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256), target.reshape(-1), reduction="none"
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_scan_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(923)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixScanPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256),
+        target.reshape(-1),
+        reduction="none",
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_scan_hash_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(932)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixScanPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        ngram_buckets=512,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256), target.reshape(-1), reduction="none"
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_attention_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(924)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixAttentionPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        layers=2,
+        heads=4,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256),
+        target.reshape(-1),
+        reduction="none",
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_window_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(925)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixWindowPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256),
+        target.reshape(-1),
+        reduction="none",
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_prefix_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(920)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixPrefixPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256),
+        target.reshape(-1),
+        reduction="none",
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_cumsum_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(927)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixCumsumPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256),
+        target.reshape(-1),
+        reduction="none",
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_conv_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(921)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixConvPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256),
+        target.reshape(-1),
+        reduction="none",
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_dilated_conv_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(926)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixDilatedConvPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        layers=3,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256),
+        target.reshape(-1),
+        reduction="none",
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_ngram_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(922)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixNgramPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        ngram_buckets=32,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256),
+        target.reshape(-1),
+        reduction="none",
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_hash_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(928)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixHashPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        ngram_buckets=512,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256),
+        target.reshape(-1),
+        reduction="none",
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_cumsum_hash_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(929)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixCumsumHashPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        ngram_buckets=512,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256), target.reshape(-1), reduction="none"
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.equal(expanded[..., :5, :], changed_logits[..., :5, :])
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_depthwise_hash_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(930)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixDepthwiseHashPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        ngram_buckets=512,
+        layers=3,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256), target.reshape(-1), reduction="none"
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.allclose(
+        expanded[..., :5, :], changed_logits[..., :5, :], atol=1e-6, rtol=1e-6
+    )
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_radix_rotary_hash_is_exact_causal_and_generation_aligned():
+    torch.manual_seed(931)
+    embedding = torch.nn.Embedding(256, 8)
+    head = RadixRotaryHashPatchHead(
+        context_width=16,
+        byte_embedding=embedding,
+        hidden_width=24,
+        patch_size=8,
+        ngram_buckets=512,
+    ).eval()
+    context = torch.randn(2, 3, 16)
+    target = torch.randint(0, 256, (2, 3, 8))
+    changed = target.clone()
+    changed[..., 4:] = torch.randint(0, 256, changed[..., 4:].shape)
+
+    radix_loss = head.loss(context, target, reduction="none")
+    expanded = torch.stack(head(context, target), dim=-2)
+    expanded_loss = torch.nn.functional.nll_loss(
+        expanded.reshape(-1, 256), target.reshape(-1), reduction="none"
+    ).view_as(target)
+    changed_logits = torch.stack(head(context, changed), dim=-2)
+    generated = head.greedy(context[:, 0])
+    generated_logits = torch.stack(head(context[:, 0], generated), dim=-2)
+
+    assert torch.allclose(radix_loss, expanded_loss, atol=1e-6, rtol=1e-6)
+    assert torch.allclose(
+        expanded[..., :5, :], changed_logits[..., :5, :], atol=1e-6, rtol=1e-6
+    )
+    assert torch.equal(generated, generated_logits.argmax(dim=-1))
+
+
+def test_patch_generator_only_radix_recurrent_trains_the_full_active_core():
+    model = CausalBytePatchLM(
+        patch_size=8,
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=2,
+        heads=4,
+        max_patches=8,
+        direct_global_context=True,
+        local_decoder="patch_generator_only",
+        modern_blocks=True,
+        fused_attention=True,
+        patch_prediction=True,
+        patch_prediction_mode="radix_recurrent",
+        patch_prediction_context="global",
+        patch_generation_width=24,
+    )
+    inputs = torch.randint(0, 256, (2, 32))
+
+    loss = model.domain_cake_patch_predictions(inputs, loss_only=True)
+    loss.backward()
+
+    assert loss.ndim == 0
+    assert torch.isfinite(loss)
+    assert model.patch_generator.recurrent.weight_hh_l0.grad is not None
+    assert model.patch_generator.high_head.weight.grad is not None
+    assert model.patch_generator.low_head.weight.grad is not None
+    assert model.core[0].qkv.weight.grad is not None
+    assert model.to_abi[0].weight.grad is not None
+    assert model.from_abi.weight.grad is not None
+    with pytest.raises(RuntimeError, match="generation-aligned patch loss"):
+        model(inputs)
+
+
+def test_generator_native_domain_brick_changes_the_training_path():
+    torch.manual_seed(919)
+    model = CausalBytePatchLM(
+        patch_size=8,
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=1,
+        heads=4,
+        max_patches=8,
+        local_decoder="patch_generator_only",
+        modern_blocks=True,
+        fused_attention=True,
+        patch_prediction=True,
+        patch_prediction_mode="radix_recurrent",
+        patch_prediction_context="global",
+        patch_generation_width=24,
+    )
+    brick = torch.nn.Linear(16, 16, bias=False)
+    inputs = torch.randint(0, 256, (2, 32))
+
+    base_loss = model.domain_cake_patch_predictions(inputs, loss_only=True)
+    brick_loss = model.domain_cake_patch_predictions(
+        inputs,
+        loss_only=True,
+        brick=brick,
+    )
+    brick_loss.backward()
+
+    assert not torch.equal(base_loss, brick_loss)
+    assert brick.weight.grad is not None

@@ -1,0 +1,15 @@
+{
+  "extends": "production_v445_1m_longcontext_patch64_layercake.json",
+  "name": "production_v446_1m_longcontext_patch64_localwide_layercake",
+  "description": "64-byte cake ablation reallocating the 1M budget from global width to the causal local cake.",
+  "model": {
+    "d_model": 144,
+    "layers": 2,
+    "heads": 8,
+    "local_width": 144,
+    "patch_generation_width": 240
+  },
+  "training": {
+    "out_dir": "runs_experiment/production_v446_1m_longcontext_patch64_localwide_layercake"
+  }
+}

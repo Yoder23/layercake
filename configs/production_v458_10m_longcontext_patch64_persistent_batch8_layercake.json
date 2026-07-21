@@ -1,0 +1,15 @@
+{
+  "extends": "production_v456_10m_longcontext_patch64_persistent_layercake.json",
+  "name": "production_v458_10m_longcontext_patch64_persistent_batch8_layercake",
+  "description": "10M quality revision with identical parameters and byte exposure, twice the optimizer updates, and linearly scaled learning rate.",
+  "training": {
+    "micro_batch_size": 8,
+    "steps": 6000,
+    "lr": 0.001,
+    "min_lr": 0.0001,
+    "warmup_steps": 200,
+    "lr_decay_steps": 6000,
+    "save_interval": 6000,
+    "out_dir": "runs_experiment/production_v458_10m_longcontext_patch64_persistent_batch8_layercake"
+  }
+}

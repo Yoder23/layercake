@@ -1,0 +1,22 @@
+{
+  "extends": "production_v443_1m_longcontext_layercake.json",
+  "name": "production_v445_1m_longcontext_patch64_layercake",
+  "description": "Exact-parameter 64-byte cake candidate: half-length global sequence with exact causal scoring of all 7936 target bytes.",
+  "model": {
+    "patch_size": 64,
+    "d_byte": 24,
+    "d_model": 160,
+    "d_abi": 64,
+    "layers": 2,
+    "heads": 8,
+    "max_patches": 125,
+    "local_width": 160,
+    "local_window": 64,
+    "patch_generation_width": 136,
+    "patch_generation_bytes": 64
+  },
+  "training": {
+    "seq_len": 8000,
+    "out_dir": "runs_experiment/production_v445_1m_longcontext_patch64_layercake"
+  }
+}

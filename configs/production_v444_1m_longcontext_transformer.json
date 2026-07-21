@@ -1,0 +1,42 @@
+{
+  "name": "production_v444_1m_longcontext_transformer",
+  "description": "Exact-parameter long-context tokenizer-Transformer scratch-training comparator for v443.",
+  "tokenizer": {
+    "vocab_size": 4096,
+    "model_type": "bpe",
+    "byte_fallback": true
+  },
+  "model": {
+    "d_model": 76,
+    "layers": 3,
+    "heads": 4,
+    "ff_mult": 4,
+    "dropout": 0.0
+  },
+  "training": {
+    "device": "cuda",
+    "seed": 24001,
+    "matmul_precision": "high",
+    "seq_len": 2523,
+    "micro_batch_size": 16,
+    "grad_accum_steps": 1,
+    "steps": 3000,
+    "lr": 0.0006,
+    "min_lr": 0.00006,
+    "warmup_steps": 100,
+    "lr_decay_steps": 3000,
+    "weight_decay": 0.01,
+    "log_interval": 100,
+    "save_interval": 3000,
+    "save_optimizer": false,
+    "metrics_path": "training_metrics.json",
+    "corpus_bytes": 24000000,
+    "eval_bytes": 1000000,
+    "eval_batches": 16,
+    "read_block_bytes": 1048576,
+    "include_suffixes": [".bin"],
+    "data_roots": ["./runs_experiment/production_v24_corpus/train.bin"],
+    "eval_data_roots": ["./runs_experiment/production_v24_corpus/eval.bin"],
+    "out_dir": "runs_experiment/production_v444_1m_longcontext_transformer"
+  }
+}

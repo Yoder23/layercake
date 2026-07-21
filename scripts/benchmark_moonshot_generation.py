@@ -10,6 +10,7 @@ import time
 
 import sentencepiece as spm
 import torch
+import torch.nn.functional as F
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT = SCRIPT_DIR.parents[0]
@@ -149,15 +150,16 @@ def _generate_layercake_patch_prediction_method(
     ids = list(prompt_bytes)
     patch_size = int(getattr(model, "patch_size", 2))
     seq = int(model.patch_pos.num_embeddings * patch_size)
+    ctx = ids[-seq:]
+    if len(ctx) % patch_size:
+        ctx = ([ord(" ")] * (patch_size - (len(ctx) % patch_size))) + ctx
+    x = torch.tensor([ctx], dtype=torch.long, device=device)
+    state = model.begin_patch_prediction_cached_generation(x)
     if device.type == "cuda":
         torch.cuda.synchronize()
     started = time.perf_counter()
     while len(ids) - len(prompt_bytes) < max_new_bytes:
-        ctx = ids[-seq:]
-        if len(ctx) % patch_size:
-            ctx = ([ord(" ")] * (patch_size - (len(ctx) % patch_size))) + ctx
-        x = torch.tensor([ctx], dtype=torch.long, device=device)
-        generated = model.generate_next_patch(x)
+        generated = model.cached_patch_prediction_step(state)
         for byte in generated[0].detach().cpu().tolist():
             ids.append(int(byte))
             if len(ids) - len(prompt_bytes) >= max_new_bytes:
@@ -186,9 +188,43 @@ def _generate_layercake(
     model = _build_model(model_cfg, device)
     model.load_state_dict(checkpoint["model"], strict=True)
     model.eval()
+    if (
+        device.type == "cuda"
+        and bool(getattr(model, "patch_prediction", False))
+        and hasattr(model, "prepare_patch_generator_cuda_graph")
+    ):
+        model.prepare_patch_generator_cuda_graph(batch_size=1)
     patch_size = int(getattr(model, "patch_size", 2))
     prompt_bytes = list(prompt.encode("utf-8", errors="replace"))
-    if generation_mode == "patch_prediction":
+    if generation_mode == "patch_prediction" or (
+        bool(getattr(model, "patch_prediction", False))
+        and getattr(model, "patch_prediction_mode", "")
+        in {
+            "autoregressive",
+            "parallel_causal",
+            "radix_attention",
+            "radix_causal",
+            "radix_cumsum",
+            "radix_cumsum_hash",
+            "radix_conv",
+            "radix_depthwise_hash",
+            "radix_dilated_conv",
+            "radix_hash",
+            "radix_grouped_recurrent_hash",
+            "radix_ngram",
+            "radix_prefix",
+            "radix_low_rank_recurrent_hash",
+            "radix_recurrent",
+            "radix_recurrent_conditional_hash",
+            "radix_recurrent_hash",
+            "radix_recurrent_ngram",
+            "radix_rotary_hash",
+            "radix_scan",
+            "radix_scan_hash",
+            "radix_simple_recurrent_hash",
+            "radix_window",
+        }
+    ):
         return _generate_layercake_patch_prediction_method(
             model,
             prompt_bytes,
@@ -553,6 +589,112 @@ def _generate_layercake_batch(
     return None
 
 
+def _split_attention_projection(
+    layer: torch.nn.TransformerEncoderLayer,
+    hidden: torch.Tensor,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    projection = F.linear(
+        hidden,
+        layer.self_attn.in_proj_weight,
+        layer.self_attn.in_proj_bias,
+    )
+    query, key, value = projection.chunk(3, dim=-1)
+    heads = int(layer.self_attn.num_heads)
+    head_width = query.shape[-1] // heads
+
+    def shaped(tensor: torch.Tensor) -> torch.Tensor:
+        return tensor.view(
+            tensor.shape[0], tensor.shape[1], heads, head_width
+        ).transpose(1, 2)
+
+    return shaped(query), shaped(key), shaped(value)
+
+
+def _attention_output(
+    layer: torch.nn.TransformerEncoderLayer,
+    query: torch.Tensor,
+    key: torch.Tensor,
+    value: torch.Tensor,
+    *,
+    is_causal: bool,
+) -> torch.Tensor:
+    attended = F.scaled_dot_product_attention(
+        query,
+        key,
+        value,
+        dropout_p=0.0,
+        is_causal=is_causal,
+    )
+    attended = attended.transpose(1, 2).reshape(
+        attended.shape[0], attended.shape[2], -1
+    )
+    return layer.self_attn.out_proj(attended)
+
+
+def _transformer_feed_forward(
+    layer: torch.nn.TransformerEncoderLayer,
+    hidden: torch.Tensor,
+) -> torch.Tensor:
+    return layer.linear2(layer.activation(layer.linear1(hidden)))
+
+
+@torch.inference_mode()
+def _prefill_bpe_cache(
+    model: BPETokenTransformerLM,
+    tokens: torch.Tensor,
+) -> tuple[torch.Tensor, list[tuple[torch.Tensor, torch.Tensor]]]:
+    positions = torch.arange(tokens.shape[1], device=tokens.device)
+    hidden = model.emb(tokens) + model.pos(positions)[None]
+    caches: list[tuple[torch.Tensor, torch.Tensor]] = []
+    for layer in model.core.layers:
+        normalized = layer.norm1(hidden)
+        query, key, value = _split_attention_projection(layer, normalized)
+        hidden = hidden + _attention_output(
+            layer,
+            query,
+            key,
+            value,
+            is_causal=True,
+        )
+        hidden = hidden + _transformer_feed_forward(
+            layer,
+            layer.norm2(hidden),
+        )
+        caches.append((key, value))
+    logits = model.head(model.norm(hidden[:, -1]))
+    return logits, caches
+
+
+@torch.inference_mode()
+def _decode_bpe_cache(
+    model: BPETokenTransformerLM,
+    token: torch.Tensor,
+    caches: list[tuple[torch.Tensor, torch.Tensor]],
+    position: int,
+) -> tuple[torch.Tensor, list[tuple[torch.Tensor, torch.Tensor]]]:
+    hidden = model.emb(token) + model.pos.weight[position][None, None]
+    updated: list[tuple[torch.Tensor, torch.Tensor]] = []
+    for layer, (cached_key, cached_value) in zip(model.core.layers, caches):
+        normalized = layer.norm1(hidden)
+        query, key, value = _split_attention_projection(layer, normalized)
+        key = torch.cat([cached_key, key], dim=2)
+        value = torch.cat([cached_value, value], dim=2)
+        hidden = hidden + _attention_output(
+            layer,
+            query,
+            key,
+            value,
+            is_causal=False,
+        )
+        hidden = hidden + _transformer_feed_forward(
+            layer,
+            layer.norm2(hidden),
+        )
+        updated.append((key, value))
+    logits = model.head(model.norm(hidden[:, -1]))
+    return logits, updated
+
+
 @torch.inference_mode()
 def _generate_bpe(
     checkpoint: dict,
@@ -584,19 +726,40 @@ def _generate_bpe(
     original_text = tokenizer.decode(ids)
     generated = torch.tensor(ids, dtype=torch.long, device=device).unsqueeze(0)
     continuation = ""
+    context = generated[:, -model.pos.num_embeddings :]
+    cached_logits, caches = _prefill_bpe_cache(model, context)
+    reference_logits = model(context)[0, -1]
+    cache_error = float(
+        (cached_logits[0] - reference_logits).abs().max().detach().cpu()
+    )
+    if cache_error > 2e-4:
+        raise RuntimeError(
+            f"Transformer KV-cache parity failed: max_abs_error={cache_error}"
+        )
+    position = int(context.shape[1])
     if device.type == "cuda":
         torch.cuda.synchronize()
     started = time.perf_counter()
     while len(continuation.encode("utf-8", errors="replace")) < max_new_bytes:
-        context = generated[:, -model.pos.num_embeddings :]
-        logits = model(context)[0, -1]
-        next_token = _pick_next(logits, generated[0].tolist(), no_repeat_ngram)
-        generated = torch.cat(
-            [generated, torch.tensor([[next_token]], dtype=torch.long, device=device)],
-            dim=1,
+        next_token = _pick_next(
+            cached_logits[0], generated[0].tolist(), no_repeat_ngram
         )
+        token = torch.tensor([[next_token]], dtype=torch.long, device=device)
+        generated = torch.cat([generated, token], dim=1)
         decoded = tokenizer.decode(generated[0].tolist())
         continuation = decoded[len(original_text) :]
+        if position >= model.pos.num_embeddings:
+            context = generated[:, -model.pos.num_embeddings :]
+            cached_logits, caches = _prefill_bpe_cache(model, context)
+            position = int(context.shape[1])
+        else:
+            cached_logits, caches = _decode_bpe_cache(
+                model,
+                token,
+                caches,
+                position,
+            )
+            position += 1
     if device.type == "cuda":
         torch.cuda.synchronize()
     elapsed = time.perf_counter() - started
@@ -614,6 +777,13 @@ def main() -> int:
     parser.add_argument("--cpu-threads", type=int, default=1)
     parser.add_argument("--max-new-bytes", type=int, default=128)
     parser.add_argument("--no-repeat-ngram", type=int, default=8)
+    parser.add_argument("--prompt-prefix-file", type=Path)
+    parser.add_argument("--prompt-prefix-bytes", type=int, default=0)
+    parser.add_argument(
+        "--radix-factorwise-greedy",
+        action="store_true",
+        help="Use ancestral high-then-low greedy decoding for radix heads.",
+    )
     args = parser.parse_args()
 
     if args.device == "cuda" and not torch.cuda.is_available():
@@ -622,6 +792,19 @@ def main() -> int:
     if device.type == "cpu":
         torch.set_num_threads(args.cpu_threads)
     checkpoint = torch.load(args.checkpoint, map_location="cpu")
+    if args.radix_factorwise_greedy and args.model_kind == "layercake":
+        checkpoint["model_config"] = dict(checkpoint["model_config"])
+        checkpoint["model_config"]["patch_generation_joint_greedy"] = False
+
+    prompts = list(PROMPTS)
+    if args.prompt_prefix_bytes > 0:
+        if args.prompt_prefix_file is None:
+            raise ValueError("--prompt-prefix-file is required with prefix bytes")
+        prefix_payload = args.prompt_prefix_file.read_bytes()[
+            : args.prompt_prefix_bytes
+        ]
+        prefix_text = prefix_payload.decode("utf-8", errors="replace")
+        prompts = [prefix_text + prompt for prompt in prompts]
 
     rows = []
     total_bytes = 0
@@ -631,7 +814,7 @@ def main() -> int:
     if args.model_kind == "layercake":
         batched_layercake = _generate_layercake_batch(
             checkpoint,
-            PROMPTS,
+            prompts,
             device=device,
             max_new_bytes=args.max_new_bytes,
             no_repeat_ngram=args.no_repeat_ngram,
@@ -639,10 +822,10 @@ def main() -> int:
     if batched_layercake is not None:
         texts, batch_seconds = batched_layercake
         per_sample_seconds = batch_seconds / max(len(texts), 1)
-        prompt_text_pairs = list(zip(PROMPTS, texts, [per_sample_seconds] * len(texts)))
+        prompt_text_pairs = list(zip(prompts, texts, [per_sample_seconds] * len(texts)))
     else:
         prompt_text_pairs = []
-        for prompt in PROMPTS:
+        for prompt in prompts:
             text, seconds = _generate_bpe(
                     checkpoint,
                     prompt,
@@ -682,6 +865,10 @@ def main() -> int:
         "cpu_threads": args.cpu_threads if device.type == "cpu" else None,
         "max_new_bytes": args.max_new_bytes,
         "no_repeat_ngram": args.no_repeat_ngram,
+        "prompt_prefix_file": (
+            str(args.prompt_prefix_file) if args.prompt_prefix_file else None
+        ),
+        "prompt_prefix_bytes": int(args.prompt_prefix_bytes),
         "metrics": {
             "generation_bytes_per_second": total_bytes / max(total_seconds, 1e-12),
             "quality_score": sum(quality_scores) / max(len(quality_scores), 1),

@@ -1,0 +1,29 @@
+{
+  "extends": "production_v464_10m_longcontext_patch32_persistent_batch8_layercake.json",
+  "name": "production_v479_25m_longcontext_patch32_persistent_batch8_layercake",
+  "description": "Matched 25M scale-up of the shared-span-winning recurrent patch LayerCake with the 64-dimensional portable ABI held fixed.",
+  "model": {
+    "d_model": 512,
+    "d_abi": 64,
+    "layers": 7,
+    "heads": 8,
+    "local_width": 512,
+    "patch_generation_width": 812
+  },
+  "training": {
+    "micro_batch_size": 8,
+    "steps": 5330,
+    "warmup_steps": 178,
+    "lr_decay_steps": 5330,
+    "save_interval": 5330,
+    "corpus_bytes": 392493612,
+    "read_block_bytes": 24000000,
+    "data_roots": [
+      "./runs_experiment/production_v392_corpus/train.bin"
+    ],
+    "eval_data_roots": [
+      "./runs_experiment/production_v24_corpus/eval.bin"
+    ],
+    "out_dir": "runs_experiment/production_v479_25m_longcontext_patch32_persistent_batch8_layercake"
+  }
+}

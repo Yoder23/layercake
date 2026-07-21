@@ -117,7 +117,65 @@ class ByteCorpusDataset(IterableDataset):
             while len(buffer) >= self.seq_len:
                 chunk = bytes(buffer[: self.seq_len])
                 del buffer[: self.seq_len]
-                yield torch.tensor(list(chunk), dtype=torch.long)
+                yield torch.frombuffer(
+                    bytearray(chunk),
+                    dtype=torch.uint8,
+                ).to(dtype=torch.long)
+
+
+def _load_corpus_prefix(
+    files: list[Path],
+    *,
+    max_bytes: int,
+    read_block_bytes: int,
+) -> bytes:
+    payload = bytearray()
+    while len(payload) < max_bytes:
+        made_progress = False
+        for path in files:
+            for block in _iter_file_payload(
+                path,
+                read_block_bytes=read_block_bytes,
+            ):
+                made_progress = True
+                remaining = max_bytes - len(payload)
+                payload.extend(block[:remaining])
+                if len(payload) >= max_bytes:
+                    return bytes(payload)
+        if not made_progress:
+            break
+    return bytes(payload)
+
+
+class RandomByteCorpusDataset(IterableDataset):
+    """Sample deterministic random overlapping windows from frozen bytes."""
+
+    def __init__(self, payload: bytes, seq_len: int, seed: int):
+        if len(payload) < seq_len:
+            raise ValueError("random byte corpus is shorter than one sequence")
+        self.payload = torch.frombuffer(
+            bytearray(payload),
+            dtype=torch.uint8,
+        )
+        self.seq_len = int(seq_len)
+        self.seed = int(seed)
+
+    def __iter__(self):
+        worker = torch.utils.data.get_worker_info()
+        worker_id = 0 if worker is None else worker.id
+        generator = torch.Generator().manual_seed(self.seed + worker_id)
+        max_start = self.payload.numel() - self.seq_len
+        while True:
+            start = int(
+                torch.randint(
+                    max_start + 1,
+                    (1,),
+                    generator=generator,
+                ).item()
+            )
+            yield self.payload[start : start + self.seq_len].to(
+                dtype=torch.long
+            )
 
 
 class JsonlRowByteDataset(IterableDataset):
@@ -489,6 +547,42 @@ def _eval_byte_bpb(
     return (sum(losses) / max(len(losses), 1)) / math.log(2)
 
 
+@torch.inference_mode()
+def _eval_generation_aligned_bpb(
+    model: CausalBytePatchLM,
+    stream: torch.Tensor,
+    *,
+    seq_len: int,
+    batch_size: int,
+    batches: int,
+    seed: int,
+    device: torch.device,
+) -> float:
+    """Evaluate the exact byte NLL used by the production patch generator."""
+    was_training = model.training
+    model.eval()
+    generator = torch.Generator().manual_seed(seed)
+    max_start = stream.numel() - seq_len
+    if max_start <= 0:
+        raise RuntimeError("held-out byte stream is too short for eval")
+    losses: list[float] = []
+    for _ in range(batches):
+        starts = torch.randint(
+            0,
+            max_start,
+            (batch_size,),
+            generator=generator,
+        )
+        rows = torch.stack(
+            [stream[start : start + seq_len] for start in starts]
+        ).to(device)
+        loss = model.domain_cake_patch_predictions(rows, loss_only=True)
+        losses.append(float(loss.item()))
+    if was_training:
+        model.train()
+    return (sum(losses) / max(len(losses), 1)) / math.log(2)
+
+
 def _load_prior_bytes(
     files: list[Path],
     *,
@@ -528,44 +622,67 @@ def _initialize_byte_priors_from_corpus(
     max_bytes: int,
     smoothing: float,
 ) -> dict[str, Any]:
-    prior_bytes = _load_prior_bytes(
-        files,
-        read_block_bytes=read_block_bytes,
-        max_bytes=max_bytes,
+    context_buckets = int(getattr(model, "context_buckets", 0))
+    context_order = int(getattr(model, "context_order", 2))
+    transition_counts = torch.full((256, 256), float(smoothing))
+    context_counts = (
+        torch.full((context_buckets, 256), float(smoothing))
+        if context_buckets and hasattr(model, "context_head")
+        else None
     )
-    if prior_bytes.numel() < 2:
-        return {"prior_bytes": int(prior_bytes.numel()), "status": "SKIPPED"}
-    x = prior_bytes[:-1]
-    y = prior_bytes[1:]
+    carry = torch.empty(0, dtype=torch.uint8)
+    prior_bytes = 0
+    for path in files:
+        if prior_bytes >= max_bytes:
+            break
+        with path.open("rb") as handle:
+            while prior_bytes < max_bytes:
+                payload = handle.read(
+                    min(read_block_bytes, max_bytes - prior_bytes)
+                )
+                if not payload:
+                    break
+                current = torch.frombuffer(
+                    bytearray(payload), dtype=torch.uint8
+                )
+                combined = torch.cat([carry, current])
+                carry_bytes = int(carry.numel())
+                if combined.numel() >= 2:
+                    all_x = combined[:-1].to(torch.long)
+                    x = all_x
+                    y = combined[1:].to(torch.long)
+                    first_pair = max(carry_bytes - 1, 0)
+                    x = x[first_pair:]
+                    y = y[first_pair:]
+                    transition_counts.index_put_(
+                        (x.to(torch.long), y),
+                        torch.ones_like(y, dtype=transition_counts.dtype),
+                        accumulate=True,
+                    )
+                    if context_counts is not None:
+                        context_ids = _context_ids_1d(
+                            all_x, context_buckets, context_order
+                        )[first_pair:]
+                        context_counts.index_put_(
+                            (context_ids, y),
+                            torch.ones_like(y, dtype=context_counts.dtype),
+                            accumulate=True,
+                        )
+                prior_bytes += len(payload)
+                carry = combined[-max(context_order, 1) :].clone()
+    if prior_bytes < 2:
+        return {"prior_bytes": prior_bytes, "status": "SKIPPED"}
     with torch.no_grad():
-        transition_counts = torch.full((256, 256), float(smoothing))
-        transition_counts.index_put_(
-            (x, y),
-            torch.ones_like(y, dtype=transition_counts.dtype),
-            accumulate=True,
-        )
         transition_logits = transition_counts.log()
         transition_logits = transition_logits - transition_logits.mean(dim=1, keepdim=True)
         model.transition_head.weight.copy_(transition_logits.to(model.transition_head.weight.device))
 
-        context_buckets = int(getattr(model, "context_buckets", 0))
-        if context_buckets and hasattr(model, "context_head"):
-            context_ids = _context_ids_1d(
-                x,
-                context_buckets,
-                int(getattr(model, "context_order", 2)),
-            )
-            context_counts = torch.full((context_buckets, 256), float(smoothing))
-            context_counts.index_put_(
-                (context_ids, y),
-                torch.ones_like(y, dtype=context_counts.dtype),
-                accumulate=True,
-            )
+        if context_counts is not None:
             context_logits = context_counts.log()
             context_logits = context_logits - context_logits.mean(dim=1, keepdim=True)
             model.context_head.weight.copy_(context_logits.to(model.context_head.weight.device))
     return {
-        "prior_bytes": int(prior_bytes.numel()),
+        "prior_bytes": prior_bytes,
         "transition_rows": 256,
         "context_buckets": int(getattr(model, "context_buckets", 0)),
         "status": "INITIALIZED",
@@ -675,6 +792,8 @@ def _build_model(model_cfg: dict, device: torch.device) -> CausalBytePatchLM:
         patch_unit_buckets=model_cfg.get("patch_unit_buckets", 0),
         dropout=model_cfg.get("dropout", 0.1),
         qk_norm=model_cfg.get("qk_norm", True),
+        global_conv_layers=model_cfg.get("global_conv_layers", 0),
+        global_gru_layers=model_cfg.get("global_gru_layers", 0),
         global_block=model_cfg.get("global_block", "attention"),
         routed_cake_experts=model_cfg.get("routed_cake_experts", 0),
         shared_cake_layers=model_cfg.get("shared_cake_layers", 0),
@@ -728,6 +847,20 @@ def _build_model(model_cfg: dict, device: torch.device) -> CausalBytePatchLM:
         patch_prediction_detach_context=model_cfg.get("patch_prediction_detach_context", False),
         patch_generation_width=model_cfg.get("patch_generation_width", 96),
         patch_generation_bytes=model_cfg.get("patch_generation_bytes", 0),
+        patch_generation_ngram_buckets=model_cfg.get(
+            "patch_generation_ngram_buckets", 0
+        ),
+        patch_generation_joint_greedy=model_cfg.get(
+            "patch_generation_joint_greedy", True
+        ),
+        patch_generation_persistent_context=model_cfg.get(
+            "patch_generation_persistent_context", False
+        ),
+        patch_generation_persistent_output_rank=model_cfg.get(
+            "patch_generation_persistent_output_rank", 0
+        ),
+        patch_generation_layers=model_cfg.get("patch_generation_layers", 2),
+        patch_generation_heads=model_cfg.get("patch_generation_heads", 4),
         patch_prediction_rollout_training=model_cfg.get(
             "patch_prediction_rollout_training", False
         ),
@@ -856,6 +989,9 @@ def _train(config: dict):
 
     include_suffixes = set(train_cfg.get("include_suffixes", [".jsonl", ".json", ".txt", ".md", ".csv"]))
     read_block_bytes = int(train_cfg.get("read_block_bytes", 1 << 20))
+    random_window_sampling = bool(
+        train_cfg.get("random_window_sampling", False)
+    )
     data_mix_cfg = train_cfg.get("data_mix") or train_cfg.get("data_mixes") or []
     mix_component_specs: list[dict[str, Any]] = []
     files: list[Path] = []
@@ -978,9 +1114,15 @@ def _train(config: dict):
     domain_cake_training_only = bool(
         train_cfg.get("domain_cake_training_only", False)
     )
-    if domain_cake_training_only and patch_prediction_loss_weight <= 0.0:
+    generation_aligned_training_only = bool(
+        train_cfg.get(
+            "generation_aligned_training_only",
+            domain_cake_training_only,
+        )
+    )
+    if generation_aligned_training_only and patch_prediction_loss_weight <= 0.0:
         raise ValueError(
-            "domain_cake_training_only requires patch_prediction_loss_weight > 0"
+            "generation-aligned training requires patch_prediction_loss_weight > 0"
         )
     answer_loss_weight = float(train_cfg.get("answer_loss_weight", 1.0))
     answer_only_loss = bool(train_cfg.get("answer_only_loss", False))
@@ -1053,6 +1195,19 @@ def _train(config: dict):
                 )
             )
         dataset = WeightedMixedByteDataset(components)
+    elif random_window_sampling:
+        random_payload = _load_corpus_prefix(
+            files,
+            max_bytes=int(train_cfg.get("corpus_bytes", 24_000_000)),
+            read_block_bytes=read_block_bytes,
+        )
+        dataset = RandomByteCorpusDataset(
+            random_payload,
+            seq_len=chunk_len,
+            seed=seed,
+        )
+        data_source_summary["random_window_sampling"] = True
+        data_source_summary["loaded_corpus_bytes"] = len(random_payload)
     elif bool(train_cfg.get("row_preserve_jsonl_examples", False)):
         dataset = JsonlRowByteDataset(
             files,
@@ -1256,7 +1411,19 @@ def _train(config: dict):
     running_train_seconds = 0.0
     running_opt_seconds = 0.0
     start = time.perf_counter()
-    bytes_per_step = seq_len * micro_batch_size * grad_accum_steps
+    if generation_aligned_training_only:
+        complete_patches = seq_len // model.patch_size
+        predicted_bytes_per_sequence = max(complete_patches - 1, 0) * min(
+            model.patch_generation_bytes,
+            model.patch_size,
+        )
+    else:
+        predicted_bytes_per_sequence = seq_len
+    bytes_per_step = (
+        predicted_bytes_per_sequence
+        * micro_batch_size
+        * grad_accum_steps
+    )
     last_metrics: dict[str, Any] = {}
     history: list[dict[str, Any]] = []
 
@@ -1310,7 +1477,42 @@ def _train(config: dict):
                     and model_cfg.get("local_decoder") == "span_patch_decoder"
                 )
                 next_patches = None
-                if domain_cake_training_only:
+                direct_generation_loss = None
+                if (
+                    generation_aligned_training_only
+                    and model.patch_prediction_mode in {
+                        "radix_causal",
+                        "radix_attention",
+                        "radix_conv",
+                        "radix_cumsum",
+                        "radix_cumsum_hash",
+                        "radix_depthwise_hash",
+                        "radix_dilated_conv",
+                        "radix_hash",
+                        "radix_grouped_recurrent_hash",
+                        "radix_ngram",
+                        "radix_prefix",
+                        "radix_low_rank_recurrent_hash",
+                        "radix_recurrent",
+                        "radix_recurrent_conditional_hash",
+                        "radix_recurrent_hash",
+                        "radix_recurrent_ngram",
+                        "radix_rotary_hash",
+                        "radix_scan",
+                        "radix_scan_hash",
+                        "radix_simple_recurrent_hash",
+                        "radix_window",
+                    }
+                ):
+                    direct_generation_loss = model.domain_cake_patch_predictions(
+                        x,
+                        context_indices=patch_context_indices,
+                        loss_only=True,
+                    )
+                    logits = None
+                    auxiliary = []
+                    patch_predictions = None
+                elif generation_aligned_training_only:
                     patch_predictions, next_patches = (
                         model.domain_cake_patch_predictions(
                             x,
@@ -1336,7 +1538,12 @@ def _train(config: dict):
                     logits, _ = model(x)
                     auxiliary = []
                     patch_predictions = None
-                if domain_cake_training_only:
+                if direct_generation_loss is not None:
+                    loss = (
+                        patch_prediction_loss_weight
+                        * direct_generation_loss
+                    )
+                elif generation_aligned_training_only:
                     loss = x.new_zeros((), dtype=torch.float32)
                 elif answer_loss_weight > 1.0 or answer_only_loss:
                     logits = logits[:, : y.shape[1], :]
@@ -1363,7 +1570,7 @@ def _train(config: dict):
                         ]
                     if (
                         patch_context_indices is not None
-                        and not domain_cake_training_only
+                        and not generation_aligned_training_only
                     ):
                         next_patches = next_patches.gather(
                             1,
@@ -1785,6 +1992,7 @@ def _train(config: dict):
                 "elapsed_seconds": elapsed,
                 "steps_per_second": steps_per_sec,
                 "bytes_per_step": bytes_per_step,
+                "predicted_bytes_per_sequence": predicted_bytes_per_sequence,
                 "train_bytes": bytes_per_step * global_step,
                 "gib_per_hour": gib_per_hour,
                 "projected_total_hours": projected_total_hours,
@@ -1919,7 +2127,12 @@ def _train(config: dict):
             max_bytes=int(train_cfg.get("eval_bytes", 100_000)),
             read_block_bytes=read_block_bytes,
         )
-        eval_bpb = _eval_byte_bpb(
+        eval_function = (
+            _eval_generation_aligned_bpb
+            if generation_aligned_training_only
+            else _eval_byte_bpb
+        )
+        eval_bpb = eval_function(
             model,
             eval_stream,
             seq_len=seq_len,

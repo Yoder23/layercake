@@ -1,0 +1,15 @@
+{
+  "extends": "production_v475_5m_longcontext_patch64_recurrent_hash_layercake.json",
+  "name": "production_v478_5m_longcontext_patch64_recurrent_hash_updates_layercake",
+  "description": "Exact-parameter 5M compact recurrent candidate with 3000 half-sized optimizer updates at unchanged total raw-byte exposure.",
+  "training": {
+    "micro_batch_size": 16,
+    "steps": 3000,
+    "lr": 0.002,
+    "min_lr": 0.0002,
+    "warmup_steps": 100,
+    "lr_decay_steps": 3000,
+    "save_interval": 3000,
+    "out_dir": "runs_experiment/production_v478_5m_longcontext_patch64_recurrent_hash_updates_layercake"
+  }
+}

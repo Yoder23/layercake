@@ -1,0 +1,18 @@
+{
+  "extends": "production_v449_5m_longcontext_transformer.json",
+  "name": "production_v457_10m_longcontext_transformer",
+  "description": "Parameter-matched 10M tokenizer-Transformer comparator at its largest safe CUDA microbatch and matched raw-byte exposure.",
+  "model": {
+    "d_model": 400,
+    "layers": 3,
+    "heads": 8
+  },
+  "training": {
+    "micro_batch_size": 7,
+    "steps": 6858,
+    "warmup_steps": 228,
+    "lr_decay_steps": 6858,
+    "save_interval": 6858,
+    "out_dir": "runs_experiment/production_v457_10m_longcontext_transformer"
+  }
+}

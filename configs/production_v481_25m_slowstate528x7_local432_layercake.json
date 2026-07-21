@@ -1,0 +1,15 @@
+{
+  "extends": "production_v480_25m_contextmatched_patch32_persistent_layercake.json",
+  "name": "production_v481_25m_slowstate528x7_local432_layercake",
+  "description": "25M two-rate revision that places capacity in the 32x slower patch state while retaining a compact causal byte recurrence and the portable 64D ABI.",
+  "model": {
+    "d_model": 528,
+    "layers": 7,
+    "heads": 8,
+    "local_width": 528,
+    "patch_generation_width": 432
+  },
+  "training": {
+    "out_dir": "runs_experiment/production_v481_25m_slowstate528x7_local432_layercake"
+  }
+}

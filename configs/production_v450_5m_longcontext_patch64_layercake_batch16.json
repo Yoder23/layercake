@@ -1,0 +1,12 @@
+{
+  "extends": "production_v448_5m_longcontext_patch64_layercake.json",
+  "name": "production_v450_5m_longcontext_patch64_layercake_batch16",
+  "description": "5M long-context LayerCake quality revision: identical architecture and raw-byte exposure with the frozen 1M optimization granularity.",
+  "training": {
+    "micro_batch_size": 16,
+    "steps": 3000,
+    "warmup_steps": 100,
+    "lr_decay_steps": 3000,
+    "out_dir": "runs_experiment/production_v450_5m_longcontext_patch64_layercake_batch16"
+  }
+}

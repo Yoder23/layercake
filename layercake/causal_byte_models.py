@@ -950,6 +950,7 @@ class AutoregressivePatchHead(nn.Module):
         byte_embedding: nn.Embedding,
         hidden_width: int,
         patch_size: int,
+        ngram_buckets: int = 0,
         copy_window: int = 0,
         copy_dim: int = 32,
         copy_scale: float = 4.0,
@@ -1224,6 +1225,3261 @@ class AutoregressivePatchHead(nn.Module):
         return torch.stack(generated, dim=-1)
 
 
+class ParallelCausalPatchHead(nn.Module):
+    """Teacher-force a byte patch in parallel with a causal convolution stack.
+
+    The recurrent patch head is a strong small-batch decoder, but its GRU
+    backward pass becomes the dominant cost in large GPU training batches.
+    This head keeps the same causal contract while exposing every teacher-
+    forced byte offset to parallel kernels.  During generation the exact same
+    depthwise filters are evaluated incrementally, so training and greedy
+    decoding cannot silently diverge.
+    """
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        dilations: tuple[int, ...] = (),
+    ):
+        super().__init__()
+        if patch_size <= 0:
+            raise ValueError("patch_size must be positive")
+        if hidden_width <= 0:
+            raise ValueError("hidden_width must be positive")
+        self.byte_embedding = byte_embedding
+        self.patch_size = int(patch_size)
+        self.dilations = tuple(
+            dilation
+            for dilation in (int(value) for value in dilations)
+            if dilation < self.patch_size
+        )
+        self.initial_state = nn.Linear(context_width, hidden_width)
+        self.input_projection = nn.Linear(
+            byte_embedding.embedding_dim,
+            hidden_width,
+            bias=False,
+        )
+        self.bos = nn.Parameter(torch.zeros(byte_embedding.embedding_dim))
+        self.positions = nn.Embedding(self.patch_size, hidden_width)
+        self.causal_convs = nn.ModuleList(
+            nn.Conv1d(
+                hidden_width,
+                hidden_width,
+                kernel_size=3,
+                dilation=dilation,
+                groups=hidden_width,
+            )
+            for dilation in self.dilations
+        )
+        self.norm = nn.LayerNorm(hidden_width)
+        self.output = nn.Linear(hidden_width, 256)
+        self.last_copy_logits = None
+
+    def _teacher_inputs(self, target: torch.Tensor) -> torch.Tensor:
+        bos = self.bos.expand(*target.shape[:-1], 1, -1)
+        if self.patch_size == 1:
+            return bos
+        embedded = self.byte_embedding(target[..., : self.patch_size - 1])
+        return torch.cat([bos, embedded], dim=-2)
+
+    def forward(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> list[torch.Tensor]:
+        """Return causal logits; offset ``i`` sees only ``target[:i]``."""
+        if prefix is not None:
+            raise ValueError(
+                "parallel_causal patch prediction does not use generation prefixes"
+            )
+        if source is not None:
+            raise ValueError(
+                "parallel_causal patch prediction does not use copy sources"
+            )
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        teacher = self._teacher_inputs(target)
+        positions = torch.arange(self.patch_size, device=context.device)
+        hidden = (
+            torch.tanh(self.initial_state(context)).unsqueeze(-2)
+            + self.input_projection(teacher)
+            + self.positions(positions)
+        )
+        leading = hidden.shape[:-2]
+        hidden = hidden.reshape(-1, self.patch_size, hidden.shape[-1]).transpose(1, 2)
+        for dilation, convolution in zip(self.dilations, self.causal_convs):
+            mixed = convolution(F.pad(hidden, (2 * dilation, 0)))
+            hidden = hidden + F.silu(mixed)
+        hidden = hidden.transpose(1, 2).reshape(
+            *leading,
+            self.patch_size,
+            hidden.shape[1],
+        )
+        logits = self.output(self.norm(hidden))
+        self.last_copy_logits = None
+        return list(logits.unbind(dim=-2))
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        if prefix is not None:
+            raise ValueError(
+                "parallel_causal patch prediction does not use generation prefixes"
+            )
+        if source is not None:
+            raise ValueError(
+                "parallel_causal patch prediction does not use copy sources"
+            )
+        base = torch.tanh(self.initial_state(context))
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        histories: list[list[torch.Tensor]] = [
+            [] for _ in self.causal_convs
+        ]
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            hidden = (
+                base
+                + self.input_projection(decoder_input)
+                + self.positions.weight[offset]
+            )
+            for layer_index, (dilation, convolution) in enumerate(
+                zip(self.dilations, self.causal_convs)
+            ):
+                history = histories[layer_index]
+                zeros = torch.zeros_like(hidden)
+                oldest = history[-2 * dilation] if len(history) >= 2 * dilation else zeros
+                middle = history[-dilation] if len(history) >= dilation else zeros
+                weights = convolution.weight[:, 0]
+                mixed = (
+                    oldest * weights[:, 0]
+                    + middle * weights[:, 1]
+                    + hidden * weights[:, 2]
+                )
+                if convolution.bias is not None:
+                    mixed = mixed + convolution.bias
+                history.append(hidden)
+                hidden = hidden + F.silu(mixed)
+            logits = self.output(self.norm(hidden))
+            next_byte = logits.argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            decoder_input = self.byte_embedding(next_byte)
+        return torch.stack(generated, dim=-1)
+
+
+class RadixCausalPatchHead(nn.Module):
+    """Exact base-16 byte distribution with a generation-aligned causal path.
+
+    A byte is represented as ``high * 16 + low``.  The low nibble is
+    conditioned on the selected high nibble, so the factorization represents
+    an unrestricted categorical byte distribution while training materializes
+    only 32 logits per target instead of 256.  ``forward`` can still expand
+    the exact 256-way log probabilities for compatibility and auditing; the
+    production training path calls :meth:`loss` and avoids that expansion.
+    """
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+    ):
+        super().__init__()
+        if patch_size <= 0 or hidden_width <= 0:
+            raise ValueError("patch_size and hidden_width must be positive")
+        self.byte_embedding = byte_embedding
+        self.patch_size = int(patch_size)
+        self.initial_state = nn.Linear(context_width, hidden_width)
+        self.input_projection = nn.Linear(
+            byte_embedding.embedding_dim,
+            hidden_width,
+            bias=False,
+        )
+        self.bos = nn.Parameter(torch.zeros(byte_embedding.embedding_dim))
+        self.positions = nn.Embedding(self.patch_size, hidden_width)
+        self.hidden_norm = nn.LayerNorm(hidden_width)
+        self.high_head = nn.Linear(hidden_width, 16)
+        self.high_embedding = nn.Embedding(16, hidden_width)
+        self.low_norm = nn.LayerNorm(hidden_width)
+        self.low_head = nn.Linear(hidden_width, 16)
+        self.last_copy_logits = None
+
+    def _validate_optional_inputs(
+        self,
+        prefix: torch.Tensor | None,
+        source: torch.Tensor | None,
+    ) -> None:
+        if prefix is not None:
+            raise ValueError("radix_causal does not use generation prefixes")
+        if source is not None:
+            raise ValueError("radix_causal does not use copy sources")
+
+    def _hidden(self, context: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        bos = self.bos.expand(*target.shape[:-1], 1, -1)
+        teacher = (
+            bos
+            if self.patch_size == 1
+            else torch.cat(
+                [
+                    bos,
+                    self.byte_embedding(target[..., : self.patch_size - 1]),
+                ],
+                dim=-2,
+            )
+        )
+        positions = torch.arange(self.patch_size, device=context.device)
+        return self.hidden_norm(
+            torch.tanh(self.initial_state(context)).unsqueeze(-2)
+            + self.input_projection(teacher)
+            + self.positions(positions)
+        )
+
+    def loss(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+        reduction: str = "mean",
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden(context, target)
+        high_target = target.bitwise_right_shift(4)
+        low_target = target.bitwise_and(15)
+        high_logits = self.high_head(hidden)
+        low_hidden = self.low_norm(hidden + self.high_embedding(high_target))
+        low_logits = self.low_head(low_hidden)
+        high_loss = F.cross_entropy(
+            high_logits.reshape(-1, 16),
+            high_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        low_loss = F.cross_entropy(
+            low_logits.reshape(-1, 16),
+            low_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        nll = high_loss + low_loss
+        if reduction == "none":
+            return nll
+        if reduction == "sum":
+            return nll.sum()
+        if reduction != "mean":
+            raise ValueError("reduction must be none, sum, or mean")
+        return nll.mean()
+
+    def forward(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> list[torch.Tensor]:
+        """Expand exact joint log probabilities for compatibility checks."""
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden(context, target)
+        high_log_probs = F.log_softmax(self.high_head(hidden), dim=-1)
+        high_values = torch.arange(16, device=hidden.device)
+        low_hidden = self.low_norm(
+            hidden.unsqueeze(-2) + self.high_embedding(high_values)
+        )
+        low_log_probs = F.log_softmax(self.low_head(low_hidden), dim=-1)
+        byte_log_probs = (
+            high_log_probs.unsqueeze(-1) + low_log_probs
+        ).flatten(-2)
+        self.last_copy_logits = None
+        return list(byte_log_probs.unbind(dim=-2))
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        base = torch.tanh(self.initial_state(context))
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            hidden = self.hidden_norm(
+                base
+                + self.input_projection(decoder_input)
+                + self.positions.weight[offset]
+            )
+            high_log_probs = F.log_softmax(
+                self.high_head(hidden), dim=-1
+            )
+            high_values = torch.arange(16, device=hidden.device)
+            low_hidden = self.low_norm(
+                hidden.unsqueeze(-2) + self.high_embedding(high_values)
+            )
+            low_log_probs = F.log_softmax(
+                self.low_head(low_hidden), dim=-1
+            )
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            decoder_input = self.byte_embedding(next_byte)
+        return torch.stack(generated, dim=-1)
+
+
+class RadixRecurrentPatchHead(nn.Module):
+    """Full-prefix causal byte decoder with an exact base-16 output.
+
+    Teacher forcing runs as one fused GRU sequence, so offset ``i`` sees every
+    target byte before ``i`` without launching a Python loop.  The output is
+    factorized exactly as ``p(high) * p(low | high)``: the production loss
+    materializes 32 logits per byte, while :meth:`forward` can reconstruct the
+    complete 256-way distribution for audits and compatibility checks.
+    """
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        ngram_buckets: int = 0,
+        joint_greedy: bool = True,
+        persistent_context: bool = False,
+        persistent_output_rank: int = 0,
+    ):
+        super().__init__()
+        if patch_size <= 0 or hidden_width <= 0:
+            raise ValueError("patch_size and hidden_width must be positive")
+        self.byte_embedding = byte_embedding
+        self.patch_size = int(patch_size)
+        self.ngram_buckets = int(ngram_buckets)
+        self.joint_greedy = bool(joint_greedy)
+        self.persistent_context = bool(persistent_context)
+        self.persistent_output_rank = int(persistent_output_rank)
+        if self.persistent_output_rank < 0:
+            raise ValueError("persistent_output_rank must be nonnegative")
+        self.initial_state = nn.Linear(context_width, hidden_width)
+        self.context_input = (
+            nn.Linear(
+                context_width,
+                byte_embedding.embedding_dim,
+                bias=False,
+            )
+            if self.persistent_context
+            else None
+        )
+        if self.context_input is not None:
+            nn.init.zeros_(self.context_input.weight)
+        if self.persistent_output_rank:
+            self.context_output_in = nn.Linear(
+                context_width,
+                self.persistent_output_rank,
+                bias=False,
+            )
+            self.context_output_out = nn.Linear(
+                self.persistent_output_rank,
+                hidden_width,
+                bias=False,
+            )
+            nn.init.zeros_(self.context_output_out.weight)
+        else:
+            self.context_output_in = None
+            self.context_output_out = None
+        self.bos = nn.Parameter(torch.zeros(byte_embedding.embedding_dim))
+        self.recurrent = nn.GRU(
+            byte_embedding.embedding_dim,
+            hidden_width,
+            batch_first=True,
+        )
+        self.hidden_norm = nn.LayerNorm(hidden_width)
+        self.high_head = nn.Linear(hidden_width, 16)
+        self.high_embedding = nn.Embedding(16, hidden_width)
+        self.high_scale = nn.Embedding(16, hidden_width)
+        nn.init.zeros_(self.high_scale.weight)
+        self.low_norm = nn.LayerNorm(hidden_width)
+        self.low_head = nn.Linear(hidden_width, 16)
+        if self.ngram_buckets > 0:
+            self.high_prior = nn.Embedding(self.ngram_buckets, 16)
+            self.low_prior = nn.Embedding(self.ngram_buckets, 16)
+            self.low_high_prior = nn.Embedding(16, 16)
+            nn.init.zeros_(self.high_prior.weight)
+            nn.init.zeros_(self.low_prior.weight)
+            nn.init.zeros_(self.low_high_prior.weight)
+        self.last_copy_logits = None
+
+    def _greedy_gru_step(
+        self,
+        decoder_input: torch.Tensor,
+        hidden: torch.Tensor,
+    ) -> torch.Tensor:
+        """One exact PyTorch-GRU step without the sequence wrapper overhead."""
+        input_gates = F.linear(
+            decoder_input,
+            self.recurrent.weight_ih_l0,
+            self.recurrent.bias_ih_l0,
+        )
+        hidden_gates = F.linear(
+            hidden,
+            self.recurrent.weight_hh_l0,
+            self.recurrent.bias_hh_l0,
+        )
+        input_reset, input_update, input_new = input_gates.chunk(3, dim=-1)
+        hidden_reset, hidden_update, hidden_new = hidden_gates.chunk(3, dim=-1)
+        reset = torch.sigmoid(input_reset + hidden_reset)
+        update = torch.sigmoid(input_update + hidden_update)
+        candidate = torch.tanh(input_new + reset * hidden_new)
+        return candidate + update * (hidden - candidate)
+
+    @staticmethod
+    def _validate_optional_inputs(
+        prefix: torch.Tensor | None,
+        source: torch.Tensor | None,
+    ) -> None:
+        if prefix is not None:
+            raise ValueError("radix_recurrent does not use generation prefixes")
+        if source is not None:
+            raise ValueError("radix_recurrent does not use copy sources")
+
+    def _hidden_sequence(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+    ) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        target = target[..., : self.patch_size]
+        bos = self.bos.expand(*context.shape[:-1], 1, -1)
+        teacher_inputs = (
+            bos
+            if self.patch_size == 1
+            else torch.cat(
+                [bos, self.byte_embedding(target[..., :-1])],
+                dim=-2,
+            )
+        )
+        if self.context_input is not None:
+            teacher_inputs = teacher_inputs + self.context_input(
+                context
+            ).unsqueeze(-2)
+        flat_inputs = teacher_inputs.reshape(
+            -1,
+            self.patch_size,
+            teacher_inputs.shape[-1],
+        )
+        initial = torch.tanh(self.initial_state(context))
+        flat_initial = initial.reshape(-1, initial.shape[-1]).unsqueeze(0)
+        self.recurrent.flatten_parameters()
+        hidden_sequence, _ = self.recurrent(
+            flat_inputs,
+            flat_initial,
+        )
+        hidden_sequence = hidden_sequence.reshape(
+            *context.shape[:-1],
+            self.patch_size,
+            initial.shape[-1],
+        )
+        if self.context_output_in is not None:
+            context_output = self.context_output_out(
+                F.silu(self.context_output_in(context))
+            )
+            hidden_sequence = hidden_sequence + context_output.unsqueeze(-2)
+        return self.hidden_norm(hidden_sequence)
+
+    def _radix_logits(
+        self,
+        hidden: torch.Tensor,
+        high_target: torch.Tensor,
+        context_ids: torch.Tensor | None = None,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        high_logits = self.high_head(hidden)
+        low_hidden = self.low_norm(
+            hidden * (1.0 + self.high_scale(high_target))
+            + self.high_embedding(high_target)
+        )
+        low_logits = self.low_head(low_hidden)
+        if context_ids is not None:
+            high_logits = high_logits + self.high_prior(context_ids)
+            low_logits = (
+                low_logits
+                + self.low_prior(context_ids)
+                + self.low_high_prior(high_target)
+            )
+        return high_logits, low_logits
+
+    def _context_ids(self, target: torch.Tensor) -> torch.Tensor | None:
+        if self.ngram_buckets <= 0:
+            return None
+        previous = torch.cat(
+            [torch.zeros_like(target[..., :1]), target[..., :-1]],
+            dim=-1,
+        )
+        previous2 = torch.cat(
+            [torch.zeros_like(target[..., :2]), target[..., :-2]],
+            dim=-1,
+        )
+        return (previous2 * 257 + previous) % self.ngram_buckets
+
+    def loss(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+        reduction: str = "mean",
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden_sequence(context, target)
+        high_target = target.bitwise_right_shift(4)
+        low_target = target.bitwise_and(15)
+        context_ids = self._context_ids(target)
+        high_logits, low_logits = self._radix_logits(
+            hidden,
+            high_target,
+            context_ids,
+        )
+        high_loss = F.cross_entropy(
+            high_logits.reshape(-1, 16),
+            high_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        low_loss = F.cross_entropy(
+            low_logits.reshape(-1, 16),
+            low_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        nll = high_loss + low_loss
+        if reduction == "none":
+            return nll
+        if reduction == "sum":
+            return nll.sum()
+        if reduction != "mean":
+            raise ValueError("reduction must be none, sum, or mean")
+        return nll.mean()
+
+    def forward(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> list[torch.Tensor]:
+        """Expand the exact joint byte log probabilities for auditing."""
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden_sequence(context, target)
+        context_ids = self._context_ids(target)
+        high_logits = self.high_head(hidden)
+        if context_ids is not None:
+            high_logits = high_logits + self.high_prior(context_ids)
+        high_log_probs = F.log_softmax(high_logits, dim=-1)
+        high_values = torch.arange(16, device=hidden.device)
+        low_hidden = self.low_norm(
+            hidden.unsqueeze(-2) * (1.0 + self.high_scale(high_values))
+            + self.high_embedding(high_values)
+        )
+        low_logits = self.low_head(low_hidden)
+        if context_ids is not None:
+            low_logits = (
+                low_logits
+                + self.low_prior(context_ids).unsqueeze(-2)
+                + self.low_high_prior(high_values)
+            )
+        low_log_probs = F.log_softmax(low_logits, dim=-1)
+        byte_log_probs = (
+            high_log_probs.unsqueeze(-1) + low_log_probs
+        ).flatten(-2)
+        self.last_copy_logits = None
+        return list(byte_log_probs.unbind(dim=-2))
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        hidden = torch.tanh(self.initial_state(context))
+        persistent_input = (
+            self.context_input(context)
+            if self.context_input is not None
+            else None
+        )
+        persistent_output = (
+            self.context_output_out(F.silu(self.context_output_in(context)))
+            if self.context_output_in is not None
+            else None
+        )
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        if persistent_input is not None:
+            decoder_input = decoder_input + persistent_input
+        high_values = torch.arange(16, device=context.device)
+        previous = torch.zeros(
+            context.shape[:-1],
+            device=context.device,
+            dtype=torch.long,
+        )
+        previous2 = torch.zeros_like(previous)
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            hidden = self._greedy_gru_step(decoder_input, hidden)
+            normalized = self.hidden_norm(
+                hidden + persistent_output
+                if persistent_output is not None
+                else hidden
+            )
+            context_ids = (
+                None
+                if self.ngram_buckets <= 0
+                else (previous2 * 257 + previous) % self.ngram_buckets
+            )
+            high_logits = self.high_head(normalized)
+            if context_ids is not None:
+                high_logits = high_logits + self.high_prior(context_ids)
+            if self.joint_greedy:
+                low_hidden = self.low_norm(
+                    normalized.unsqueeze(-2)
+                    * (1.0 + self.high_scale(high_values))
+                    + self.high_embedding(high_values)
+                )
+                low_logits = self.low_head(low_hidden)
+                if context_ids is not None:
+                    low_logits = (
+                        low_logits
+                        + self.low_prior(context_ids).unsqueeze(-2)
+                        + self.low_high_prior(high_values)
+                    )
+                low_log_probs = F.log_softmax(low_logits, dim=-1)
+                next_byte = (
+                    high_logits.unsqueeze(-1) + low_log_probs
+                ).flatten(-2).argmax(dim=-1)
+            else:
+                selected_high = high_logits.argmax(dim=-1)
+                low_hidden = self.low_norm(
+                    normalized * (1.0 + self.high_scale(selected_high))
+                    + self.high_embedding(selected_high)
+                )
+                low_logits = self.low_head(low_hidden)
+                if context_ids is not None:
+                    low_logits = (
+                        low_logits
+                        + self.low_prior(context_ids)
+                        + self.low_high_prior(selected_high)
+                    )
+                next_byte = selected_high * 16 + low_logits.argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            previous2, previous = previous, next_byte
+            decoder_input = self.byte_embedding(next_byte)
+            if persistent_input is not None:
+                decoder_input = decoder_input + persistent_input
+        return torch.stack(generated, dim=-1)
+
+
+class RadixRecurrentHashPatchHead(RadixRecurrentPatchHead):
+    """Compact fused GRU augmented with two- and four-byte sparse memory."""
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        ngram_buckets: int,
+        joint_greedy: bool = True,
+        persistent_context: bool = False,
+        persistent_output_rank: int = 0,
+    ):
+        if ngram_buckets < 512:
+            raise ValueError("radix recurrent hash buckets must be at least 512")
+        super().__init__(
+            context_width,
+            byte_embedding,
+            hidden_width,
+            patch_size,
+            0,
+            joint_greedy=joint_greedy,
+            persistent_context=persistent_context,
+            persistent_output_rank=persistent_output_rank,
+        )
+        self.ngram_buckets = int(ngram_buckets)
+        self.short_buckets = max(256, self.ngram_buckets // 3)
+        self.long_buckets = self.ngram_buckets - self.short_buckets
+        self.short_high_prior = nn.Embedding(self.short_buckets, 16)
+        self.short_low_prior = nn.Embedding(self.short_buckets, 16)
+        self.long_high_prior = nn.Embedding(self.long_buckets, 16)
+        self.long_low_prior = nn.Embedding(self.long_buckets, 16)
+        self.low_high_prior = nn.Embedding(16, 16)
+        for embedding in (
+            self.short_high_prior,
+            self.short_low_prior,
+            self.long_high_prior,
+            self.long_low_prior,
+            self.low_high_prior,
+        ):
+            nn.init.zeros_(embedding.weight)
+
+    @staticmethod
+    def _lag(target: torch.Tensor, lag: int) -> torch.Tensor:
+        if lag >= target.shape[-1]:
+            return torch.zeros_like(target)
+        return F.pad(target[..., :-lag], (lag, 0))
+
+    def _context_ids(self, target: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        previous = self._lag(target, 1)
+        previous2 = self._lag(target, 2)
+        short_ids = (previous2 * 257 + previous) % self.short_buckets
+        values = [self._lag(target, lag) for lag in (4, 3, 2, 1)]
+        long_ids = values[0]
+        for value in values[1:]:
+            long_ids = (long_ids * 257 + value) % self.long_buckets
+        return short_ids, long_ids
+
+    def _prior_logits(
+        self,
+        short_ids: torch.Tensor,
+        long_ids: torch.Tensor,
+        high: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        if high is None:
+            return self.short_high_prior(short_ids) + self.long_high_prior(long_ids)
+        return (
+            self.short_low_prior(short_ids)
+            + self.long_low_prior(long_ids)
+            + self.low_high_prior(high)
+        )
+
+    def _radix_logits(
+        self,
+        hidden: torch.Tensor,
+        high_target: torch.Tensor,
+        context_ids: tuple[torch.Tensor, torch.Tensor] | None = None,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        high_logits = self.high_head(hidden)
+        low_hidden = self.low_norm(
+            hidden * (1.0 + self.high_scale(high_target))
+            + self.high_embedding(high_target)
+        )
+        low_logits = self.low_head(low_hidden)
+        if context_ids is not None:
+            short_ids, long_ids = context_ids
+            high_logits = high_logits + self._prior_logits(short_ids, long_ids)
+            low_logits = low_logits + self._prior_logits(
+                short_ids, long_ids, high_target
+            )
+        return high_logits, low_logits
+
+    def forward(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> list[torch.Tensor]:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden_sequence(context, target)
+        short_ids, long_ids = self._context_ids(target)
+        high_log_probs = F.log_softmax(
+            self.high_head(hidden) + self._prior_logits(short_ids, long_ids), dim=-1
+        )
+        high_values = torch.arange(16, device=hidden.device)
+        low_hidden = self.low_norm(
+            hidden.unsqueeze(-2) * (1.0 + self.high_scale(high_values))
+            + self.high_embedding(high_values)
+        )
+        low_logits = self.low_head(low_hidden) + self._prior_logits(
+            short_ids.unsqueeze(-1), long_ids.unsqueeze(-1), high_values
+        )
+        low_log_probs = F.log_softmax(low_logits, dim=-1)
+        byte_log_probs = (high_log_probs.unsqueeze(-1) + low_log_probs).flatten(-2)
+        self.last_copy_logits = None
+        return list(byte_log_probs.unbind(dim=-2))
+
+    def _history_ids(self, history: list[torch.Tensor]) -> tuple[torch.Tensor, torch.Tensor]:
+        zero = torch.zeros_like(history[-1])
+        previous = history[-1]
+        previous2 = history[-2] if len(history) >= 2 else zero
+        short_ids = (previous2 * 257 + previous) % self.short_buckets
+        values = [
+            history[-lag] if len(history) >= lag else zero
+            for lag in (4, 3, 2, 1)
+        ]
+        long_ids = values[0]
+        for value in values[1:]:
+            long_ids = (long_ids * 257 + value) % self.long_buckets
+        return short_ids, long_ids
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        hidden = torch.tanh(self.initial_state(context))
+        persistent_input = (
+            self.context_input(context) if self.context_input is not None else None
+        )
+        persistent_output = (
+            self.context_output_out(F.silu(self.context_output_in(context)))
+            if self.context_output_in is not None
+            else None
+        )
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        if persistent_input is not None:
+            decoder_input = decoder_input + persistent_input
+        high_values = torch.arange(16, device=context.device)
+        history: list[torch.Tensor] = []
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            hidden = self._greedy_gru_step(decoder_input, hidden)
+            normalized = self.hidden_norm(
+                hidden + persistent_output if persistent_output is not None else hidden
+            )
+            if history:
+                short_ids, long_ids = self._history_ids(history)
+            else:
+                short_ids = torch.zeros(
+                    context.shape[:-1], device=context.device, dtype=torch.long
+                )
+                long_ids = torch.zeros_like(short_ids)
+            high_logits = self.high_head(normalized) + self._prior_logits(
+                short_ids, long_ids
+            )
+            if self.joint_greedy:
+                low_hidden = self.low_norm(
+                    normalized.unsqueeze(-2)
+                    * (1.0 + self.high_scale(high_values))
+                    + self.high_embedding(high_values)
+                )
+                low_logits = self.low_head(low_hidden) + self._prior_logits(
+                    short_ids.unsqueeze(-1), long_ids.unsqueeze(-1), high_values
+                )
+                next_byte = (
+                    high_logits.unsqueeze(-1)
+                    + F.log_softmax(low_logits, dim=-1)
+                ).flatten(-2).argmax(dim=-1)
+            else:
+                selected_high = high_logits.argmax(dim=-1)
+                low_hidden = self.low_norm(
+                    normalized * (1.0 + self.high_scale(selected_high))
+                    + self.high_embedding(selected_high)
+                )
+                low_logits = self.low_head(low_hidden) + self._prior_logits(
+                    short_ids, long_ids, selected_high
+                )
+                next_byte = selected_high * 16 + low_logits.argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            history.append(next_byte)
+            if len(history) > 4:
+                history.pop(0)
+            decoder_input = self.byte_embedding(next_byte)
+            if persistent_input is not None:
+                decoder_input = decoder_input + persistent_input
+        return torch.stack(generated, dim=-1)
+
+
+class RadixRecurrentConditionalHashPatchHead(RadixRecurrentHashPatchHead):
+    """Compact GRU with an exact conditional bigram table and hashed 4-grams."""
+
+    _CONDITIONAL_SHORT_BUDGET = 2176
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        ngram_buckets: int,
+        joint_greedy: bool = True,
+        persistent_context: bool = False,
+        persistent_output_rank: int = 0,
+    ):
+        if ngram_buckets <= self._CONDITIONAL_SHORT_BUDGET:
+            raise ValueError(
+                "conditional recurrent hash requires more than 2176 buckets"
+            )
+        super().__init__(
+            context_width,
+            byte_embedding,
+            hidden_width,
+            patch_size,
+            ngram_buckets,
+            joint_greedy=joint_greedy,
+            persistent_context=persistent_context,
+            persistent_output_rank=persistent_output_rank,
+        )
+        del self.short_high_prior
+        del self.short_low_prior
+        del self.long_high_prior
+        del self.long_low_prior
+        self.short_buckets = 256
+        self.long_buckets = self.ngram_buckets - self._CONDITIONAL_SHORT_BUDGET
+        self.short_high_prior = nn.Embedding(self.short_buckets, 16)
+        # Flattening context and predicted high nibble avoids materializing a
+        # [batch, positions, 16, 16] table during teacher-forced training.
+        self.short_low_prior = nn.Embedding(self.short_buckets * 16, 16)
+        self.long_high_prior = nn.Embedding(self.long_buckets, 16)
+        self.long_low_prior = nn.Embedding(self.long_buckets, 16)
+        for embedding in (
+            self.short_high_prior,
+            self.short_low_prior,
+            self.long_high_prior,
+            self.long_low_prior,
+        ):
+            nn.init.zeros_(embedding.weight)
+
+    def _context_ids(self, target: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        previous = self._lag(target, 1)
+        values = [self._lag(target, lag) for lag in (4, 3, 2, 1)]
+        long_ids = values[0]
+        for value in values[1:]:
+            long_ids = (long_ids * 257 + value) % self.long_buckets
+        return previous, long_ids
+
+    def _prior_logits(
+        self,
+        short_ids: torch.Tensor,
+        long_ids: torch.Tensor,
+        high: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        if high is None:
+            return self.short_high_prior(short_ids) + self.long_high_prior(long_ids)
+        conditional_ids = short_ids * 16 + high
+        return (
+            self.short_low_prior(conditional_ids)
+            + self.long_low_prior(long_ids)
+            + self.low_high_prior(high)
+        )
+
+    def _history_ids(self, history: list[torch.Tensor]) -> tuple[torch.Tensor, torch.Tensor]:
+        zero = torch.zeros_like(history[-1])
+        previous = history[-1]
+        values = [
+            history[-lag] if len(history) >= lag else zero
+            for lag in (4, 3, 2, 1)
+        ]
+        long_ids = values[0]
+        for value in values[1:]:
+            long_ids = (long_ids * 257 + value) % self.long_buckets
+        return previous, long_ids
+
+
+class RadixLowRankRecurrentHashPatchHead(RadixRecurrentHashPatchHead):
+    """Wide GRU state with a low-rank, globally mixing hidden transition."""
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        ngram_buckets: int,
+        joint_greedy: bool = True,
+        persistent_context: bool = False,
+        persistent_output_rank: int = 0,
+    ):
+        super().__init__(
+            context_width,
+            byte_embedding,
+            hidden_width,
+            patch_size,
+            ngram_buckets,
+            joint_greedy=joint_greedy,
+            persistent_context=persistent_context,
+            persistent_output_rank=persistent_output_rank,
+        )
+        self.hidden_width = int(hidden_width)
+        self.recurrent_rank = max(16, self.hidden_width // 6)
+        del self.recurrent
+        self.input_gates = nn.Linear(
+            byte_embedding.embedding_dim,
+            self.hidden_width * 3,
+        )
+        self.recurrent_down = nn.Linear(
+            self.hidden_width,
+            self.recurrent_rank,
+            bias=False,
+        )
+        self.recurrent_up = nn.Linear(
+            self.recurrent_rank,
+            self.hidden_width * 3,
+        )
+        nn.init.orthogonal_(self.recurrent_down.weight)
+
+    @staticmethod
+    def _gru_update(
+        input_gates: torch.Tensor,
+        hidden_gates: torch.Tensor,
+        hidden: torch.Tensor,
+    ) -> torch.Tensor:
+        input_reset, input_update, input_new = input_gates.chunk(3, dim=-1)
+        hidden_reset, hidden_update, hidden_new = hidden_gates.chunk(3, dim=-1)
+        reset = torch.sigmoid(input_reset + hidden_reset)
+        update = torch.sigmoid(input_update + hidden_update)
+        candidate = torch.tanh(input_new + reset * hidden_new)
+        return candidate + update * (hidden - candidate)
+
+    def _hidden_sequence(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+    ) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        target = target[..., : self.patch_size]
+        bos = self.bos.expand(*context.shape[:-1], 1, -1)
+        teacher_inputs = (
+            bos
+            if self.patch_size == 1
+            else torch.cat(
+                [bos, self.byte_embedding(target[..., :-1])], dim=-2
+            )
+        )
+        if self.context_input is not None:
+            teacher_inputs = teacher_inputs + self.context_input(context).unsqueeze(-2)
+        flat_inputs = teacher_inputs.reshape(
+            -1, self.patch_size, teacher_inputs.shape[-1]
+        )
+        input_gates = self.input_gates(flat_inputs)
+        hidden = torch.tanh(self.initial_state(context)).reshape(-1, self.hidden_width)
+        outputs: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            hidden_gates = self.recurrent_up(self.recurrent_down(hidden))
+            hidden = self._gru_update(input_gates[:, offset], hidden_gates, hidden)
+            outputs.append(hidden)
+        hidden_sequence = torch.stack(outputs, dim=1).reshape(
+            *context.shape[:-1], self.patch_size, self.hidden_width
+        )
+        if self.context_output_in is not None:
+            context_output = self.context_output_out(
+                F.silu(self.context_output_in(context))
+            )
+            hidden_sequence = hidden_sequence + context_output.unsqueeze(-2)
+        return self.hidden_norm(hidden_sequence)
+
+    def _greedy_gru_step(
+        self,
+        decoder_input: torch.Tensor,
+        hidden: torch.Tensor,
+    ) -> torch.Tensor:
+        return self._gru_update(
+            self.input_gates(decoder_input),
+            self.recurrent_up(self.recurrent_down(hidden)),
+            hidden,
+        )
+
+
+class RadixSimpleRecurrentHashPatchHead(RadixRecurrentHashPatchHead):
+    """Fused orthogonal tanh recurrence plus sparse multi-order byte memory."""
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        ngram_buckets: int,
+        joint_greedy: bool = True,
+        persistent_context: bool = False,
+        persistent_output_rank: int = 0,
+    ):
+        super().__init__(
+            context_width,
+            byte_embedding,
+            hidden_width,
+            patch_size,
+            ngram_buckets,
+            joint_greedy=joint_greedy,
+            persistent_context=persistent_context,
+            persistent_output_rank=persistent_output_rank,
+        )
+        self.recurrent = nn.RNN(
+            byte_embedding.embedding_dim,
+            hidden_width,
+            nonlinearity="tanh",
+            batch_first=True,
+        )
+        nn.init.orthogonal_(self.recurrent.weight_hh_l0)
+
+    def _greedy_gru_step(
+        self,
+        decoder_input: torch.Tensor,
+        hidden: torch.Tensor,
+    ) -> torch.Tensor:
+        return torch.tanh(
+            F.linear(
+                decoder_input,
+                self.recurrent.weight_ih_l0,
+                self.recurrent.bias_ih_l0,
+            )
+            + F.linear(
+                hidden,
+                self.recurrent.weight_hh_l0,
+                self.recurrent.bias_hh_l0,
+            )
+        )
+
+
+class RadixGroupedRecurrentHashPatchHead(RadixRecurrentHashPatchHead):
+    """Wide recurrent state split into parallel groups with a shared fused GRU."""
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        ngram_buckets: int,
+        groups: int,
+        joint_greedy: bool = True,
+        persistent_context: bool = False,
+        persistent_output_rank: int = 0,
+    ):
+        if groups <= 0 or hidden_width % groups:
+            raise ValueError("grouped recurrent width must be divisible by groups")
+        super().__init__(
+            context_width,
+            byte_embedding,
+            hidden_width,
+            patch_size,
+            ngram_buckets,
+            joint_greedy=joint_greedy,
+            persistent_context=persistent_context,
+            persistent_output_rank=persistent_output_rank,
+        )
+        self.recurrent_groups = int(groups)
+        self.hidden_width = int(hidden_width)
+        self.group_width = hidden_width // self.recurrent_groups
+        del self.recurrent
+        self.recurrent = nn.GRU(
+            byte_embedding.embedding_dim,
+            self.group_width,
+            batch_first=True,
+        )
+        self.group_input_scale = nn.Parameter(
+            torch.ones(self.recurrent_groups, byte_embedding.embedding_dim)
+        )
+        self.group_input_bias = nn.Parameter(
+            torch.zeros(self.recurrent_groups, byte_embedding.embedding_dim)
+        )
+
+    def _hidden_sequence(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+    ) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        target = target[..., : self.patch_size]
+        bos = self.bos.expand(*context.shape[:-1], 1, -1)
+        teacher_inputs = (
+            bos
+            if self.patch_size == 1
+            else torch.cat(
+                [bos, self.byte_embedding(target[..., :-1])], dim=-2
+            )
+        )
+        if self.context_input is not None:
+            teacher_inputs = teacher_inputs + self.context_input(context).unsqueeze(-2)
+        flat_inputs = teacher_inputs.reshape(
+            -1, self.patch_size, teacher_inputs.shape[-1]
+        )
+        initial = torch.tanh(self.initial_state(context))
+        flat_initial = initial.reshape(-1, initial.shape[-1])
+        batch = flat_inputs.shape[0]
+        group_inputs = (
+            flat_inputs[:, None]
+            * self.group_input_scale[None, :, None, :]
+            + self.group_input_bias[None, :, None, :]
+        ).reshape(
+            batch * self.recurrent_groups,
+            self.patch_size,
+            flat_inputs.shape[-1],
+        )
+        group_initial = flat_initial.reshape(
+            batch * self.recurrent_groups,
+            self.group_width,
+        ).unsqueeze(0)
+        self.recurrent.flatten_parameters()
+        group_output, _ = self.recurrent(group_inputs, group_initial)
+        hidden_sequence = group_output.reshape(
+            batch,
+            self.recurrent_groups,
+            self.patch_size,
+            self.group_width,
+        ).permute(0, 2, 1, 3).reshape(
+            *context.shape[:-1], self.patch_size, initial.shape[-1]
+        )
+        if self.context_output_in is not None:
+            context_output = self.context_output_out(
+                F.silu(self.context_output_in(context))
+            )
+            hidden_sequence = hidden_sequence + context_output.unsqueeze(-2)
+        return self.hidden_norm(hidden_sequence)
+
+    @staticmethod
+    def _group_gru_step(
+        recurrent: nn.GRU,
+        decoder_input: torch.Tensor,
+        hidden: torch.Tensor,
+    ) -> torch.Tensor:
+        input_gates = F.linear(
+            decoder_input,
+            recurrent.weight_ih_l0,
+            recurrent.bias_ih_l0,
+        )
+        hidden_gates = F.linear(
+            hidden,
+            recurrent.weight_hh_l0,
+            recurrent.bias_hh_l0,
+        )
+        input_reset, input_update, input_new = input_gates.chunk(3, dim=-1)
+        hidden_reset, hidden_update, hidden_new = hidden_gates.chunk(3, dim=-1)
+        reset = torch.sigmoid(input_reset + hidden_reset)
+        update = torch.sigmoid(input_update + hidden_update)
+        candidate = torch.tanh(input_new + reset * hidden_new)
+        return candidate + update * (hidden - candidate)
+
+    def _greedy_gru_step(
+        self,
+        decoder_input: torch.Tensor,
+        hidden: torch.Tensor,
+    ) -> torch.Tensor:
+        leading = hidden.shape[:-1]
+        flat_hidden = hidden.reshape(
+            -1, self.recurrent_groups, self.group_width
+        )
+        flat_input = decoder_input.reshape(-1, decoder_input.shape[-1])
+        group_input = (
+            flat_input[:, None, :] * self.group_input_scale[None]
+            + self.group_input_bias[None]
+        )
+        next_hidden = self._group_gru_step(
+            self.recurrent,
+            group_input.reshape(-1, group_input.shape[-1]),
+            flat_hidden.reshape(-1, self.group_width),
+        )
+        return next_hidden.reshape(*leading, self.hidden_width)
+
+
+class RadixScanPatchHead(nn.Module):
+    """Parallel QRNN-style causal scan with exact radix byte likelihoods."""
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        ngram_buckets: int = 0,
+    ):
+        super().__init__()
+        if patch_size <= 0 or hidden_width <= 0:
+            raise ValueError("patch_size and hidden_width must be positive")
+        self.byte_embedding = byte_embedding
+        self.patch_size = int(patch_size)
+        self.hidden_width = int(hidden_width)
+        self.initial_state = nn.Linear(context_width, hidden_width)
+        self.context_gates = nn.Linear(context_width, hidden_width * 3)
+        self.input_conv = nn.Conv1d(
+            byte_embedding.embedding_dim,
+            hidden_width * 3,
+            kernel_size=2,
+        )
+        self.bos = nn.Parameter(torch.zeros(byte_embedding.embedding_dim))
+        self.hidden_norm = nn.LayerNorm(hidden_width)
+        self.high_head = nn.Linear(hidden_width, 16)
+        self.high_embedding = nn.Embedding(16, hidden_width)
+        self.high_scale = nn.Embedding(16, hidden_width)
+        nn.init.zeros_(self.high_scale.weight)
+        self.low_norm = nn.LayerNorm(hidden_width)
+        self.low_head = nn.Linear(hidden_width, 16)
+        self.ngram_buckets = int(ngram_buckets)
+        if self.ngram_buckets:
+            if self.ngram_buckets < 512:
+                raise ValueError("radix scan hash buckets must be at least 512")
+            self.short_buckets = max(256, self.ngram_buckets // 3)
+            self.long_buckets = self.ngram_buckets - self.short_buckets
+            self.short_high_prior = nn.Embedding(self.short_buckets, 16)
+            self.short_low_prior = nn.Embedding(self.short_buckets, 16)
+            self.long_high_prior = nn.Embedding(self.long_buckets, 16)
+            self.long_low_prior = nn.Embedding(self.long_buckets, 16)
+            self.low_high_prior = nn.Embedding(16, 16)
+            for embedding in (
+                self.short_high_prior,
+                self.short_low_prior,
+                self.long_high_prior,
+                self.long_low_prior,
+                self.low_high_prior,
+            ):
+                nn.init.zeros_(embedding.weight)
+        with torch.no_grad():
+            self.context_gates.bias.zero_()
+            self.context_gates.bias[
+                hidden_width : 2 * hidden_width
+            ].fill_(2.0)
+            self.input_conv.bias.zero_()
+        self.last_copy_logits = None
+
+    @staticmethod
+    def _validate_optional_inputs(
+        prefix: torch.Tensor | None,
+        source: torch.Tensor | None,
+    ) -> None:
+        if prefix is not None:
+            raise ValueError("radix_scan does not use generation prefixes")
+        if source is not None:
+            raise ValueError("radix_scan does not use copy sources")
+
+    def _teacher_inputs(self, target: torch.Tensor) -> torch.Tensor:
+        bos = self.bos.expand(*target.shape[:-1], 1, -1)
+        if self.patch_size == 1:
+            return bos
+        return torch.cat(
+            [bos, self.byte_embedding(target[..., : self.patch_size - 1])],
+            dim=-2,
+        )
+
+    @staticmethod
+    def _lag(target: torch.Tensor, lag: int) -> torch.Tensor:
+        if lag >= target.shape[-1]:
+            return torch.zeros_like(target)
+        return F.pad(target[..., :-lag], (lag, 0))
+
+    def _context_ids(self, target: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        previous = self._lag(target, 1)
+        previous2 = self._lag(target, 2)
+        short_ids = (previous2 * 257 + previous) % self.short_buckets
+        values = [self._lag(target, lag) for lag in (4, 3, 2, 1)]
+        long_ids = values[0]
+        for value in values[1:]:
+            long_ids = (long_ids * 257 + value) % self.long_buckets
+        return short_ids, long_ids
+
+    def _prior_logits(
+        self,
+        short_ids: torch.Tensor,
+        long_ids: torch.Tensor,
+        high: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        if high is None:
+            return self.short_high_prior(short_ids) + self.long_high_prior(long_ids)
+        return (
+            self.short_low_prior(short_ids)
+            + self.long_low_prior(long_ids)
+            + self.low_high_prior(high)
+        )
+
+    def _history_ids(self, history: list[torch.Tensor]) -> tuple[torch.Tensor, torch.Tensor]:
+        zero = torch.zeros_like(history[-1])
+        previous = history[-1]
+        previous2 = history[-2] if len(history) >= 2 else zero
+        short_ids = (previous2 * 257 + previous) % self.short_buckets
+        values = [
+            history[-lag] if len(history) >= lag else zero
+            for lag in (4, 3, 2, 1)
+        ]
+        long_ids = values[0]
+        for value in values[1:]:
+            long_ids = (long_ids * 257 + value) % self.long_buckets
+        return short_ids, long_ids
+
+    def _hidden_sequence(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+    ) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        teacher = self._teacher_inputs(target)
+        leading = context.shape[:-1]
+        flat_teacher = teacher.reshape(
+            -1,
+            self.patch_size,
+            teacher.shape[-1],
+        )
+        previous_teacher = F.pad(
+            flat_teacher[:, :-1], (0, 0, 1, 0)
+        )
+        weights = self.input_conv.weight
+        gates = (
+            F.linear(previous_teacher, weights[:, :, 0])
+            + F.linear(flat_teacher, weights[:, :, 1])
+            + self.input_conv.bias
+        )
+        gates = gates + self.context_gates(context).reshape(
+            -1,
+            1,
+            self.hidden_width * 3,
+        )
+        proposal_logits, forget_logits, output_logits = gates.chunk(3, dim=-1)
+        proposal = torch.tanh(proposal_logits.float())
+        forget = torch.sigmoid(forget_logits.float())
+        output = torch.sigmoid(output_logits.float())
+        product = torch.cumprod(forget, dim=1)
+        weighted = (1.0 - forget) * proposal / product.clamp_min(1e-7)
+        initial = torch.tanh(self.initial_state(context)).reshape(
+            -1,
+            1,
+            self.hidden_width,
+        ).float()
+        state = product * (initial + torch.cumsum(weighted, dim=1))
+        hidden = (output * state).to(dtype=gates.dtype).reshape(
+            *leading,
+            self.patch_size,
+            self.hidden_width,
+        )
+        return self.hidden_norm(hidden)
+
+    def _low_hidden(
+        self,
+        hidden: torch.Tensor,
+        high: torch.Tensor,
+    ) -> torch.Tensor:
+        return self.low_norm(
+            hidden * (1.0 + self.high_scale(high))
+            + self.high_embedding(high)
+        )
+
+    def loss(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+        reduction: str = "mean",
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden_sequence(context, target)
+        high_target = target.bitwise_right_shift(4)
+        low_target = target.bitwise_and(15)
+        high_logits = self.high_head(hidden)
+        low_logits = self.low_head(self._low_hidden(hidden, high_target))
+        if self.ngram_buckets:
+            short_ids, long_ids = self._context_ids(target)
+            high_logits = high_logits + self._prior_logits(short_ids, long_ids)
+            low_logits = low_logits + self._prior_logits(
+                short_ids, long_ids, high_target
+            )
+        high_loss = F.cross_entropy(
+            high_logits.reshape(-1, 16),
+            high_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        low_loss = F.cross_entropy(
+            low_logits.reshape(-1, 16),
+            low_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        nll = high_loss + low_loss
+        if reduction == "none":
+            return nll
+        if reduction == "sum":
+            return nll.sum()
+        if reduction != "mean":
+            raise ValueError("reduction must be none, sum, or mean")
+        return nll.mean()
+
+    def forward(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> list[torch.Tensor]:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden_sequence(context, target)
+        high_logits = self.high_head(hidden)
+        short_ids = long_ids = None
+        if self.ngram_buckets:
+            short_ids, long_ids = self._context_ids(target)
+            high_logits = high_logits + self._prior_logits(short_ids, long_ids)
+        high_log_probs = F.log_softmax(high_logits, dim=-1)
+        high_values = torch.arange(16, device=hidden.device)
+        low_hidden = self._low_hidden(
+            hidden.unsqueeze(-2),
+            high_values,
+        )
+        low_logits = self.low_head(low_hidden)
+        if self.ngram_buckets:
+            low_logits = low_logits + self._prior_logits(
+                short_ids.unsqueeze(-1),
+                long_ids.unsqueeze(-1),
+                high_values,
+            )
+        low_log_probs = F.log_softmax(low_logits, dim=-1)
+        byte_log_probs = (
+            high_log_probs.unsqueeze(-1) + low_log_probs
+        ).flatten(-2)
+        self.last_copy_logits = None
+        return list(byte_log_probs.unbind(dim=-2))
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        state = torch.tanh(self.initial_state(context))
+        context_gates = self.context_gates(context)
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        previous_input = torch.zeros_like(decoder_input)
+        high_values = torch.arange(16, device=context.device)
+        weights = self.input_conv.weight
+        byte_history: list[torch.Tensor] = []
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            gates = (
+                F.linear(previous_input, weights[:, :, 0])
+                + F.linear(decoder_input, weights[:, :, 1])
+                + self.input_conv.bias
+                + context_gates
+            )
+            proposal_logits, forget_logits, output_logits = gates.chunk(3, dim=-1)
+            proposal = torch.tanh(proposal_logits)
+            forget = torch.sigmoid(forget_logits)
+            state = forget * state + (1.0 - forget) * proposal
+            hidden = self.hidden_norm(torch.sigmoid(output_logits) * state)
+            high_logits = self.high_head(hidden)
+            short_ids = long_ids = None
+            if self.ngram_buckets:
+                if byte_history:
+                    short_ids, long_ids = self._history_ids(byte_history)
+                else:
+                    short_ids = torch.zeros(
+                        context.shape[:-1], device=context.device, dtype=torch.long
+                    )
+                    long_ids = torch.zeros_like(short_ids)
+                high_logits = high_logits + self._prior_logits(short_ids, long_ids)
+            high_log_probs = F.log_softmax(high_logits, dim=-1)
+            low_hidden = self._low_hidden(
+                hidden.unsqueeze(-2),
+                high_values,
+            )
+            low_logits = self.low_head(low_hidden)
+            if self.ngram_buckets:
+                low_logits = low_logits + self._prior_logits(
+                    short_ids.unsqueeze(-1),
+                    long_ids.unsqueeze(-1),
+                    high_values,
+                )
+            low_log_probs = F.log_softmax(low_logits, dim=-1)
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            byte_history.append(next_byte)
+            if len(byte_history) > 4:
+                byte_history.pop(0)
+            previous_input = decoder_input
+            decoder_input = self.byte_embedding(next_byte)
+        return torch.stack(generated, dim=-1)
+
+
+class RadixAttentionPatchHead(nn.Module):
+    """Parallel causal self-attention over a byte patch with radix output."""
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        layers: int,
+        heads: int,
+    ):
+        super().__init__()
+        if patch_size <= 0 or hidden_width <= 0 or layers <= 0:
+            raise ValueError("patch_size, hidden_width, and layers must be positive")
+        if hidden_width % heads:
+            raise ValueError("patch attention width must be divisible by heads")
+        self.byte_embedding = byte_embedding
+        self.patch_size = int(patch_size)
+        self.initial_state = nn.Linear(context_width, hidden_width)
+        self.input_projection = nn.Linear(
+            byte_embedding.embedding_dim,
+            hidden_width,
+            bias=False,
+        )
+        self.bos = nn.Parameter(torch.zeros(byte_embedding.embedding_dim))
+        self.positions = nn.Embedding(self.patch_size, hidden_width)
+        self.blocks = nn.ModuleList(
+            FusedModernCausalBlock(
+                hidden_width,
+                heads,
+                dropout=0.0,
+                qk_norm=False,
+            )
+            for _ in range(layers)
+        )
+        self.hidden_norm = nn.LayerNorm(hidden_width)
+        self.high_head = nn.Linear(hidden_width, 16)
+        self.high_embedding = nn.Embedding(16, hidden_width)
+        self.high_scale = nn.Embedding(16, hidden_width)
+        nn.init.zeros_(self.high_scale.weight)
+        self.low_norm = nn.LayerNorm(hidden_width)
+        self.low_head = nn.Linear(hidden_width, 16)
+        self.last_copy_logits = None
+
+    @staticmethod
+    def _validate_optional_inputs(
+        prefix: torch.Tensor | None,
+        source: torch.Tensor | None,
+    ) -> None:
+        if prefix is not None:
+            raise ValueError("radix_attention does not use generation prefixes")
+        if source is not None:
+            raise ValueError("radix_attention does not use copy sources")
+
+    def _hidden(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+    ) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        bos = self.bos.expand(*target.shape[:-1], 1, -1)
+        teacher = (
+            bos
+            if self.patch_size == 1
+            else torch.cat(
+                [bos, self.byte_embedding(target[..., : self.patch_size - 1])],
+                dim=-2,
+            )
+        )
+        positions = torch.arange(self.patch_size, device=context.device)
+        hidden = (
+            torch.tanh(self.initial_state(context)).unsqueeze(-2)
+            + self.input_projection(teacher)
+            + self.positions(positions)
+        )
+        leading = hidden.shape[:-2]
+        hidden = hidden.reshape(-1, self.patch_size, hidden.shape[-1])
+        mask = causal_mask(self.patch_size, hidden.device)
+        hidden = run_modern_stack(self.blocks, hidden, mask)
+        return self.hidden_norm(hidden).reshape(
+            *leading,
+            self.patch_size,
+            hidden.shape[-1],
+        )
+
+    def _low_hidden(
+        self,
+        hidden: torch.Tensor,
+        high: torch.Tensor,
+    ) -> torch.Tensor:
+        return self.low_norm(
+            hidden * (1.0 + self.high_scale(high))
+            + self.high_embedding(high)
+        )
+
+    def loss(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+        reduction: str = "mean",
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden(context, target)
+        high_target = target.bitwise_right_shift(4)
+        low_target = target.bitwise_and(15)
+        high_logits = self.high_head(hidden)
+        low_logits = self.low_head(self._low_hidden(hidden, high_target))
+        high_loss = F.cross_entropy(
+            high_logits.reshape(-1, 16),
+            high_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        low_loss = F.cross_entropy(
+            low_logits.reshape(-1, 16),
+            low_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        nll = high_loss + low_loss
+        if reduction == "none":
+            return nll
+        if reduction == "sum":
+            return nll.sum()
+        if reduction != "mean":
+            raise ValueError("reduction must be none, sum, or mean")
+        return nll.mean()
+
+    def forward(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> list[torch.Tensor]:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden(context, target)
+        high_log_probs = F.log_softmax(self.high_head(hidden), dim=-1)
+        high_values = torch.arange(16, device=hidden.device)
+        low_log_probs = F.log_softmax(
+            self.low_head(
+                self._low_hidden(hidden.unsqueeze(-2), high_values)
+            ),
+            dim=-1,
+        )
+        byte_log_probs = (
+            high_log_probs.unsqueeze(-1) + low_log_probs
+        ).flatten(-2)
+        self.last_copy_logits = None
+        return list(byte_log_probs.unbind(dim=-2))
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        generated = torch.zeros(
+            *context.shape[:-1],
+            self.patch_size,
+            device=context.device,
+            dtype=torch.long,
+        )
+        high_values = torch.arange(16, device=context.device)
+        for offset in range(self.patch_size):
+            hidden = self._hidden(context, generated)[..., offset, :]
+            high_log_probs = F.log_softmax(
+                self.high_head(hidden), dim=-1
+            )
+            low_log_probs = F.log_softmax(
+                self.low_head(
+                    self._low_hidden(hidden.unsqueeze(-2), high_values)
+                ),
+                dim=-1,
+            )
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated[..., offset] = next_byte
+        return generated
+
+
+class RadixWindowPatchHead(nn.Module):
+    """One-GEMM ordered causal window mixer with exact radix likelihoods."""
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+    ):
+        super().__init__()
+        if patch_size <= 0 or hidden_width <= 0:
+            raise ValueError("patch_size and hidden_width must be positive")
+        self.byte_embedding = byte_embedding
+        self.patch_size = int(patch_size)
+        self.initial_state = nn.Linear(context_width, hidden_width)
+        self.prefix_glu = nn.Linear(
+            self.patch_size * byte_embedding.embedding_dim,
+            hidden_width * 2,
+        )
+        self.bos = nn.Parameter(torch.zeros(byte_embedding.embedding_dim))
+        self.positions = nn.Embedding(self.patch_size, hidden_width)
+        self.hidden_norm = nn.LayerNorm(hidden_width)
+        self.high_head = nn.Linear(hidden_width, 16)
+        self.high_embedding = nn.Embedding(16, hidden_width)
+        self.high_scale = nn.Embedding(16, hidden_width)
+        nn.init.zeros_(self.high_scale.weight)
+        self.low_norm = nn.LayerNorm(hidden_width)
+        self.low_head = nn.Linear(hidden_width, 16)
+        self.last_copy_logits = None
+
+    @staticmethod
+    def _validate_optional_inputs(prefix, source) -> None:
+        if prefix is not None:
+            raise ValueError("radix_window does not use generation prefixes")
+        if source is not None:
+            raise ValueError("radix_window does not use copy sources")
+
+    def _teacher(self, target: torch.Tensor) -> torch.Tensor:
+        bos = self.bos.expand(*target.shape[:-1], 1, -1)
+        if self.patch_size == 1:
+            return bos
+        return torch.cat(
+            [bos, self.byte_embedding(target[..., : self.patch_size - 1])],
+            dim=-2,
+        )
+
+    def _hidden(self, context: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        teacher = self._teacher(target)
+        padded = F.pad(teacher, (0, 0, self.patch_size - 1, 0))
+        windows = padded.unfold(-2, self.patch_size, 1).transpose(-2, -1)
+        windows = windows.reshape(
+            *teacher.shape[:-2],
+            self.patch_size,
+            -1,
+        )
+        gate, value = self.prefix_glu(windows).chunk(2, dim=-1)
+        positions = torch.arange(self.patch_size, device=context.device)
+        return self.hidden_norm(
+            torch.tanh(self.initial_state(context)).unsqueeze(-2)
+            + F.silu(gate) * value
+            + self.positions(positions)
+        )
+
+    def _low_hidden(self, hidden: torch.Tensor, high: torch.Tensor) -> torch.Tensor:
+        return self.low_norm(
+            hidden * (1.0 + self.high_scale(high))
+            + self.high_embedding(high)
+        )
+
+    def loss(
+        self, context, target, prefix=None, source=None, reduction="mean"
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden(context, target)
+        high_target = target.bitwise_right_shift(4)
+        low_target = target.bitwise_and(15)
+        high_loss = F.cross_entropy(
+            self.high_head(hidden).reshape(-1, 16),
+            high_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        low_loss = F.cross_entropy(
+            self.low_head(self._low_hidden(hidden, high_target)).reshape(-1, 16),
+            low_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        nll = high_loss + low_loss
+        if reduction == "none":
+            return nll
+        if reduction == "sum":
+            return nll.sum()
+        if reduction != "mean":
+            raise ValueError("reduction must be none, sum, or mean")
+        return nll.mean()
+
+    def forward(self, context, target, prefix=None, source=None):
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden(context, target)
+        high_log_probs = F.log_softmax(self.high_head(hidden), dim=-1)
+        high_values = torch.arange(16, device=hidden.device)
+        low_log_probs = F.log_softmax(
+            self.low_head(self._low_hidden(hidden.unsqueeze(-2), high_values)),
+            dim=-1,
+        )
+        joint = (high_log_probs.unsqueeze(-1) + low_log_probs).flatten(-2)
+        self.last_copy_logits = None
+        return list(joint.unbind(dim=-2))
+
+    @torch.no_grad()
+    def greedy(
+        self, context, prefix=None, forced_first=None, source=None
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        generated = torch.zeros(
+            *context.shape[:-1],
+            self.patch_size,
+            device=context.device,
+            dtype=torch.long,
+        )
+        high_values = torch.arange(16, device=context.device)
+        for offset in range(self.patch_size):
+            hidden = self._hidden(context, generated)[..., offset, :]
+            high_log_probs = F.log_softmax(self.high_head(hidden), dim=-1)
+            low_log_probs = F.log_softmax(
+                self.low_head(
+                    self._low_hidden(hidden.unsqueeze(-2), high_values)
+                ),
+                dim=-1,
+            )
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated[..., offset] = next_byte
+        return generated
+
+
+class RadixPrefixPatchHead(RadixCausalPatchHead):
+    """Parallel full-prefix radix decoder with exact incremental generation.
+
+    Each hidden channel learns its own exponential memory decay.  Teacher
+    forcing evaluates the resulting lower-triangular causal recurrence in one
+    tensor contraction; greedy generation uses the mathematically identical
+    state update.  This retains byte-order information without a recurrent
+    backward kernel.
+    """
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+    ):
+        super().__init__(
+            context_width,
+            byte_embedding,
+            hidden_width,
+            patch_size,
+        )
+        initial_decays = torch.linspace(0.35, 0.995, hidden_width)
+        lag_positions = torch.arange(self.patch_size).unsqueeze(-1)
+        self.prefix_lag_weights = nn.Parameter(
+            initial_decays.unsqueeze(0).pow(lag_positions)
+        )
+
+    def _hidden(self, context: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        bos = self.bos.expand(*target.shape[:-1], 1, -1)
+        teacher = (
+            bos
+            if self.patch_size == 1
+            else torch.cat(
+                [
+                    bos,
+                    self.byte_embedding(target[..., : self.patch_size - 1]),
+                ],
+                dim=-2,
+            )
+        )
+        projected = self.input_projection(teacher)
+        positions = torch.arange(self.patch_size, device=context.device)
+        distance = positions[:, None] - positions[None, :]
+        causal = distance >= 0
+        weights = self.prefix_lag_weights[
+            distance.clamp(0, self.patch_size - 1)
+        ]
+        weights = weights * causal.unsqueeze(-1)
+        prefix_state = torch.einsum(
+            "ijh,...jh->...ih",
+            weights.to(dtype=projected.dtype),
+            projected,
+        )
+        return self.hidden_norm(
+            torch.tanh(self.initial_state(context)).unsqueeze(-2)
+            + F.silu(prefix_state)
+            + self.positions(positions)
+        )
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        base = torch.tanh(self.initial_state(context))
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        history: list[torch.Tensor] = []
+        high_values = torch.arange(16, device=context.device)
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            history.append(self.input_projection(decoder_input))
+            stacked_history = torch.stack(history, dim=-2)
+            lag_weights = self.prefix_lag_weights[
+                torch.arange(
+                    len(history) - 1,
+                    -1,
+                    -1,
+                    device=context.device,
+                )
+            ]
+            prefix_state = torch.einsum(
+                "...lh,lh->...h",
+                stacked_history,
+                lag_weights.to(dtype=stacked_history.dtype),
+            )
+            hidden = self.hidden_norm(
+                base + F.silu(prefix_state) + self.positions.weight[offset]
+            )
+            high_log_probs = F.log_softmax(
+                self.high_head(hidden), dim=-1
+            )
+            low_hidden = self.low_norm(
+                hidden.unsqueeze(-2) + self.high_embedding(high_values)
+            )
+            low_log_probs = F.log_softmax(
+                self.low_head(low_hidden), dim=-1
+            )
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            decoder_input = self.byte_embedding(next_byte)
+        return torch.stack(generated, dim=-1)
+
+
+class RadixCumsumPatchHead(RadixCausalPatchHead):
+    """Parallel ordered-prefix decoder with an exact incremental state.
+
+    Teacher forcing builds every causal prefix with one ``cumsum`` rather
+    than a recurrent backward kernel or a quadratic triangular contraction.
+    A learned code for each input position makes the cumulative sketch
+    order-sensitive, while an explicit recent-byte path preserves the local
+    signal that matters most for byte prediction.  Greedy decoding performs
+    the identical cumulative update one byte at a time.
+    """
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+    ):
+        super().__init__(
+            context_width,
+            byte_embedding,
+            hidden_width,
+            patch_size,
+        )
+        self.prefix_codes = nn.Parameter(
+            torch.empty(self.patch_size, hidden_width)
+        )
+        self.recent_scale = nn.Parameter(torch.ones(hidden_width))
+        nn.init.normal_(self.prefix_codes, mean=0.0, std=0.05)
+
+    def _coded_inputs(self, projected: torch.Tensor) -> torch.Tensor:
+        codes = 1.0 + self.prefix_codes.to(dtype=projected.dtype)
+        return projected * codes
+
+    def _hidden(self, context: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        bos = self.bos.expand(*target.shape[:-1], 1, -1)
+        teacher = (
+            bos
+            if self.patch_size == 1
+            else torch.cat(
+                [bos, self.byte_embedding(target[..., : self.patch_size - 1])],
+                dim=-2,
+            )
+        )
+        projected = self.input_projection(teacher)
+        prefix_state = self._coded_inputs(projected).cumsum(dim=-2)
+        prefix_scale = torch.arange(
+            1,
+            self.patch_size + 1,
+            device=context.device,
+            dtype=projected.dtype,
+        ).rsqrt()
+        prefix_state = prefix_state * prefix_scale.view(
+            *((1,) * (prefix_state.ndim - 2)), self.patch_size, 1
+        )
+        positions = torch.arange(self.patch_size, device=context.device)
+        return self.hidden_norm(
+            torch.tanh(self.initial_state(context)).unsqueeze(-2)
+            + F.silu(prefix_state)
+            + projected * self.recent_scale.to(dtype=projected.dtype)
+            + self.positions(positions)
+        )
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        base = torch.tanh(self.initial_state(context))
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        prefix_state = torch.zeros_like(base)
+        high_values = torch.arange(16, device=context.device)
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            projected = self.input_projection(decoder_input)
+            prefix_state = prefix_state + projected * (
+                1.0 + self.prefix_codes[offset].to(dtype=projected.dtype)
+            )
+            normalized_prefix = prefix_state * float(offset + 1) ** -0.5
+            hidden = self.hidden_norm(
+                base
+                + F.silu(normalized_prefix)
+                + projected * self.recent_scale.to(dtype=projected.dtype)
+                + self.positions.weight[offset]
+            )
+            high_log_probs = F.log_softmax(self.high_head(hidden), dim=-1)
+            low_hidden = self.low_norm(
+                hidden.unsqueeze(-2) + self.high_embedding(high_values)
+            )
+            low_log_probs = F.log_softmax(self.low_head(low_hidden), dim=-1)
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            decoder_input = self.byte_embedding(next_byte)
+        return torch.stack(generated, dim=-1)
+
+
+class RadixDilatedConvPatchHead(nn.Module):
+    """Parallel full-prefix decoder built from causal dilated byte cakes.
+
+    Five dilation levels cover a 32-byte patch during teacher forcing without
+    a sequential recurrent backward pass.  Each block uses a depthwise causal
+    convolution followed by a gated channel mixer.  Greedy decoding recomputes
+    the short patch graph and is therefore mathematically identical to the
+    teacher-forced distribution used by :meth:`loss`.
+    """
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        layers: int,
+    ):
+        super().__init__()
+        if patch_size <= 0 or hidden_width <= 0 or layers <= 0:
+            raise ValueError("patch_size, hidden_width, and layers must be positive")
+        self.byte_embedding = byte_embedding
+        self.patch_size = int(patch_size)
+        self.initial_state = nn.Linear(context_width, hidden_width)
+        self.input_projection = nn.Linear(
+            byte_embedding.embedding_dim,
+            hidden_width,
+            bias=False,
+        )
+        self.bos = nn.Parameter(torch.zeros(byte_embedding.embedding_dim))
+        self.positions = nn.Embedding(self.patch_size, hidden_width)
+        self.block_norms = nn.ModuleList(
+            nn.LayerNorm(hidden_width) for _ in range(layers)
+        )
+        self.depthwise = nn.ModuleList(
+            nn.Conv1d(
+                hidden_width,
+                hidden_width,
+                kernel_size=3,
+                dilation=2**index,
+                groups=hidden_width,
+            )
+            for index in range(layers)
+        )
+        self.channel_mixers = nn.ModuleList(
+            nn.Linear(hidden_width, hidden_width * 2)
+            for _ in range(layers)
+        )
+        self.hidden_norm = nn.LayerNorm(hidden_width)
+        self.high_head = nn.Linear(hidden_width, 16)
+        self.high_embedding = nn.Embedding(16, hidden_width)
+        self.high_scale = nn.Embedding(16, hidden_width)
+        nn.init.zeros_(self.high_scale.weight)
+        self.low_norm = nn.LayerNorm(hidden_width)
+        self.low_head = nn.Linear(hidden_width, 16)
+        self.last_copy_logits = None
+
+    @staticmethod
+    def _validate_optional_inputs(prefix, source) -> None:
+        if prefix is not None:
+            raise ValueError("radix_dilated_conv does not use generation prefixes")
+        if source is not None:
+            raise ValueError("radix_dilated_conv does not use copy sources")
+
+    def _teacher_inputs(self, target: torch.Tensor) -> torch.Tensor:
+        bos = self.bos.expand(*target.shape[:-1], 1, -1)
+        if self.patch_size == 1:
+            return bos
+        return torch.cat(
+            [bos, self.byte_embedding(target[..., : self.patch_size - 1])],
+            dim=-2,
+        )
+
+    def _hidden(self, context: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        teacher = self._teacher_inputs(target)
+        positions = torch.arange(self.patch_size, device=context.device)
+        hidden = (
+            torch.tanh(self.initial_state(context)).unsqueeze(-2)
+            + self.input_projection(teacher)
+            + self.positions(positions)
+        )
+        leading = hidden.shape[:-2]
+        hidden = hidden.reshape(-1, self.patch_size, hidden.shape[-1])
+        for index, (norm, convolution, mixer) in enumerate(
+            zip(self.block_norms, self.depthwise, self.channel_mixers)
+        ):
+            normalized = norm(hidden)
+            dilation = 2**index
+            mixed = convolution(
+                F.pad(normalized.transpose(1, 2), (2 * dilation, 0))
+            ).transpose(1, 2)
+            gate, value = mixer(mixed).chunk(2, dim=-1)
+            hidden = hidden + torch.sigmoid(gate) * F.silu(value)
+        hidden = self.hidden_norm(hidden)
+        return hidden.reshape(*leading, self.patch_size, hidden.shape[-1])
+
+    def _low_hidden(self, hidden: torch.Tensor, high: torch.Tensor) -> torch.Tensor:
+        return self.low_norm(
+            hidden * (1.0 + self.high_scale(high))
+            + self.high_embedding(high)
+        )
+
+    def loss(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+        reduction: str = "mean",
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden(context, target)
+        high_target = target.bitwise_right_shift(4)
+        low_target = target.bitwise_and(15)
+        high_loss = F.cross_entropy(
+            self.high_head(hidden).reshape(-1, 16),
+            high_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        low_loss = F.cross_entropy(
+            self.low_head(self._low_hidden(hidden, high_target)).reshape(-1, 16),
+            low_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        nll = high_loss + low_loss
+        if reduction == "none":
+            return nll
+        if reduction == "sum":
+            return nll.sum()
+        if reduction != "mean":
+            raise ValueError("reduction must be none, sum, or mean")
+        return nll.mean()
+
+    def forward(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> list[torch.Tensor]:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden(context, target)
+        high_log_probs = F.log_softmax(self.high_head(hidden), dim=-1)
+        high_values = torch.arange(16, device=context.device)
+        low_log_probs = F.log_softmax(
+            self.low_head(
+                self._low_hidden(hidden.unsqueeze(-2), high_values)
+            ),
+            dim=-1,
+        )
+        joint = (high_log_probs.unsqueeze(-1) + low_log_probs).flatten(-2)
+        self.last_copy_logits = None
+        return list(joint.unbind(dim=-2))
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        generated = torch.zeros(
+            *context.shape[:-1],
+            self.patch_size,
+            device=context.device,
+            dtype=torch.long,
+        )
+        high_values = torch.arange(16, device=context.device)
+        for offset in range(self.patch_size):
+            hidden = self._hidden(context, generated)[..., offset, :]
+            high_log_probs = F.log_softmax(self.high_head(hidden), dim=-1)
+            low_log_probs = F.log_softmax(
+                self.low_head(
+                    self._low_hidden(hidden.unsqueeze(-2), high_values)
+                ),
+                dim=-1,
+            )
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated[..., offset] = next_byte
+        return generated
+
+
+class RadixConvPatchHead(RadixCausalPatchHead):
+    """Ordered full-prefix decoder using one parallel causal convolution."""
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+    ):
+        super().__init__(
+            context_width,
+            byte_embedding,
+            hidden_width,
+            patch_size,
+        )
+        self.prefix_mixer = nn.Conv1d(
+            hidden_width,
+            hidden_width,
+            kernel_size=self.patch_size,
+            groups=hidden_width,
+        )
+
+    def _teacher_inputs(self, target: torch.Tensor) -> torch.Tensor:
+        bos = self.bos.expand(*target.shape[:-1], 1, -1)
+        if self.patch_size == 1:
+            return bos
+        return torch.cat(
+            [
+                bos,
+                self.byte_embedding(target[..., : self.patch_size - 1]),
+            ],
+            dim=-2,
+        )
+
+    def _hidden(self, context: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        teacher = self._teacher_inputs(target)
+        projected = self.input_projection(teacher)
+        leading = projected.shape[:-2]
+        mixed = self.prefix_mixer(
+            F.pad(
+                projected.reshape(
+                    -1,
+                    self.patch_size,
+                    projected.shape[-1],
+                ).transpose(1, 2),
+                (self.patch_size - 1, 0),
+            )
+        ).transpose(1, 2).reshape(
+            *leading,
+            self.patch_size,
+            projected.shape[-1],
+        )
+        positions = torch.arange(self.patch_size, device=context.device)
+        return self.hidden_norm(
+            torch.tanh(self.initial_state(context)).unsqueeze(-2)
+            + F.silu(mixed)
+            + self.positions(positions)
+        )
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        base = torch.tanh(self.initial_state(context))
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        history: list[torch.Tensor] = []
+        high_values = torch.arange(16, device=context.device)
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            history.append(self.input_projection(decoder_input))
+            prefix_values = torch.stack(history, dim=-2)
+            if len(history) < self.patch_size:
+                prefix_values = F.pad(
+                    prefix_values,
+                    (0, 0, self.patch_size - len(history), 0),
+                )
+            leading = prefix_values.shape[:-2]
+            mixed = self.prefix_mixer(
+                prefix_values.reshape(
+                    -1,
+                    self.patch_size,
+                    prefix_values.shape[-1],
+                ).transpose(1, 2)
+            ).squeeze(-1).reshape(*leading, prefix_values.shape[-1])
+            hidden = self.hidden_norm(
+                base + F.silu(mixed) + self.positions.weight[offset]
+            )
+            high_log_probs = F.log_softmax(
+                self.high_head(hidden), dim=-1
+            )
+            low_hidden = self.low_norm(
+                hidden.unsqueeze(-2) + self.high_embedding(high_values)
+            )
+            low_log_probs = F.log_softmax(
+                self.low_head(low_hidden), dim=-1
+            )
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            decoder_input = self.byte_embedding(next_byte)
+        return torch.stack(generated, dim=-1)
+
+
+class RadixNgramPatchHead(RadixCausalPatchHead):
+    """Exact radix decoder with a trainable hashed byte n-gram cake."""
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        ngram_buckets: int,
+    ):
+        if ngram_buckets <= 0:
+            raise ValueError("radix n-gram buckets must be positive")
+        super().__init__(
+            context_width,
+            byte_embedding,
+            hidden_width,
+            patch_size,
+        )
+        self.ngram_buckets = int(ngram_buckets)
+        self.high_prior = nn.Embedding(self.ngram_buckets, 16)
+        self.low_prior = nn.Embedding(self.ngram_buckets, 16)
+        self.low_high_prior = nn.Embedding(16, 16)
+        nn.init.zeros_(self.high_prior.weight)
+        nn.init.zeros_(self.low_prior.weight)
+        nn.init.zeros_(self.low_high_prior.weight)
+
+    def _context_ids(self, target: torch.Tensor) -> torch.Tensor:
+        target = target[..., : self.patch_size]
+        previous = torch.cat(
+            [torch.zeros_like(target[..., :1]), target[..., :-1]],
+            dim=-1,
+        )
+        previous2 = torch.cat(
+            [torch.zeros_like(target[..., :2]), target[..., :-2]],
+            dim=-1,
+        )
+        return (previous2 * 257 + previous) % self.ngram_buckets
+
+    def loss(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+        reduction: str = "mean",
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden(context, target)
+        context_ids = self._context_ids(target)
+        high_target = target.bitwise_right_shift(4)
+        low_target = target.bitwise_and(15)
+        high_logits = self.high_head(hidden) + self.high_prior(context_ids)
+        low_hidden = self.low_norm(hidden + self.high_embedding(high_target))
+        low_logits = (
+            self.low_head(low_hidden)
+            + self.low_prior(context_ids)
+            + self.low_high_prior(high_target)
+        )
+        high_loss = F.cross_entropy(
+            high_logits.reshape(-1, 16),
+            high_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        low_loss = F.cross_entropy(
+            low_logits.reshape(-1, 16),
+            low_target.reshape(-1),
+            reduction="none",
+        ).view_as(target)
+        nll = high_loss + low_loss
+        if reduction == "none":
+            return nll
+        if reduction == "sum":
+            return nll.sum()
+        if reduction != "mean":
+            raise ValueError("reduction must be none, sum, or mean")
+        return nll.mean()
+
+    def forward(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> list[torch.Tensor]:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden(context, target)
+        context_ids = self._context_ids(target)
+        high_log_probs = F.log_softmax(
+            self.high_head(hidden) + self.high_prior(context_ids),
+            dim=-1,
+        )
+        high_values = torch.arange(16, device=hidden.device)
+        low_hidden = self.low_norm(
+            hidden.unsqueeze(-2) + self.high_embedding(high_values)
+        )
+        low_log_probs = F.log_softmax(
+            self.low_head(low_hidden)
+            + self.low_prior(context_ids).unsqueeze(-2)
+            + self.low_high_prior(high_values),
+            dim=-1,
+        )
+        byte_log_probs = (
+            high_log_probs.unsqueeze(-1) + low_log_probs
+        ).flatten(-2)
+        self.last_copy_logits = None
+        return list(byte_log_probs.unbind(dim=-2))
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        base = torch.tanh(self.initial_state(context))
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        previous = torch.zeros(context.shape[:-1], device=context.device, dtype=torch.long)
+        previous2 = torch.zeros_like(previous)
+        high_values = torch.arange(16, device=context.device)
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            hidden = self.hidden_norm(
+                base
+                + self.input_projection(decoder_input)
+                + self.positions.weight[offset]
+            )
+            context_ids = (previous2 * 257 + previous) % self.ngram_buckets
+            high_log_probs = F.log_softmax(
+                self.high_head(hidden) + self.high_prior(context_ids),
+                dim=-1,
+            )
+            low_hidden = self.low_norm(
+                hidden.unsqueeze(-2) + self.high_embedding(high_values)
+            )
+            low_log_probs = F.log_softmax(
+                self.low_head(low_hidden)
+                + self.low_prior(context_ids).unsqueeze(-2)
+                + self.low_high_prior(high_values),
+                dim=-1,
+            )
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            previous2, previous = previous, next_byte
+            decoder_input = self.byte_embedding(next_byte)
+        return torch.stack(generated, dim=-1)
+
+
+class RadixHashPatchHead(RadixCausalPatchHead):
+    """Constant-depth radix decoder with multi-order learned byte memory.
+
+    The dense path consumes the immediately preceding byte. Two sparse tables
+    add ordered backoff contexts for the preceding two and four bytes. Teacher
+    forcing computes every hash in parallel, while greedy generation builds
+    the same IDs from emitted history.
+    """
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        ngram_buckets: int,
+    ):
+        if ngram_buckets < 512:
+            raise ValueError("radix hash buckets must be at least 512")
+        super().__init__(context_width, byte_embedding, hidden_width, patch_size)
+        self.ngram_buckets = int(ngram_buckets)
+        self.short_buckets = max(256, self.ngram_buckets // 3)
+        self.long_buckets = self.ngram_buckets - self.short_buckets
+        self.short_high_prior = nn.Embedding(self.short_buckets, 16)
+        self.short_low_prior = nn.Embedding(self.short_buckets, 16)
+        self.long_high_prior = nn.Embedding(self.long_buckets, 16)
+        self.long_low_prior = nn.Embedding(self.long_buckets, 16)
+        self.low_high_prior = nn.Embedding(16, 16)
+        for embedding in (
+            self.short_high_prior,
+            self.short_low_prior,
+            self.long_high_prior,
+            self.long_low_prior,
+            self.low_high_prior,
+        ):
+            nn.init.zeros_(embedding.weight)
+
+    @staticmethod
+    def _lag(target: torch.Tensor, lag: int) -> torch.Tensor:
+        if lag >= target.shape[-1]:
+            return torch.zeros_like(target)
+        return F.pad(target[..., :-lag], (lag, 0))
+
+    def _context_ids(self, target: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        target = target[..., : self.patch_size]
+        previous = self._lag(target, 1)
+        previous2 = self._lag(target, 2)
+        short_ids = (previous2 * 257 + previous) % self.short_buckets
+        previous3 = self._lag(target, 3)
+        previous4 = self._lag(target, 4)
+        long_ids = previous4
+        for value in (previous3, previous2, previous):
+            long_ids = (long_ids * 257 + value) % self.long_buckets
+        return short_ids, long_ids
+
+    def _prior_logits(
+        self,
+        short_ids: torch.Tensor,
+        long_ids: torch.Tensor,
+        high: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        if high is None:
+            return self.short_high_prior(short_ids) + self.long_high_prior(long_ids)
+        return (
+            self.short_low_prior(short_ids)
+            + self.long_low_prior(long_ids)
+            + self.low_high_prior(high)
+        )
+
+    def loss(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+        reduction: str = "mean",
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden(context, target)
+        short_ids, long_ids = self._context_ids(target)
+        high_target = target.bitwise_right_shift(4)
+        low_target = target.bitwise_and(15)
+        high_logits = self.high_head(hidden) + self._prior_logits(short_ids, long_ids)
+        low_hidden = self.low_norm(hidden + self.high_embedding(high_target))
+        low_logits = self.low_head(low_hidden) + self._prior_logits(
+            short_ids, long_ids, high_target
+        )
+        high_loss = F.cross_entropy(
+            high_logits.reshape(-1, 16), high_target.reshape(-1), reduction="none"
+        ).view_as(target)
+        low_loss = F.cross_entropy(
+            low_logits.reshape(-1, 16), low_target.reshape(-1), reduction="none"
+        ).view_as(target)
+        nll = high_loss + low_loss
+        if reduction == "none":
+            return nll
+        if reduction == "sum":
+            return nll.sum()
+        if reduction != "mean":
+            raise ValueError("reduction must be none, sum, or mean")
+        return nll.mean()
+
+    def forward(
+        self,
+        context: torch.Tensor,
+        target: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> list[torch.Tensor]:
+        self._validate_optional_inputs(prefix, source)
+        target = target[..., : self.patch_size]
+        hidden = self._hidden(context, target)
+        short_ids, long_ids = self._context_ids(target)
+        high_log_probs = F.log_softmax(
+            self.high_head(hidden) + self._prior_logits(short_ids, long_ids), dim=-1
+        )
+        high_values = torch.arange(16, device=hidden.device)
+        low_hidden = self.low_norm(
+            hidden.unsqueeze(-2) + self.high_embedding(high_values)
+        )
+        low_log_probs = F.log_softmax(
+            self.low_head(low_hidden)
+            + self._prior_logits(
+                short_ids.unsqueeze(-1), long_ids.unsqueeze(-1), high_values
+            ),
+            dim=-1,
+        )
+        byte_log_probs = (high_log_probs.unsqueeze(-1) + low_log_probs).flatten(-2)
+        self.last_copy_logits = None
+        return list(byte_log_probs.unbind(dim=-2))
+
+    def _history_ids(self, history: list[torch.Tensor]) -> tuple[torch.Tensor, torch.Tensor]:
+        zero = torch.zeros_like(history[-1])
+        previous = history[-1]
+        previous2 = history[-2] if len(history) >= 2 else zero
+        short_ids = (previous2 * 257 + previous) % self.short_buckets
+        values = [
+            history[-lag] if len(history) >= lag else zero
+            for lag in (4, 3, 2, 1)
+        ]
+        long_ids = values[0]
+        for value in values[1:]:
+            long_ids = (long_ids * 257 + value) % self.long_buckets
+        return short_ids, long_ids
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        base = torch.tanh(self.initial_state(context))
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        high_values = torch.arange(16, device=context.device)
+        history: list[torch.Tensor] = []
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            hidden = self.hidden_norm(
+                base + self.input_projection(decoder_input) + self.positions.weight[offset]
+            )
+            if history:
+                short_ids, long_ids = self._history_ids(history)
+            else:
+                short_ids = torch.zeros(
+                    context.shape[:-1], device=context.device, dtype=torch.long
+                )
+                long_ids = torch.zeros_like(short_ids)
+            high_log_probs = F.log_softmax(
+                self.high_head(hidden) + self._prior_logits(short_ids, long_ids), dim=-1
+            )
+            low_hidden = self.low_norm(
+                hidden.unsqueeze(-2) + self.high_embedding(high_values)
+            )
+            low_log_probs = F.log_softmax(
+                self.low_head(low_hidden)
+                + self._prior_logits(
+                    short_ids.unsqueeze(-1), long_ids.unsqueeze(-1), high_values
+                ),
+                dim=-1,
+            )
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            history.append(next_byte)
+            if len(history) > 4:
+                history.pop(0)
+            decoder_input = self.byte_embedding(next_byte)
+        return torch.stack(generated, dim=-1)
+
+
+class RadixCumsumHashPatchHead(RadixHashPatchHead):
+    """Order-sensitive cumulative state plus sparse multi-order byte memory."""
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        ngram_buckets: int,
+    ):
+        super().__init__(
+            context_width,
+            byte_embedding,
+            hidden_width,
+            patch_size,
+            ngram_buckets,
+        )
+        self.prefix_codes = nn.Parameter(torch.empty(patch_size, hidden_width))
+        self.recent_scale = nn.Parameter(torch.ones(hidden_width))
+        nn.init.normal_(self.prefix_codes, mean=0.0, std=0.05)
+
+    def _hidden(self, context: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        bos = self.bos.expand(*target.shape[:-1], 1, -1)
+        teacher = (
+            bos
+            if self.patch_size == 1
+            else torch.cat(
+                [bos, self.byte_embedding(target[..., : self.patch_size - 1])],
+                dim=-2,
+            )
+        )
+        projected = self.input_projection(teacher)
+        coded = projected * (
+            1.0 + self.prefix_codes.to(dtype=projected.dtype)
+        )
+        prefix_state = coded.cumsum(dim=-2)
+        prefix_scale = torch.arange(
+            1,
+            self.patch_size + 1,
+            device=context.device,
+            dtype=projected.dtype,
+        ).rsqrt()
+        prefix_state = prefix_state * prefix_scale.view(
+            *((1,) * (prefix_state.ndim - 2)), self.patch_size, 1
+        )
+        positions = torch.arange(self.patch_size, device=context.device)
+        return self.hidden_norm(
+            torch.tanh(self.initial_state(context)).unsqueeze(-2)
+            + F.silu(prefix_state)
+            + projected * self.recent_scale.to(dtype=projected.dtype)
+            + self.positions(positions)
+        )
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        base = torch.tanh(self.initial_state(context))
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        prefix_state = torch.zeros_like(base)
+        high_values = torch.arange(16, device=context.device)
+        history: list[torch.Tensor] = []
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            projected = self.input_projection(decoder_input)
+            prefix_state = prefix_state + projected * (
+                1.0 + self.prefix_codes[offset].to(dtype=projected.dtype)
+            )
+            hidden = self.hidden_norm(
+                base
+                + F.silu(prefix_state * float(offset + 1) ** -0.5)
+                + projected * self.recent_scale.to(dtype=projected.dtype)
+                + self.positions.weight[offset]
+            )
+            if history:
+                short_ids, long_ids = self._history_ids(history)
+            else:
+                short_ids = torch.zeros(
+                    context.shape[:-1], device=context.device, dtype=torch.long
+                )
+                long_ids = torch.zeros_like(short_ids)
+            high_log_probs = F.log_softmax(
+                self.high_head(hidden) + self._prior_logits(short_ids, long_ids), dim=-1
+            )
+            low_hidden = self.low_norm(
+                hidden.unsqueeze(-2) + self.high_embedding(high_values)
+            )
+            low_log_probs = F.log_softmax(
+                self.low_head(low_hidden)
+                + self._prior_logits(
+                    short_ids.unsqueeze(-1), long_ids.unsqueeze(-1), high_values
+                ),
+                dim=-1,
+            )
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            history.append(next_byte)
+            if len(history) > 4:
+                history.pop(0)
+            decoder_input = self.byte_embedding(next_byte)
+        return torch.stack(generated, dim=-1)
+
+
+class RadixDepthwiseHashPatchHead(RadixHashPatchHead):
+    """Parallel full-patch receptive field with cheap depthwise byte cakes."""
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        ngram_buckets: int,
+        layers: int,
+    ):
+        if layers <= 0:
+            raise ValueError("radix depthwise layers must be positive")
+        super().__init__(
+            context_width,
+            byte_embedding,
+            hidden_width,
+            patch_size,
+            ngram_buckets,
+        )
+        self.depthwise_layers = int(layers)
+        self.block_norms = nn.ModuleList(
+            nn.LayerNorm(hidden_width) for _ in range(self.depthwise_layers)
+        )
+        self.depthwise = nn.ModuleList(
+            nn.Conv1d(
+                hidden_width,
+                hidden_width,
+                kernel_size=3,
+                dilation=2**index,
+                groups=hidden_width,
+            )
+            for index in range(self.depthwise_layers)
+        )
+        self.gate_scales = nn.ParameterList(
+            nn.Parameter(torch.zeros(hidden_width))
+            for _ in range(self.depthwise_layers)
+        )
+        self.gate_biases = nn.ParameterList(
+            nn.Parameter(torch.full((hidden_width,), -1.0))
+            for _ in range(self.depthwise_layers)
+        )
+        self.value_scales = nn.ParameterList(
+            nn.Parameter(torch.ones(hidden_width))
+            for _ in range(self.depthwise_layers)
+        )
+        self.value_biases = nn.ParameterList(
+            nn.Parameter(torch.zeros(hidden_width))
+            for _ in range(self.depthwise_layers)
+        )
+
+    def _teacher_inputs(self, target: torch.Tensor) -> torch.Tensor:
+        bos = self.bos.expand(*target.shape[:-1], 1, -1)
+        if self.patch_size == 1:
+            return bos
+        return torch.cat(
+            [bos, self.byte_embedding(target[..., : self.patch_size - 1])], dim=-2
+        )
+
+    def _hidden(self, context: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        teacher = self._teacher_inputs(target)
+        positions = torch.arange(self.patch_size, device=context.device)
+        hidden = (
+            torch.tanh(self.initial_state(context)).unsqueeze(-2)
+            + self.input_projection(teacher)
+            + self.positions(positions)
+        )
+        leading = hidden.shape[:-2]
+        hidden = hidden.reshape(-1, self.patch_size, hidden.shape[-1])
+        for index, (norm, convolution) in enumerate(
+            zip(self.block_norms, self.depthwise)
+        ):
+            normalized = norm(hidden)
+            dilation = 2**index
+            lag_one = F.pad(
+                normalized[:, :-dilation], (0, 0, dilation, 0)
+            )
+            if 2 * dilation < self.patch_size:
+                lag_two = F.pad(
+                    normalized[:, : -2 * dilation],
+                    (0, 0, 2 * dilation, 0),
+                )
+            else:
+                lag_two = torch.zeros_like(normalized)
+            weights = convolution.weight[:, 0].to(dtype=normalized.dtype)
+            mixed = (
+                lag_two * weights[:, 0]
+                + lag_one * weights[:, 1]
+                + normalized * weights[:, 2]
+                + convolution.bias.to(dtype=normalized.dtype)
+            )
+            gate = torch.sigmoid(
+                mixed * self.gate_scales[index] + self.gate_biases[index]
+            )
+            value = F.silu(
+                mixed * self.value_scales[index] + self.value_biases[index]
+            )
+            hidden = hidden + gate * value
+        hidden = self.hidden_norm(hidden)
+        return hidden.reshape(*leading, self.patch_size, hidden.shape[-1])
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        base = torch.tanh(self.initial_state(context))
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        high_values = torch.arange(16, device=context.device)
+        block_histories: list[list[torch.Tensor]] = [
+            [] for _ in range(self.depthwise_layers)
+        ]
+        byte_history: list[torch.Tensor] = []
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            hidden = (
+                base
+                + self.input_projection(decoder_input)
+                + self.positions.weight[offset]
+            )
+            for index, (norm, convolution) in enumerate(
+                zip(self.block_norms, self.depthwise)
+            ):
+                normalized = norm(hidden)
+                history = block_histories[index]
+                dilation = 2**index
+                zero = torch.zeros_like(normalized)
+                lag_one = history[-dilation] if len(history) >= dilation else zero
+                lag_two = (
+                    history[-2 * dilation]
+                    if len(history) >= 2 * dilation
+                    else zero
+                )
+                weights = convolution.weight[:, 0].to(dtype=normalized.dtype)
+                mixed = (
+                    lag_two * weights[:, 0]
+                    + lag_one * weights[:, 1]
+                    + normalized * weights[:, 2]
+                    + convolution.bias.to(dtype=normalized.dtype)
+                )
+                gate = torch.sigmoid(
+                    mixed * self.gate_scales[index] + self.gate_biases[index]
+                )
+                value = F.silu(
+                    mixed * self.value_scales[index] + self.value_biases[index]
+                )
+                hidden = hidden + gate * value
+                history.append(normalized)
+            hidden = self.hidden_norm(hidden)
+            if byte_history:
+                short_ids, long_ids = self._history_ids(byte_history)
+            else:
+                short_ids = torch.zeros(
+                    context.shape[:-1], device=context.device, dtype=torch.long
+                )
+                long_ids = torch.zeros_like(short_ids)
+            high_log_probs = F.log_softmax(
+                self.high_head(hidden) + self._prior_logits(short_ids, long_ids), dim=-1
+            )
+            low_hidden = self.low_norm(
+                hidden.unsqueeze(-2) + self.high_embedding(high_values)
+            )
+            low_log_probs = F.log_softmax(
+                self.low_head(low_hidden)
+                + self._prior_logits(
+                    short_ids.unsqueeze(-1), long_ids.unsqueeze(-1), high_values
+                ),
+                dim=-1,
+            )
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            byte_history.append(next_byte)
+            if len(byte_history) > 4:
+                byte_history.pop(0)
+            decoder_input = self.byte_embedding(next_byte)
+        return torch.stack(generated, dim=-1)
+
+
+class RadixRotaryHashPatchHead(RadixHashPatchHead):
+    """Parallel relative-order prefix memory using cumulative rotary states."""
+
+    def __init__(
+        self,
+        context_width: int,
+        byte_embedding: nn.Embedding,
+        hidden_width: int,
+        patch_size: int,
+        ngram_buckets: int,
+    ):
+        if hidden_width % 2:
+            raise ValueError("radix rotary hidden width must be even")
+        super().__init__(
+            context_width,
+            byte_embedding,
+            hidden_width,
+            patch_size,
+            ngram_buckets,
+        )
+        half = hidden_width // 2
+        periods = torch.logspace(
+            math.log10(2.0),
+            math.log10(max(128.0, float(patch_size * 2))),
+            half,
+        )
+        self.register_buffer("rotary_frequencies", 2.0 * math.pi / periods)
+        self.recent_scale = nn.Parameter(torch.ones(hidden_width))
+
+    def _rotary_tables(
+        self, device: torch.device, dtype: torch.dtype
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        positions = torch.arange(self.patch_size, device=device, dtype=dtype)
+        phases = positions[:, None] * self.rotary_frequencies.to(
+            device=device, dtype=dtype
+        )
+        return phases.cos(), phases.sin()
+
+    @staticmethod
+    def _rotate(
+        values: torch.Tensor,
+        cosine: torch.Tensor,
+        sine: torch.Tensor,
+        inverse: bool = False,
+    ) -> torch.Tensor:
+        even = values[..., 0::2]
+        odd = values[..., 1::2]
+        if inverse:
+            rotated_even = even * cosine + odd * sine
+            rotated_odd = -even * sine + odd * cosine
+        else:
+            rotated_even = even * cosine - odd * sine
+            rotated_odd = even * sine + odd * cosine
+        return torch.stack((rotated_even, rotated_odd), dim=-1).flatten(-2)
+
+    def _hidden(self, context: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        if target.shape[-1] < self.patch_size:
+            raise ValueError("target is shorter than the configured patch span")
+        bos = self.bos.expand(*target.shape[:-1], 1, -1)
+        teacher = (
+            bos
+            if self.patch_size == 1
+            else torch.cat(
+                [bos, self.byte_embedding(target[..., : self.patch_size - 1])],
+                dim=-2,
+            )
+        )
+        projected = self.input_projection(teacher)
+        cosine, sine = self._rotary_tables(context.device, projected.dtype)
+        rotated_inputs = self._rotate(projected, cosine, sine)
+        cumulative = rotated_inputs.cumsum(dim=-2)
+        relative_prefix = self._rotate(cumulative, cosine, sine, inverse=True)
+        prefix_scale = torch.arange(
+            1,
+            self.patch_size + 1,
+            device=context.device,
+            dtype=projected.dtype,
+        ).rsqrt()
+        relative_prefix = relative_prefix * prefix_scale.view(
+            *((1,) * (relative_prefix.ndim - 2)), self.patch_size, 1
+        )
+        positions = torch.arange(self.patch_size, device=context.device)
+        return self.hidden_norm(
+            torch.tanh(self.initial_state(context)).unsqueeze(-2)
+            + F.silu(relative_prefix)
+            + projected * self.recent_scale.to(dtype=projected.dtype)
+            + self.positions(positions)
+        )
+
+    @torch.no_grad()
+    def greedy(
+        self,
+        context: torch.Tensor,
+        prefix: torch.Tensor | None = None,
+        forced_first: torch.Tensor | None = None,
+        source: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        self._validate_optional_inputs(prefix, source)
+        base = torch.tanh(self.initial_state(context))
+        decoder_input = self.bos.expand(*context.shape[:-1], -1)
+        rotary_state = torch.zeros_like(base)
+        cosine, sine = self._rotary_tables(context.device, base.dtype)
+        high_values = torch.arange(16, device=context.device)
+        history: list[torch.Tensor] = []
+        generated: list[torch.Tensor] = []
+        for offset in range(self.patch_size):
+            projected = self.input_projection(decoder_input)
+            rotary_state = rotary_state + self._rotate(
+                projected, cosine[offset], sine[offset]
+            )
+            relative_prefix = self._rotate(
+                rotary_state, cosine[offset], sine[offset], inverse=True
+            ) * float(offset + 1) ** -0.5
+            hidden = self.hidden_norm(
+                base
+                + F.silu(relative_prefix)
+                + projected * self.recent_scale.to(dtype=projected.dtype)
+                + self.positions.weight[offset]
+            )
+            if history:
+                short_ids, long_ids = self._history_ids(history)
+            else:
+                short_ids = torch.zeros(
+                    context.shape[:-1], device=context.device, dtype=torch.long
+                )
+                long_ids = torch.zeros_like(short_ids)
+            high_log_probs = F.log_softmax(
+                self.high_head(hidden) + self._prior_logits(short_ids, long_ids), dim=-1
+            )
+            low_hidden = self.low_norm(
+                hidden.unsqueeze(-2) + self.high_embedding(high_values)
+            )
+            low_log_probs = F.log_softmax(
+                self.low_head(low_hidden)
+                + self._prior_logits(
+                    short_ids.unsqueeze(-1), long_ids.unsqueeze(-1), high_values
+                ),
+                dim=-1,
+            )
+            next_byte = (
+                high_log_probs.unsqueeze(-1) + low_log_probs
+            ).flatten(-2).argmax(dim=-1)
+            if offset == 0 and forced_first is not None:
+                next_byte = forced_first
+            generated.append(next_byte)
+            history.append(next_byte)
+            if len(history) > 4:
+                history.pop(0)
+            decoder_input = self.byte_embedding(next_byte)
+        return torch.stack(generated, dim=-1)
+
+
 class CausalByteLM(nn.Module):
     def __init__(self, d_model=128, d_abi=64, layers=3, heads=4, max_len=256):
         super().__init__()
@@ -1271,6 +4527,12 @@ class CausalBytePatchLM(nn.Module):
         patch_prediction_mode="factorized",
         patch_generation_width=96,
         patch_generation_bytes=0,
+        patch_generation_ngram_buckets=0,
+        patch_generation_joint_greedy=True,
+        patch_generation_persistent_context=False,
+        patch_generation_persistent_output_rank=0,
+        patch_generation_layers=2,
+        patch_generation_heads=4,
         patch_prediction_rollout_training=False,
         patch_prediction_rollout_mix=1.0,
         patch_generation_context=0,
@@ -1361,6 +4623,20 @@ class CausalBytePatchLM(nn.Module):
         self.patch_prediction_mode = patch_prediction_mode
         self.patch_generation_width = patch_generation_width
         self.patch_generation_bytes = int(patch_generation_bytes or patch_size)
+        self.patch_generation_ngram_buckets = int(
+            patch_generation_ngram_buckets
+        )
+        self.patch_generation_joint_greedy = bool(
+            patch_generation_joint_greedy
+        )
+        self.patch_generation_persistent_context = bool(
+            patch_generation_persistent_context
+        )
+        self.patch_generation_persistent_output_rank = int(
+            patch_generation_persistent_output_rank
+        )
+        self.patch_generation_layers = int(patch_generation_layers)
+        self.patch_generation_heads = int(patch_generation_heads)
         if self.patch_generation_bytes <= 0:
             raise ValueError("patch_generation_bytes must be positive")
         if self.patch_generation_bytes % self.patch_size != 0:
@@ -1551,15 +4827,22 @@ class CausalBytePatchLM(nn.Module):
                 raise ValueError(
                     "coarse_layers must be positive with coarse patching"
                 )
-        self.transition_head = nn.Embedding(256, 256)
-        if transition_logits is None:
-            nn.init.zeros_(self.transition_head.weight)
+        if local_decoder == "patch_generator_only":
+            if transition_logits is not None:
+                raise ValueError(
+                    "patch_generator_only does not consume transition_logits"
+                )
+            self.transition_head = None
         else:
-            if transition_logits.shape != (256, 256):
-                raise ValueError("transition logits must have shape [256, 256]")
-            with torch.no_grad():
-                self.transition_head.weight.copy_(transition_logits)
-        self.transition_head.weight.requires_grad_(trainable_transition_head)
+            self.transition_head = nn.Embedding(256, 256)
+            if transition_logits is None:
+                nn.init.zeros_(self.transition_head.weight)
+            else:
+                if transition_logits.shape != (256, 256):
+                    raise ValueError("transition logits must have shape [256, 256]")
+                with torch.no_grad():
+                    self.transition_head.weight.copy_(transition_logits)
+            self.transition_head.weight.requires_grad_(trainable_transition_head)
         if trainable_prior_gates:
             self.transition_logit_scale = nn.Parameter(
                 torch.tensor(float(transition_logit_scale))
@@ -1753,7 +5036,8 @@ class CausalBytePatchLM(nn.Module):
             self.core = nn.TransformerEncoder(block, layers)
         self.to_abi = nn.Sequential(nn.Linear(d_model, d_abi), nn.LayerNorm(d_abi))
         self.from_abi = nn.Linear(d_abi, d_model)
-        self.bos_context = nn.Parameter(torch.zeros(1, 1, d_abi))
+        if local_decoder != "patch_generator_only":
+            self.bos_context = nn.Parameter(torch.zeros(1, 1, d_abi))
         local_input_width = (
             d_byte + d_model + (d_model if patch_encoder_layers else 0)
         )
@@ -1794,6 +5078,11 @@ class CausalBytePatchLM(nn.Module):
                 )
             if local_decoder == "span_patch_decoder" and self.span_verifier:
                 self.span_verifier_head = nn.Linear(self.local_width, 1)
+        elif local_decoder == "patch_generator_only":
+            if not patch_prediction:
+                raise ValueError(
+                    "patch_generator_only requires patch prediction"
+                )
         elif local_decoder == "routed_window_transformer":
             if not self.routed_cake_experts or self.routed_cake_experts < 5:
                 raise ValueError(
@@ -1897,7 +5186,7 @@ class CausalBytePatchLM(nn.Module):
                 self.prior_gate.weight.zero_()
                 self.prior_gate.bias[0] = torch.logit(transition_init)
                 self.prior_gate.bias[1] = torch.logit(context_init)
-        if tie_byte_embeddings:
+        if tie_byte_embeddings and local_decoder != "patch_generator_only":
             self.output_to_byte = nn.Linear(
                 self.local_width, d_byte, bias=False
             )
@@ -1906,7 +5195,7 @@ class CausalBytePatchLM(nn.Module):
             nn.init.normal_(
                 self.output_to_byte.weight, std=d_model ** -0.5
             )
-        else:
+        elif local_decoder != "patch_generator_only":
             self.head = nn.Linear(self.local_width, 256)
         self.aux_heads = nn.ModuleList(
             nn.Linear(self.local_width, 256)
@@ -1917,23 +5206,274 @@ class CausalBytePatchLM(nn.Module):
                 self.patch_prediction_heads = nn.ModuleList(
                     nn.Linear(d_model, 256) for _ in range(patch_size)
                 )
-            elif patch_prediction_mode == "autoregressive":
-                self.patch_generator = AutoregressivePatchHead(
-                    d_model,
-                    self.byte_emb,
-                    patch_generation_width,
-                    self.patch_generation_bytes,
-                    copy_window=self.patch_generation_copy_window,
-                    copy_dim=self.patch_generation_copy_dim,
-                    copy_scale=self.patch_generation_copy_scale,
-                    position_copy=self.patch_generation_position_copy,
-                    contextual_copy=self.patch_generation_contextual_copy,
-                    lowercase_copy=self.patch_generation_lowercase_copy,
-                    semantic_copy=self.patch_generation_semantic_copy,
-                )
+            elif patch_prediction_mode in {
+                "autoregressive",
+                "parallel_causal",
+                "radix_attention",
+                "radix_causal",
+                "radix_cumsum",
+                "radix_cumsum_hash",
+                "radix_depthwise_hash",
+                "radix_conv",
+                "radix_dilated_conv",
+                "radix_hash",
+                "radix_grouped_recurrent_hash",
+                "radix_ngram",
+                "radix_prefix",
+                "radix_low_rank_recurrent_hash",
+                "radix_recurrent",
+                "radix_recurrent_conditional_hash",
+                "radix_recurrent_hash",
+                "radix_recurrent_ngram",
+                "radix_rotary_hash",
+                "radix_scan",
+                "radix_scan_hash",
+                "radix_simple_recurrent_hash",
+                "radix_window",
+            }:
+                if patch_prediction_mode == "autoregressive":
+                    self.patch_generator = AutoregressivePatchHead(
+                        d_model,
+                        self.byte_emb,
+                        patch_generation_width,
+                        self.patch_generation_bytes,
+                        copy_window=self.patch_generation_copy_window,
+                        copy_dim=self.patch_generation_copy_dim,
+                        copy_scale=self.patch_generation_copy_scale,
+                        position_copy=self.patch_generation_position_copy,
+                        contextual_copy=self.patch_generation_contextual_copy,
+                        lowercase_copy=self.patch_generation_lowercase_copy,
+                        semantic_copy=self.patch_generation_semantic_copy,
+                    )
+                elif patch_prediction_mode == "parallel_causal":
+                    if self.patch_generation_context:
+                        raise ValueError(
+                            "parallel_causal does not support patch_generation_context"
+                        )
+                    if self.patch_generation_copy_window:
+                        raise ValueError(
+                            "parallel_causal does not support patch_generation_copy_window"
+                        )
+                    self.patch_generator = ParallelCausalPatchHead(
+                        d_model,
+                        self.byte_emb,
+                        patch_generation_width,
+                        self.patch_generation_bytes,
+                    )
+                elif patch_prediction_mode == "radix_attention":
+                    if self.patch_generation_context:
+                        raise ValueError(
+                            "radix_attention does not support patch_generation_context"
+                        )
+                    if self.patch_generation_copy_window:
+                        raise ValueError(
+                            "radix_attention does not support patch_generation_copy_window"
+                        )
+                    self.patch_generator = RadixAttentionPatchHead(
+                        d_model,
+                        self.byte_emb,
+                        patch_generation_width,
+                        self.patch_generation_bytes,
+                        self.patch_generation_layers,
+                        self.patch_generation_heads,
+                    )
+                elif patch_prediction_mode == "radix_dilated_conv":
+                    if self.patch_generation_context:
+                        raise ValueError(
+                            "radix_dilated_conv does not support patch_generation_context"
+                        )
+                    if self.patch_generation_copy_window:
+                        raise ValueError(
+                            "radix_dilated_conv does not support patch_generation_copy_window"
+                        )
+                    self.patch_generator = RadixDilatedConvPatchHead(
+                        d_model,
+                        self.byte_emb,
+                        patch_generation_width,
+                        self.patch_generation_bytes,
+                        self.patch_generation_layers,
+                    )
+                elif patch_prediction_mode == "radix_depthwise_hash":
+                    if self.patch_generation_context:
+                        raise ValueError(
+                            "radix_depthwise_hash does not support patch_generation_context"
+                        )
+                    if self.patch_generation_copy_window:
+                        raise ValueError(
+                            "radix_depthwise_hash does not support patch_generation_copy_window"
+                        )
+                    self.patch_generator = RadixDepthwiseHashPatchHead(
+                        d_model,
+                        self.byte_emb,
+                        patch_generation_width,
+                        self.patch_generation_bytes,
+                        self.patch_generation_ngram_buckets,
+                        self.patch_generation_layers,
+                    )
+                elif patch_prediction_mode in {
+                    "radix_causal",
+                    "radix_cumsum",
+                    "radix_cumsum_hash",
+                    "radix_conv",
+                    "radix_hash",
+                    "radix_ngram",
+                    "radix_prefix",
+                    "radix_rotary_hash",
+                }:
+                    if self.patch_generation_context:
+                        raise ValueError(
+                            "radix_causal does not support patch_generation_context"
+                        )
+                    if self.patch_generation_copy_window:
+                        raise ValueError(
+                            "radix_causal does not support patch_generation_copy_window"
+                        )
+                    generator_type = {
+                        "radix_causal": RadixCausalPatchHead,
+                        "radix_cumsum": RadixCumsumPatchHead,
+                        "radix_cumsum_hash": RadixCumsumHashPatchHead,
+                        "radix_conv": RadixConvPatchHead,
+                        "radix_hash": RadixHashPatchHead,
+                        "radix_ngram": RadixNgramPatchHead,
+                        "radix_prefix": RadixPrefixPatchHead,
+                        "radix_rotary_hash": RadixRotaryHashPatchHead,
+                    }[patch_prediction_mode]
+                    generator_args = (
+                        (
+                            d_model,
+                            self.byte_emb,
+                            patch_generation_width,
+                            self.patch_generation_bytes,
+                            self.patch_generation_ngram_buckets,
+                        )
+                        if patch_prediction_mode in {
+                            "radix_cumsum_hash",
+                            "radix_hash",
+                            "radix_ngram",
+                            "radix_rotary_hash",
+                        }
+                        else (
+                            d_model,
+                            self.byte_emb,
+                            patch_generation_width,
+                            self.patch_generation_bytes,
+                        )
+                    )
+                    self.patch_generator = generator_type(*generator_args)
+                elif patch_prediction_mode in {"radix_scan", "radix_scan_hash"}:
+                    if self.patch_generation_context:
+                        raise ValueError(
+                            "radix_scan does not support patch_generation_context"
+                        )
+                    if self.patch_generation_copy_window:
+                        raise ValueError(
+                            "radix_scan does not support patch_generation_copy_window"
+                        )
+                    self.patch_generator = RadixScanPatchHead(
+                        d_model,
+                        self.byte_emb,
+                        patch_generation_width,
+                        self.patch_generation_bytes,
+                        (
+                            self.patch_generation_ngram_buckets
+                            if patch_prediction_mode == "radix_scan_hash"
+                            else 0
+                        ),
+                    )
+                elif patch_prediction_mode == "radix_window":
+                    if self.patch_generation_context:
+                        raise ValueError(
+                            "radix_window does not support patch_generation_context"
+                        )
+                    if self.patch_generation_copy_window:
+                        raise ValueError(
+                            "radix_window does not support patch_generation_copy_window"
+                        )
+                    self.patch_generator = RadixWindowPatchHead(
+                        d_model,
+                        self.byte_emb,
+                        patch_generation_width,
+                        self.patch_generation_bytes,
+                    )
+                else:
+                    if self.patch_generation_context:
+                        raise ValueError(
+                            "radix_recurrent does not support patch_generation_context"
+                        )
+                    if self.patch_generation_copy_window:
+                        raise ValueError(
+                            "radix_recurrent does not support patch_generation_copy_window"
+                        )
+                    if patch_prediction_mode == "radix_grouped_recurrent_hash":
+                        self.patch_generator = RadixGroupedRecurrentHashPatchHead(
+                            d_model,
+                            self.byte_emb,
+                            patch_generation_width,
+                            self.patch_generation_bytes,
+                            self.patch_generation_ngram_buckets,
+                            self.patch_generation_heads,
+                            joint_greedy=self.patch_generation_joint_greedy,
+                            persistent_context=(
+                                self.patch_generation_persistent_context
+                            ),
+                            persistent_output_rank=(
+                                self.patch_generation_persistent_output_rank
+                            ),
+                        )
+                        recurrent_type = None
+                    else:
+                        recurrent_type = {
+                            "radix_low_rank_recurrent_hash": (
+                                RadixLowRankRecurrentHashPatchHead
+                            ),
+                            "radix_recurrent": RadixRecurrentPatchHead,
+                            "radix_recurrent_conditional_hash": (
+                                RadixRecurrentConditionalHashPatchHead
+                            ),
+                            "radix_recurrent_hash": RadixRecurrentHashPatchHead,
+                            "radix_recurrent_ngram": RadixRecurrentPatchHead,
+                            "radix_simple_recurrent_hash": (
+                                RadixSimpleRecurrentHashPatchHead
+                            ),
+                        }[patch_prediction_mode]
+                    if recurrent_type is not None:
+                        self.patch_generator = recurrent_type(
+                            d_model,
+                            self.byte_emb,
+                            patch_generation_width,
+                            self.patch_generation_bytes,
+                            (
+                                self.patch_generation_ngram_buckets
+                                if patch_prediction_mode in {
+                                    "radix_low_rank_recurrent_hash",
+                                    "radix_recurrent_conditional_hash",
+                                    "radix_recurrent_hash",
+                                    "radix_recurrent_ngram",
+                                    "radix_simple_recurrent_hash",
+                                }
+                                else 0
+                            ),
+                            joint_greedy=self.patch_generation_joint_greedy,
+                            persistent_context=(
+                                self.patch_generation_persistent_context
+                            ),
+                            persistent_output_rank=(
+                                self.patch_generation_persistent_output_rank
+                            ),
+                        )
             else:
                 raise ValueError(
-                    "patch_prediction_mode must be factorized or autoregressive"
+                    "patch_prediction_mode must be factorized, autoregressive, "
+                    "parallel_causal, radix_attention, radix_causal, radix_conv, "
+                    "radix_cumsum, radix_cumsum_hash, radix_depthwise_hash, "
+                    "radix_dilated_conv, "
+                    "radix_grouped_recurrent_hash, radix_hash, radix_ngram, "
+                    "radix_low_rank_recurrent_hash, "
+                    "radix_prefix, radix_recurrent, "
+                    "radix_recurrent_conditional_hash, radix_recurrent_hash, "
+                    "radix_recurrent_ngram, "
+                    "radix_rotary_hash, radix_scan, radix_scan_hash, "
+                    "radix_simple_recurrent_hash, or radix_window"
                 )
         if self.default_cake_route is not None:
             for module in self.modules():
@@ -1952,6 +5492,23 @@ class CausalBytePatchLM(nn.Module):
             raise RuntimeError("this model has no routed cake blocks")
         for module in routed:
             module.set_route(route)
+
+    def patch_generator_context(
+        self,
+        global_h: torch.Tensor,
+        brick=None,
+    ) -> torch.Tensor:
+        """Compose a host core state and an optional domain brick through ABI.
+
+        The residual host path preserves foundation capacity, while every
+        generator prediction also traverses the ABI bridge.  A portable brick
+        therefore changes the actual generation state instead of an auxiliary
+        or legacy-only logit path.
+        """
+        abi = self.to_abi(global_h)
+        if brick is not None:
+            abi = brick(abi)
+        return global_h + self.from_abi(abi)
 
     def sparse_cake_parameters(
         self,
@@ -1996,6 +5553,10 @@ class CausalBytePatchLM(nn.Module):
     def _transition_prior(
         self, x: torch.Tensor, scale: torch.Tensor | float | None = None
     ) -> torch.Tensor:
+        if self.transition_head is None:
+            raise RuntimeError(
+                "patch_generator_only has no legacy transition prior"
+            )
         if scale is None:
             scale = self.transition_logit_scale
         prior = self.transition_head(x) * scale
@@ -2336,6 +5897,11 @@ class CausalBytePatchLM(nn.Module):
         return_generated_patch: bool = False,
         patch_prediction_context_indices: torch.Tensor | None = None,
     ):
+        if self.local_decoder == "patch_generator_only":
+            raise RuntimeError(
+                "patch_generator_only models use generation-aligned patch loss "
+                "and generate_next_patch/cached patch generation"
+            )
         if self.profile_timing:
             self.last_profile = {}
         batch, length = x.shape
@@ -2703,7 +6269,10 @@ class CausalBytePatchLM(nn.Module):
                         :, self.patch_size - 1 :: self.patch_size
                     ]
                 else:
-                    prediction_source = global_h
+                    prediction_source = self.patch_generator_context(
+                        global_h,
+                        brick=brick,
+                    )
                 prediction_context = prediction_source[
                     :, :: self.patch_prediction_stride
                 ]
@@ -2722,7 +6291,30 @@ class CausalBytePatchLM(nn.Module):
                     )
                 if self.patch_prediction_detach_context:
                     prediction_context = prediction_context.detach()
-                if self.patch_prediction_mode == "autoregressive":
+                if self.patch_prediction_mode in {
+                    "autoregressive",
+                    "parallel_causal",
+                    "radix_attention",
+                    "radix_causal",
+                    "radix_cumsum",
+                    "radix_cumsum_hash",
+                    "radix_conv",
+                    "radix_dilated_conv",
+                    "radix_hash",
+                    "radix_grouped_recurrent_hash",
+                    "radix_ngram",
+                    "radix_prefix",
+                    "radix_low_rank_recurrent_hash",
+                    "radix_recurrent",
+                    "radix_recurrent_conditional_hash",
+                    "radix_recurrent_hash",
+                    "radix_recurrent_ngram",
+                    "radix_rotary_hash",
+                    "radix_scan",
+                    "radix_scan_hash",
+                    "radix_simple_recurrent_hash",
+                    "radix_window",
+                }:
                     next_patches = self.patch_prediction_targets(x)[
                         :, :: self.patch_prediction_stride
                     ]
@@ -2799,7 +6391,31 @@ class CausalBytePatchLM(nn.Module):
                         for head in self.patch_prediction_heads
                     ]
                 if return_generated_patch:
-                    if self.patch_prediction_mode == "autoregressive":
+                    if self.patch_prediction_mode in {
+                        "autoregressive",
+                        "parallel_causal",
+                        "radix_attention",
+                        "radix_causal",
+                        "radix_cumsum",
+                        "radix_cumsum_hash",
+                        "radix_depthwise_hash",
+                        "radix_conv",
+                        "radix_dilated_conv",
+                        "radix_hash",
+                        "radix_grouped_recurrent_hash",
+                        "radix_ngram",
+                        "radix_prefix",
+                        "radix_low_rank_recurrent_hash",
+                        "radix_recurrent",
+                        "radix_recurrent_conditional_hash",
+                        "radix_recurrent_hash",
+                        "radix_recurrent_ngram",
+                        "radix_rotary_hash",
+                        "radix_scan",
+                        "radix_scan_hash",
+                        "radix_simple_recurrent_hash",
+                        "radix_window",
+                    }:
                         forced_first = None
                         if self.patch_prediction_context == "local":
                             forced_first = logits[:, -1].argmax(dim=-1)
@@ -2900,15 +6516,41 @@ class CausalBytePatchLM(nn.Module):
         self,
         x: torch.Tensor,
         context_indices: torch.Tensor | None = None,
-    ) -> tuple[list[torch.Tensor], torch.Tensor]:
+        loss_only: bool = False,
+        brick=None,
+    ) -> tuple[list[torch.Tensor], torch.Tensor] | torch.Tensor:
         """Teacher-forced generation loss without the legacy local decoder.
 
         This is the training path for a routed domain cake: the frozen shared
         foundation and frozen portable decoder remain in the forward graph,
         while only the selected tail cake needs gradients and optimizer state.
         """
-        if not self.patch_prediction or self.patch_prediction_mode != "autoregressive":
-            raise RuntimeError("domain cake training requires autoregressive patch prediction")
+        if not self.patch_prediction or self.patch_prediction_mode not in {
+            "autoregressive",
+            "parallel_causal",
+            "radix_attention",
+            "radix_causal",
+            "radix_cumsum",
+            "radix_cumsum_hash",
+            "radix_depthwise_hash",
+            "radix_conv",
+            "radix_dilated_conv",
+            "radix_hash",
+            "radix_grouped_recurrent_hash",
+            "radix_ngram",
+            "radix_prefix",
+            "radix_low_rank_recurrent_hash",
+            "radix_recurrent",
+            "radix_recurrent_conditional_hash",
+            "radix_recurrent_hash",
+            "radix_recurrent_ngram",
+            "radix_rotary_hash",
+            "radix_scan",
+            "radix_scan_hash",
+            "radix_simple_recurrent_hash",
+            "radix_window",
+        }:
+            raise RuntimeError("domain cake training requires causal patch prediction")
         if self.patch_prediction_context != "global":
             raise RuntimeError("domain cake training requires global patch context")
         if self.patch_encoder_layers or self.coarse_patch_size:
@@ -2942,7 +6584,10 @@ class CausalBytePatchLM(nn.Module):
             if self.modern_blocks
             else self.core(patch_h, mask=mask)
         )
-        prediction_context = global_h[:, :: self.patch_prediction_stride]
+        prediction_context = self.patch_generator_context(
+            global_h,
+            brick=brick,
+        )[:, :: self.patch_prediction_stride]
         if self.patch_prediction_detach_context:
             prediction_context = prediction_context.detach()
         targets = self.patch_prediction_targets(x)[
@@ -2982,6 +6627,67 @@ class CausalBytePatchLM(nn.Module):
                     1,
                     gather_index.expand(-1, 1, source.shape[-1]),
                 )
+        if loss_only:
+            loss_function = getattr(self.patch_generator, "loss", None)
+            if loss_function is not None:
+                per_byte_loss = loss_function(
+                    prediction_context,
+                    targets,
+                    prefix,
+                    source=source,
+                    reduction="none",
+                )
+            else:
+                loss_predictions = self.patch_generator(
+                    prediction_context,
+                    targets,
+                    prefix,
+                    source=source,
+                )
+                loss_logits = torch.stack(loss_predictions, dim=2)
+                per_byte_loss = F.cross_entropy(
+                    loss_logits.reshape(-1, loss_logits.shape[-1]),
+                    targets[
+                        :, : loss_logits.shape[1], : loss_logits.shape[2]
+                    ].reshape(-1),
+                    reduction="none",
+                ).view(
+                    loss_logits.shape[0],
+                    loss_logits.shape[1],
+                    loss_logits.shape[2],
+                )
+            offsets = torch.arange(
+                per_byte_loss.shape[2],
+                device=x.device,
+                dtype=torch.long,
+            )
+            if context_indices is None:
+                selected_contexts = (
+                    torch.arange(
+                        per_byte_loss.shape[1],
+                        device=x.device,
+                        dtype=torch.long,
+                    )
+                    * self.patch_prediction_stride
+                )
+                absolute_positions = (
+                    (selected_contexts[:, None] + 1) * self.patch_size
+                    + offsets[None]
+                )
+                valid = absolute_positions.unsqueeze(0) < x.shape[1]
+            else:
+                selected_contexts = (
+                    context_indices * self.patch_prediction_stride
+                )
+                absolute_positions = (
+                    (selected_contexts[:, None] + 1) * self.patch_size
+                    + offsets[None]
+                )
+                valid = (absolute_positions < x.shape[1]).unsqueeze(1)
+            weights = valid.expand_as(per_byte_loss).to(
+                dtype=per_byte_loss.dtype
+            )
+            return (per_byte_loss * weights).sum() / weights.sum().clamp_min(1.0)
         predictions = self.patch_generator(
             prediction_context,
             targets,
@@ -2992,7 +6698,10 @@ class CausalBytePatchLM(nn.Module):
 
     @torch.no_grad()
     def generate_next_patch(
-        self, x: torch.Tensor, return_logits: bool = False
+        self,
+        x: torch.Tensor,
+        return_logits: bool = False,
+        brick=None,
     ) -> torch.Tensor:
         """Generate from the global path without running the local LM decoder."""
         if self.local_decoder not in {"parallel_patch", "abi_patch_cell"} and not self.patch_prediction:
@@ -3048,9 +6757,36 @@ class CausalBytePatchLM(nn.Module):
             global_h = run_modern_stack(self.core, patch_h, mask)
         else:
             global_h = self.core(patch_h, mask=mask)
-        if self.patch_prediction_mode == "autoregressive":
+        if self.patch_prediction_mode in {
+            "autoregressive",
+            "parallel_causal",
+            "radix_attention",
+            "radix_causal",
+            "radix_cumsum",
+            "radix_cumsum_hash",
+            "radix_depthwise_hash",
+            "radix_conv",
+            "radix_dilated_conv",
+            "radix_hash",
+            "radix_grouped_recurrent_hash",
+            "radix_ngram",
+            "radix_prefix",
+            "radix_low_rank_recurrent_hash",
+            "radix_recurrent",
+            "radix_recurrent_conditional_hash",
+            "radix_recurrent_hash",
+            "radix_recurrent_ngram",
+            "radix_rotary_hash",
+            "radix_scan",
+            "radix_scan_hash",
+            "radix_simple_recurrent_hash",
+            "radix_window",
+        }:
             return self.patch_generator.greedy(
-                global_h[:, -1],
+                self.patch_generator_context(
+                    global_h[:, -1],
+                    brick=brick,
+                ),
                 (
                     x[:, -self.patch_generation_context :]
                     if self.patch_generation_context
@@ -3127,13 +6863,34 @@ class CausalBytePatchLM(nn.Module):
             return dict(existing["summary"])
         if not next(self.parameters()).is_cuda:
             raise RuntimeError("CUDA graph preparation requires a CUDA model")
-        if self.patch_prediction_mode != "autoregressive":
-            raise RuntimeError("CUDA graph preparation requires autoregressive patch prediction")
+        if self.patch_prediction_mode not in {
+            "autoregressive",
+            "parallel_causal",
+            "radix_attention",
+            "radix_causal",
+            "radix_cumsum",
+            "radix_cumsum_hash",
+            "radix_depthwise_hash",
+            "radix_conv",
+            "radix_dilated_conv",
+            "radix_hash",
+            "radix_grouped_recurrent_hash",
+            "radix_ngram",
+            "radix_prefix",
+            "radix_low_rank_recurrent_hash",
+            "radix_recurrent",
+            "radix_recurrent_conditional_hash",
+            "radix_recurrent_hash",
+            "radix_recurrent_ngram",
+            "radix_rotary_hash",
+            "radix_scan",
+            "radix_scan_hash",
+            "radix_simple_recurrent_hash",
+            "radix_window",
+        }:
+            raise RuntimeError("CUDA graph preparation requires causal patch prediction")
         if self.patch_generation_context:
             raise RuntimeError("CUDA graph preparation does not support generation prefixes")
-        if self.patch_generation_copy_window <= 0:
-            raise RuntimeError("CUDA graph preparation requires a fixed copy window")
-
         started = time.perf_counter()
         original_greedy = self.patch_generator.greedy
 
@@ -3145,37 +6902,68 @@ class CausalBytePatchLM(nn.Module):
             def forward(self, context: torch.Tensor, source: torch.Tensor) -> torch.Tensor:
                 return self.head.greedy(context, source=source)
 
+        class GreedyContextTraceWrapper(nn.Module):
+            def __init__(self, head: nn.Module):
+                super().__init__()
+                self.head = head
+
+            def forward(self, context: torch.Tensor) -> torch.Tensor:
+                return self.head.greedy(context)
+
         device = next(self.parameters()).device
         sample_context = torch.zeros(
             int(batch_size),
             self.d_model,
             device=device,
         )
-        sample_source = torch.zeros(
-            int(batch_size),
-            self.patch_generation_copy_window,
-            dtype=torch.long,
-            device=device,
+        uses_copy_source = self.patch_generation_copy_window > 0
+        sample_source = (
+            torch.zeros(
+                int(batch_size),
+                self.patch_generation_copy_window,
+                dtype=torch.long,
+                device=device,
+            )
+            if uses_copy_source
+            else None
+        )
+        trace_wrapper = (
+            GreedyTraceWrapper(self.patch_generator).eval()
+            if uses_copy_source
+            else GreedyContextTraceWrapper(self.patch_generator).eval()
+        )
+        trace_inputs = (
+            (sample_context, sample_source)
+            if uses_copy_source
+            else (sample_context,)
         )
         traced = torch.jit.freeze(
             torch.jit.trace(
-                GreedyTraceWrapper(self.patch_generator).eval(),
-                (sample_context, sample_source),
+                trace_wrapper,
+                trace_inputs,
                 check_trace=False,
             )
         )
         static_context = sample_context.clone()
-        static_source = sample_source.clone()
+        static_source = sample_source.clone() if sample_source is not None else None
         warmup_stream = torch.cuda.Stream(device=device)
         warmup_stream.wait_stream(torch.cuda.current_stream(device))
         with torch.cuda.stream(warmup_stream):
             for _ in range(3):
-                static_output = traced(static_context, static_source)
+                static_output = (
+                    traced(static_context, static_source)
+                    if static_source is not None
+                    else traced(static_context)
+                )
         torch.cuda.current_stream(device).wait_stream(warmup_stream)
         torch.cuda.synchronize(device)
         graph = torch.cuda.CUDAGraph()
         with torch.cuda.graph(graph):
-            static_output = traced(static_context, static_source)
+            static_output = (
+                traced(static_context, static_source)
+                if static_source is not None
+                else traced(static_context)
+            )
 
         def graph_greedy(
             context: torch.Tensor,
@@ -3186,8 +6974,9 @@ class CausalBytePatchLM(nn.Module):
             if (
                 prefix is not None
                 or forced_first is not None
-                or source is None
                 or context.shape != static_context.shape
+                or (uses_copy_source and source is None)
+                or (not uses_copy_source and source is not None)
             ):
                 return original_greedy(
                     context,
@@ -3195,9 +6984,10 @@ class CausalBytePatchLM(nn.Module):
                     forced_first=forced_first,
                     source=source,
                 )
-            normalized_source = self.patch_generator._normalized_copy_source(source)
             static_context.copy_(context)
-            static_source.copy_(normalized_source)
+            if static_source is not None:
+                normalized_source = self.patch_generator._normalized_copy_source(source)
+                static_source.copy_(normalized_source)
             graph.replay()
             return static_output
 
@@ -3223,13 +7013,141 @@ class CausalBytePatchLM(nn.Module):
         )
         return dict(summary)
 
+    @torch.no_grad()
+    def prepare_patch_generator_script(self, batch_size: int = 1) -> dict:
+        """Freeze fixed-span local decoding into one CPU inference graph."""
+        existing = getattr(self, "_patch_generator_script_runtime", None)
+        if existing is not None:
+            return dict(existing["summary"])
+        if next(self.parameters()).is_cuda:
+            raise RuntimeError("scripted patch preparation requires a CPU model")
+        if self.patch_prediction_mode not in {
+            "autoregressive",
+            "parallel_causal",
+            "radix_attention",
+            "radix_causal",
+            "radix_cumsum",
+            "radix_cumsum_hash",
+            "radix_depthwise_hash",
+            "radix_conv",
+            "radix_dilated_conv",
+            "radix_hash",
+            "radix_grouped_recurrent_hash",
+            "radix_ngram",
+            "radix_prefix",
+            "radix_low_rank_recurrent_hash",
+            "radix_recurrent",
+            "radix_recurrent_conditional_hash",
+            "radix_recurrent_hash",
+            "radix_recurrent_ngram",
+            "radix_rotary_hash",
+            "radix_scan",
+            "radix_scan_hash",
+            "radix_simple_recurrent_hash",
+            "radix_window",
+        }:
+            raise RuntimeError("scripted patch preparation requires causal patch prediction")
+        if self.patch_generation_context or self.patch_generation_copy_window:
+            raise RuntimeError(
+                "scripted patch preparation currently requires context-only decoding"
+            )
+
+        started = time.perf_counter()
+        original_greedy = self.patch_generator.greedy
+
+        class GreedyContextTraceWrapper(nn.Module):
+            def __init__(self, head: nn.Module):
+                super().__init__()
+                self.head = head
+
+            def forward(self, context: torch.Tensor) -> torch.Tensor:
+                return self.head.greedy(context)
+
+        sample_context = torch.zeros(int(batch_size), self.d_model)
+        traced = torch.jit.optimize_for_inference(
+            torch.jit.freeze(
+                torch.jit.trace(
+                    GreedyContextTraceWrapper(self.patch_generator).eval(),
+                    (sample_context,),
+                    check_trace=False,
+                )
+            )
+        )
+        reference = original_greedy(sample_context)
+        scripted = traced(sample_context)
+        if not torch.equal(reference, scripted):
+            raise RuntimeError("scripted patch generator changed greedy output")
+
+        def scripted_greedy(
+            context: torch.Tensor,
+            prefix: torch.Tensor | None = None,
+            forced_first: torch.Tensor | None = None,
+            source: torch.Tensor | None = None,
+        ) -> torch.Tensor:
+            if (
+                prefix is not None
+                or forced_first is not None
+                or source is not None
+                or context.shape != sample_context.shape
+            ):
+                return original_greedy(
+                    context,
+                    prefix,
+                    forced_first=forced_first,
+                    source=source,
+                )
+            return traced(context)
+
+        object.__setattr__(self.patch_generator, "greedy", scripted_greedy)
+        summary = {
+            "enabled": True,
+            "batch_size": int(batch_size),
+            "generation_bytes": int(self.patch_generation_bytes),
+            "setup_seconds": time.perf_counter() - started,
+        }
+        object.__setattr__(
+            self,
+            "_patch_generator_script_runtime",
+            {
+                "traced": traced,
+                "original_greedy": original_greedy,
+                "summary": summary,
+            },
+        )
+        return dict(summary)
+
     @torch.inference_mode()
     def begin_patch_prediction_cached_generation(self, x: torch.Tensor) -> dict:
         """Prefill global caches for exact autoregressive draft patch generation."""
         if (
             not self.patch_prediction
             or self.patch_prediction_context != "global"
-            or self.patch_prediction_mode != "autoregressive"
+            or self.patch_prediction_mode
+            not in {
+                "autoregressive",
+                "parallel_causal",
+                "radix_attention",
+                "radix_causal",
+                "radix_cumsum",
+                "radix_cumsum_hash",
+                "radix_depthwise_hash",
+                "radix_conv",
+                "radix_dilated_conv",
+                "radix_hash",
+                "radix_grouped_recurrent_hash",
+                "radix_ngram",
+                "radix_prefix",
+                "radix_low_rank_recurrent_hash",
+                "radix_recurrent",
+                "radix_recurrent_conditional_hash",
+                "radix_recurrent_hash",
+                "radix_recurrent_ngram",
+                "radix_rotary_hash",
+                "radix_scan",
+                "radix_scan_hash",
+                "radix_simple_recurrent_hash",
+                "radix_window",
+            }
             or not self.modern_blocks
         ):
             raise RuntimeError("cached patch prediction generation is unsupported")
@@ -3851,7 +7769,31 @@ class CausalBytePatchLM(nn.Module):
             if self.patch_generation_context
             else None
         )
-        if self.patch_prediction_mode == "autoregressive":
+        if self.patch_prediction_mode in {
+            "autoregressive",
+            "parallel_causal",
+            "radix_attention",
+            "radix_causal",
+            "radix_cumsum",
+            "radix_cumsum_hash",
+            "radix_depthwise_hash",
+            "radix_conv",
+            "radix_dilated_conv",
+            "radix_hash",
+            "radix_grouped_recurrent_hash",
+            "radix_ngram",
+            "radix_prefix",
+            "radix_low_rank_recurrent_hash",
+            "radix_recurrent",
+            "radix_recurrent_conditional_hash",
+            "radix_recurrent_hash",
+            "radix_recurrent_ngram",
+            "radix_rotary_hash",
+            "radix_scan",
+            "radix_scan_hash",
+            "radix_simple_recurrent_hash",
+            "radix_window",
+        }:
             draft = self.patch_generator.greedy(
                 global_h[:, -1],
                 prefix,

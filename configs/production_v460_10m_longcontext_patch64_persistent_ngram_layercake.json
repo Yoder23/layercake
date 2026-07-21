@@ -1,0 +1,13 @@
+{
+  "extends": "production_v456_10m_longcontext_patch64_persistent_layercake.json",
+  "name": "production_v460_10m_longcontext_patch64_persistent_ngram_layercake",
+  "description": "Exact 10M capacity reallocation: compact learned recurrent byte n-gram cake plus persistent global conditioning.",
+  "model": {
+    "patch_prediction_mode": "radix_recurrent_ngram",
+    "patch_generation_ngram_buckets": 4096,
+    "patch_generation_width": 377
+  },
+  "training": {
+    "out_dir": "runs_experiment/production_v460_10m_longcontext_patch64_persistent_ngram_layercake"
+  }
+}
