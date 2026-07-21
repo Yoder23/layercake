@@ -23,7 +23,7 @@ RESULTS = ROOT / "results"
 
 
 def _load_torch(path: str) -> dict:
-    return torch.load(ROOT / path, map_location="cpu")
+    return torch.load(ROOT / path, map_location="cpu", weights_only=True)
 
 
 def _game_artifact(base_artifact: dict, domain_id: str) -> dict:

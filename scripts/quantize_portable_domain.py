@@ -20,7 +20,7 @@ def main() -> None:
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
 
-    source = torch.load(args.input, map_location="cpu")
+    source = torch.load(args.input, map_location="cpu", weights_only=True)
     quantized = quantize_portable_artifact(source)
     artifact_path = Path(args.artifact)
     artifact_path.parent.mkdir(parents=True, exist_ok=True)

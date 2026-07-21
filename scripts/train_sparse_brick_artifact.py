@@ -28,7 +28,7 @@ def main():
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    core = torch.load(args.core, map_location="cpu")
+    core = torch.load(args.core, map_location="cpu", weights_only=True)
     byte, patch = build_models(core, device)
     config = {
         "type": "sparse_low_rank", "d_abi": core["args"].get("d_abi", 64),

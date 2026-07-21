@@ -4,6 +4,8 @@ from pathlib import Path
 import shutil
 import torch
 
+from layercake.safe_loading import safe_torch_load
+
 
 class CherryPickError(ValueError):
     pass
@@ -52,8 +54,8 @@ def cherry_pick_module(source_commit, target_commit, module_name: str, *, output
 
 def _compare_tensors(source_path: str, target_path: str) -> dict:
     try:
-        source = torch.load(source_path, map_location="cpu")
-        target = torch.load(target_path, map_location="cpu")
+        source = safe_torch_load(source_path, map_location="cpu")
+        target = safe_torch_load(target_path, map_location="cpu")
     except Exception as exc:
         return {
             "checked": False,

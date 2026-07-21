@@ -35,13 +35,13 @@ def main():
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    artifact = torch.load(args.core, map_location="cpu")
+    artifact = torch.load(args.core, map_location="cpu", weights_only=True)
     byte, patch = build_models(artifact, device)
     byte.eval()
     patch.eval()
     brick = None
     if args.brick:
-        brick_artifact = torch.load(args.brick, map_location="cpu")
+        brick_artifact = torch.load(args.brick, map_location="cpu", weights_only=True)
         brick = build_brick(brick_artifact["brick_config"], device)
         brick.load_state_dict(brick_artifact["brick"])
         brick.eval()

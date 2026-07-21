@@ -1277,7 +1277,7 @@ def _train(config: dict):
             teacher_path = Path(teacher_checkpoint)
             if not teacher_path.is_absolute():
                 teacher_path = (root / teacher_path).resolve()
-            ckpt = torch.load(teacher_path, map_location=device)
+            ckpt = torch.load(teacher_path, map_location=device, weights_only=True)
             teacher_model.load_state_dict(ckpt["model"], strict=True)
         teacher_model.eval()
         for parameter in teacher_model.parameters():
@@ -1293,7 +1293,7 @@ def _train(config: dict):
         if not resume_path.exists():
             raise FileNotFoundError(f"resume checkpoint not found: {resume_path}")
 
-        ckpt = torch.load(resume_path, map_location=device)
+        ckpt = torch.load(resume_path, map_location=device, weights_only=True)
         resume_strict = bool(train_cfg.get("resume_strict", True))
         mismatched_keys: list[str] = []
         if "model" in ckpt:

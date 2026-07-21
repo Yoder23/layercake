@@ -1,0 +1,35 @@
+{
+  "format": "layercake-moonshot-config/1",
+  "run_name": "full_local",
+  "seeds": [7001, 7002, 7003, 7004, 7005],
+  "device": "cuda",
+  "precision": "fp32",
+  "steps": 120,
+  "evaluation_interval": 10,
+  "sequence_bytes": 128,
+  "bpe_merges": 128,
+  "learning_rate": 0.0003,
+  "locked_quality_threshold_bpb": 6.5,
+  "warmup_runs": 5,
+  "benchmark_repeats": 30,
+  "generation_bytes": 64,
+  "domain_steps": 200,
+  "foundation": {
+    "patch_size": 4,
+    "d_byte": 48,
+    "d_model": 192,
+    "recurrent_layers": 2,
+    "local_kernel": 5,
+    "routed_experts": 16,
+    "expert_expansion": 4,
+    "dropout": 0.0,
+    "abi_width": 64
+  },
+  "data": {
+    "train": "data/moonshot/train.txt",
+    "validation": "data/moonshot/validation.txt",
+    "test": "data/moonshot/test.txt",
+    "architecture_selection": "data/moonshot/architecture_selection.txt"
+  },
+  "output": "results/moonshot/full_local"
+}

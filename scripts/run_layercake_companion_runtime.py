@@ -28,7 +28,7 @@ from layercake.domain_runtime import (  # noqa: E402
 def _load_checkpoint(path: Path) -> dict[str, Any]:
     if not path.exists():
         raise FileNotFoundError(path)
-    return torch.load(path, map_location="cpu")
+    return torch.load(path, map_location="cpu", weights_only=True)
 
 
 def _prompt_rows(args: argparse.Namespace) -> list[dict[str, Any]]:

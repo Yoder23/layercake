@@ -78,7 +78,7 @@ def _keyword_hits(
 def _load_checkpoint(path: Path) -> dict[str, Any]:
     if not path.exists():
         raise FileNotFoundError(path)
-    return torch.load(path, map_location="cpu")
+    return torch.load(path, map_location="cpu", weights_only=True)
 
 
 def _generate_one(

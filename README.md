@@ -23,6 +23,29 @@ inside tokenizer-specific or `d_model`-specific weights. A brick should be train
 copied exactly, activated sparsely, quantized, and used by independently trained LayerCake
 cores of different sizes.
 
+## Executable moonshot path (July 2026)
+
+The repository now includes a causal byte-patch foundation with physically top-1 sparse
+capacity, a parameter-matched learned-BPE transformer baseline, safe `.cake` packages,
+atomic extension management, budget-aware routing/orchestration, CPU/CUDA/mobile-export
+runtimes, and a fail-closed experiment certificate.
+
+```powershell
+python -m layercake.moonshot smoke
+python -m layercake.moonshot train
+python -m layercake.moonshot benchmark
+python -m layercake.moonshot verify
+python -m layercake.moonshot demo
+```
+
+The current status is **NOT YET PROVEN**. The engineering smoke passes data integrity,
+parameter matching, sparse activity, package/portability mechanics, routing, and export
+checks. It also trains five small neural cakes, but their BPB probes do not establish the
+required 5x ordinary-task error reduction. The run is far too small to promote general-quality or 5x training claims; physical
+mobile hardware is also unmeasured. See [the architecture](docs/MOONSHOT_ARCHITECTURE.md),
+[threat model](docs/CAKE_THREAT_MODEL.md), and
+[claims and limitations](MOONSHOT_CLAIMS_AND_LIMITATIONS.md).
+
 ## CPU/GPU North Star v23 routed-cake result
 
 The v23 architecture adds three frozen shared foundation layers and five

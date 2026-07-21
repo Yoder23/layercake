@@ -153,7 +153,7 @@ def run_layercake(
     torch.set_num_threads(1)
     device = torch.device("cpu")
     loaded_at = memory_info()
-    artifact = torch.load(artifact_path, map_location="cpu")
+    artifact = torch.load(artifact_path, map_location="cpu", weights_only=True)
     model = build_patch_model_only(artifact, device)
     model.eval()
     after_load = memory_info()
@@ -225,7 +225,7 @@ def run_bpe(
     torch.set_num_threads(1)
     device = torch.device("cpu")
     loaded_at = memory_info()
-    artifact = torch.load(artifact_path, map_location="cpu")
+    artifact = torch.load(artifact_path, map_location="cpu", weights_only=True)
     config = artifact["args"]
     model = BPETokenLM(
         artifact["vocab_size"],
@@ -351,7 +351,7 @@ def invoke_child(
 def export_patch_only(source: Path, output: Path) -> Path:
     if output.exists() and output.stat().st_mtime >= source.stat().st_mtime:
         return output
-    artifact = torch.load(source, map_location="cpu")
+    artifact = torch.load(source, map_location="cpu", weights_only=True)
     payload = {
         "args": artifact["args"],
         "patch_model": artifact["patch_model"],

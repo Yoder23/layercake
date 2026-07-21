@@ -84,7 +84,7 @@ def main() -> int:
     parser.add_argument("--generation-bytes", type=int, default=64)
     parser.add_argument("--context-bytes", type=int, default=128)
     args = parser.parse_args()
-    artifact = torch.load(args.artifact, map_location="cpu")
+    artifact = torch.load(args.artifact, map_location="cpu", weights_only=True)
     result = verify(
         artifact,
         args.prompt,

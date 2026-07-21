@@ -89,7 +89,7 @@ def _copy_block(
 
 
 def migrate(source_path: Path, output_path: Path, report_path: Path) -> dict[str, Any]:
-    checkpoint = torch.load(source_path, map_location="cpu")
+    checkpoint = torch.load(source_path, map_location="cpu", weights_only=True)
     source_config = dict(checkpoint["model_config"])
     source_state = checkpoint["model"]
     routed_config = _routed_config(source_config)

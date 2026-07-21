@@ -24,7 +24,7 @@ from layercake.portable_domain import (
 
 
 def _load_artifact(path: Path) -> dict:
-    return torch.load(path, map_location="cpu")
+    return torch.load(path, map_location="cpu", weights_only=True)
 
 
 def _clone_with_domain_id(artifact: dict, domain_id: str) -> dict:

@@ -35,7 +35,7 @@ def main() -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     config = _load_config_with_extends(CONFIG)
     model = _build_model(config["model"], device)
-    checkpoint = torch.load(CHECKPOINT, map_location=device, weights_only=False)
+    checkpoint = torch.load(CHECKPOINT, map_location=device, weights_only=True)
     model.load_state_dict(checkpoint["model"], strict=True)
     model.eval()
 

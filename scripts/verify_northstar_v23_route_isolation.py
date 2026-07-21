@@ -18,8 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def verify(base_path: Path, trained_path: Path, metrics_path: Path) -> dict:
-    base_checkpoint = torch.load(base_path, map_location="cpu")
-    trained_checkpoint = torch.load(trained_path, map_location="cpu")
+    base_checkpoint = torch.load(base_path, map_location="cpu", weights_only=True)
+    trained_checkpoint = torch.load(trained_path, map_location="cpu", weights_only=True)
     base_state = base_checkpoint["model"]
     trained_state = trained_checkpoint["model"]
     if base_state.keys() != trained_state.keys():

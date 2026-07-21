@@ -71,10 +71,10 @@ def main():
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    core = torch.load(args.core, map_location="cpu")
+    core = torch.load(args.core, map_location="cpu", weights_only=True)
     _, base_patch = build_models(core, device)
     full_patch = copy.deepcopy(base_patch)
-    brick_artifact = torch.load(args.sparse_brick, map_location="cpu")
+    brick_artifact = torch.load(args.sparse_brick, map_location="cpu", weights_only=True)
     brick = build_brick(brick_artifact["brick_config"], device)
     brick.load_state_dict(brick_artifact["brick"])
     root = Path(__file__).resolve().parents[1]

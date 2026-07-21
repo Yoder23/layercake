@@ -261,7 +261,7 @@ def main() -> None:
     ).to(device)
     patch.profile_timing = args.profile_timing
     if args.resume:
-        resumed = torch.load(args.resume, map_location="cpu")
+        resumed = torch.load(args.resume, map_location="cpu", weights_only=True)
         patch.load_state_dict(resumed["patch_model"])
     optimizer = torch.optim.AdamW(
         patch.parameters(),

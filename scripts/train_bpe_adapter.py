@@ -95,7 +95,7 @@ def main() -> None:
 
     torch.manual_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    artifact = torch.load(args.artifact, map_location="cpu")
+    artifact = torch.load(args.artifact, map_location="cpu", weights_only=True)
     config = artifact["args"]
     base = BPETokenLM(
         artifact["vocab_size"],

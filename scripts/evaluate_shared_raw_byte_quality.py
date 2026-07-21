@@ -66,7 +66,7 @@ def _piece_byte_offsets(encoded) -> tuple[list[int], list[tuple[int, int]]]:
 
 
 def _load_transformer(path: str, device: torch.device):
-    checkpoint = torch.load(path, map_location="cpu", weights_only=False)
+    checkpoint = torch.load(path, map_location="cpu", weights_only=True)
     config = checkpoint["model_config"]
     max_len = int(checkpoint["model"]["pos.weight"].shape[0])
     model = BPETokenTransformerLM(
@@ -179,7 +179,7 @@ def main() -> None:
         layercake_format = "count_cake"
     else:
         byte_checkpoint = torch.load(
-            args.layercake_checkpoint, map_location="cpu", weights_only=False
+            args.layercake_checkpoint, map_location="cpu", weights_only=True
         )
         byte_model = _build_model(byte_checkpoint["model_config"], device)
         byte_model.load_state_dict(byte_checkpoint["model"])

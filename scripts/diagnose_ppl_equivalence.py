@@ -39,9 +39,9 @@ def main() -> None:
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    brick_artifact = torch.load(args.brick, map_location="cpu")
-    source_artifact = torch.load(brick_artifact["source_core"], map_location="cpu")
-    target_artifact = torch.load(args.target, map_location="cpu")
+    brick_artifact = torch.load(args.brick, map_location="cpu", weights_only=True)
+    source_artifact = torch.load(brick_artifact["source_core"], map_location="cpu", weights_only=True)
+    target_artifact = torch.load(args.target, map_location="cpu", weights_only=True)
     _, source = build_models(source_artifact, device)
     _, target = build_models(target_artifact, device)
     brick = build_brick(brick_artifact["brick_config"], device)

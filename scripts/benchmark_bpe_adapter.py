@@ -32,8 +32,8 @@ def main() -> None:
     if args.device == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is unavailable")
     device = torch.device(args.device)
-    base_artifact = torch.load(args.base, map_location="cpu")
-    adapter_artifact = torch.load(args.adapter, map_location="cpu")
+    base_artifact = torch.load(args.base, map_location="cpu", weights_only=True)
+    adapter_artifact = torch.load(args.adapter, map_location="cpu", weights_only=True)
     config = base_artifact["args"]
     base = BPETokenLM(
         base_artifact["vocab_size"],

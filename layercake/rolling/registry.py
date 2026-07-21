@@ -7,6 +7,8 @@ import tempfile
 import torch
 from torch import nn
 
+from layercake.safe_loading import safe_torch_load
+
 from .common import file_sha256
 
 
@@ -52,7 +54,7 @@ class ModuleRegistry:
         return str(path)
 
     def load_module(self, name: str, path: str | Path) -> None:
-        self.modules[name].load_state_dict(torch.load(path, map_location="cpu"))
+        self.modules[name].load_state_dict(safe_torch_load(path, map_location="cpu"), strict=True)
 
     def restore_module(self, name: str, path: str | Path) -> None:
         self.load_module(name, path)

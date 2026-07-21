@@ -46,7 +46,7 @@ def main() -> None:
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is required")
     started = time.perf_counter()
-    checkpoint = torch.load(args.recurrent_checkpoint, map_location="cpu")
+    checkpoint = torch.load(args.recurrent_checkpoint, map_location="cpu", weights_only=True)
     recurrent = _build_model(checkpoint["model_config"], torch.device("cuda"))
     recurrent.load_state_dict(checkpoint["model"])
     recurrent.eval()

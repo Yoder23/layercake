@@ -11,7 +11,7 @@ def main() -> None:
     parser.add_argument("--input", required=True)
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
-    artifact = torch.load(args.input, map_location="cpu")
+    artifact = torch.load(args.input, map_location="cpu", weights_only=True)
     state = artifact["patch_model"]
     removed = [
         name for name in state if name.startswith("patch_prediction_heads.")

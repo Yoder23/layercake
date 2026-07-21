@@ -118,7 +118,7 @@ def _generate_bpe(model, tokenizer, prompt_text: str, new_bytes: int, device: to
 
 
 def _load_bpe(path: Path, device: torch.device):
-    artifact = torch.load(path, map_location="cpu")
+    artifact = torch.load(path, map_location="cpu", weights_only=True)
     with tempfile.NamedTemporaryFile(suffix=".model", delete=False) as handle:
         handle.write(artifact["tokenizer_model"])
         tokenizer_path = Path(handle.name)
@@ -205,7 +205,7 @@ def main() -> None:
     if device.type == "cpu":
         torch.set_num_threads(args.cpu_threads)
 
-    layercake_artifact = torch.load(args.layercake, map_location="cpu")
+    layercake_artifact = torch.load(args.layercake, map_location="cpu", weights_only=True)
     _, layercake = build_models(layercake_artifact, device)
     layercake.eval()
     _, bpe, tokenizer = _load_bpe(args.bpe, device)

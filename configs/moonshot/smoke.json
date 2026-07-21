@@ -1,0 +1,35 @@
+{
+  "format": "layercake-moonshot-config/1",
+  "run_name": "smoke",
+  "seeds": [7001, 7002, 7003],
+  "device": "cpu",
+  "precision": "fp32",
+  "steps": 2,
+  "evaluation_interval": 1,
+  "sequence_bytes": 64,
+  "bpe_merges": 32,
+  "learning_rate": 0.0005,
+  "locked_quality_threshold_bpb": 7.99,
+  "warmup_runs": 1,
+  "benchmark_repeats": 3,
+  "generation_bytes": 4,
+  "domain_steps": 12,
+  "foundation": {
+    "patch_size": 4,
+    "d_byte": 24,
+    "d_model": 64,
+    "recurrent_layers": 1,
+    "local_kernel": 5,
+    "routed_experts": 16,
+    "expert_expansion": 4,
+    "dropout": 0.0,
+    "abi_width": 32
+  },
+  "data": {
+    "train": "data/moonshot/train.txt",
+    "validation": "data/moonshot/validation.txt",
+    "test": "data/moonshot/test.txt",
+    "architecture_selection": "data/moonshot/architecture_selection.txt"
+  },
+  "output": "results/moonshot/smoke"
+}

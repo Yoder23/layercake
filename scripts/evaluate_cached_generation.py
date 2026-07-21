@@ -29,7 +29,7 @@ def main() -> None:
         raise ValueError("continuation-bytes must be even")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    artifact = torch.load(args.core, map_location="cpu")
+    artifact = torch.load(args.core, map_location="cpu", weights_only=True)
     _, model = build_models(artifact, device)
     model.eval()
     root = Path(__file__).resolve().parents[1]

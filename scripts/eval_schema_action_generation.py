@@ -545,7 +545,7 @@ def _generate_bpe(
 
 
 def _load_layercake(path: Path, device: torch.device) -> tuple[dict[str, Any], torch.nn.Module]:
-    checkpoint = torch.load(path, map_location="cpu")
+    checkpoint = torch.load(path, map_location="cpu", weights_only=True)
     model = _build_model(checkpoint["model_config"], device)
     model.load_state_dict(checkpoint["model"], strict=True)
     model.eval()
@@ -553,7 +553,7 @@ def _load_layercake(path: Path, device: torch.device) -> tuple[dict[str, Any], t
 
 
 def _load_bpe(path: Path, device: torch.device) -> tuple[dict[str, Any], BPETokenTransformerLM, spm.SentencePieceProcessor]:
-    checkpoint = torch.load(path, map_location="cpu")
+    checkpoint = torch.load(path, map_location="cpu", weights_only=True)
     model_cfg = checkpoint["model_config"]
     train_cfg = checkpoint["training_config"]
     with tempfile.NamedTemporaryFile(suffix=".model", delete=False) as handle:

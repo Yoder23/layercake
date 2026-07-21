@@ -2,15 +2,24 @@
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import torch
 import torch.nn.functional as F
 
 
-def canonical_byte_table(d_abi: int, device=None, dtype=torch.float32) -> torch.Tensor:
+@lru_cache(maxsize=32)
+def _canonical_byte_table_cpu(d_abi: int) -> torch.Tensor:
+    """Materialize the historic seeded table once so exporters see a constant."""
     generator = torch.Generator().manual_seed(8675309)
     table = torch.randn(256, d_abi, generator=generator)
-    table = F.normalize(table, dim=-1)
-    return table.to(device=device, dtype=dtype)
+    return F.normalize(table, dim=-1)
+
+
+def canonical_byte_table(d_abi: int, device=None, dtype=torch.float32) -> torch.Tensor:
+    if d_abi <= 0:
+        raise ValueError("d_abi must be positive")
+    return _canonical_byte_table_cpu(int(d_abi)).to(device=device, dtype=dtype)
 
 
 def causal_byte_anchors(

@@ -41,7 +41,7 @@ def main() -> None:
     if args.device == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is unavailable")
     device = torch.device(args.device)
-    artifact = torch.load(args.decoder, map_location="cpu")
+    artifact = torch.load(args.decoder, map_location="cpu", weights_only=True)
     spec, decoder = load_portable_artifact(artifact, device)
     x = torch.randint(0, 256, (args.batch, args.context), device=device)
     with torch.inference_mode():

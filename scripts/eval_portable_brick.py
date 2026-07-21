@@ -30,8 +30,8 @@ def main():
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    brick_artifact = torch.load(args.brick, map_location="cpu")
-    target = torch.load(args.target, map_location="cpu")
+    brick_artifact = torch.load(args.brick, map_location="cpu", weights_only=True)
+    target = torch.load(args.target, map_location="cpu", weights_only=True)
     byte, _ = build_models(target, device)
     brick = build_brick(brick_artifact["brick_config"], device)
     state, quant_diff = brick_artifact["brick"], 0.0

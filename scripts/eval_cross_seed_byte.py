@@ -19,8 +19,8 @@ def main():
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    source = torch.load(args.source, map_location="cpu")
-    target = torch.load(args.target, map_location="cpu")
+    source = torch.load(args.source, map_location="cpu", weights_only=True)
+    target = torch.load(args.target, map_location="cpu", weights_only=True)
     target_args = target["args"]
     byte_model = CausalByteLM(
         d_model=target_args.get("d_model", 128),

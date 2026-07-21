@@ -295,7 +295,7 @@ def train(config: dict[str, Any]) -> None:
         resume_checkpoint = torch.load(
             resume_path,
             map_location="cpu",
-            weights_only=False,
+            weights_only=True,
         )
         if "model" not in resume_checkpoint or "tokenizer_model" not in resume_checkpoint:
             raise ValueError(

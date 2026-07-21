@@ -1,0 +1,233 @@
+{
+  "controls": {
+    "active_parameter_fraction_at_most_20_percent": true,
+    "config_sha256": "0c40864dd34fd819093f02bad07e11ac4edb2fcbb3d2e3540d22329e26218a10",
+    "parameters_within_5_percent": true,
+    "randomized_execution_order": true,
+    "same_raw_chunks_per_step": true,
+    "test_not_used_for_selection": true,
+    "warmup_excluded": true
+  },
+  "evidence": {
+    "ecosystem": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\smoke\\ecosystem_evidence.json",
+      "sha256": "48ff941c55083750abae5fe4dea4cca01cf04a5b0691fe504c74bc0658deb2b7"
+    },
+    "inference": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\smoke\\inference_evidence.json",
+      "sha256": "f173978de7c67b19b02684f10fafe5163c7a53adb2a73ff7a06a0003d8a5ef4e"
+    },
+    "pytest": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\smoke\\pytest_evidence.json",
+      "sha256": "efcfb7c69d8df9d5de718469fee279d1f692de70caee1c09abe6773aac852cea"
+    },
+    "training": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\smoke\\training_evidence.json",
+      "sha256": "f753b964f34623f8f97597a4fca0282be008170da9ba39a44b62adff1a3f6364"
+    }
+  },
+  "format": "layercake-moonshot-certificate/1",
+  "gates": {
+    "bit_exact_payload_preservation": {
+      "status": "PASS"
+    },
+    "cpu_inference": {
+      "quality_comparable": false,
+      "status": "FAIL",
+      "throughput_ratio": 4.337408832847817
+    },
+    "data_integrity": {
+      "evidence": {
+        "bytes": {
+          "architecture_selection": 438,
+          "test": 706,
+          "train": 775,
+          "validation": 646
+        },
+        "cross_split_ngram_overlaps": {
+          "architecture_selection:test": 0,
+          "architecture_selection:train": 0,
+          "architecture_selection:validation": 0,
+          "test:train": 0,
+          "test:validation": 0,
+          "train:validation": 0
+        },
+        "exact_split_hashes_unique": true,
+        "leakage_ngram": 32,
+        "loading_seconds": 0.0010186999570578337,
+        "paths": {
+          "architecture_selection": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\architecture_selection.txt",
+          "test": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\test.txt",
+          "train": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\train.txt",
+          "validation": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\validation.txt"
+        },
+        "sha256": {
+          "architecture_selection": "c8c8a2e864ab5d2b57f073f0d6d9662afc9c9b0bec3372abb1c07e02ada0d9cc",
+          "test": "b866996cdf5bd5ff67966c90d374d76039f3f7d192dddc88b4fc56e1bf4387e9",
+          "train": "146b20575515442b1e090495e2caa7c9f2b570799cc5211f5bcb6ac40258f87e",
+          "validation": "e985496f41965db99156ad5d26aa33280eb7b651e41eacfa5d8380b7ae6c8bf3"
+        },
+        "status": "PASS"
+      },
+      "status": "PASS"
+    },
+    "domain_quality": {
+      "reason": "five neural cakes were trained and BPB-tested, but no ordinary task error metric established a 5x reduction",
+      "smoke_metrics": {
+        "domains": {
+          "actions": {
+            "bpb_improvement_over_random": 1.0709543425151797,
+            "random_frozen_cake_bpb": 7.9991607466464725,
+            "test_sha256": "cde7ee811fdfcedf9ae13737be857529659baa547c8bb9770b3e1de89213500d",
+            "train_sha256": "0c0c4b5b968701c4b61e39d85341a9e25b82af9c2e93b5136df1dd7f37f727ed",
+            "trained_cake_heldout_bpb": 7.469189328706693,
+            "training_seconds": 0.0314174999948591,
+            "training_steps": 12,
+            "wrong_domain_cake": "game",
+            "wrong_domain_cake_bpb": 7.728130535429358
+          },
+          "biomedical": {
+            "bpb_improvement_over_random": 1.0426925993964435,
+            "random_frozen_cake_bpb": 7.9643191253734775,
+            "test_sha256": "30f95d7d8a793669196f919b19c765fb693f58039cec6ae98d80dda21a173d66",
+            "train_sha256": "fd3c89069514c118987d5bb929a99f50d4dab1a1393721fab586f963781b0b64",
+            "trained_cake_heldout_bpb": 7.63822350900311,
+            "training_seconds": 0.032056499971076846,
+            "training_steps": 12,
+            "wrong_domain_cake": "actions",
+            "wrong_domain_cake_bpb": 7.458205140761387
+          },
+          "game": {
+            "bpb_improvement_over_random": 1.0577070693338044,
+            "random_frozen_cake_bpb": 8.151170708299281,
+            "test_sha256": "f6b03fdeba90633b4ed07b2674ca464d465e99121da7f8d54adddd17a91cc5af",
+            "train_sha256": "c0fa78a4695fd7ec0bd8777b60586494a7a4a08a0ae07205e560f40b6b3add90",
+            "trained_cake_heldout_bpb": 7.70645384211461,
+            "training_seconds": 0.033348000026308,
+            "training_steps": 12,
+            "wrong_domain_cake": "python",
+            "wrong_domain_cake_bpb": 7.700047144404668
+          },
+          "mathematics": {
+            "bpb_improvement_over_random": 1.0565882234052093,
+            "random_frozen_cake_bpb": 8.048585808782029,
+            "test_sha256": "8deab39cd9562a0793d0c53882566a42842a637d1b1a8390431c142aaaac2e7b",
+            "train_sha256": "bee803f093b4173a6353d3b911186c300eb83368a8c3e73f32c5f778a7f3d151",
+            "trained_cake_heldout_bpb": 7.617523677145262,
+            "training_seconds": 0.029708200017921627,
+            "training_steps": 12,
+            "wrong_domain_cake": "biomedical",
+            "wrong_domain_cake_bpb": 7.680296656779584
+          },
+          "python": {
+            "bpb_improvement_over_random": 1.0616023387198714,
+            "random_frozen_cake_bpb": 8.163699988379939,
+            "test_sha256": "0d9092986bea4d0da86c588de1614d2b6749a3af160575732cd1a15c1c8d1c66",
+            "train_sha256": "53a95e12d7a614a469bbee004c55c76dfb9366471d7e0fc3dbb7d2959eb7e8b3",
+            "trained_cake_heldout_bpb": 7.6899792800231594,
+            "training_seconds": 0.04661669989582151,
+            "training_steps": 12,
+            "wrong_domain_cake": "mathematics",
+            "wrong_domain_cake_bpb": 7.676478641930429
+          }
+        },
+        "five_x_error_gate": "NOT_EVALUATED_BY_BPB",
+        "metric": "heldout_bits_per_byte",
+        "status": "MEASURED_SMOKE_NOT_PROMOTED"
+      },
+      "status": "FAIL"
+    },
+    "end_to_end_orchestration": {
+      "reason": "router is executable; held-out domain task accuracy and oracle/monolith comparison remain unmeasured",
+      "status": "OPEN"
+    },
+    "foundation_training_time_to_quality": {
+      "locked_threshold_bpb": 7.99,
+      "status": "NOT_RUN_INSUFFICIENT_COMPUTE",
+      "transformer_over_layercake_ratio": 4.108534926873517
+    },
+    "functional_cross_host_portability": {
+      "contract": {
+        "abi_version": "lc-portable-byte/1",
+        "cake_type": "portable_decoder",
+        "deterministic": true,
+        "precision": "fp32",
+        "runtime": "pytorch-cpu"
+      },
+      "status": "PASS"
+    },
+    "gpu_inference": {
+      "quality_comparable": false,
+      "status": "FAIL",
+      "throughput_ratio": 1.812348994796993
+    },
+    "mobile_inference": {
+      "export_smoke": "PASS",
+      "status": "NOT_RUN_NO_HARDWARE"
+    },
+    "multi_seed_replication": {
+      "seeds": [
+        7001,
+        7002,
+        7003
+      ],
+      "status": "PASS"
+    },
+    "package_security": {
+      "reason": null,
+      "status": "PASS"
+    },
+    "raw_training_throughput": {
+      "reason": "measured micro-run is reported but is not a production training claim",
+      "status": "OPEN"
+    },
+    "repository_correctness": {
+      "pytest": {
+        "command": [
+          "C:\\Python310\\python.exe",
+          "-m",
+          "pytest",
+          "-q"
+        ],
+        "exit_code": 0,
+        "format": "layercake-pytest-evidence/1",
+        "package_security_test_sha256": "2d34f0879d004e89f3057ecee156e3f61931d30c7219e51153f5a67e2f0aba3f",
+        "passed": 392,
+        "seconds": 16.15819820004981,
+        "source_tree_sha256": "2dfad421ea8645289be9332d582afe432c16f13b514e08a2956203b9352e66a4",
+        "status": "PASS",
+        "summary_tail": "........................................................................ [ 18%]\n........................................................................ [ 36%]\n........................................................................ [ 55%]\n........................................................................ [ 73%]\n........................................................................ [ 91%]\n................................                                         [100%]\n============================== warnings summary ===============================\n<frozen importlib._bootstrap>:241\n  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:241\n  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\ntests/cake/test_package_security.py::test_duplicate_entries_are_rejected\n  C:\\Python310\\lib\\zipfile.py:1506: UserWarning: Duplicate name: 'manifest.json'\n    return self._open_to_write(zinfo, force_zip64=force_zip64)\n\ntests/test_artifact_utils.py: 1 warning\ntests/test_causal_byte_models.py: 24 warnings\ntests/test_northstar_v6_configs.py: 1 warning\ntests/test_portable_domain_decoder.py: 2 warnings\ntests/test_production_cpu_game_configs.py: 3 warnings\ntests/test_tier1_dominance.py: 1 warning\ntests/test_transformer_baselines.py: 1 warning\ntests/test_variable_patch_model.py: 3 warnings\ntests/test_verify_micro_receiver_transfer_dominance.py: 2 warnings\n  C:\\Python310\\lib\\site-packages\\torch\\nn\\modules\\transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True\n    warnings.warn(\n\ntests/test_variable_patch_model.py::test_variable_patch_model_shapes_and_compression\ntests/test_variable_patch_model.py::test_variable_patch_model_is_causal_before_changed_patch\ntests/test_variable_patch_model.py::test_transition_difficulty_table_adds_boundaries\n  C:\\Python310\\lib\\site-packages\\torch\\nn\\functional.py:5962: UserWarning: Support for mismatched src_key_padding_mask and mask is deprecated. Use same type for both instead.\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n392 passed, 44 warnings in 14.30s\nsys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n"
+      },
+      "reason": null,
+      "status": "PASS"
+    },
+    "route_accuracy": {
+      "abstention_accuracy": 1.0,
+      "false_activation_rate": 0.0,
+      "mean_route_milliseconds": 0.042837506043724716,
+      "route_accuracy": 1.0,
+      "status": "PASS",
+      "top_k_recall": 1.0
+    },
+    "same_scale_general_quality": {
+      "layercake_bpb": {
+        "high_95": 7.852972396343604,
+        "low_95": 7.803092156222296,
+        "mean": 7.82803227628295
+      },
+      "parameters_matched": true,
+      "scale_sufficient": false,
+      "status": "NOT_RUN_INSUFFICIENT_COMPUTE",
+      "transformer_bpb": {
+        "high_95": 5.9069746294815495,
+        "low_95": 5.854624485173243,
+        "mean": 5.880799557327396
+      }
+    },
+    "uninstall_reinstall_behavior": {
+      "status": "PASS"
+    }
+  },
+  "moonshot_proven": false,
+  "overall_status": "OPEN"
+}

@@ -171,11 +171,11 @@ def main() -> None:
     if device.type == "cpu":
         torch.set_num_threads(args.cpu_threads)
 
-    layercake_artifact = torch.load(args.layercake, map_location="cpu")
+    layercake_artifact = torch.load(args.layercake, map_location="cpu", weights_only=True)
     _, layercake = build_models(layercake_artifact, device)
     layercake.eval()
 
-    bpe_artifact = torch.load(args.bpe, map_location="cpu")
+    bpe_artifact = torch.load(args.bpe, map_location="cpu", weights_only=True)
     config = bpe_artifact["args"]
     bpe = BPETokenLM(
         bpe_artifact["vocab_size"],

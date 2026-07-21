@@ -30,7 +30,7 @@ def _exact_checkpoint_transfer(
     seed: int,
     eval_rows: int,
 ) -> dict[str, Any]:
-    checkpoint = torch.load(checkpoint_path, map_location="cpu")
+    checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
     model_cfg = checkpoint["model_config"]
     torch_device = torch.device(device)
     source = _build_model(model_cfg, torch_device).eval()

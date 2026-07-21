@@ -54,6 +54,15 @@ Thumbs.db
 htmlcov/
 .ruff_cache/
 
+# Generated compiler/runtime caches (never release source artifacts)
+.cache/
+.i/
+.t/
+.torchinductor_cache/
+.torchinductor_cache_serial/
+.triton_cache/
+.triton_cache_serial/
+
 # Logs
 *.log
 *.err
@@ -75,6 +84,15 @@ results/*
 !results/transformer_dominance_matrix.json
 !results/scale15m_transition_frontier_certificate.json
 !results/micro_scale_curriculum_frontier_v2.json
+!results/moonshot/
+results/moonshot/*
+!results/moonshot/smoke/
+results/moonshot/smoke/*
+!results/moonshot/smoke/training_evidence.json
+!results/moonshot/smoke/inference_evidence.json
+!results/moonshot/smoke/ecosystem_evidence.json
+!results/moonshot/smoke/pytest_evidence.json
+!results/moonshot/smoke/release_certificate.json
 results/breakthrough_equal/*
 !results/breakthrough_equal/question_comparison_lmonly1000_cpu_stateful_repeats5.json
 !results/breakthrough_equal/question_comparison_lmonly1000_gpu_draft_repeats5.json

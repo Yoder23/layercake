@@ -139,7 +139,7 @@ def _xml_fix_runtime(prompt: str) -> str:
 
 
 def _load_bpe(path: Path, device: torch.device) -> tuple[BPETokenTransformerLM, spm.SentencePieceProcessor]:
-    checkpoint = torch.load(path, map_location="cpu")
+    checkpoint = torch.load(path, map_location="cpu", weights_only=True)
     model_cfg = checkpoint["model_config"]
     tokenizer_payload = checkpoint.get("tokenizer_model")
     if isinstance(tokenizer_payload, (bytes, bytearray)):

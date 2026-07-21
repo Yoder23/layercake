@@ -102,7 +102,7 @@ class CachedTransformerDecoder:
 
 
 def _load_transformer(path: Path, device: torch.device):
-    checkpoint = torch.load(path, map_location="cpu", weights_only=False)
+    checkpoint = torch.load(path, map_location="cpu", weights_only=True)
     config = checkpoint["model_config"]
     model = BPETokenTransformerLM(
         vocab_size=4096,

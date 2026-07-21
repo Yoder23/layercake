@@ -68,9 +68,9 @@ def main() -> None:
         device = torch.device("cpu")
     else:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    artifact = torch.load(args.decoder, map_location="cpu")
-    source = torch.load(args.source_core, map_location="cpu")
-    target = torch.load(args.target_core, map_location="cpu")
+    artifact = torch.load(args.decoder, map_location="cpu", weights_only=True)
+    source = torch.load(args.source_core, map_location="cpu", weights_only=True)
+    target = torch.load(args.target_core, map_location="cpu", weights_only=True)
     source_spec, source_decoder = load_portable_artifact(artifact, device)
     target_spec, target_decoder = load_portable_artifact(artifact, device)
 

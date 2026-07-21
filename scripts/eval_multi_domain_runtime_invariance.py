@@ -57,7 +57,7 @@ def main() -> None:
     other_paths = [Path(item) for item in args.others]
     prompt = _load_prompt(Path(args.prompt_file), args.prompt_bytes)
 
-    target_artifact = torch.load(target_path, map_location="cpu")
+    target_artifact = torch.load(target_path, map_location="cpu", weights_only=True)
     target_id = target_artifact["spec"]["domain_id"]
 
     solo = LayerCakeRuntime()
@@ -67,7 +67,7 @@ def main() -> None:
     multi.install_portable_domain(target_artifact, device)
     installed_ids = [target_id]
     for path in other_paths:
-        artifact = torch.load(path, map_location="cpu")
+        artifact = torch.load(path, map_location="cpu", weights_only=True)
         installed_ids.append(multi.install_portable_domain(artifact, device))
 
     prompt_tensor = torch.tensor(list(prompt), dtype=torch.long).unsqueeze(0)

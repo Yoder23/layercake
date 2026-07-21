@@ -154,12 +154,23 @@ def _generate_layercake_patch_prediction_method(
     if len(ctx) % patch_size:
         ctx = ([ord(" ")] * (patch_size - (len(ctx) % patch_size))) + ctx
     x = torch.tensor([ctx], dtype=torch.long, device=device)
-    state = model.begin_patch_prediction_cached_generation(x)
+    cached = all(
+        hasattr(model, name)
+        for name in (
+            "begin_patch_prediction_cached_generation",
+            "cached_patch_prediction_step",
+        )
+    )
+    state = model.begin_patch_prediction_cached_generation(x) if cached else None
     if device.type == "cuda":
         torch.cuda.synchronize()
     started = time.perf_counter()
     while len(ids) - len(prompt_bytes) < max_new_bytes:
-        generated = model.cached_patch_prediction_step(state)
+        if cached:
+            generated = model.cached_patch_prediction_step(state)
+        else:
+            generated = model.generate_next_patch(x)
+            x = torch.cat([x, generated.to(device=x.device)], dim=1)
         for byte in generated[0].detach().cpu().tolist():
             ids.append(int(byte))
             if len(ids) - len(prompt_bytes) >= max_new_bytes:
@@ -791,7 +802,7 @@ def main() -> int:
     device = torch.device(args.device)
     if device.type == "cpu":
         torch.set_num_threads(args.cpu_threads)
-    checkpoint = torch.load(args.checkpoint, map_location="cpu")
+    checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=True)
     if args.radix_factorwise_greedy and args.model_kind == "layercake":
         checkpoint["model_config"] = dict(checkpoint["model_config"])
         checkpoint["model_config"]["patch_generation_joint_greedy"] = False

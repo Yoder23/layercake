@@ -7311,7 +7311,7 @@ class CausalBytePatchLM(nn.Module):
             else None
         )
         patch = self.patch_generator.greedy(
-            state["last_global"],
+            self.patch_generator_context(state["last_global"]),
             prefix,
             source=(
                 state["recent_bytes"][:, -self.patch_generation_copy_window :]

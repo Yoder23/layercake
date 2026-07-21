@@ -30,7 +30,7 @@ def main() -> None:
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    artifact = torch.load(args.artifact, map_location="cpu")
+    artifact = torch.load(args.artifact, map_location="cpu", weights_only=True)
     config = artifact["args"]
     model = BPETokenLM(
         artifact["vocab_size"],

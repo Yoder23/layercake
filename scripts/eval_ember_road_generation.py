@@ -78,7 +78,7 @@ def main() -> None:
     else:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    ckpt = torch.load(args.core_checkpoint, map_location="cpu")
+    ckpt = torch.load(args.core_checkpoint, map_location="cpu", weights_only=True)
     model_cfg = ckpt["model_config"]
     model = CausalBytePatchLM(**model_cfg).to(device)
     model.load_state_dict(ckpt["model"], strict=False)
@@ -87,7 +87,7 @@ def main() -> None:
     runtime = None
     domain_id = args.domain_id
     if args.domain_artifact:
-        artifact = torch.load(args.domain_artifact, map_location="cpu")
+        artifact = torch.load(args.domain_artifact, map_location="cpu", weights_only=True)
         domain_id = artifact["spec"]["domain_id"]
         runtime = LayerCakeRuntime(model)
         runtime.install_portable_domain(artifact, device=device)

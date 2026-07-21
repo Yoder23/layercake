@@ -34,7 +34,7 @@ def main() -> None:
     device = torch.device(args.device)
     payload = Path(args.data).read_bytes()
     started = time.perf_counter()
-    checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
+    checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=True)
     config = checkpoint["model_config"]
     max_len = int(checkpoint["model"]["pos.weight"].shape[0])
     model = BPETokenTransformerLM(

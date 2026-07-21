@@ -22,7 +22,7 @@ def main():
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    artifact = torch.load(args.artifact, map_location="cpu")
+    artifact = torch.load(args.artifact, map_location="cpu", weights_only=True)
     byte, patch = build_models(artifact, device)
     byte.eval()
     for parameter in byte.parameters():
