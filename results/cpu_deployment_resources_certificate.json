@@ -1,0 +1,115 @@
+{
+  "artifacts": {
+    "bpe": "runs_experiment/scale15m_bpe_matched.pt",
+    "layercake_deployment": "runs_experiment\\scale15m_transition_lw280_2300_patch_only.pt",
+    "layercake_source": "runs_experiment/scale15m_transition_lw280_2300_noprofile.pt"
+  },
+  "bpe": {
+    "after_generation": {
+      "peak_rss_bytes": 469725184,
+      "rss_bytes": 468606976
+    },
+    "after_load": {
+      "peak_rss_bytes": 463368192,
+      "rss_bytes": 463368192
+    },
+    "after_prefill": {
+      "peak_rss_bytes": 469725184,
+      "rss_bytes": 468606976
+    },
+    "artifact_bytes": 59846244,
+    "generated_bytes": 64,
+    "generation_bytes_per_second": 159.36885948291498,
+    "generation_seconds": 0.40158409997820854,
+    "generation_seconds_all": [
+      0.4013378999661654,
+      0.4094227999448776,
+      0.40158409997820854
+    ],
+    "loaded_at": {
+      "peak_rss_bytes": 331890688,
+      "rss_bytes": 331890688
+    },
+    "model": "bpe",
+    "parameter_bytes": 59375360,
+    "peak_rss_bytes": 469725184,
+    "prefill_seconds": 0.015803500078618526,
+    "prefill_seconds_all": [
+      0.015259200008586049,
+      0.015809200005605817,
+      0.015803500078618526
+    ]
+  },
+  "failed_required": [
+    "layercake_prefill_faster_than_bpe"
+  ],
+  "layercake": {
+    "after_generation": {
+      "peak_rss_bytes": 465342464,
+      "rss_bytes": 460976128
+    },
+    "after_load": {
+      "peak_rss_bytes": 453537792,
+      "rss_bytes": 453537792
+    },
+    "after_prefill": {
+      "peak_rss_bytes": 465342464,
+      "rss_bytes": 460976128
+    },
+    "artifact_bytes": 57453675,
+    "generated_bytes": 64,
+    "generation_bytes_per_second": 373.74859934001296,
+    "generation_seconds": 0.17123809992335737,
+    "generation_seconds_all": [
+      0.1739486998412758,
+      0.17123809992335737,
+      0.1691521001048386
+    ],
+    "loaded_at": {
+      "peak_rss_bytes": 332238848,
+      "rss_bytes": 332238848
+    },
+    "model": "layercake",
+    "parameter_bytes": 57278240,
+    "peak_rss_bytes": 465342464,
+    "prefill_profile_seconds": {
+      "byte_and_patch_features": 2.6300083845853806e-05,
+      "global_core_cache_prefill": 0.013474600156769156,
+      "local_cache_prefill": 0.003913099877536297,
+      "local_inputs": 0.0002482000272721052,
+      "next_logits": 7.750000804662704e-05,
+      "patch_projection": 0.00015769992023706436,
+      "validate_prompt": 1.1699972674250603e-05
+    },
+    "prefill_seconds": 0.018387699965387583,
+    "prefill_seconds_all": [
+      0.018071899889037013,
+      0.018387699965387583,
+      0.018874799832701683
+    ]
+  },
+  "metrics": {
+    "artifact_ratio": 0.9600214008417972,
+    "bpe_artifact_bytes": 59846244,
+    "bpe_parameter_bytes": 59375360,
+    "bpe_peak_rss_bytes": 469725184,
+    "generation_speed_ratio": 2.3451796075636744,
+    "layercake_artifact_bytes": 57453675,
+    "layercake_parameter_bytes": 57278240,
+    "layercake_peak_rss_bytes": 465342464,
+    "parameter_memory_ratio": 0.9646802983594541,
+    "peak_rss_ratio": 0.9906696082107448,
+    "prefill_speed_ratio": 0.8594604060522267,
+    "repeats": 3
+  },
+  "required_gates": {
+    "layercake_artifact_smaller_than_bpe": true,
+    "layercake_generation_faster_than_bpe": true,
+    "layercake_parameter_memory_lower_than_bpe": true,
+    "layercake_peak_rss_no_more_than_bpe": true,
+    "layercake_prefill_faster_than_bpe": false,
+    "measured_in_isolated_processes": true
+  },
+  "scope": "CPU deployment-resource benchmark from separate fresh Python processes. This is a local desktop CPU proxy, not phone, NPU, battery, or thermal evidence.",
+  "status": "OPEN"
+}

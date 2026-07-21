@@ -1,0 +1,46 @@
+{
+  "name": "production_cpu_game_5m_bpe_domain_rigorous",
+  "description": "Domain-adapted 5M-class BPE transformer baseline for real game-domain checkpoint comparison.",
+  "tokenizer": {
+    "vocab_size": 4096,
+    "model_type": "bpe",
+    "byte_fallback": true
+  },
+  "model": {
+    "d_model": 384,
+    "layers": 1,
+    "heads": 4,
+    "ff_mult": 4,
+    "dropout": 0.05
+  },
+  "training": {
+    "device": "cuda",
+    "seed": 1234,
+    "matmul_precision": "high",
+    "seq_len": 256,
+    "micro_batch_size": 4,
+    "grad_accum_steps": 1,
+    "steps": 10000,
+    "lr": 0.0004,
+    "min_lr": 0.00008,
+    "warmup_steps": 500,
+    "lr_decay_steps": 10000,
+    "weight_decay": 0.01,
+    "log_interval": 250,
+    "save_optimizer": false,
+    "metrics_path": "training_metrics.json",
+    "corpus_bytes": 20000000,
+    "eval_bytes": 11217,
+    "eval_batches": 16,
+    "read_block_bytes": 1048576,
+    "include_suffixes": [".jsonl", ".json", ".txt", ".md", ".csv"],
+    "data_roots": [
+      "./data/game_domains/ember-road.rulebook.repeated.txt",
+      "../layercakeogwithdecoder/data/v6/redpajama_english_train.jsonl"
+    ],
+    "eval_data_roots": [
+      "./data/game_domains/ember-road.rulebook.json"
+    ],
+    "out_dir": "runs_experiment/production_cpu_game_5m_bpe_domain_rigorous"
+  }
+}

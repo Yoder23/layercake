@@ -1,0 +1,45 @@
+{
+  "name": "portable_domain_5m_bpe_conflicting_multi_domain",
+  "description": "BPE transformer baseline trained on conflicting app/website domains with overlapping concepts and different facts.",
+  "tokenizer": {
+    "vocab_size": 1200,
+    "model_type": "bpe",
+    "byte_fallback": true
+  },
+  "model": {
+    "d_model": 384,
+    "layers": 1,
+    "heads": 4,
+    "ff_mult": 4,
+    "dropout": 0.05
+  },
+  "training": {
+    "device": "cuda",
+    "seed": 4451,
+    "matmul_precision": "high",
+    "seq_len": 256,
+    "micro_batch_size": 4,
+    "grad_accum_steps": 1,
+    "steps": 2500,
+    "lr": 0.0004,
+    "min_lr": 0.00008,
+    "warmup_steps": 250,
+    "lr_decay_steps": 2500,
+    "weight_decay": 0.01,
+    "log_interval": 250,
+    "save_optimizer": false,
+    "metrics_path": "training_metrics.json",
+    "corpus_bytes": 6000000,
+    "eval_bytes": 4096,
+    "eval_batches": 16,
+    "read_block_bytes": 1048576,
+    "include_suffixes": [".jsonl", ".json", ".txt", ".md", ".csv"],
+    "data_roots": [
+      "./data/portable_domains/conflicting_multi_domain_corpus.txt"
+    ],
+    "eval_data_roots": [
+      "./data/portable_domains/conflicting_multi_domain_corpus.txt"
+    ],
+    "out_dir": "runs_experiment/portable_domain_5m_bpe_conflicting_multi_domain"
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "claim": "At approximately 15M source parameters and with a strengthened equal-size tokenizer-transformer comparator given more total and corrected-task bytes, Layercake is exactly correct on the locked schema and compositional holdouts, exceeds 5x steady-state CPU and GPU answer speed, preserves that quality and speed advantage in a smaller INT8 patch-generation deployment, and transfers an unchanged portable domain payload bit-exactly from an independent 15M host to an independent 5M host on CPU and GPU.",
+  "environment": {
+    "cpu_benchmark": {
+      "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+      "cuda_available": true,
+      "device_type": "cpu",
+      "gpu": null,
+      "gpu_compute_capability": null,
+      "gpu_total_memory_bytes": null,
+      "platform": "Windows-10-10.0.26200-SP0",
+      "python": "3.10.0",
+      "torch": "2.7.1+cu118",
+      "torch_cuda": "11.8"
+    },
+    "gpu_benchmark": {
+      "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+      "cuda_available": true,
+      "device_type": "cuda",
+      "gpu": "NVIDIA GeForce RTX 3080 Laptop GPU",
+      "gpu_compute_capability": "8.6",
+      "gpu_total_memory_bytes": 17179344896,
+      "platform": "Windows-10-10.0.26200-SP0",
+      "python": "3.10.0",
+      "torch": "2.7.1+cu118",
+      "torch_cuda": "11.8"
+    },
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.10.0"
+  },
+  "evidence": {
+    "relevance_cpu": {
+      "bytes": 56426,
+      "path": "results/breakthrough_equal/northstar_v22_relevance_patch_cpu.json",
+      "sha256": "c26a65004021602b812d5ce5edf4746204d6e1084c9f8a69376278d453760eb1"
+    },
+    "relevance_gpu": {
+      "bytes": 56667,
+      "path": "results/breakthrough_equal/northstar_v22_relevance_patch_cuda_graph_gpu.json",
+      "sha256": "476c42fca74ddd6f59236fe0b75a6057dee6d9fa3ff445ffcca3258c221c030d"
+    },
+    "relevance_int8": {
+      "bytes": 56461,
+      "path": "results/breakthrough_equal/northstar_v22_relevance_patch_dynamic_int8_cpu.json",
+      "sha256": "6e60cd56977e1740dd1da129a8e55a4f143fde305d498acb1d0faae7b9cc9ed4"
+    },
+    "resources_int8": {
+      "bytes": 4820,
+      "path": "results/breakthrough_equal/northstar_v22_deployment_resources_dynamic_int8_cpu.json",
+      "sha256": "0ac86e98c179b358caf03756a8cc92f0948936c772035c453ac90d2c8587e115"
+    },
+    "runtime_artifact": {
+      "bytes": 9004852,
+      "path": "artifacts/layercake_v22_patch_int8.ts",
+      "sha256": "4eb7c883c6ea9c42160e5bc34af4e88e1721afa0187b72687a43c776d2788656"
+    },
+    "runtime_manifest": {
+      "bytes": 1633,
+      "path": "artifacts/layercake_v22_patch_int8.manifest.json",
+      "sha256": "1a45b20e448ec05997e76f6f4b22c520377953f1ca7395bab31910960bc3c192"
+    },
+    "schema_cpu": {
+      "bytes": 85707,
+      "path": "results/breakthrough_equal/northstar_v22_schema_patch_cpu.json",
+      "sha256": "b6ca8d6678b57e9b0c1ee668fe1b84f53af24ca23badc25dfa8ef90dca586d27"
+    },
+    "schema_gpu": {
+      "bytes": 85967,
+      "path": "results/breakthrough_equal/northstar_v22_schema_patch_cuda_graph_gpu.json",
+      "sha256": "0046976c45c916e113ac585f8066dc71ff149c5fafbf2bdc481f729761b7ed61"
+    },
+    "schema_int8": {
+      "bytes": 85717,
+      "path": "results/breakthrough_equal/northstar_v22_schema_patch_dynamic_int8_cpu.json",
+      "sha256": "f72f294aa5656fac4033e99d038272d6712f09bf50fd27a03133840d74c41eba"
+    },
+    "tests": {
+      "bytes": 2565,
+      "path": "results/breakthrough_equal/northstar_v22_pytest_summary.json",
+      "sha256": "1a7e6316320ed3cf01db8f5702ec432171d72fad142f6cc6387314b8dee75f86"
+    },
+    "transfer_cpu": {
+      "bytes": 1605,
+      "path": "results/breakthrough_equal/northstar_v22_lossless_transfer_15m_to_5m_cpu.json",
+      "sha256": "c18429b1a2c23afb32dce30ab162ea88272ccbfce2ac31cb3bf3d6f64a11e784"
+    },
+    "transfer_gpu": {
+      "bytes": 1605,
+      "path": "results/breakthrough_equal/northstar_v22_lossless_transfer_15m_to_5m_gpu.json",
+      "sha256": "568af2e3042f6de544246814dcb3cea72444f6a166ed1d683e0f671f31ff4b75"
+    }
+  },
+  "failed_required": [],
+  "limitations": {
+    "cuda_graph_setup": "One-time setup is recorded and excluded from steady-state latency.",
+    "deployment_scope": "The 8.7MB runtime is the global autoregressive patch-generation path used by the locked tasks, not the full general byte-LM decoder.",
+    "mobile_evidence_scope": "INT8 artifact size, isolated x86 CPU peak memory, quality, and speed proxy; no Android/iOS ARM, NPU, battery, or thermal measurement.",
+    "real_phone_hardware_measured": false,
+    "task_scope": "Schema/action JSON and compositional prompt grounding plus a separate general-language BPB evaluation; not universal LLM dominance.",
+    "training_scope": "This release certificate does not claim faster full-core training. The separate fail-closed training audit currently reports OPEN."
+  },
+  "metrics": {
+    "cuda_graph_setup_seconds": [
+      18.8381900999957,
+      18.810406199998397
+    ],
+    "dense_speed_ratios": [
+      23.632661701748916,
+      19.89488191978564,
+      24.584975587479615,
+      20.301292748418927,
+      23.338539111191135,
+      19.508366513262573
+    ],
+    "deployment": {
+      "deployment_artifact_ratio_layercake_over_transformer": 0.2715282795049212,
+      "deployment_private_increment_ratio_layercake_over_transformer": 2.16608359418155,
+      "deployment_rss_increment_ratio_layercake_over_transformer": 2.307348965864085,
+      "generation_speed_ratio_layercake_over_transformer": 11.594151896399191,
+      "peak_private_memory_ratio_layercake_over_transformer": 0.9316674636245645,
+      "peak_rss_ratio_layercake_over_transformer": 0.9108459134886873
+    },
+    "int8_artifact_ratios": [
+      0.2715282795049212,
+      0.2715282795049212
+    ],
+    "int8_speed_ratios": [
+      12.05966602462425,
+      12.567353818384365,
+      11.810033658792157
+    ],
+    "layercake_corrected_task_bytes": 73728000,
+    "layercake_general_bpb": 1.9088364738222183,
+    "layercake_parameters": 15190449,
+    "layercake_total_train_bytes": 143360000.0,
+    "packaged_runtime_bytes": 9004852,
+    "packaged_runtime_sha256": "4eb7c883c6ea9c42160e5bc34af4e88e1721afa0187b72687a43c776d2788656",
+    "parameter_ratio": 1.0160259137140581,
+    "pytest": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 304
+    },
+    "transfer_generation_hash": "79bd027f68f4a85d0d3448f5b404362951cb452af8a84b02ea1a3c192f9d124c",
+    "transfer_payload_hash": "e831595c6753b3e48a82be9a0be216c67fc5efd72cffc560e55be5324c6e729c",
+    "transformer_corrected_task_bytes_conservative": 111736565.52780077,
+    "transformer_general_bpb": 2.714944438726752,
+    "transformer_parameters": 14950848,
+    "transformer_total_train_bytes": 159365308.03623238
+  },
+  "required_gates": {
+    "all_evidence_present": true,
+    "cpu_gpu_execution_provenance_recorded": true,
+    "cuda_graph_setup_recorded": true,
+    "equal_size_parameter_ratio_at_most_1_05": true,
+    "fair_neural_no_structured_shortcuts": true,
+    "full_regression_suite": true,
+    "int8_artifact_at_most_half_transformer": true,
+    "int8_quality_100_percent": true,
+    "int8_speed_at_least_5x": true,
+    "isolated_deployment_resource_gate": true,
+    "layercake_dense_cpu_gpu_speed_at_least_5x": true,
+    "layercake_dense_quality_100_percent": true,
+    "layercake_general_bpb_better": true,
+    "layercake_heldout_quality_strictly_better": true,
+    "layercake_one_neural_call_per_answer": true,
+    "lossless_15m_to_5m_transfer_cpu_gpu": true,
+    "lossless_transfer_cross_backend_generation_equal": true,
+    "packaged_runtime_validated": true,
+    "transformer_corrected_task_exposure_at_least_layercake": true,
+    "transformer_total_exposure_at_least_layercake": true
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,57 @@
+{
+  "name": "layercake_byte_100m_core_phaseB_redpajama",
+  "description": "English polish continuation for 100M byte core (game-clean)",
+  "model": {
+    "patch_size": 2,
+    "d_byte": 64,
+    "d_model": 704,
+    "d_abi": 256,
+    "layers": 15,
+    "heads": 11,
+    "max_patches": 1024,
+    "continuous_local": false,
+    "direct_global_context": true,
+    "local_decoder": "window_transformer",
+    "local_layers": 3,
+    "local_width": 528,
+    "modern_blocks": true,
+    "fused_attention": true,
+    "local_window": 64,
+    "patch_unit_buckets": 0,
+    "dropout": 0.1,
+    "qk_norm": true,
+    "global_block": "attention"
+  },
+  "training": {
+    "device": "cuda",
+    "seq_len": 1024,
+    "micro_batch_size": 2,
+    "grad_accum_steps": 16,
+    "steps": 70000,
+    "resume_from": "runs_experiment/byte_100m_core_phaseA_curriculum/latest.pt",
+    "lr": 0.00014,
+    "min_lr": 0.00002,
+    "warmup_steps": 500,
+    "lr_decay_steps": 54500,
+    "lr_step_offset": 15000,
+    "weight_decay": 0.01,
+    "log_interval": 50,
+    "save_interval": 1000,
+    "keep_last_n": 1,
+    "save_optimizer": false,
+    "read_block_bytes": 1048576,
+    "include_suffixes": [
+      ".jsonl",
+      ".json",
+      ".txt",
+      ".md",
+      ".csv"
+    ],
+    "data_roots": [
+      "../layercakeogwithdecoder/data/v6/redpajama_english_train.jsonl",
+      "./data/curriculum/english_school_curriculum.txt",
+      "./data/curriculum/companion_dialogue_curriculum.txt"
+    ],
+    "out_dir": "runs_experiment/byte_100m_core_phaseB_redpajama"
+  }
+}

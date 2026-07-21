@@ -56,10 +56,18 @@ def main() -> None:
     parser.add_argument("--eval-source-label", default="repository-heldout-python")
     parser.add_argument("--batches", type=int, default=50)
     parser.add_argument("--generation-bytes", type=int, default=64)
+    parser.add_argument("--device", choices=["cpu", "cuda"], default=None)
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if args.device == "cuda":
+        if not torch.cuda.is_available():
+            raise RuntimeError("CUDA was requested but is unavailable")
+        device = torch.device("cuda")
+    elif args.device == "cpu":
+        device = torch.device("cpu")
+    else:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     artifact = torch.load(args.decoder, map_location="cpu")
     source = torch.load(args.source_core, map_location="cpu")
     target = torch.load(args.target_core, map_location="cpu")

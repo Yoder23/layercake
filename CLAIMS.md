@@ -3,6 +3,46 @@
 This file separates current evidence, historical negative controls, and research targets.
 Passing a small-scale gate does not imply the same result at larger scale.
 
+## North Star v23 routed-cake evidence
+
+| Claim | Evidence | Result |
+|---|---|---|
+| Lossless architectural migration | v23 migration artifact | Full next-byte logits, ABI, patch logits, and generation bit-exact |
+| Selected domain-cake training speed | v23 training artifact | CPU 5.32x median / 5.21x min; GPU 5.70x median / 5.39x min |
+| Sparse optimizer | v23 route-isolation artifact | 1.773M optimizer params; 11.67% of 15.193M |
+| No deployed generation regression | v23 CPU/GPU artifacts | 100% exact; at least 95% v22 throughput |
+| Route training isolation | v23 route-isolation artifact | Default ABI, patch logits, and generated patches bit-exact |
+| Portable-domain transfer | v23 transfer artifacts | logit diff 0; PPL ratio 1; identical CPU/GPU generation |
+
+The >5x row is domain-cake fine-tuning with a frozen foundation versus full
+transformer training. Full-foundation pretraining and time-to-quality remain
+open and must not be inferred from that row.
+
+## North Star v22 evidence
+
+The current promoted result is the fail-closed
+`results/breakthrough_equal/northstar_v22_release_certificate.json` certificate.
+
+| Claim | Evidence | Result |
+|---|---|---|
+| Equal-size parameter comparison | v22 certificate | 15.190M vs 14.951M; 1.016x ratio |
+| Better held-out general BPB | v22 certificate | 1.9088 vs 2.7149 |
+| Exact schema/compositional grounding | v22 CPU/GPU artifacts | 100% LayerCake; 87.5%/60% transformer |
+| Faster CPU/GPU task generation | v22 CPU/GPU artifacts | minimum 19.51x across locked dense splits |
+| Smaller/faster INT8 task deployment | v22 INT8/resource artifacts | 8.73 MB; minimum 11.59x; lower process peaks |
+| Exact independent cross-size domain transfer | v22 transfer artifacts | logit diff 0; PPL ratio 1; identical CPU/GPU generation |
+| Repository regression | v22 pytest summary | 304 passed |
+| Faster full-core training | v22 training audit | OPEN: 0.722x CPU / 1.045x GPU recipe medians; historical equal-quality time ratio 1.107x |
+
+The strengthened transformer receives 159.37M total bytes versus LayerCake's reported
+143.36M and a conservative 111.74M corrected-task bytes versus LayerCake's 73.73M.
+Structured heads and direct domain caches are forbidden in every quality/speed artifact.
+
+This promotes a same-size local architecture result for the locked task and general-BPB
+protocol. It does not establish universal open-domain superiority or real-phone dominance.
+The INT8 deployment artifact excludes the full local byte-LM training decoder. It also does
+not establish training dominance; `TRAINING_NORTHSTAR.md` defines the open 5x gate.
+
 ## Current v2 evidence
 
 Current north-star certificate:

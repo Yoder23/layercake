@@ -1,0 +1,1377 @@
+{
+  "benchmark_mode": "fair_neural",
+  "checkpoint_parameters": {
+    "layercake": 15190449,
+    "ratio_layercake_over_transformer": 1.0160259137140581,
+    "transformer": 14950848
+  },
+  "cpu_threads": null,
+  "deployment_artifact_bytes": {
+    "layercake": 60938881,
+    "ratio_layercake_over_transformer": 1.011066855891508,
+    "transformer": 60271861
+  },
+  "device": "cuda",
+  "dynamic_int8": false,
+  "dynamic_int8_engine": null,
+  "dynamic_int8_module_types": [],
+  "environment": {
+    "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+    "cuda_available": true,
+    "device_type": "cuda",
+    "gpu": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "gpu_compute_capability": "8.6",
+    "gpu_total_memory_bytes": 17179344896,
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.10.0",
+    "torch": "2.7.1+cu118",
+    "torch_cuda": "11.8"
+  },
+  "layercake_cuda_graph_runtime": {
+    "batch_size": 1,
+    "enabled": true,
+    "generation_bytes": 80,
+    "setup_seconds": 18.810406199998397
+  },
+  "layercake_deployment_scope": "full checkpoint",
+  "layercake_direct_domain_cache": false,
+  "layercake_neural_mode": "patch",
+  "layercake_structured_schema_head": false,
+  "max_new_bytes": 128,
+  "no_repeat_ngram": 0,
+  "repeats": 3,
+  "scope": "Fresh schema/action benchmark: train LayerCake and BPE transformer on the same generated XML/JSON/app-edit corpus, then ask seen and held-out task questions. Quality is parsed JSON exactness and character similarity, not a flat rubric score.",
+  "splits": {
+    "heldout": {
+      "samples": [
+        {
+          "expected": "{\"attrs\":{\"id\":\"42\"},\"tag\":\"item\",\"text\":\"ok\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 6229.640109659083,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"42\"},\"tag\":\"item\",\"text\":\"ok\"}",
+            "latency_per_answer_seconds": 0.012841833330943095,
+            "max_repeat_8gram": 3,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "42"
+              },
+              "tag": "item",
+              "text": "ok"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"42\"},\"tag\":\"item\",\"text\":\"ok\"},\"tag\":\"item\",\"text\":\"ok\"},\"tag\":\"",
+            "seconds": 0.012841833330943095,
+            "timing_trials": [
+              0.01942849999613827,
+              0.010845700002391823,
+              0.008251299994299188
+            ]
+          },
+          "name": "heldout_relevance_xml_00",
+          "prompt": "Question: Given an XML node <item id=\"42\">ok</item>, produce the matching JSON object. Answer: ",
+          "speed_ratio_layercake_over_transformer": 11.402135719280254,
+          "transformer": {
+            "bytes_per_second": 546.3573020907982,
+            "char_similarity": 0.9375,
+            "edit_distance": 3,
+            "estimated_generated_calls": null,
+            "exact_json_match": false,
+            "extracted_json": "{\"attrs\":{\"id\":\"42\"},\"tag\":\"item\",\"text\":\"open\"}",
+            "latency_per_answer_seconds": 0.08968489999582137,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "42"
+              },
+              "tag": "item",
+              "text": "open"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"42\"},\"tag\":\"item\",\"text\":\"open\"}",
+            "seconds": 0.08968489999582137,
+            "timing_trials": [
+              0.09573019999515964,
+              0.08312679999653483,
+              0.09019769999576965
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"71\"},\"tag\":\"item\",\"text\":\"ready\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 9973.445699177657,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"71\"},\"tag\":\"item\",\"text\":\"ready\"}",
+            "latency_per_answer_seconds": 0.008021300001322137,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "71"
+              },
+              "tag": "item",
+              "text": "ready"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"71\"},\"tag\":\"item\",\"text\":\"ready\"},\"tag\":\"item\",\"text\":\"ready\"}},",
+            "seconds": 0.008021300001322137,
+            "timing_trials": [
+              0.00976529999752529,
+              0.006506600002467167,
+              0.007792000003973953
+            ]
+          },
+          "name": "heldout_relevance_xml_01",
+          "prompt": "Question: Given an XML node <item id=\"71\">ready</item>, produce the matching JSON object. Answer: ",
+          "speed_ratio_layercake_over_transformer": 17.559133158433422,
+          "transformer": {
+            "bytes_per_second": 567.9919167528803,
+            "char_similarity": 0.8979591836734694,
+            "edit_distance": 5,
+            "estimated_generated_calls": null,
+            "exact_json_match": false,
+            "extracted_json": "{\"attrs\":{\"id\":\"71\"},\"tag\":\"item\",\"text\":\"done\"}",
+            "latency_per_answer_seconds": 0.08626883333151152,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "71"
+              },
+              "tag": "item",
+              "text": "done"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"71\"},\"tag\":\"item\",\"text\":\"done\"}",
+            "seconds": 0.08626883333151152,
+            "timing_trials": [
+              0.0854749999998603,
+              0.08111120000103256,
+              0.09222029999364167
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"83\"},\"tag\":\"item\",\"text\":\"done\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 12568.537808852861,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"83\"},\"tag\":\"item\",\"text\":\"done\"}",
+            "latency_per_answer_seconds": 0.006365099999432762,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "83"
+              },
+              "tag": "item",
+              "text": "done"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"83\"},\"tag\":\"item\",\"text\":\"done\"},\"tag\":\"item\",\"text\":\"done\"},\"ta",
+            "seconds": 0.006365099999432762,
+            "timing_trials": [
+              0.0053307999987737276,
+              0.005458499996166211,
+              0.00830600000335835
+            ]
+          },
+          "name": "heldout_relevance_xml_02",
+          "prompt": "Question: Given an XML node <item id=\"83\">done</item>, produce the matching JSON object. Answer: ",
+          "speed_ratio_layercake_over_transformer": 21.55888985440079,
+          "transformer": {
+            "bytes_per_second": 582.9863176506401,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"83\"},\"tag\":\"item\",\"text\":\"done\"}",
+            "latency_per_answer_seconds": 0.08405000000251069,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "83"
+              },
+              "tag": "item",
+              "text": "done"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"83\"},\"tag\":\"item\",\"text\":\"done\"}",
+            "seconds": 0.08405000000251069,
+            "timing_trials": [
+              0.08273300000291783,
+              0.08669029999873601,
+              0.08272670000587823
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"94\"},\"tag\":\"item\",\"text\":\"open\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 14312.891745298492,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"94\"},\"tag\":\"item\",\"text\":\"open\"}",
+            "latency_per_answer_seconds": 0.005589366664935369,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "94"
+              },
+              "tag": "item",
+              "text": "open"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"94\"},\"tag\":\"item\",\"text\":\"open\"},\"tag\":\"item\",\"text\":\"open\"},\"ta",
+            "seconds": 0.005589366664935369,
+            "timing_trials": [
+              0.005918700000620447,
+              0.005178499995963648,
+              0.005670899998222012
+            ]
+          },
+          "name": "heldout_relevance_xml_03",
+          "prompt": "Question: Given an XML node <item id=\"94\">open</item>, produce the matching JSON object. Answer: ",
+          "speed_ratio_layercake_over_transformer": 23.418107989714276,
+          "transformer": {
+            "bytes_per_second": 611.1890743515664,
+            "char_similarity": 0.88,
+            "edit_distance": 6,
+            "estimated_generated_calls": null,
+            "exact_json_match": false,
+            "extracted_json": "{\"attrs\":{\"id\":\"94\"},\"tag\":\"item\",\"text\":\"active\"}",
+            "latency_per_answer_seconds": 0.08344389999789807,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "94"
+              },
+              "tag": "item",
+              "text": "active"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"94\"},\"tag\":\"item\",\"text\":\"active\"}",
+            "seconds": 0.08344389999789807,
+            "timing_trials": [
+              0.07817739999882178,
+              0.0869886000000406,
+              0.08516569999483181
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"105\"},\"tag\":\"item\",\"text\":\"closed\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 13673.42171696273,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"105\"},\"tag\":\"item\",\"text\":\"closed\"}",
+            "latency_per_answer_seconds": 0.005850766666602188,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "105"
+              },
+              "tag": "item",
+              "text": "closed"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"105\"},\"tag\":\"item\",\"text\":\"closed\"}},\"tag\":\"item\",\"text\":\"closed",
+            "seconds": 0.005850766666602188,
+            "timing_trials": [
+              0.006244299998797942,
+              0.00554040000133682,
+              0.005767599999671802
+            ]
+          },
+          "name": "heldout_relevance_xml_04",
+          "prompt": "Question: Given an XML node <item id=\"105\">closed</item>, produce the matching JSON object. Answer: ",
+          "speed_ratio_layercake_over_transformer": 23.535864190219673,
+          "transformer": {
+            "bytes_per_second": 580.9611071194369,
+            "char_similarity": 0.9019607843137255,
+            "edit_distance": 5,
+            "estimated_generated_calls": null,
+            "exact_json_match": false,
+            "extracted_json": "{\"attrs\":{\"id\":\"105\"},\"tag\":\"item\",\"text\":\"valid\"}",
+            "latency_per_answer_seconds": 0.08778556666705602,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "105"
+              },
+              "tag": "item",
+              "text": "valid"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"105\"},\"tag\":\"item\",\"text\":\"valid\"}",
+            "seconds": 0.08778556666705602,
+            "timing_trials": [
+              0.08713749999878928,
+              0.09321550000458956,
+              0.08300369999778923
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"116\"},\"tag\":\"item\",\"text\":\"active\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 12303.401888730248,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"116\"},\"tag\":\"item\",\"text\":\"active\"}",
+            "latency_per_answer_seconds": 0.006502266667666845,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "116"
+              },
+              "tag": "item",
+              "text": "active"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"116\"},\"tag\":\"item\",\"text\":\"active\"}}},atext\":\"actig\"}},\"tag\":\"it",
+            "seconds": 0.006502266667666845,
+            "timing_trials": [
+              0.005527599998458754,
+              0.007813000003807247,
+              0.006166200000734534
+            ]
+          },
+          "name": "heldout_relevance_xml_05",
+          "prompt": "Question: Given an XML node <item id=\"116\">active</item>, produce the matching JSON object. Answer: ",
+          "speed_ratio_layercake_over_transformer": 20.871798549420276,
+          "transformer": {
+            "bytes_per_second": 589.4749252010187,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"116\"},\"tag\":\"item\",\"text\":\"active\"}",
+            "latency_per_answer_seconds": 0.08821410000139925,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "116"
+              },
+              "tag": "item",
+              "text": "active"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"116\"},\"tag\":\"item\",\"text\":\"active\"}",
+            "seconds": 0.08821410000139925,
+            "timing_trials": [
+              0.09000120000564493,
+              0.0885511000014958,
+              0.08608999999705702
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"127\"},\"tag\":\"item\",\"text\":\"valid\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 13110.742071529223,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"127\"},\"tag\":\"item\",\"text\":\"valid\"}",
+            "latency_per_answer_seconds": 0.0061018666650246205,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "127"
+              },
+              "tag": "item",
+              "text": "valid"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"127\"},\"tag\":\"item\",\"text\":\"valid\"},\"tag\":\"item\",\"text\":\"valid\"},",
+            "seconds": 0.0061018666650246205,
+            "timing_trials": [
+              0.005916599999181926,
+              0.007180799999332521,
+              0.005208199996559415
+            ]
+          },
+          "name": "heldout_relevance_xml_06",
+          "prompt": "Question: Given an XML node <item id=\"127\">valid</item>, produce the matching JSON object. Answer: ",
+          "speed_ratio_layercake_over_transformer": 22.263376819014308,
+          "transformer": {
+            "bytes_per_second": 588.8927891806527,
+            "char_similarity": 0.9,
+            "edit_distance": 5,
+            "estimated_generated_calls": null,
+            "exact_json_match": false,
+            "extracted_json": "{\"attrs\":{\"id\":\"127\"},\"tag\":\"item\",\"text\":\"green\"}",
+            "latency_per_answer_seconds": 0.0866032000000511,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "127"
+              },
+              "tag": "item",
+              "text": "green"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"127\"},\"tag\":\"item\",\"text\":\"green\"}",
+            "seconds": 0.0866032000000511,
+            "timing_trials": [
+              0.07985560000088299,
+              0.0915473999993992,
+              0.0884065999998711
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"138\"},\"tag\":\"item\",\"text\":\"pending\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 12962.112819351803,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"138\"},\"tag\":\"item\",\"text\":\"pending\"}",
+            "latency_per_answer_seconds": 0.00617183333573242,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "138"
+              },
+              "tag": "item",
+              "text": "pending"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"138\"},\"tag\":\"item\",\"text\":\"pending\"}},\"tag\":\"item\",\"text\":\"pendi",
+            "seconds": 0.00617183333573242,
+            "timing_trials": [
+              0.006234100001165643,
+              0.005661500006681308,
+              0.006619899999350309
+            ]
+          },
+          "name": "heldout_relevance_xml_07",
+          "prompt": "Question: Given an XML node <item id=\"138\">pending</item>, produce the matching JSON object. Answer: ",
+          "speed_ratio_layercake_over_transformer": 24.251162530426395,
+          "transformer": {
+            "bytes_per_second": 534.4944929171565,
+            "char_similarity": 0.8653846153846154,
+            "edit_distance": 7,
+            "estimated_generated_calls": null,
+            "exact_json_match": false,
+            "extracted_json": "{\"attrs\":{\"id\":\"138\"},\"tag\":\"item\",\"text\":\"blue\"}",
+            "latency_per_answer_seconds": 0.09354633333471914,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "138"
+              },
+              "tag": "item",
+              "text": "blue"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"138\"},\"tag\":\"item\",\"text\":\"blue\"}",
+            "seconds": 0.09354633333471914,
+            "timing_trials": [
+              0.08655390000058105,
+              0.09637340000335826,
+              0.09771170000021812
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"149\"},\"tag\":\"item\",\"text\":\"green\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 11919.069510743842,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"149\"},\"tag\":\"item\",\"text\":\"green\"}",
+            "latency_per_answer_seconds": 0.006711933337404237,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "149"
+              },
+              "tag": "item",
+              "text": "green"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"149\"},\"tag\":\"item\",\"text\":\"green\"},\"tag\":\"item\",\"text\":\"green\"},",
+            "seconds": 0.006711933337404237,
+            "timing_trials": [
+              0.008686400004080497,
+              0.005946600002062041,
+              0.005502800006070174
+            ]
+          },
+          "name": "heldout_relevance_xml_08",
+          "prompt": "Question: Given an XML node <item id=\"149\">green</item>, produce the matching JSON object. Answer: ",
+          "speed_ratio_layercake_over_transformer": 21.001734211729996,
+          "transformer": {
+            "bytes_per_second": 567.5278712977304,
+            "char_similarity": 0.92,
+            "edit_distance": 4,
+            "estimated_generated_calls": null,
+            "exact_json_match": false,
+            "extracted_json": "{\"attrs\":{\"id\":\"149\"},\"tag\":\"item\",\"text\":\"gold\"}",
+            "latency_per_answer_seconds": 0.08810139999938353,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "149"
+              },
+              "tag": "item",
+              "text": "gold"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"149\"},\"tag\":\"item\",\"text\":\"gold\"}",
+            "seconds": 0.08810139999938353,
+            "timing_trials": [
+              0.087889800000994,
+              0.08551399999851128,
+              0.0909003999986453
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"160\"},\"tag\":\"item\",\"text\":\"gold\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 12213.056778041573,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"160\"},\"tag\":\"item\",\"text\":\"gold\"}",
+            "latency_per_answer_seconds": 0.006550366665275457,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "160"
+              },
+              "tag": "item",
+              "text": "gold"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"160\"},\"tag\":\"item\",\"text\":\"gold\"},\"tag\":\"item\",\"text\":\"gold\"},\"t",
+            "seconds": 0.006550366665275457,
+            "timing_trials": [
+              0.008099999999103602,
+              0.005414599996584002,
+              0.006136500000138767
+            ]
+          },
+          "name": "heldout_relevance_xml_09",
+          "prompt": "Question: Given an XML node <item id=\"160\">gold</item>, produce the matching JSON object. Answer: ",
+          "speed_ratio_layercake_over_transformer": 20.584053524132486,
+          "transformer": {
+            "bytes_per_second": 593.3261280982941,
+            "char_similarity": 0.9,
+            "edit_distance": 5,
+            "estimated_generated_calls": null,
+            "exact_json_match": false,
+            "extracted_json": "{\"attrs\":{\"id\":\"167\"},\"tag\":\"item\",\"text\":\"green\"}",
+            "latency_per_answer_seconds": 0.08595610000096106,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "167"
+              },
+              "tag": "item",
+              "text": "green"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"167\"},\"tag\":\"item\",\"text\":\"green\"}",
+            "seconds": 0.08595610000096106,
+            "timing_trials": [
+              0.0839038000049186,
+              0.08313949999865144,
+              0.09082499999931315
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-right\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 12680.632974382414,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-right\"}}",
+            "latency_per_answer_seconds": 0.006308833333605435,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#save",
+              "to": {
+                "anchor": "top-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-right\"}}}anchor\":\"top-ri",
+            "seconds": 0.006308833333605435,
+            "timing_trials": [
+              0.006451699999161065,
+              0.005763900000602007,
+              0.006710900001053233
+            ]
+          },
+          "name": "heldout_relevance_edit_00",
+          "prompt": "Question: A user says move the Save button to the top right of the app. What edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 18.702281903499212,
+          "transformer": {
+            "bytes_per_second": 678.0259777824147,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-right\"}}",
+            "latency_per_answer_seconds": 0.09586653333341626,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#save",
+              "to": {
+                "anchor": "top-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-right\"}}",
+            "seconds": 0.09586653333341626,
+            "timing_trials": [
+              0.08811299999797484,
+              0.0995242999997572,
+              0.09996230000251671
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 11671.164931128777,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}",
+            "latency_per_answer_seconds": 0.0068544999982502,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#cancel",
+              "to": {
+                "anchor": "top-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}}anchor\":\"top-l",
+            "seconds": 0.0068544999982502,
+            "timing_trials": [
+              0.005236099998001009,
+              0.008802399999694899,
+              0.006524999997054692
+            ]
+          },
+          "name": "heldout_relevance_edit_01",
+          "prompt": "Question: A user says move the Cancel button to the top left of the app. What edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 19.52473896895062,
+          "transformer": {
+            "bytes_per_second": 597.7629175831208,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}",
+            "latency_per_answer_seconds": 0.1104116666635188,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#cancel",
+              "to": {
+                "anchor": "top-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}",
+            "seconds": 0.1104116666635188,
+            "timing_trials": [
+              0.1048538999966695,
+              0.11269559999345802,
+              0.11368550000042887
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#share\",\"to\":{\"anchor\":\"bottom-right\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 13281.167854721103,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#share\",\"to\":{\"anchor\":\"bottom-right\"}}",
+            "latency_per_answer_seconds": 0.0060235666678636335,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#share",
+              "to": {
+                "anchor": "bottom-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#share\",\"to\":{\"anchor\":\"bottom-right\"}}}arght\":\"bot",
+            "seconds": 0.0060235666678636335,
+            "timing_trials": [
+              0.006349600000248756,
+              0.005625600002531428,
+              0.006095500000810716
+            ]
+          },
+          "name": "heldout_relevance_edit_02",
+          "prompt": "Question: A user says move the Share button to the bottom right of the app. What edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 21.411616510070377,
+          "transformer": {
+            "bytes_per_second": 620.278615978138,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#share\",\"to\":{\"anchor\":\"bottom-right\"}}",
+            "latency_per_answer_seconds": 0.11124033333180705,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#share",
+              "to": {
+                "anchor": "bottom-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#share\",\"to\":{\"anchor\":\"bottom-right\"}}",
+            "seconds": 0.11124033333180705,
+            "timing_trials": [
+              0.11117869999725372,
+              0.10874279999552527,
+              0.11379950000264216
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#search\",\"to\":{\"anchor\":\"bottom-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 11708.573609165043,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#search\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.006832599996414501,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#search",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#search\",\"to\":{\"anchor\":\"bottom-left\"}}}archor\":\"bo",
+            "seconds": 0.006832599996414501,
+            "timing_trials": [
+              0.005823199993756134,
+              0.008048199997574557,
+              0.006626399997912813
+            ]
+          },
+          "name": "heldout_relevance_edit_03",
+          "prompt": "Question: A user says move the Search button to the bottom left of the app. What edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 18.97724479301893,
+          "transformer": {
+            "bytes_per_second": 616.9796372902467,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#search\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.11183513333283675,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#search",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#search\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "seconds": 0.11183513333283675,
+            "timing_trials": [
+              0.10993549999693641,
+              0.1140365000028396,
+              0.11153339999873424
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#login\",\"to\":{\"anchor\":\"center\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 11420.142274716716,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#login\",\"to\":{\"anchor\":\"center\"}}",
+            "latency_per_answer_seconds": 0.007005166667416536,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#login",
+              "to": {
+                "anchor": "center"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#login\",\"to\":{\"anchor\":\"center\"}}center\"}}}anchor\":",
+            "seconds": 0.007005166667416536,
+            "timing_trials": [
+              0.005430500001239125,
+              0.006589399999938905,
+              0.00899560000107158
+            ]
+          },
+          "name": "heldout_relevance_edit_04",
+          "prompt": "Question: A user says move the Login button to the center of the app. What edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 16.845990844723996,
+          "transformer": {
+            "bytes_per_second": 677.9145483326316,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#login\",\"to\":{\"anchor\":\"center\"}}",
+            "latency_per_answer_seconds": 0.09293206666673844,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#login",
+              "to": {
+                "anchor": "center"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#login\",\"to\":{\"anchor\":\"center\"}}",
+            "seconds": 0.09293206666673844,
+            "timing_trials": [
+              0.0872497000018484,
+              0.09505419999914011,
+              0.09649229999922682
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#export\",\"to\":{\"anchor\":\"header-right\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 12047.950843232384,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#export\",\"to\":{\"anchor\":\"header-right\"}}",
+            "latency_per_answer_seconds": 0.006640133333955116,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#export",
+              "to": {
+                "anchor": "header-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#export\",\"to\":{\"anchor\":\"header-right\"}}}ader-rght\"",
+            "seconds": 0.006640133333955116,
+            "timing_trials": [
+              0.005468399998790119,
+              0.008163600003172178,
+              0.006288399999903049
+            ]
+          },
+          "name": "heldout_relevance_edit_05",
+          "prompt": "Question: A user says move the Export button to the header right of the app. What edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 16.91779568255654,
+          "transformer": {
+            "bytes_per_second": 712.1466099543148,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#export\",\"to\":{\"anchor\":\"header-right\"}}",
+            "latency_per_answer_seconds": 0.09829436666768743,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#export",
+              "to": {
+                "anchor": "header-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#export\",\"to\":{\"anchor\":\"header-right\"}}",
+            "seconds": 0.09829436666768743,
+            "timing_trials": [
+              0.09685750000062399,
+              0.09426759999769274,
+              0.10375800000474555
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#print\",\"to\":{\"anchor\":\"footer-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 14025.57329072515,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#print\",\"to\":{\"anchor\":\"footer-left\"}}",
+            "latency_per_answer_seconds": 0.005703866668530584,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#print",
+              "to": {
+                "anchor": "footer-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#print\",\"to\":{\"anchor\":\"footer-left\"}}}anchor\":\"foo",
+            "seconds": 0.005703866668530584,
+            "timing_trials": [
+              0.005317400005878881,
+              0.006048299997928552,
+              0.005745900001784321
+            ]
+          },
+          "name": "heldout_relevance_edit_06",
+          "prompt": "Question: A user says move the Print button to the footer left of the app. What edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 22.906291286910154,
+          "transformer": {
+            "bytes_per_second": 612.3022323888848,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#print\",\"to\":{\"anchor\":\"footer-left\"}}",
+            "latency_per_answer_seconds": 0.11105626666540047,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#print",
+              "to": {
+                "anchor": "footer-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#print\",\"to\":{\"anchor\":\"footer-left\"}}",
+            "seconds": 0.11105626666540047,
+            "timing_trials": [
+              0.11163910000323085,
+              0.11325209999631625,
+              0.10827759999665432
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#help\",\"to\":{\"anchor\":\"top-right\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 13479.435434514618,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#help\",\"to\":{\"anchor\":\"top-right\"}}",
+            "latency_per_answer_seconds": 0.0059349666674582595,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#help",
+              "to": {
+                "anchor": "top-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#help\",\"to\":{\"anchor\":\"top-right\"}}}anchor\":\"top-ri",
+            "seconds": 0.0059349666674582595,
+            "timing_trials": [
+              0.005466300004627556,
+              0.006077799997001421,
+              0.006260800000745803
+            ]
+          },
+          "name": "heldout_relevance_edit_07",
+          "prompt": "Question: A user says move the Help button to the top right of the app. What edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 21.13979167967907,
+          "transformer": {
+            "bytes_per_second": 637.6333144035624,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#help\",\"to\":{\"anchor\":\"top-right\"}}",
+            "latency_per_answer_seconds": 0.10193946666792424,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#help",
+              "to": {
+                "anchor": "top-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#help\",\"to\":{\"anchor\":\"top-right\"}}",
+            "seconds": 0.10193946666792424,
+            "timing_trials": [
+              0.10069540000404231,
+              0.10082200000033481,
+              0.10430099999939557
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 12640.227522026462,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.006329000001035941,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#save",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}}anchor\":\"bott",
+            "seconds": 0.006329000001035941,
+            "timing_trials": [
+              0.005971099999442231,
+              0.006709900000714697,
+              0.006306000002950896
+            ]
+          },
+          "name": "heldout_relevance_edit_08",
+          "prompt": "Question: A user says move the Save button to the bottom left of the app. What edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 21.316963920715178,
+          "transformer": {
+            "bytes_per_second": 592.9656572596191,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.11299136666639242,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#save",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "seconds": 0.11299136666639242,
+            "timing_trials": [
+              0.12155540000094334,
+              0.10449180000432534,
+              0.11292689999390859
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#login\",\"to\":{\"anchor\":\"top-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 13088.505571210393,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#login\",\"to\":{\"anchor\":\"top-left\"}}",
+            "latency_per_answer_seconds": 0.006112233330592669,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#login",
+              "to": {
+                "anchor": "top-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#login\",\"to\":{\"anchor\":\"top-left\"}}}anchor\":\"top-le",
+            "seconds": 0.006112233330592669,
+            "timing_trials": [
+              0.005121399997733533,
+              0.007694499996432569,
+              0.005520799997611903
+            ]
+          },
+          "name": "heldout_relevance_edit_09",
+          "prompt": "Question: A user says move the Login button to the top left of the app. What edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 21.8368828314826,
+          "transformer": {
+            "bytes_per_second": 599.3760955817593,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#login\",\"to\":{\"anchor\":\"top-left\"}}",
+            "latency_per_answer_seconds": 0.10844610000155323,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#login",
+              "to": {
+                "anchor": "top-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#login\",\"to\":{\"anchor\":\"top-left\"}}",
+            "seconds": 0.10844610000155323,
+            "timing_trials": [
+              0.10155300000042189,
+              0.11406130000250414,
+              0.10972400000173366
+            ]
+          }
+        }
+      ],
+      "summary": {
+        "layercake": {
+          "exact_json_accuracy": 1.0,
+          "mean_bytes_per_second": 12265.484722708528,
+          "mean_char_similarity": 1.0,
+          "mean_estimated_generated_calls": 1.0,
+          "mean_latency_per_answer_seconds": 0.006722574999973101,
+          "median_bytes_per_second": 12604.382665439662,
+          "parseable_json_rate": 1.0
+        },
+        "mean_speed_ratio_layercake_over_transformer": 20.301292748418927,
+        "transformer": {
+          "exact_json_accuracy": 0.6,
+          "mean_bytes_per_second": 605.4293765607433,
+          "mean_char_similarity": 0.9601402291685905,
+          "mean_estimated_generated_calls": null,
+          "mean_latency_per_answer_seconds": 0.09643338166642934,
+          "median_bytes_per_second": 595.5445228407075,
+          "parseable_json_rate": 1.0
+        }
+      }
+    },
+    "seen": {
+      "samples": [],
+      "summary": {
+        "layercake": {
+          "exact_json_accuracy": 0.0,
+          "mean_bytes_per_second": 0.0,
+          "mean_char_similarity": 0.0,
+          "mean_estimated_generated_calls": null,
+          "mean_latency_per_answer_seconds": 0.0,
+          "median_bytes_per_second": 0.0,
+          "parseable_json_rate": 0.0
+        },
+        "mean_speed_ratio_layercake_over_transformer": 0.0,
+        "transformer": {
+          "exact_json_accuracy": 0.0,
+          "mean_bytes_per_second": 0.0,
+          "mean_char_similarity": 0.0,
+          "mean_estimated_generated_calls": null,
+          "mean_latency_per_answer_seconds": 0.0,
+          "median_bytes_per_second": 0.0,
+          "parseable_json_rate": 0.0
+        }
+      }
+    }
+  },
+  "stop_after_json": true,
+  "training": {
+    "layercake": {
+      "eval_bpb": 1.9088364738222183,
+      "latest": {
+        "bpb": 3.26425034038019,
+        "bytes_per_step": 2048,
+        "counted_pretrain_seconds": 0.128810899797827,
+        "data_seconds_per_step": 0.00033993079606443644,
+        "domain_cache_initialization": {
+          "status": "DISABLED"
+        },
+        "elapsed_seconds": 158.40914389980026,
+        "eval_bpb": 1.9088364738222183,
+        "eval_bytes": 1000000,
+        "forward_backward_seconds_per_step": 0.017623886603396387,
+        "gib_per_hour": 3.034243122813544,
+        "loss": 2.2626059200763704,
+        "lr": 1.000000355818132e-05,
+        "optimizer_seconds_per_step": 0.001638590204063803,
+        "parameter_filter": {
+          "enabled": true,
+          "frozen_parameter_count": 115,
+          "frozen_params_after_filter": 15121072,
+          "frozen_patterns": [],
+          "total_params": 15190449,
+          "trainable_parameter_names": [
+            "patch_generator.copy_query.weight",
+            "patch_generator.copy_key.weight",
+            "patch_generator.copy_gate.weight",
+            "patch_generator.copy_gate.bias",
+            "patch_generator.copy_position_key.weight",
+            "patch_generator.copy_previous_key.weight",
+            "patch_generator.copy_next_key.weight",
+            "patch_generator.copy_next2_key.weight",
+            "patch_generator.copy_context_key.weight"
+          ],
+          "trainable_params_after_filter": 69377,
+          "trainable_patterns": [
+            "patch_generator.copy_*"
+          ]
+        },
+        "prior_initialization": {
+          "status": "DISABLED"
+        },
+        "projected_total_hours": 0.044002539972166736,
+        "remaining_hours": 0.0,
+        "resume_load": {
+          "mismatched_keys": [],
+          "missing_keys": [
+            "patch_generator.copy_context_key.weight"
+          ],
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\runs_experiment\\northstar_v18_supervised_context_copy\\latest.pt",
+          "status": "LOADED",
+          "strict": false,
+          "unexpected_keys": []
+        },
+        "step": 70000,
+        "steps": 70000,
+        "steps_per_second": 441.89368288157425,
+        "train_bytes": 143360000,
+        "trainable_params": 69377
+      },
+      "parameters": 15190449,
+      "path": "runs_experiment\\northstar_v21_semantic_pointer\\training_metrics.json",
+      "status": "COMPLETE",
+      "train_bytes": 143360000,
+      "train_seconds": 158.40914389980026
+    },
+    "transformer": {
+      "eval_bpb": 2.714944438726752,
+      "latest": {
+        "artifact": "runs_experiment\\northstar_v22_fair_corrected_bpe\\latest.pt",
+        "bpb": 0.04382682446897592,
+        "bytes_per_step": 21283.15533862872,
+        "cumulative_train_bytes": 159365308.03623238,
+        "elapsed_seconds": 793.8556148998905,
+        "elapsed_total_seconds": 813.4683423999231,
+        "eval_bpb": 2.714944438726752,
+        "gib_per_hour": 0.6292093459791099,
+        "loss": 0.10523259334266186,
+        "lr": 1.2000005762960945e-05,
+        "phase_step": 7000,
+        "phase_steps": 7000,
+        "phase_train_bytes": 148982087.37040102,
+        "projected_total_hours": 0.2205154485833029,
+        "resume_cumulative_train_bytes": 10383220.665831348,
+        "resume_step": 2000,
+        "step": 9000,
+        "steps": 9000,
+        "steps_per_second": 8.817724367777808,
+        "tokenizer_seconds": 19.612727500032634,
+        "train_bytes": 148982087.37040102,
+        "trainable_params": 14950848
+      },
+      "parameters": 14950848,
+      "path": "runs_experiment\\northstar_v22_fair_corrected_bpe\\training_metrics.json",
+      "status": "COMPLETE",
+      "train_bytes": 148982087.37040102,
+      "train_seconds": 813.4683423999231
+    }
+  }
+}

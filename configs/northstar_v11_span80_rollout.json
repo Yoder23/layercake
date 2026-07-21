@@ -1,0 +1,23 @@
+{
+  "extends": "northstar_v10_span80_prompt_boundary.json",
+  "name": "northstar_v11_span80_rollout",
+  "description": "On-policy deployment-boundary continuation: condition the differentiable 80-byte decoder on its own current greedy rollout, then optimize the true answer bytes at exactly the inference prompt state.",
+  "model": {
+    "patch_prediction_rollout_training": true,
+    "patch_prediction_rollout_mix": 1.0
+  },
+  "training": {
+    "seed": 13131,
+    "steps": 28000,
+    "lr": 0.00005,
+    "min_lr": 0.000005,
+    "warmup_steps": 100,
+    "lr_decay_steps": 3900,
+    "lr_step_offset": 24000,
+    "resume_from": "runs_experiment/northstar_v10_span80_prompt_boundary/latest.pt",
+    "log_interval": 250,
+    "save_interval": 2000,
+    "eval_seed": 13132,
+    "out_dir": "runs_experiment/northstar_v11_span80_rollout"
+  }
+}

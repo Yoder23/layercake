@@ -1,0 +1,115 @@
+{
+  "claim": "The migration-compatible v23 LayerCake preserves the complete v22 generation path bit-exactly, retains locked quality and throughput, trains one isolated generation-aligned domain cake at more than 5x the full equal-capacity transformer throughput on the measured CPU and GPU protocols, and preserves lossless portable-domain transfer.",
+  "evidence": {
+    "migration": {
+      "bytes": 734,
+      "path": "results/breakthrough_equal/northstar_v23_lossless_migration.json",
+      "sha256": "6ddf54c00ee1e188d43e4e80f7d30f6c35ad57372f26bc262b8fd771e8019d89"
+    },
+    "relevance_cpu": {
+      "bytes": 56443,
+      "path": "results/breakthrough_equal/northstar_v23_relevance_patch_cpu.json",
+      "sha256": "372e0b711c765f57748b80f58c04a59bfb84ae085c490e5907a5ed7644a98479"
+    },
+    "relevance_gpu": {
+      "bytes": 56688,
+      "path": "results/breakthrough_equal/northstar_v23_relevance_patch_cuda_graph_gpu.json",
+      "sha256": "8d34bc6245bf79094cf60418ddad3451ca659840261ffe756b9f2741f3f9ced2"
+    },
+    "route_isolation": {
+      "bytes": 1719,
+      "path": "results/breakthrough_equal/northstar_v23_route_isolation.json",
+      "sha256": "795031bf36b9d120827f36e013ef461ab567af2701a78446efafa5d19c0ccb07"
+    },
+    "schema_cpu": {
+      "bytes": 85701,
+      "path": "results/breakthrough_equal/northstar_v23_schema_patch_cpu.json",
+      "sha256": "32b45af274626b8f40a3109b835f1433c76bd70da795e05e43fe4441a6eaa919"
+    },
+    "schema_gpu": {
+      "bytes": 85968,
+      "path": "results/breakthrough_equal/northstar_v23_schema_patch_cuda_graph_gpu.json",
+      "sha256": "9f6cca67d15a80f34d47e92fe57139f2da0d40cde2bd6d4fa7b7de23ab1e64a1"
+    },
+    "tests": {
+      "bytes": 2566,
+      "path": "results/breakthrough_equal/northstar_v23_pytest_summary.json",
+      "sha256": "73daaa5867791823f47e126df779972c3d6ef8795ca2984278dd5848a432bb8e"
+    },
+    "training_speed": {
+      "bytes": 24745,
+      "path": "results/breakthrough_equal/northstar_v23_domain_cake_training_speed.json",
+      "sha256": "7801c1baacb0904f95773c150f67f3f62f4aa655c44d1950c3062f11b210a346"
+    },
+    "transfer_cpu": {
+      "bytes": 1593,
+      "path": "results/breakthrough_equal/northstar_v23_lossless_transfer_15m_to_5m_cpu.json",
+      "sha256": "4b6dab06380a1fc48f825dc280544af00c41ed211b2e992a41eb1ba1dc304938"
+    },
+    "transfer_gpu": {
+      "bytes": 1594,
+      "path": "results/breakthrough_equal/northstar_v23_lossless_transfer_15m_to_5m_gpu.json",
+      "sha256": "6b0bbc3399cfe033e0207668e1da33dc5d2e8f0322288dd34edeede7fd4e2de8"
+    }
+  },
+  "failed_required": [],
+  "limitations": {
+    "cpu_training_precision": "The frozen CPU foundation uses dynamic INT8; the active cake and decoder gradient path remain float32.",
+    "legacy_decoder_scope": "The v22-compatible next-byte local decoder reuses inactive routed experts. Domain-route isolation is certified for the deployed autoregressive generation path, not that compatibility decoder.",
+    "task_scope": "Quality covers the locked schema/action and relevance holdouts plus bit-exact preservation of the previously measured general-BPB logits.",
+    "training_scope": "The >5x result is selected-domain-cake fine-tuning with a frozen foundation and portable decoder versus full transformer training. It is not full-foundation pretraining or time-to-quality evidence."
+  },
+  "metrics": {
+    "generation_speed_ratios": [
+      23.26682625335038,
+      20.878863195151737,
+      24.280322762770638,
+      19.835725419931627,
+      23.448514870181565,
+      19.802449599888998
+    ],
+    "generation_throughput_retention_over_v22": {
+      "relevance_cpu": 0.9672496746891021,
+      "relevance_gpu": 1.071917923860617,
+      "schema_cpu": 0.9924226305671415,
+      "schema_gpu": 1.0892484758976038
+    },
+    "layercake_parameters": 15193137,
+    "parameter_ratio": 1.0162057028470894,
+    "pytest": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 314
+    },
+    "route_optimizer_parameters": 1772544,
+    "route_training_loss_ratio": 0.2908335090000181,
+    "training_median_ratios": {
+      "cpu": 5.325257101701562,
+      "cuda": 5.703812393869709
+    },
+    "training_minimum_ratios": {
+      "cpu": 5.21707430566786,
+      "cuda": 5.393138836913305
+    },
+    "transfer_payload_hash": "e831595c6753b3e48a82be9a0be216c67fc5efd72cffc560e55be5324c6e729c",
+    "transformer_parameters": 14950848
+  },
+  "required_gates": {
+    "all_evidence_present": true,
+    "equal_size_parameter_ratio_at_most_1_05": true,
+    "full_regression_suite": true,
+    "generation_quality_100_percent_cpu_gpu": true,
+    "generation_quality_strictly_better_than_transformer": true,
+    "generation_speed_at_least_5x_cpu_gpu": true,
+    "generation_throughput_retains_at_least_95_percent_of_v22": true,
+    "lossless_transfer_cpu_gpu": true,
+    "lossless_transfer_cross_backend_equal": true,
+    "migration_all_logits_and_generation_bit_exact": true,
+    "route_training_converged_and_generation_path_isolated": true,
+    "selected_domain_cake_training_cpu_gpu_at_least_5x": true,
+    "training_protocol_is_generation_aligned_sparse_route": true
+  },
+  "schema_version": 1,
+  "status": "PASS"
+}

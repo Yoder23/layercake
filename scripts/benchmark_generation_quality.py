@@ -45,24 +45,52 @@ def choose_byte(
 
 
 @torch.no_grad()
-def generate_layercake_cached(
+def generate_layercake(
     model,
     prompt: torch.Tensor,
     new_bytes: int,
+    mode: str,
     no_repeat_ngram: int,
 ):
-    generated = prompt.clone()
-    state = model.begin_cached_generation(prompt)
-    started = time.perf_counter()
-    while generated.shape[1] - prompt.shape[1] < new_bytes:
-        next_patch = model.cached_generation_step(
-            state, no_repeat_ngram=no_repeat_ngram
+    state = model.begin_cached_generation(prompt) if mode == "stateful_cached" else None
+    if mode == "stateful_cached":
+        continuation = torch.empty(
+            prompt.shape[0],
+            new_bytes,
+            dtype=prompt.dtype,
+            device=prompt.device,
         )
+        emitted = 0
+    else:
+        generated = prompt.clone()
+    started = time.perf_counter()
+    while True:
+        if mode == "stateful_cached" and emitted >= new_bytes:
+            break
+        if mode != "stateful_cached" and generated.shape[1] - prompt.shape[1] >= new_bytes:
+            break
+        if mode == "stateful_cached":
+            next_patch = model.cached_generation_step(
+                state, no_repeat_ngram=no_repeat_ngram
+            )
+            take = min(next_patch.shape[1], new_bytes - emitted)
+            continuation[:, emitted : emitted + take] = next_patch[:, :take]
+            emitted += take
+            continue
+        context = generated[:, -model.patch_pos.num_embeddings * model.patch_size :]
+        if mode == "cached":
+            next_patch = model.generate_cached_patch(context)
+        elif mode == "verified":
+            next_patch = model.generate_verified_patch(context)
+        else:
+            next_patch = model.generate_next_patch(context)
         generated = torch.cat([generated, next_patch], dim=1)
     if prompt.device.type == "cuda":
         torch.cuda.synchronize()
     elapsed = time.perf_counter() - started
-    return generated[:, prompt.shape[1] :], elapsed
+    if mode != "stateful_cached":
+        continuation = generated[:, prompt.shape[1] : prompt.shape[1] + new_bytes]
+    return continuation, elapsed
 
 
 @torch.no_grad()
@@ -126,7 +154,12 @@ def main() -> None:
     parser.add_argument("--bpe", required=True)
     parser.add_argument("--new-bytes", type=int, default=128)
     parser.add_argument("--prompt-bytes", type=int, default=128)
-    parser.add_argument("--no-repeat-ngram", type=int, default=0)
+    parser.add_argument(
+        "--layercake-mode",
+        choices=["draft", "verified", "cached", "stateful_cached"],
+        default="stateful_cached",
+    )
+    parser.add_argument("--no-repeat-ngram", type=int, default=8)
     parser.add_argument("--device", choices=["cuda", "cpu"], default="cpu")
     parser.add_argument("--cpu-threads", type=int, default=1)
     parser.add_argument("--output", required=True)
@@ -168,8 +201,8 @@ def main() -> None:
     prompt_text = prompt_bytes.decode("utf-8", errors="replace")
     prompt = torch.tensor(list(prompt_bytes), dtype=torch.long, device=device).unsqueeze(0)
 
-    layercake_bytes, layercake_seconds = generate_layercake_cached(
-        layercake, prompt, args.new_bytes, args.no_repeat_ngram
+    layercake_bytes, layercake_seconds = generate_layercake(
+        layercake, prompt, args.new_bytes, args.layercake_mode, args.no_repeat_ngram
     )
     bpe_bytes, bpe_seconds = generate_bpe(
         bpe, tokenizer, prompt_text, args.new_bytes, device
@@ -181,7 +214,7 @@ def main() -> None:
         "cpu_threads": args.cpu_threads if device.type == "cpu" else None,
         "new_bytes": args.new_bytes,
         "layercake_decoding": {
-            "mode": "stateful_cached",
+            "mode": args.layercake_mode,
             "no_repeat_ngram": args.no_repeat_ngram,
         },
         "layercake": {
@@ -206,8 +239,9 @@ def main() -> None:
             ),
         },
         "scope": (
-            "Generation quality diagnostic. LayerCake uses the exact stateful "
-            "cached path with an optional byte no-repeat n-gram constraint."
+            "Generation quality diagnostic. LayerCake uses the selected "
+            "generation path with an optional byte no-repeat n-gram constraint "
+            "on stateful cached decoding."
         ),
     }
     output = Path(args.output)

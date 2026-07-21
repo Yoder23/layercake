@@ -1,0 +1,21 @@
+{
+  "extends": "northstar_v13_span80_wide_position_copy.json",
+  "name": "northstar_v14_unified_grounding",
+  "description": "Continue the position-aware wide local decoder on the corrected single canonical JSON response contract shared by schema and paraphrased relevance data.",
+  "training": {
+    "seed": 13161,
+    "steps": 42000,
+    "lr": 0.00008,
+    "min_lr": 0.000008,
+    "warmup_steps": 100,
+    "lr_decay_steps": 7900,
+    "lr_step_offset": 34000,
+    "resume_from": "runs_experiment/northstar_v13_span80_wide_position_copy/latest.pt",
+    "resume_strict": true,
+    "resume_ignore_shape_mismatch": false,
+    "log_interval": 500,
+    "save_interval": 4000,
+    "eval_seed": 13162,
+    "out_dir": "runs_experiment/northstar_v14_unified_grounding"
+  }
+}

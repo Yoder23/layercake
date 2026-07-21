@@ -1,0 +1,524 @@
+{
+  "status": "FAIL",
+  "scope": "LayerCake byte curriculum vs baseline transformer at 1M/2M/5M/10M (fair LR tuning v2)",
+  "device": "cuda",
+  "steps": 800,
+  "tune_steps": 150,
+  "seq": 128,
+  "batch": 24,
+  "train_bytes": 8000000,
+  "eval_bytes": 300000,
+  "summary_gates": {
+    "all_scales_pass": false,
+    "pass_1m": false,
+    "pass_2m": false,
+    "pass_5m": false,
+    "pass_10m": false
+  },
+  "scales": [
+    {
+      "scale": "1m",
+      "status": "FAIL",
+      "gates": {
+        "speed_beats_baseline": true,
+        "quality_noninferior": false,
+        "bpb_noninferior": false,
+        "cost_proxy_lower": true,
+        "params_no_larger": true
+      },
+      "layercake": {
+        "params": 914496,
+        "train": {
+          "elapsed_seconds": 12.406183400191367,
+          "steps_per_second": 64.48397336989714,
+          "lr": 0.001
+        },
+        "general_bpb": 2.317205058988256,
+        "qa_quality_mean": 0.2673611111111111,
+        "lr_tuning": [
+          {
+            "lr": 0.001,
+            "bpb": 3.7272283263826105
+          },
+          {
+            "lr": 0.0007,
+            "bpb": 4.06528985353145
+          },
+          {
+            "lr": 0.0004,
+            "bpb": 4.409903025368377
+          },
+          {
+            "lr": 0.0002,
+            "bpb": 4.830024171101736
+          }
+        ]
+      },
+      "baseline": {
+        "params": 967040,
+        "train": {
+          "elapsed_seconds": 6.549194699851796,
+          "steps_per_second": 122.15242280369272,
+          "lr": 0.001,
+          "prep_seconds": 7.416275100084022,
+          "elapsed_total_seconds": 13.965469799935818
+        },
+        "general_bpb": 2.0933649237362184,
+        "qa_quality_mean": 0.38444201902605973,
+        "lr_tuning": [
+          {
+            "lr": 0.001,
+            "bpb": 3.453654567700353
+          },
+          {
+            "lr": 0.0007,
+            "bpb": 3.664531929287674
+          },
+          {
+            "lr": 0.0004,
+            "bpb": 3.8168084142995546
+          },
+          {
+            "lr": 0.0002,
+            "bpb": 3.8862220525351474
+          }
+        ]
+      },
+      "cost_proxy_param_seconds": {
+        "layercake": 11345405.094741404,
+        "baseline": 13505167.915329933
+      },
+      "qa_samples": [
+        {
+          "prompt": "Question: What is a calm first step when two threats appear? Answer:",
+          "layercake": {
+            "text": " I with the sere the service the the sen the sen the sen the sen the sen the sen the sen the sen",
+            "alpha_ratio": 0.7604166666666666,
+            "max_token_repeat": 11.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.2661458333333333
+          },
+          "baseline": {
+            "text": "Iforedender: - Ifore one: - Ifore one: - Ifore one: - Ifore one: - Ifore one: - Ifore one: - Ifore one: - Ifore one: - Ifore one: - I",
+            "alpha_ratio": 0.631578947368421,
+            "max_token_repeat": 10.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.22105263157894733
+          }
+        },
+        {
+          "prompt": "Question: How should I recover after a mistake? Answer:",
+          "layercake": {
+            "text": " I with the sere the sentime the service the the sen the sen the sen the sen the sen the sen the",
+            "alpha_ratio": 0.7708333333333334,
+            "max_token_repeat": 11.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.26979166666666665
+          },
+          "baseline": {
+            "text": "Ifore the same sentence: - Ifferently beforeday before action. - Ifore action? - Ifore one one cose one prent one could before one creat, then before one c",
+            "alpha_ratio": 0.7806451612903226,
+            "max_token_repeat": 6.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.4132258064516129
+          }
+        },
+        {
+          "prompt": "Question: Give a short plan before entering the next room. Answer:",
+          "layercake": {
+            "text": " I with the provide the service the the sen the sen the sen the sen the sen the sen the sen the ",
+            "alpha_ratio": 0.7604166666666666,
+            "max_token_repeat": 11.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.2661458333333333
+          },
+          "baseline": {
+            "text": "Ifore action. Ifferently beforedition, then regetailable: - Ifore actions. - Iforedition. - Iforeding one: - Ifore one one created to before one. -",
+            "alpha_ratio": 0.7687074829931972,
+            "max_token_repeat": 5.0,
+            "keyword_score": 0.25,
+            "quality_score": 0.519047619047619
+          }
+        }
+      ]
+    },
+    {
+      "scale": "2m",
+      "status": "FAIL",
+      "gates": {
+        "speed_beats_baseline": true,
+        "quality_noninferior": false,
+        "bpb_noninferior": false,
+        "cost_proxy_lower": true,
+        "params_no_larger": true
+      },
+      "layercake": {
+        "params": 2011888,
+        "train": {
+          "elapsed_seconds": 16.662990799872205,
+          "steps_per_second": 48.01058883175615,
+          "lr": 0.001
+        },
+        "general_bpb": 2.091819708309715,
+        "qa_quality_mean": 0.3789236111111111,
+        "lr_tuning": [
+          {
+            "lr": 0.001,
+            "bpb": 3.5362616572420627
+          },
+          {
+            "lr": 0.0007,
+            "bpb": 3.730614114433617
+          },
+          {
+            "lr": 0.0004,
+            "bpb": 4.173834754486801
+          },
+          {
+            "lr": 0.0002,
+            "bpb": 4.606398340527642
+          }
+        ]
+      },
+      "baseline": {
+        "params": 2018640,
+        "train": {
+          "elapsed_seconds": 11.039562899852172,
+          "steps_per_second": 72.46663724437066,
+          "lr": 0.001,
+          "prep_seconds": 7.416275100084022,
+          "elapsed_total_seconds": 18.455837999936193
+        },
+        "general_bpb": 1.8073389996999318,
+        "qa_quality_mean": 0.5151523326042424,
+        "lr_tuning": [
+          {
+            "lr": 0.001,
+            "bpb": 3.1866081282186336
+          },
+          {
+            "lr": 0.0007,
+            "bpb": 3.4485753021284444
+          },
+          {
+            "lr": 0.0004,
+            "bpb": 3.682343164855849
+          },
+          {
+            "lr": 0.0002,
+            "bpb": 3.854717271137359
+          }
+        ]
+      },
+      "cost_proxy_param_seconds": {
+        "layercake": 33524071.23437329,
+        "baseline": 37255692.8201912
+      },
+      "qa_samples": [
+        {
+          "prompt": "Question: What is a calm first step when two threats appear? Answer:",
+          "layercake": {
+            "text": " I with the senter the senter the some to the sentervice the sentervice the sentervice the some ",
+            "alpha_ratio": 0.8125,
+            "max_token_repeat": 7.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.389375
+          },
+          "baseline": {
+            "text": "Is: Ifore the first, then take one clear first, then take one clear first, then first, then find the first, then take one find the nextaintaintaintternswer: Ifore the first, then",
+            "alpha_ratio": 0.7921348314606742,
+            "max_token_repeat": 6.0,
+            "keyword_score": 0.3333333333333333,
+            "quality_score": 0.517247191011236
+          }
+        },
+        {
+          "prompt": "Question: How should I recover after a mistake? Answer:",
+          "layercake": {
+            "text": " I with the senter the senter the senter the some to the sentervice the sentervice the sentervic",
+            "alpha_ratio": 0.8229166666666666,
+            "max_token_repeat": 7.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.39302083333333326
+          },
+          "baseline": {
+            "text": "Ifore the nextaintternswer: - Ifore one clear first, then phindownswer: - Ifore the first, then take one find the first, then find the first, then prentswer: -",
+            "alpha_ratio": 0.7735849056603774,
+            "max_token_repeat": 4.0,
+            "keyword_score": 0.3333333333333333,
+            "quality_score": 0.580754716981132
+          }
+        },
+        {
+          "prompt": "Question: Give a short plan before entering the next room. Answer:",
+          "layercake": {
+            "text": " I have the see the sen the sentent the sentervice the some to the sentervice the sentervice the",
+            "alpha_ratio": 0.8125,
+            "max_token_repeat": 8.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.354375
+          },
+          "baseline": {
+            "text": "What do first, then find the sentence: - Answer: - Answer: Ifored one clear first, then take one focuse one clear first, then take one cleargressive one find the first",
+            "alpha_ratio": 0.7784431137724551,
+            "max_token_repeat": 5.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.44745508982035925
+          }
+        }
+      ]
+    },
+    {
+      "scale": "5m",
+      "status": "FAIL",
+      "gates": {
+        "speed_beats_baseline": true,
+        "quality_noninferior": false,
+        "bpb_noninferior": false,
+        "cost_proxy_lower": true,
+        "params_no_larger": true
+      },
+      "layercake": {
+        "params": 5134208,
+        "train": {
+          "elapsed_seconds": 16.584010899998248,
+          "steps_per_second": 48.2392350574302,
+          "lr": 0.001
+        },
+        "general_bpb": 1.6148397624691904,
+        "qa_quality_mean": 0.41343749999999996,
+        "lr_tuning": [
+          {
+            "lr": 0.001,
+            "bpb": 3.312293122572349
+          },
+          {
+            "lr": 0.0007,
+            "bpb": 3.4803252402207585
+          },
+          {
+            "lr": 0.0004,
+            "bpb": 3.730767843992468
+          },
+          {
+            "lr": 0.0002,
+            "bpb": 4.255506838831377
+          }
+        ]
+      },
+      "baseline": {
+        "params": 6861760,
+        "train": {
+          "elapsed_seconds": 17.136047599837184,
+          "steps_per_second": 46.68521112228943,
+          "lr": 0.001,
+          "prep_seconds": 7.416275100084022,
+          "elapsed_total_seconds": 24.552322699921206
+        },
+        "general_bpb": 1.0138944194515924,
+        "qa_quality_mean": 0.5058674181427804,
+        "lr_tuning": [
+          {
+            "lr": 0.001,
+            "bpb": 2.8069406149654044
+          },
+          {
+            "lr": 0.0007,
+            "bpb": 3.0403199637117306
+          },
+          {
+            "lr": 0.0004,
+            "bpb": 3.360618503538246
+          },
+          {
+            "lr": 0.0002,
+            "bpb": 3.697016170055877
+          }
+        ]
+      },
+      "cost_proxy_param_seconds": {
+        "layercake": 85145761.4348582,
+        "baseline": 168472145.80941135
+      },
+      "qa_samples": [
+        {
+          "prompt": "Question: What is a calm first step when two threats appear? Answer:",
+          "layercake": {
+            "text": " I we a conside to the second to the second the second to the second the second to the second to",
+            "alpha_ratio": 0.78125,
+            "max_token_repeat": 6.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.4134375
+          },
+          "baseline": {
+            "text": "- Adddd one optimization question. - Add one reason behind the next action. - Explain one reassurance. - Avoid action plan. - Answer: - Ad",
+            "alpha_ratio": 0.7463768115942029,
+            "max_token_repeat": 6.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.40123188405797094
+          }
+        },
+        {
+          "prompt": "Question: How should I recover after a mistake? Answer:",
+          "layercake": {
+            "text": " I we a construction and the second the second to the second to the second to the second to the ",
+            "alpha_ratio": 0.78125,
+            "max_token_repeat": 6.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.4134375
+          },
+          "baseline": {
+            "text": "Protect your focus one clear first, then target your focus one clean action, then tempose one clear first, then phase: Is the next termed. Compo one c",
+            "alpha_ratio": 0.7933333333333333,
+            "max_token_repeat": 4.0,
+            "keyword_score": 0.3333333333333333,
+            "quality_score": 0.5876666666666667
+          }
+        },
+        {
+          "prompt": "Question: Give a short plan before entering the next room. Answer:",
+          "layercake": {
+            "text": " I we a conside to the second to the second the second to the second to the second to the second",
+            "alpha_ratio": 0.78125,
+            "max_token_repeat": 6.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.4134375
+          },
+          "baseline": {
+            "text": "What short stabilize action, then room? Answer: I do first, then targetition, then target your focus one clear first, then target your fallback first, then phase:",
+            "alpha_ratio": 0.7962962962962963,
+            "max_token_repeat": 5.0,
+            "keyword_score": 0.25,
+            "quality_score": 0.5287037037037037
+          }
+        }
+      ]
+    },
+    {
+      "scale": "10m",
+      "status": "FAIL",
+      "gates": {
+        "speed_beats_baseline": true,
+        "quality_noninferior": false,
+        "bpb_noninferior": false,
+        "cost_proxy_lower": true,
+        "params_no_larger": true
+      },
+      "layercake": {
+        "params": 8342688,
+        "train": {
+          "elapsed_seconds": 35.05374850006774,
+          "steps_per_second": 22.822095616919658,
+          "lr": 0.001
+        },
+        "general_bpb": 1.4092324367045146,
+        "qa_quality_mean": 0.3925347222222222,
+        "lr_tuning": [
+          {
+            "lr": 0.001,
+            "bpb": 3.203089229960931
+          },
+          {
+            "lr": 0.0007,
+            "bpb": 3.36180660672147
+          },
+          {
+            "lr": 0.0004,
+            "bpb": 3.6799048922405966
+          },
+          {
+            "lr": 0.0002,
+            "bpb": 4.045974344426927
+          }
+        ]
+      },
+      "baseline": {
+        "params": 9715200,
+        "train": {
+          "elapsed_seconds": 28.663829299854115,
+          "steps_per_second": 27.90973919189756,
+          "lr": 0.001,
+          "prep_seconds": 7.416275100084022,
+          "elapsed_total_seconds": 36.080104399938136
+        },
+        "general_bpb": 0.7658691865606331,
+        "qa_quality_mean": 0.5479237014812316,
+        "lr_tuning": [
+          {
+            "lr": 0.001,
+            "bpb": 2.723238371657878
+          },
+          {
+            "lr": 0.0007,
+            "bpb": 2.8997538489767356
+          },
+          {
+            "lr": 0.0004,
+            "bpb": 3.256901214434987
+          },
+          {
+            "lr": 0.0002,
+            "bpb": 3.6428042843629704
+          }
+        ]
+      },
+      "cost_proxy_param_seconds": {
+        "layercake": 292442486.9665331,
+        "baseline": 350525430.266279
+      },
+      "qa_samples": [
+        {
+          "prompt": "Question: What is a calm first step when two threats appear? Answer:",
+          "layercake": {
+            "text": " I was the second to the second to the second to the second the sense of the sensitual to the se",
+            "alpha_ratio": 0.78125,
+            "max_token_repeat": 7.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.3784375
+          },
+          "baseline": {
+            "text": "Enterns. Companion: Player: Stabilize survivalize survival instructions. Companion: What should I do first before a clear first, then room",
+            "alpha_ratio": 0.8260869565217391,
+            "max_token_repeat": 2.0,
+            "keyword_score": 0.3333333333333333,
+            "quality_score": 0.6691304347826087
+          }
+        },
+        {
+          "prompt": "Question: How should I recover after a mistake? Answer:",
+          "layercake": {
+            "text": " I was the second to the second the stability of the service of the sensitual start of the sense",
+            "alpha_ratio": 0.8020833333333334,
+            "max_token_repeat": 6.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.4207291666666666
+          },
+          "baseline": {
+            "text": "Enterns. Companion: Enternswer: Stabilize one fallback first, then phase: Enter with one focus one clear first, then phase: What should I do first, then ro",
+            "alpha_ratio": 0.7935483870967742,
+            "max_token_repeat": 3.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.5227419354838709
+          }
+        },
+        {
+          "prompt": "Question: Give a short plan before entering the next room. Answer:",
+          "layercake": {
+            "text": " I was the second to the second to the second to the second the second to the second to the seco",
+            "alpha_ratio": 0.78125,
+            "max_token_repeat": 7.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.3784375
+          },
+          "baseline": {
+            "text": "Enter with one defensive lane, then phrases, then pick one clear first, then pick one clear first, then tempo survivable lan. Companion: I do first, then pick",
+            "alpha_ratio": 0.7911392405063291,
+            "max_token_repeat": 5.0,
+            "keyword_score": 0.0,
+            "quality_score": 0.45189873417721516
+          }
+        }
+      ]
+    }
+  ]
+}

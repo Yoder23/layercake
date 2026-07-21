@@ -1,0 +1,63 @@
+{
+  "failed_required": [],
+  "metrics": {
+    "adapter_cpu_bytes_per_second": 8074.953516334376,
+    "adapter_domain_bpb": 2.11011393891534,
+    "adapter_payload_bytes": 383008,
+    "adapter_training_seconds": 183.0902979373932,
+    "bpe_general_bpb": 2.049247849357011,
+    "bpe_parameters": 14843840,
+    "bpe_training_seconds": 131.48440837860107,
+    "core_general_bpb": 2.0382150492670745,
+    "core_parameters": 14319560,
+    "core_training_seconds": 122.45883679389954,
+    "cpu_deployment_artifact_ratio": 0.9600214008417972,
+    "cpu_deployment_generation_speed_ratio": 2.1266636041031295,
+    "cpu_deployment_parameter_memory_ratio": 0.9646802983594541,
+    "cpu_deployment_peak_rss_ratio": 0.9854198999827557,
+    "cpu_generation_speed_ratio": 2.7757501977059387,
+    "domain_bpb": 1.4417685101548379,
+    "domain_cpu_bytes_per_second": 35744.704939635165,
+    "domain_payload_bytes": 148808,
+    "domain_training_seconds": 51.29266142845154,
+    "english_generation_sample": "ore than a straight of this products are all those times at three to thursday an interesting thy",
+    "receiver_cpu_generation_speed_ratio": 1.4696922589993437,
+    "transfer_max_logit_diff": 0.0,
+    "transfer_ppl_ratio": 1.0
+  },
+  "open_cpu_deployment_resource_items": {
+    "isolated_prefill_microbench_faster_than_bpe": false
+  },
+  "open_requirements_for_real_game_shipping": {
+    "battery_or_thermal_measurement": false,
+    "game_dialogue_domain_dataset": false,
+    "memory_peak_measurement": true,
+    "native_int8_runtime": false,
+    "real_mobile_device_latency": false,
+    "task_level_game_qa_or_npc_eval": false
+  },
+  "required_gates": {
+    "core_better_bpb_than_bpe": true,
+    "core_faster_training_than_bpe": true,
+    "core_frontier_promoted": true,
+    "core_smaller_than_bpe": true,
+    "core_uses_fewer_training_bytes": true,
+    "cpu_deployment_artifact_smaller_than_bpe": true,
+    "cpu_deployment_generation_faster_than_bpe": true,
+    "cpu_deployment_peak_memory_measured_and_no_worse_than_bpe": true,
+    "cpu_generation_at_least_2x_bpe": true,
+    "domain_cpu_at_least_2x_adapter": true,
+    "domain_payload_smaller_than_adapter": true,
+    "domain_quality_beats_adapter": true,
+    "domain_training_faster_than_adapter": true,
+    "dominance_matrix_promoted_tiers_pass": true,
+    "english_generation_alpha_space": true,
+    "english_generation_diverse": true,
+    "english_generation_no_8gram_loop": true,
+    "english_generation_printable": true,
+    "lossless_transfer_exact": true,
+    "receiver_after_transfer_beats_transformer": true
+  },
+  "scope": "Game-ready CPU/mobile proxy gate. This certifies a CPU-first desktop/mobile-proxy deployment thesis with installable domain payloads. It is not a real Android/iOS, battery, thermal, NPU, or task-level game dialogue benchmark.",
+  "status": "PASS"
+}

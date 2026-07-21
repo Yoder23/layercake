@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "campaign": "LayerCake-Northstar-v5 breakthrough sweep",
+  "claim": "LayerCake clears 5x speed plus noninferior or better quality across every promoted benchmark against matched BPE transformers and pinned local transformer runtimes.",
+  "claim_policy": {
+    "promotion_rule": "no_red_gates",
+    "partial_wins_promotable": false,
+    "required_speed_ratio": 5.0,
+    "parameter_window_ratio_min": 0.95,
+    "parameter_window_ratio_max": 1.05
+  },
+  "hardware_target": {
+    "primary_gpu": "NVIDIA GeForce RTX 3080 Laptop GPU 16GB",
+    "cpu_mode": "one-thread CPU plus isolated-process RSS/prefill profiling",
+    "workstation_scope": "single workstation"
+  },
+  "tracks": {
+    "fair_neural": {
+      "allowed": [
+        "raw neural LayerCake generation",
+        "stateful neural caches",
+        "copy/pointer neural heads trained from data"
+      ],
+      "forbidden": [
+        "structured schema heads",
+        "direct answer caches",
+        "train/eval overlap",
+        "alias lookup runtimes"
+      ]
+    },
+    "product_runtime": {
+      "allowed": [
+        "portable domain capsules",
+        "structured transducers",
+        "bounded task runtimes",
+        "portable memory"
+      ],
+      "label_required": true
+    }
+  },
+  "baselines": {
+    "matched_bpe": {
+      "description": "same-data, same-size BPE transformer; parameter window +/-5%",
+      "configs": [
+        "configs/breakthrough_equal_15m_bpe_v4.json",
+        "configs/schema_action_bpe_1p3m.json",
+        "configs/production_companion_16m_bpe_redpajama_game_phase3.json"
+      ]
+    },
+    "local_transformer_runtime": {
+      "description": "practical local transformer runtime tier; exact model/runtime/version/quantization must be recorded",
+      "required": true,
+      "artifact": "results/breakthrough_equal/local_transformer_runtime_comparison.json"
+    }
+  },
+  "promoted_gates": [
+    {
+      "name": "lm_bpb_noninferior",
+      "track": "fair_neural",
+      "artifact": "results/breakthrough_equal/patch4_polish5000_speed_quality_candidate_certificate.json",
+      "checks": [
+        {
+          "path": "ratios.heldout_bpb_ratio_layercake_over_transformer",
+          "op": "<=",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "name": "cpu_generation_5x",
+      "track": "fair_neural",
+      "artifact": "results/breakthrough_equal/patch4_polish5000_speed_quality_candidate_certificate.json",
+      "checks": [
+        {
+          "path": "ratios.cpu_generation_speed_ratio_layercake_over_transformer",
+          "op": ">=",
+          "value": 5.0
+        }
+      ]
+    },
+    {
+      "name": "gpu_generation_5x",
+      "track": "fair_neural",
+      "artifact": "results/breakthrough_equal/patch4_polish5000_speed_quality_candidate_certificate.json",
+      "checks": [
+        {
+          "path": "ratios.gpu_generation_speed_ratio_layercake_over_transformer",
+          "op": ">=",
+          "value": 5.0
+        }
+      ]
+    },
+    {
+      "name": "question_instruction_relevance",
+      "track": "fair_neural",
+      "artifact": "results/breakthrough_equal/question_inference_guardrail_patch4_polish5000_cpu_gpu.json",
+      "checks": [
+        {"path": "status", "op": "==", "value": "PASS"},
+        {"path": "gates.cpu_question_relevance_met", "op": "==", "value": true},
+        {"path": "gates.gpu_question_relevance_met", "op": "==", "value": true}
+      ]
+    },
+    {
+      "name": "schema_action_fair_neural_quality_and_speed",
+      "track": "fair_neural",
+      "artifact": "results/breakthrough_equal/schema_action_fair_neural_candidate_report.json",
+      "checks": [
+        {"path": "status", "op": "==", "value": "PASS"}
+      ]
+    },
+    {
+      "name": "cpu_prefill_5x",
+      "track": "fair_neural",
+      "artifact": "results/breakthrough_equal/patch4_polish5000_cpu_deployment_resources_fast_prefill.json",
+      "checks": [
+        {"path": "metrics.prefill_speed_ratio", "op": ">=", "value": 5.0}
+      ]
+    },
+    {
+      "name": "runtime_footprint_noninferior",
+      "track": "fair_neural",
+      "artifact": "results/breakthrough_equal/patch4_polish5000_cpu_deployment_resources_fast_prefill.json",
+      "checks": [
+        {"path": "required_gates.layercake_parameter_memory_lower_than_bpe", "op": "==", "value": true},
+        {"path": "required_gates.layercake_artifact_smaller_than_bpe", "op": "==", "value": true},
+        {"path": "required_gates.layercake_peak_rss_no_more_than_bpe", "op": "==", "value": true}
+      ]
+    },
+    {
+      "name": "lossless_domain_transfer_exact",
+      "track": "product_runtime",
+      "artifact": "results/northstar_mobile_certificate.json",
+      "checks": [
+        {"path": "required_gates.lossless_migration_seed6250", "op": "==", "value": true},
+        {"path": "required_gates.lossless_migration_seed6263", "op": "==", "value": true},
+        {"path": "metrics.migration_ppl_ratio.0", "op": "==", "value": 1.0},
+        {"path": "metrics.migration_max_logit_diff.0", "op": "==", "value": 0.0}
+      ]
+    },
+    {
+      "name": "multi_domain_orchestrator_bounded",
+      "track": "product_runtime",
+      "artifact": "results/breakthrough_equal/domain_orchestrator_certificate.json",
+      "checks": [
+        {"path": "status", "op": "==", "value": "PASS"},
+        {"path": "metrics.routing_accuracy", "op": "==", "value": 1.0},
+        {"path": "required_gates.active_compute_bounded", "op": "==", "value": true},
+        {"path": "required_gates.single_active_model_per_prompt", "op": "==", "value": true},
+        {"path": "required_gates.handoff_packets_hashable", "op": "==", "value": true}
+      ]
+    },
+    {
+      "name": "cpu_phone_deployment_bundle_ready",
+      "track": "product_runtime",
+      "artifact": "results/breakthrough_equal/cpu_phone_deployment_bundle.json",
+      "checks": [
+        {"path": "status", "op": "==", "value": "PASS"},
+        {"path": "required_gates.core_artifacts_present", "op": "==", "value": true},
+        {"path": "required_gates.portable_domains_present", "op": "==", "value": true},
+        {"path": "required_gates.all_artifacts_hashed", "op": "==", "value": true},
+        {"path": "required_gates.cpu_only_target_declared", "op": "==", "value": true},
+        {"path": "required_gates.phone_target_declared", "op": "==", "value": true},
+        {"path": "required_gates.real_phone_runtime_evidence", "op": "==", "value": true}
+      ]
+    },
+    {
+      "name": "local_transformer_runtime_5x",
+      "track": "product_runtime",
+      "artifact": "results/breakthrough_equal/local_transformer_runtime_comparison.json",
+      "checks": [
+        {"path": "status", "op": "==", "value": "PASS"},
+        {"path": "ratios.cpu_generation_speed_ratio", "op": ">=", "value": 5.0},
+        {"path": "ratios.gpu_generation_speed_ratio", "op": ">=", "value": 5.0},
+        {"path": "gates.pinned_runtime_metadata", "op": "==", "value": true}
+      ]
+    }
+  ],
+  "evidence_hygiene_gates": [
+    {
+      "name": "fresh_tiny_paired_train_eval_smoke",
+      "artifact": "results/breakthrough_equal/tiny_real_train_sweep_smoke_integrity.json",
+      "checks": [
+        {"path": "status", "op": "==", "value": "PASS"},
+        {"path": "gates.layercake_training_observed", "op": "==", "value": true},
+        {"path": "gates.transformer_training_observed", "op": "==", "value": true},
+        {"path": "gates.layercake_eval_observed", "op": "==", "value": true},
+        {"path": "gates.transformer_eval_observed", "op": "==", "value": true},
+        {"path": "gates.same_train_eval_split_declared", "op": "==", "value": true},
+        {"path": "gates.raw_generation_samples_present", "op": "==", "value": true},
+        {"path": "gates.dominance_result_retained", "op": "==", "value": true}
+      ]
+    }
+  ],
+  "stages": [
+    "stage_1_1m_to_5m_fast_gates",
+    "stage_2_15m_to_25m_promoted_sweep",
+    "stage_3_local_runtime_product_comparison",
+    "stage_4_public_artifact_packaging"
+  ],
+  "default_output": "results/breakthrough_equal/layercake_breakthrough_sweep_certificate.json"
+}

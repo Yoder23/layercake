@@ -1,0 +1,143 @@
+{
+  "failed_required": [],
+  "layercake": {
+    "deployment_artifact_bytes": 8734535,
+    "deployment_scope": "global autoregressive patch generation only",
+    "dynamic_int8": true,
+    "dynamic_int8_engine": "x86",
+    "dynamic_int8_module_types": [
+      "Linear"
+    ],
+    "generation": {
+      "all_seconds": [
+        0.025622700108215213,
+        0.03164239996112883,
+        0.02720550005324185,
+        0.02670900011435151,
+        0.03314660000614822
+      ],
+      "bytes_per_second": 2940.581861882266,
+      "generated_bytes": 80,
+      "median_seconds": 0.02720550005324185,
+      "repeats": 5
+    },
+    "memory": {
+      "after_checkpoint_release": {
+        "peak_private_bytes": 1396600832,
+        "peak_rss_bytes": 495509504,
+        "private_bytes": 1379692544,
+        "rss_bytes": 479768576
+      },
+      "after_deployment_conversion": {
+        "peak_private_bytes": 1379758080,
+        "peak_rss_bytes": 476291072,
+        "private_bytes": 1379758080,
+        "rss_bytes": 476291072
+      },
+      "after_fp32_load": {
+        "peak_private_bytes": 1368952832,
+        "peak_rss_bytes": 463257600,
+        "private_bytes": 1368952832,
+        "rss_bytes": 463257600
+      },
+      "after_generation": {
+        "peak_private_bytes": 1396600832,
+        "peak_rss_bytes": 495509504,
+        "private_bytes": 1379373056,
+        "rss_bytes": 482799616
+      },
+      "baseline": {
+        "peak_private_bytes": 1186631680,
+        "peak_rss_bytes": 332464128,
+        "private_bytes": 1186631680,
+        "rss_bytes": 332464128
+      },
+      "deployment_private_increment_bytes": 192741376,
+      "deployment_rss_increment_bytes": 150335488,
+      "process_peak_private_bytes": 1396600832,
+      "process_peak_rss_bytes": 495509504
+    },
+    "model": "layercake",
+    "parameter_count_fp32_source": 15190449,
+    "source_checkpoint_bytes": 60935932
+  },
+  "metrics": {
+    "deployment_artifact_ratio_layercake_over_transformer": 0.2715282795049212,
+    "deployment_private_increment_ratio_layercake_over_transformer": 2.16608359418155,
+    "deployment_rss_increment_ratio_layercake_over_transformer": 2.307348965864085,
+    "generation_speed_ratio_layercake_over_transformer": 11.594151896399191,
+    "peak_private_memory_ratio_layercake_over_transformer": 0.9316674636245645,
+    "peak_rss_ratio_layercake_over_transformer": 0.9108459134886873
+  },
+  "required_gates": {
+    "layercake_deployment_artifact_smaller": true,
+    "layercake_generation_at_least_5x": true,
+    "layercake_peak_private_memory_lower": true,
+    "layercake_peak_rss_lower": true,
+    "measured_in_isolated_processes": true,
+    "same_quantization_policy": true
+  },
+  "scope": "One-thread x86 CPU deployment proxy measured in separate fresh processes. It is not an ARM phone, NPU, battery, or thermal test.",
+  "status": "PASS",
+  "transformer": {
+    "deployment_artifact_bytes": 32168049,
+    "deployment_scope": "autoregressive transformer generation",
+    "dynamic_int8": true,
+    "dynamic_int8_engine": "x86",
+    "dynamic_int8_module_types": [
+      "Linear"
+    ],
+    "generation": {
+      "all_seconds": [
+        0.30737049994058907,
+        0.3204204998910427,
+        0.3185218998696655,
+        0.3154247000347823,
+        0.31445219996385276
+      ],
+      "bytes_per_second": 253.6263012731035,
+      "generated_bytes": 80,
+      "median_seconds": 0.3154247000347823,
+      "repeats": 5
+    },
+    "memory": {
+      "after_checkpoint_release": {
+        "peak_private_bytes": 1499033600,
+        "peak_rss_bytes": 544010240,
+        "private_bytes": 1435897856,
+        "rss_bytes": 484929536
+      },
+      "after_deployment_conversion": {
+        "peak_private_bytes": 1439924224,
+        "peak_rss_bytes": 483622912,
+        "private_bytes": 1425154048,
+        "rss_bytes": 475439104
+      },
+      "after_fp32_load": {
+        "peak_private_bytes": 1424748544,
+        "peak_rss_bytes": 464773120,
+        "private_bytes": 1424748544,
+        "rss_bytes": 464773120
+      },
+      "after_generation": {
+        "peak_private_bytes": 1499033600,
+        "peak_rss_bytes": 544010240,
+        "private_bytes": 1275285504,
+        "rss_bytes": 397574144
+      },
+      "baseline": {
+        "peak_private_bytes": 1186304000,
+        "peak_rss_bytes": 332419072,
+        "private_bytes": 1186304000,
+        "rss_bytes": 332419072
+      },
+      "deployment_private_increment_bytes": 88981504,
+      "deployment_rss_increment_bytes": 65155072,
+      "process_peak_private_bytes": 1499033600,
+      "process_peak_rss_bytes": 544010240
+    },
+    "model": "transformer",
+    "parameter_count_fp32_source": 14950848,
+    "source_checkpoint_bytes": 60268170
+  }
+}

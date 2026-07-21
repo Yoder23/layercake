@@ -1,0 +1,50 @@
+{
+  "name": "game_companion_scale_bpe_2m",
+  "description": "2M-class BPE transformer trained on English curriculum plus Ember Road game JSON/instructions for companion scale comparison.",
+  "tokenizer": {
+    "vocab_size": 2048,
+    "model_type": "bpe",
+    "byte_fallback": true
+  },
+  "model": {
+    "d_model": 192,
+    "layers": 4,
+    "heads": 6,
+    "ff_mult": 4,
+    "dropout": 0.05
+  },
+  "training": {
+    "device": "cuda",
+    "seed": 72012,
+    "matmul_precision": "high",
+    "seq_len": 512,
+    "micro_batch_size": 8,
+    "grad_accum_steps": 1,
+    "steps": 1200,
+    "lr": 0.0007,
+    "min_lr": 0.00007,
+    "warmup_steps": 60,
+    "lr_decay_steps": 1200,
+    "weight_decay": 0.01,
+    "log_interval": 100,
+    "save_optimizer": false,
+    "metrics_path": "training_metrics.json",
+    "corpus_bytes": 8000000,
+    "eval_bytes": 65536,
+    "eval_batches": 8,
+    "read_block_bytes": 1048576,
+    "include_suffixes": [".jsonl", ".json", ".txt", ".md", ".csv"],
+    "data_roots": [
+      "./data/curriculum/english_school_curriculum.txt",
+      "./data/curriculum/companion_dialogue_curriculum.txt",
+      "./data/game_domains/ember-road.rulebook.json",
+      "./data/game_domains/ember-road.instructions.txt",
+      "./data/game_domains/ember-road.companion_responses.txt"
+    ],
+    "eval_data_roots": [
+      "./data/game_domains/ember-road.rulebook.json",
+      "./data/game_domains/ember-road.instructions.txt"
+    ],
+    "out_dir": "runs_experiment/game_companion_scale_bpe_2m"
+  }
+}

@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 import hashlib
 import json
+import re
 from typing import Any
 
 
@@ -38,6 +39,8 @@ class RouteDecision:
     model_id: str
     input_mode: str
     active_bricks: tuple[str, ...]
+    selected_domain: str | None = None
+    route_confidence: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -124,6 +127,39 @@ class LayerCakeOrchestrator:
     def __init__(self, escalation_threshold: float = 0.6):
         self.escalation_threshold = escalation_threshold
 
+    @staticmethod
+    def _terms(text: str) -> set[str]:
+        return set(re.findall(r"[a-z0-9_]+", text.lower()))
+
+    def _domain_score(self, task_terms: set[str], domain: str, aliases: list[str] | None = None) -> float:
+        aliases = aliases or []
+        domain_terms = self._terms(domain)
+        alias_terms = set()
+        for alias in aliases:
+            alias_terms.update(self._terms(alias))
+        terms = domain_terms | alias_terms
+        if not terms:
+            return 0.0
+        hits = len(task_terms & terms)
+        return hits / len(terms)
+
+    def _brick_score(self, task_terms: set[str], brick: dict) -> float:
+        aliases = list(brick.get("keywords", [])) + list(brick.get("aliases", []))
+        return self._domain_score(task_terms, str(brick.get("domain", "")), aliases)
+
+    def _model_score(self, task_terms: set[str], model: dict) -> float:
+        domains = model.get("domains", [])
+        if isinstance(domains, str):
+            domains = [domains]
+        aliases = list(model.get("keywords", [])) + list(model.get("aliases", []))
+        scores = [
+            self._domain_score(task_terms, str(domain), aliases)
+            for domain in domains
+        ]
+        if not scores:
+            return 0.0
+        return max(scores)
+
     def route(
         self,
         task: str,
@@ -131,22 +167,89 @@ class LayerCakeOrchestrator:
         bricks: list[dict],
         uncertainty: float,
     ) -> dict:
-        candidates = sorted(
-            (model for model in models if model.get("available", True)),
-            key=lambda model: model.get("cost", float("inf")),
-        )
+        task_terms = self._terms(task)
+        candidates = [model for model in models if model.get("available", True)]
         if not candidates:
             raise ValueError("no available LayerCake models")
-        selected = candidates[-1] if uncertainty >= self.escalation_threshold else candidates[0]
-        compatible = [
-            brick["id"]
+        model_rows = [
+            {
+                "model": model,
+                "score": self._model_score(task_terms, model),
+                "cost": float(model.get("cost", float("inf"))),
+                "capacity": float(model.get("capacity", model.get("cost", 0.0))),
+            }
+            for model in candidates
+        ]
+        best_score = max(row["score"] for row in model_rows)
+        domain_matched = best_score > 0.0
+        if uncertainty >= self.escalation_threshold:
+            selected_row = max(
+                [row for row in model_rows if row["score"] == best_score] if domain_matched else model_rows,
+                key=lambda row: (row["capacity"], -row["cost"]),
+            )
+        else:
+            selected_row = min(
+                [row for row in model_rows if row["score"] == best_score] if domain_matched else model_rows,
+                key=lambda row: (row["cost"], -row["capacity"]),
+            )
+        selected = selected_row["model"]
+        brick_rows = [
+            {"brick": brick, "score": self._brick_score(task_terms, brick)}
             for brick in bricks
             if brick.get("abi_version") == selected.get("abi_version")
-            and brick.get("domain") in task.lower()
         ]
+        brick_rows = [row for row in brick_rows if row["score"] > 0.0]
+        brick_rows.sort(key=lambda row: (-row["score"], str(row["brick"].get("id", ""))))
+        compatible = [row["brick"]["id"] for row in brick_rows]
+        selected_domain = None
+        if brick_rows:
+            selected_domain = str(brick_rows[0]["brick"].get("domain", ""))
+        elif selected.get("domains"):
+            domains = selected["domains"]
+            if isinstance(domains, str):
+                selected_domain = domains
+            else:
+                selected_domain = str(domains[0])
         return {
             "model_id": selected["id"],
             "input_mode": selected.get("input_mode", "byte_patch"),
             "active_bricks": compatible[: selected.get("top_k", 1)],
+            "active_model_count": 1,
+            "selected_domain": selected_domain,
+            "route_confidence": selected_row["score"],
             "escalate": uncertainty >= self.escalation_threshold,
         }
+
+    def handoff_packet(
+        self,
+        task: str,
+        models: list[dict],
+        bricks: list[dict],
+        uncertainty: float,
+        abi_state: ABIStateSummary | None = None,
+        byte_patch: BytePatchSummary | None = None,
+    ) -> HandoffPacket:
+        decision = self.route(task, models, bricks, uncertainty)
+        packet = HandoffPacket(
+            abi_version=str(
+                next(
+                    model.get("abi_version", "")
+                    for model in models
+                    if model.get("id") == decision["model_id"]
+                )
+            ),
+            input_mode=str(decision["input_mode"]),
+            source_model_id=str(decision["model_id"]),
+            uncertainty=float(uncertainty),
+            active_domain_bricks=list(decision["active_bricks"]),
+            needed_domain=decision.get("selected_domain"),
+            escalation_reason=(
+                "uncertainty_threshold"
+                if decision.get("escalate")
+                else None
+            ),
+            abi_state=abi_state,
+            byte_patch=byte_patch,
+        )
+        packet.validate()
+        return packet

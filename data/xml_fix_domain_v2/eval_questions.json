@@ -1,0 +1,582 @@
+{
+  "heldout": [
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/form/body/button[@id='save-btn']\",\"to\":\"/form/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_100053",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-100053\"><header></header><body><button id=\"save-btn\" action=\"save\" kind=\"secondary\" label=\"Save\"/><field id=\"phone-field\" type=\"select\" required=\"true\" label=\"Phone\"/></body></form>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"kind\",\"op\":\"set_attr\",\"path\":\"/form/header/button[@id='submit-btn']\",\"value\":\"primary\"}",
+      "kind": "invalid_kind",
+      "name": "invalid_kind_100470",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-100470\"><header><button id=\"submit-btn\" action=\"submit\" kind=\"loud\" label=\"Submit\"/></header><body><field id=\"name-field\" type=\"select\" required=\"true\" label=\"Name\"/></body></form>\nExpectation: button kind must be primary, secondary, or danger.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/dialog/body/field[@id='status-field']\",\"value\":\"Customer Status\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_100478",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-100478\"><header><button id=\"help-btn\" action=\"help\" kind=\"primary\" label=\"Help\"/></header><body><field id=\"status-field\" type=\"select\" required=\"true\" label=\"Status\"/></body></dialog>\nExpectation: change the visible field label to Customer Status.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='name-field']\",\"value\":\"email\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_100465",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-100465\"><header><button id=\"back-btn\" action=\"back\" kind=\"secondary\" label=\"Back\"/></header><body><field id=\"name-field\" type=\"select\" required=\"true\" label=\"Name\"/></body></screen>\nExpectation: field name-field should use type email.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/dialog/body/field[@id='name-field']\",\"value\":\"Customer Name\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_100142",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-100142\"><header><button id=\"cancel-btn\" action=\"cancel\" kind=\"secondary\" label=\"Cancel\"/></header><body><field id=\"name-field\" type=\"number\" required=\"true\" label=\"Name\"/></body></dialog>\nExpectation: change the visible field label to Customer Name.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"kind\",\"op\":\"set_attr\",\"path\":\"/screen/header/button[@id='save-btn']\",\"value\":\"primary\"}",
+      "kind": "invalid_kind",
+      "name": "invalid_kind_100266",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-100266\"><header><button id=\"save-btn\" action=\"save\" kind=\"loud\" label=\"Save\"/></header><body><field id=\"name-field\" type=\"text\" required=\"true\" label=\"Name\"/></body></screen>\nExpectation: button kind must be primary, secondary, or danger.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/panel/body/button[@id='save-btn']\",\"to\":\"/panel/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_100431",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100431\"><header></header><body><button id=\"save-btn\" action=\"save\" kind=\"primary\" label=\"Save\"/><field id=\"status-field\" type=\"select\" required=\"true\" label=\"Status\"/></body></panel>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/form/body/button[@id='help-btn']\",\"to\":\"/form/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_100239",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-100239\"><header></header><body><button id=\"help-btn\" action=\"help\" kind=\"secondary\" label=\"Help\"/><field id=\"zip-field\" type=\"select\" required=\"true\" label=\"Zip\"/></body></form>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/dialog/body/field[@id='age-field']\",\"value\":\"email\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_100423",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-100423\"><header><button id=\"save-btn\" action=\"save\" kind=\"danger\" label=\"Save\"/></header><body><field id=\"age-field\" type=\"text\" required=\"true\" label=\"Age\"/></body></dialog>\nExpectation: field age-field should use type email.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/form/header/button[@id='back-btn']\",\"value\":\"back\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_100151",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-100151\"><header><button id=\"back-btn\" action=\"delete\" kind=\"secondary\" label=\"Back\"/></header><body><field id=\"status-field\" type=\"text\" required=\"true\" label=\"Status\"/></body></form>\nExpectation: button back-btn should trigger back.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/panel/header/button[@id='save-btn']\",\"value\":\"save\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_100109",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100109\"><header><button id=\"save-btn\" action=\"delete\" kind=\"primary\" label=\"Save\"/></header><body><field id=\"phone-field\" type=\"select\" required=\"true\" label=\"Phone\"/></body></panel>\nExpectation: button save-btn should trigger save.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/panel/header/button[@id='submit-btn']\",\"value\":\"submit\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_100097",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100097\"><header><button id=\"submit-btn\" action=\"help\" kind=\"secondary\" label=\"Submit\"/></header><body><field id=\"zip-field\" type=\"text\" required=\"true\" label=\"Zip\"/></body></panel>\nExpectation: button submit-btn should trigger submit.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/dialog/body/button[@id='save-btn']\",\"to\":\"/dialog/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_100317",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-100317\"><header></header><body><button id=\"save-btn\" action=\"save\" kind=\"primary\" label=\"Save\"/><field id=\"status-field\" type=\"email\" required=\"true\" label=\"Status\"/></body></dialog>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/dialog/body/button[@id='back-btn']\",\"to\":\"/dialog/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_100137",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-100137\"><header></header><body><button id=\"back-btn\" action=\"back\" kind=\"secondary\" label=\"Back\"/><field id=\"phone-field\" type=\"text\" required=\"true\" label=\"Phone\"/></body></dialog>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='email-field']\",\"value\":\"number\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_100345",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-100345\"><header><button id=\"cancel-btn\" action=\"cancel\" kind=\"danger\" label=\"Cancel\"/></header><body><field id=\"email-field\" type=\"text\" required=\"true\" label=\"Email\"/></body></screen>\nExpectation: field email-field should use type number.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"kind\",\"op\":\"set_attr\",\"path\":\"/form/header/button[@id='cancel-btn']\",\"value\":\"secondary\"}",
+      "kind": "invalid_kind",
+      "name": "invalid_kind_100326",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-100326\"><header><button id=\"cancel-btn\" action=\"cancel\" kind=\"loud\" label=\"Cancel\"/></header><body><field id=\"age-field\" type=\"text\" required=\"true\" label=\"Age\"/></body></form>\nExpectation: button kind must be primary, secondary, or danger.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/screen/header/button\",\"value\":\"delete-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_100060",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-100060\"><header><button action=\"delete\" kind=\"danger\" label=\"Delete\"/></header><body><field id=\"name-field\" type=\"number\" required=\"true\" label=\"Name\"/></body></screen>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/dialog/body/field[@id='name-field']\",\"value\":\"select\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_100411",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-100411\"><header><button id=\"cancel-btn\" action=\"cancel\" kind=\"primary\" label=\"Cancel\"/></header><body><field id=\"name-field\" type=\"email\" required=\"true\" label=\"Name\"/></body></dialog>\nExpectation: field name-field should use type select.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/form/header/button\",\"value\":\"submit-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_100204",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-100204\"><header><button action=\"submit\" kind=\"secondary\" label=\"Submit\"/></header><body><field id=\"status-field\" type=\"select\" required=\"true\" label=\"Status\"/></body></form>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/screen/header/button\",\"value\":\"cancel-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_100000",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-100000\"><header><button action=\"cancel\" kind=\"primary\" label=\"Cancel\"/></header><body><field id=\"status-field\" type=\"email\" required=\"true\" label=\"Status\"/></body></screen>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/panel/header/button\",\"value\":\"save-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_100090",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100090\"><header><button action=\"save\" kind=\"danger\" label=\"Save\"/></header><body><field id=\"email-field\" type=\"email\" required=\"true\" label=\"Email\"/></body></panel>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='name-field']\",\"value\":\"Customer Name\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_100376",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-100376\"><header><button id=\"back-btn\" action=\"back\" kind=\"primary\" label=\"Back\"/></header><body><field id=\"name-field\" type=\"number\" required=\"true\" label=\"Name\"/></body></screen>\nExpectation: change the visible field label to Customer Name.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='status-field']\",\"value\":\"Customer Status\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_100310",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-100310\"><header><button id=\"back-btn\" action=\"back\" kind=\"danger\" label=\"Back\"/></header><body><field id=\"status-field\" type=\"select\" required=\"true\" label=\"Status\"/></body></screen>\nExpectation: change the visible field label to Customer Status.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='email-field']\",\"value\":\"Customer Email\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_100304",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-100304\"><header><button id=\"cancel-btn\" action=\"cancel\" kind=\"danger\" label=\"Cancel\"/></header><body><field id=\"email-field\" type=\"number\" required=\"true\" label=\"Email\"/></body></screen>\nExpectation: change the visible field label to Customer Email.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/form/body/field[@id='status-field']\",\"value\":\"email\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_100141",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-100141\"><header><button id=\"delete-btn\" action=\"delete\" kind=\"secondary\" label=\"Delete\"/></header><body><field id=\"status-field\" type=\"text\" required=\"true\" label=\"Status\"/></body></form>\nExpectation: field status-field should use type email.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/panel/header/button\",\"value\":\"delete-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_100294",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100294\"><header><button action=\"delete\" kind=\"secondary\" label=\"Delete\"/></header><body><field id=\"age-field\" type=\"text\" required=\"true\" label=\"Age\"/></body></panel>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/panel/header/button[@id='cancel-btn']\",\"value\":\"cancel\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_100427",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100427\"><header><button id=\"cancel-btn\" action=\"submit\" kind=\"primary\" label=\"Cancel\"/></header><body><field id=\"email-field\" type=\"number\" required=\"true\" label=\"Email\"/></body></panel>\nExpectation: button cancel-btn should trigger cancel.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/panel/body/button[@id='delete-btn']\",\"to\":\"/panel/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_100269",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100269\"><header></header><body><button id=\"delete-btn\" action=\"delete\" kind=\"primary\" label=\"Delete\"/><field id=\"email-field\" type=\"text\" required=\"true\" label=\"Email\"/></body></panel>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"kind\",\"op\":\"set_attr\",\"path\":\"/panel/header/button[@id='help-btn']\",\"value\":\"danger\"}",
+      "kind": "invalid_kind",
+      "name": "invalid_kind_100020",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100020\"><header><button id=\"help-btn\" action=\"help\" kind=\"loud\" label=\"Help\"/></header><body><field id=\"age-field\" type=\"text\" required=\"true\" label=\"Age\"/></body></panel>\nExpectation: button kind must be primary, secondary, or danger.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/panel/body/field[@id='age-field']\",\"value\":\"select\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_100009",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100009\"><header><button id=\"back-btn\" action=\"back\" kind=\"danger\" label=\"Back\"/></header><body><field id=\"age-field\" type=\"text\" required=\"true\" label=\"Age\"/></body></panel>\nExpectation: field age-field should use type select.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/panel/body/button[@id='save-btn']\",\"to\":\"/panel/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_100251",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100251\"><header></header><body><button id=\"save-btn\" action=\"save\" kind=\"primary\" label=\"Save\"/><field id=\"name-field\" type=\"email\" required=\"true\" label=\"Name\"/></body></panel>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/panel/header/button[@id='submit-btn']\",\"value\":\"submit\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_100241",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100241\"><header><button id=\"submit-btn\" action=\"cancel\" kind=\"primary\" label=\"Submit\"/></header><body><field id=\"name-field\" type=\"select\" required=\"true\" label=\"Name\"/></body></panel>\nExpectation: button submit-btn should trigger submit.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/form/body/field[@id='name-field']\",\"value\":\"Customer Name\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_100268",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-100268\"><header><button id=\"save-btn\" action=\"save\" kind=\"primary\" label=\"Save\"/></header><body><field id=\"name-field\" type=\"select\" required=\"true\" label=\"Name\"/></body></form>\nExpectation: change the visible field label to Customer Name.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"kind\",\"op\":\"set_attr\",\"path\":\"/dialog/header/button[@id='help-btn']\",\"value\":\"secondary\"}",
+      "kind": "invalid_kind",
+      "name": "invalid_kind_100338",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-100338\"><header><button id=\"help-btn\" action=\"help\" kind=\"loud\" label=\"Help\"/></header><body><field id=\"name-field\" type=\"number\" required=\"true\" label=\"Name\"/></body></dialog>\nExpectation: button kind must be primary, secondary, or danger.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/panel/header/button[@id='save-btn']\",\"value\":\"save\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_100295",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100295\"><header><button id=\"save-btn\" action=\"help\" kind=\"secondary\" label=\"Save\"/></header><body><field id=\"phone-field\" type=\"email\" required=\"true\" label=\"Phone\"/></body></panel>\nExpectation: button save-btn should trigger save.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/screen/header/button[@id='cancel-btn']\",\"value\":\"cancel\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_100421",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-100421\"><header><button id=\"cancel-btn\" action=\"submit\" kind=\"danger\" label=\"Cancel\"/></header><body><field id=\"zip-field\" type=\"email\" required=\"true\" label=\"Zip\"/></body></screen>\nExpectation: button cancel-btn should trigger cancel.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='name-field']\",\"value\":\"Customer Name\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_100262",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-100262\"><header><button id=\"cancel-btn\" action=\"cancel\" kind=\"danger\" label=\"Cancel\"/></header><body><field id=\"name-field\" type=\"select\" required=\"true\" label=\"Name\"/></body></screen>\nExpectation: change the visible field label to Customer Name.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/dialog/header/button\",\"value\":\"delete-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_100246",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-100246\"><header><button action=\"delete\" kind=\"danger\" label=\"Delete\"/></header><body><field id=\"zip-field\" type=\"number\" required=\"true\" label=\"Zip\"/></body></dialog>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/form/header/button\",\"value\":\"save-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_100348",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-100348\"><header><button action=\"save\" kind=\"danger\" label=\"Save\"/></header><body><field id=\"zip-field\" type=\"number\" required=\"true\" label=\"Zip\"/></body></form>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/panel/header/button[@id='cancel-btn']\",\"value\":\"cancel\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_100067",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100067\"><header><button id=\"cancel-btn\" action=\"save\" kind=\"primary\" label=\"Cancel\"/></header><body><field id=\"age-field\" type=\"select\" required=\"true\" label=\"Age\"/></body></panel>\nExpectation: button cancel-btn should trigger cancel.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/panel/body/button[@id='submit-btn']\",\"to\":\"/panel/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_100041",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100041\"><header></header><body><button id=\"submit-btn\" action=\"submit\" kind=\"danger\" label=\"Submit\"/><field id=\"zip-field\" type=\"email\" required=\"true\" label=\"Zip\"/></body></panel>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/dialog/header/button[@id='submit-btn']\",\"value\":\"submit\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_100013",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-100013\"><header><button id=\"submit-btn\" action=\"help\" kind=\"secondary\" label=\"Submit\"/></header><body><field id=\"email-field\" type=\"number\" required=\"true\" label=\"Email\"/></body></dialog>\nExpectation: button submit-btn should trigger submit.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/form/body/field[@id='zip-field']\",\"value\":\"email\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_100339",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-100339\"><header><button id=\"submit-btn\" action=\"submit\" kind=\"danger\" label=\"Submit\"/></header><body><field id=\"zip-field\" type=\"number\" required=\"true\" label=\"Zip\"/></body></form>\nExpectation: field zip-field should use type email.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/form/body/field[@id='age-field']\",\"value\":\"Customer Age\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_100358",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-100358\"><header><button id=\"back-btn\" action=\"back\" kind=\"primary\" label=\"Back\"/></header><body><field id=\"age-field\" type=\"email\" required=\"true\" label=\"Age\"/></body></form>\nExpectation: change the visible field label to Customer Age.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/panel/body/field[@id='phone-field']\",\"value\":\"select\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_100363",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100363\"><header><button id=\"back-btn\" action=\"back\" kind=\"primary\" label=\"Back\"/></header><body><field id=\"phone-field\" type=\"text\" required=\"true\" label=\"Phone\"/></body></panel>\nExpectation: field phone-field should use type select.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"kind\",\"op\":\"set_attr\",\"path\":\"/form/header/button[@id='delete-btn']\",\"value\":\"primary\"}",
+      "kind": "invalid_kind",
+      "name": "invalid_kind_100302",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-100302\"><header><button id=\"delete-btn\" action=\"delete\" kind=\"loud\" label=\"Delete\"/></header><body><field id=\"status-field\" type=\"text\" required=\"true\" label=\"Status\"/></body></form>\nExpectation: button kind must be primary, secondary, or danger.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/panel/header/button\",\"value\":\"cancel-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_100024",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-100024\"><header><button action=\"cancel\" kind=\"primary\" label=\"Cancel\"/></header><body><field id=\"status-field\" type=\"number\" required=\"true\" label=\"Status\"/></body></panel>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/dialog/header/button[@id='back-btn']\",\"value\":\"back\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_100439",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-100439\"><header><button id=\"back-btn\" action=\"help\" kind=\"danger\" label=\"Back\"/></header><body><field id=\"status-field\" type=\"email\" required=\"true\" label=\"Status\"/></body></dialog>\nExpectation: button back-btn should trigger back.\nFix: "
+    }
+  ],
+  "seen": [
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/panel/header/button\",\"value\":\"cancel-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_02676",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-2676\"><header><button action=\"cancel\" kind=\"secondary\" label=\"Cancel\"/></header><body><field id=\"status-field\" type=\"text\" required=\"true\" label=\"Status\"/></body></panel>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/panel/body/field[@id='name-field']\",\"value\":\"email\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_00147",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-0147\"><header><button id=\"help-btn\" action=\"help\" kind=\"primary\" label=\"Help\"/></header><body><field id=\"name-field\" type=\"select\" required=\"true\" label=\"Name\"/></body></panel>\nExpectation: field name-field should use type email.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/dialog/header/button\",\"value\":\"cancel-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_01236",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-1236\"><header><button action=\"cancel\" kind=\"danger\" label=\"Cancel\"/></header><body><field id=\"age-field\" type=\"email\" required=\"true\" label=\"Age\"/></body></dialog>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/form/body/button[@id='submit-btn']\",\"to\":\"/form/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_00827",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-0827\"><header></header><body><button id=\"submit-btn\" action=\"submit\" kind=\"danger\" label=\"Submit\"/><field id=\"zip-field\" type=\"select\" required=\"true\" label=\"Zip\"/></body></form>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/form/header/button\",\"value\":\"cancel-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_00282",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-0282\"><header><button action=\"cancel\" kind=\"danger\" label=\"Cancel\"/></header><body><field id=\"age-field\" type=\"text\" required=\"true\" label=\"Age\"/></body></form>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='age-field']\",\"value\":\"Customer Age\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_03442",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-3442\"><header><button id=\"submit-btn\" action=\"submit\" kind=\"danger\" label=\"Submit\"/></header><body><field id=\"age-field\" type=\"email\" required=\"true\" label=\"Age\"/></body></screen>\nExpectation: change the visible field label to Customer Age.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/dialog/header/button[@id='save-btn']\",\"value\":\"save\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_01519",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-1519\"><header><button id=\"save-btn\" action=\"cancel\" kind=\"danger\" label=\"Save\"/></header><body><field id=\"phone-field\" type=\"text\" required=\"true\" label=\"Phone\"/></body></dialog>\nExpectation: button save-btn should trigger save.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/form/header/button[@id='cancel-btn']\",\"value\":\"cancel\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_01195",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-1195\"><header><button id=\"cancel-btn\" action=\"delete\" kind=\"primary\" label=\"Cancel\"/></header><body><field id=\"age-field\" type=\"text\" required=\"true\" label=\"Age\"/></body></form>\nExpectation: button cancel-btn should trigger cancel.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/panel/header/button[@id='delete-btn']\",\"value\":\"delete\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_03049",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-3049\"><header><button id=\"delete-btn\" action=\"submit\" kind=\"secondary\" label=\"Delete\"/></header><body><field id=\"zip-field\" type=\"email\" required=\"true\" label=\"Zip\"/></body></panel>\nExpectation: button delete-btn should trigger delete.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"kind\",\"op\":\"set_attr\",\"path\":\"/dialog/header/button[@id='cancel-btn']\",\"value\":\"danger\"}",
+      "kind": "invalid_kind",
+      "name": "invalid_kind_00116",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-0116\"><header><button id=\"cancel-btn\" action=\"cancel\" kind=\"loud\" label=\"Cancel\"/></header><body><field id=\"phone-field\" type=\"text\" required=\"true\" label=\"Phone\"/></body></dialog>\nExpectation: button kind must be primary, secondary, or danger.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/form/header/button\",\"value\":\"save-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_03054",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-3054\"><header><button action=\"save\" kind=\"primary\" label=\"Save\"/></header><body><field id=\"phone-field\" type=\"text\" required=\"true\" label=\"Phone\"/></body></form>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/form/header/button[@id='submit-btn']\",\"value\":\"submit\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_03403",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-3403\"><header><button id=\"submit-btn\" action=\"back\" kind=\"danger\" label=\"Submit\"/></header><body><field id=\"zip-field\" type=\"email\" required=\"true\" label=\"Zip\"/></body></form>\nExpectation: button submit-btn should trigger submit.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/dialog/header/button\",\"value\":\"help-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_00936",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-0936\"><header><button action=\"help\" kind=\"secondary\" label=\"Help\"/></header><body><field id=\"phone-field\" type=\"email\" required=\"true\" label=\"Phone\"/></body></dialog>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/panel/body/button[@id='back-btn']\",\"to\":\"/panel/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_03851",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-3851\"><header></header><body><button id=\"back-btn\" action=\"back\" kind=\"danger\" label=\"Back\"/><field id=\"email-field\" type=\"email\" required=\"true\" label=\"Email\"/></body></panel>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/dialog/body/field[@id='name-field']\",\"value\":\"Customer Name\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_03874",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-3874\"><header><button id=\"submit-btn\" action=\"submit\" kind=\"secondary\" label=\"Submit\"/></header><body><field id=\"name-field\" type=\"text\" required=\"true\" label=\"Name\"/></body></dialog>\nExpectation: change the visible field label to Customer Name.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/dialog/body/button[@id='submit-btn']\",\"to\":\"/dialog/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_00941",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-0941\"><header></header><body><button id=\"submit-btn\" action=\"submit\" kind=\"secondary\" label=\"Submit\"/><field id=\"email-field\" type=\"select\" required=\"true\" label=\"Email\"/></body></dialog>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/screen/header/button[@id='save-btn']\",\"value\":\"save\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_01951",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-1951\"><header><button id=\"save-btn\" action=\"delete\" kind=\"secondary\" label=\"Save\"/></header><body><field id=\"age-field\" type=\"text\" required=\"true\" label=\"Age\"/></body></screen>\nExpectation: button save-btn should trigger save.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/form/body/button[@id='back-btn']\",\"to\":\"/form/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_03923",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-3923\"><header></header><body><button id=\"back-btn\" action=\"back\" kind=\"primary\" label=\"Back\"/><field id=\"status-field\" type=\"email\" required=\"true\" label=\"Status\"/></body></form>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='name-field']\",\"value\":\"Customer Name\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_02764",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-2764\"><header><button id=\"help-btn\" action=\"help\" kind=\"danger\" label=\"Help\"/></header><body><field id=\"name-field\" type=\"text\" required=\"true\" label=\"Name\"/></body></screen>\nExpectation: change the visible field label to Customer Name.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"kind\",\"op\":\"set_attr\",\"path\":\"/dialog/header/button[@id='cancel-btn']\",\"value\":\"danger\"}",
+      "kind": "invalid_kind",
+      "name": "invalid_kind_02624",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-2624\"><header><button id=\"cancel-btn\" action=\"cancel\" kind=\"loud\" label=\"Cancel\"/></header><body><field id=\"zip-field\" type=\"email\" required=\"true\" label=\"Zip\"/></body></dialog>\nExpectation: button kind must be primary, secondary, or danger.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/form/body/button[@id='help-btn']\",\"to\":\"/form/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_01937",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-1937\"><header></header><body><button id=\"help-btn\" action=\"help\" kind=\"secondary\" label=\"Help\"/><field id=\"age-field\" type=\"email\" required=\"true\" label=\"Age\"/></body></form>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='email-field']\",\"value\":\"Customer Email\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_03016",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-3016\"><header><button id=\"save-btn\" action=\"save\" kind=\"danger\" label=\"Save\"/></header><body><field id=\"email-field\" type=\"text\" required=\"true\" label=\"Email\"/></body></screen>\nExpectation: change the visible field label to Customer Email.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='status-field']\",\"value\":\"select\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_03537",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-3537\"><header><button id=\"delete-btn\" action=\"delete\" kind=\"secondary\" label=\"Delete\"/></header><body><field id=\"status-field\" type=\"text\" required=\"true\" label=\"Status\"/></body></screen>\nExpectation: field status-field should use type select.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/dialog/body/field[@id='age-field']\",\"value\":\"number\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_02073",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-2073\"><header><button id=\"help-btn\" action=\"help\" kind=\"danger\" label=\"Help\"/></header><body><field id=\"age-field\" type=\"select\" required=\"true\" label=\"Age\"/></body></dialog>\nExpectation: field age-field should use type number.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/panel/header/button[@id='submit-btn']\",\"value\":\"submit\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_03865",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-3865\"><header><button id=\"submit-btn\" action=\"back\" kind=\"primary\" label=\"Submit\"/></header><body><field id=\"age-field\" type=\"text\" required=\"true\" label=\"Age\"/></body></panel>\nExpectation: button submit-btn should trigger submit.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/panel/header/button[@id='help-btn']\",\"value\":\"help\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_03715",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-3715\"><header><button id=\"help-btn\" action=\"delete\" kind=\"secondary\" label=\"Help\"/></header><body><field id=\"email-field\" type=\"text\" required=\"true\" label=\"Email\"/></body></panel>\nExpectation: button help-btn should trigger help.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/panel/body/field[@id='zip-field']\",\"value\":\"Customer Zip\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_02164",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-2164\"><header><button id=\"back-btn\" action=\"back\" kind=\"secondary\" label=\"Back\"/></header><body><field id=\"zip-field\" type=\"email\" required=\"true\" label=\"Zip\"/></body></panel>\nExpectation: change the visible field label to Customer Zip.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"kind\",\"op\":\"set_attr\",\"path\":\"/screen/header/button[@id='save-btn']\",\"value\":\"primary\"}",
+      "kind": "invalid_kind",
+      "name": "invalid_kind_03662",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-3662\"><header><button id=\"save-btn\" action=\"save\" kind=\"loud\" label=\"Save\"/></header><body><field id=\"name-field\" type=\"email\" required=\"true\" label=\"Name\"/></body></screen>\nExpectation: button kind must be primary, secondary, or danger.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/dialog/body/button[@id='cancel-btn']\",\"to\":\"/dialog/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_02837",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-2837\"><header></header><body><button id=\"cancel-btn\" action=\"cancel\" kind=\"primary\" label=\"Cancel\"/><field id=\"age-field\" type=\"select\" required=\"true\" label=\"Age\"/></body></dialog>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/form/body/field[@id='name-field']\",\"value\":\"number\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_01095",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-1095\"><header><button id=\"help-btn\" action=\"help\" kind=\"primary\" label=\"Help\"/></header><body><field id=\"name-field\" type=\"email\" required=\"true\" label=\"Name\"/></body></form>\nExpectation: field name-field should use type number.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/form/body/field[@id='age-field']\",\"value\":\"email\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_02187",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-2187\"><header><button id=\"delete-btn\" action=\"delete\" kind=\"secondary\" label=\"Delete\"/></header><body><field id=\"age-field\" type=\"number\" required=\"true\" label=\"Age\"/></body></form>\nExpectation: field age-field should use type email.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/panel/body/field[@id='email-field']\",\"value\":\"Customer Email\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_02404",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-2404\"><header><button id=\"save-btn\" action=\"save\" kind=\"secondary\" label=\"Save\"/></header><body><field id=\"email-field\" type=\"email\" required=\"true\" label=\"Email\"/></body></panel>\nExpectation: change the visible field label to Customer Email.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/form/body/field[@id='name-field']\",\"value\":\"number\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_01527",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-1527\"><header><button id=\"save-btn\" action=\"save\" kind=\"danger\" label=\"Save\"/></header><body><field id=\"name-field\" type=\"text\" required=\"true\" label=\"Name\"/></body></form>\nExpectation: field name-field should use type number.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/dialog/body/field[@id='name-field']\",\"value\":\"Customer Name\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_01816",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-1816\"><header><button id=\"save-btn\" action=\"save\" kind=\"primary\" label=\"Save\"/></header><body><field id=\"name-field\" type=\"select\" required=\"true\" label=\"Name\"/></body></dialog>\nExpectation: change the visible field label to Customer Name.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/form/body/button[@id='save-btn']\",\"to\":\"/form/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_02579",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-2579\"><header></header><body><button id=\"save-btn\" action=\"save\" kind=\"danger\" label=\"Save\"/><field id=\"status-field\" type=\"text\" required=\"true\" label=\"Status\"/></body></form>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/dialog/header/button[@id='delete-btn']\",\"value\":\"delete\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_00079",
+      "prompt": "XML schema: UIFlow.v2\nXML: <dialog id=\"dialog-0079\"><header><button id=\"delete-btn\" action=\"back\" kind=\"danger\" label=\"Delete\"/></header><body><field id=\"name-field\" type=\"email\" required=\"true\" label=\"Name\"/></body></dialog>\nExpectation: button delete-btn should trigger delete.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"kind\",\"op\":\"set_attr\",\"path\":\"/screen/header/button[@id='back-btn']\",\"value\":\"secondary\"}",
+      "kind": "invalid_kind",
+      "name": "invalid_kind_01844",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-1844\"><header><button id=\"back-btn\" action=\"back\" kind=\"loud\" label=\"Back\"/></header><body><field id=\"status-field\" type=\"number\" required=\"true\" label=\"Status\"/></body></screen>\nExpectation: button kind must be primary, secondary, or danger.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"id\",\"op\":\"set_attr\",\"path\":\"/form/header/button\",\"value\":\"cancel-btn\"}",
+      "kind": "missing_attr",
+      "name": "missing_attr_03114",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-3114\"><header><button action=\"cancel\" kind=\"secondary\" label=\"Cancel\"/></header><body><field id=\"zip-field\" type=\"select\" required=\"true\" label=\"Zip\"/></body></form>\nExpectation: every button must have an id ending in -btn.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/panel/body/button[@id='save-btn']\",\"to\":\"/panel/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_00629",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-0629\"><header></header><body><button id=\"save-btn\" action=\"save\" kind=\"danger\" label=\"Save\"/><field id=\"name-field\" type=\"select\" required=\"true\" label=\"Name\"/></body></panel>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/panel/body/field[@id='zip-field']\",\"value\":\"number\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_01611",
+      "prompt": "XML schema: UIFlow.v2\nXML: <panel id=\"panel-1611\"><header><button id=\"save-btn\" action=\"save\" kind=\"danger\" label=\"Save\"/></header><body><field id=\"zip-field\" type=\"select\" required=\"true\" label=\"Zip\"/></body></panel>\nExpectation: field zip-field should use type number.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='phone-field']\",\"value\":\"select\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_00909",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-0909\"><header><button id=\"delete-btn\" action=\"delete\" kind=\"primary\" label=\"Delete\"/></header><body><field id=\"phone-field\" type=\"number\" required=\"true\" label=\"Phone\"/></body></screen>\nExpectation: field phone-field should use type select.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='name-field']\",\"value\":\"Customer Name\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_02326",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-2326\"><header><button id=\"help-btn\" action=\"help\" kind=\"secondary\" label=\"Help\"/></header><body><field id=\"name-field\" type=\"text\" required=\"true\" label=\"Name\"/></body></screen>\nExpectation: change the visible field label to Customer Name.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/form/body/button[@id='cancel-btn']\",\"to\":\"/form/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_03695",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-3695\"><header></header><body><button id=\"cancel-btn\" action=\"cancel\" kind=\"secondary\" label=\"Cancel\"/><field id=\"phone-field\" type=\"text\" required=\"true\" label=\"Phone\"/></body></form>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/form/body/field[@id='age-field']\",\"value\":\"email\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_01629",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-1629\"><header><button id=\"cancel-btn\" action=\"cancel\" kind=\"secondary\" label=\"Cancel\"/></header><body><field id=\"age-field\" type=\"select\" required=\"true\" label=\"Age\"/></body></form>\nExpectation: field age-field should use type email.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"action\",\"op\":\"set_attr\",\"path\":\"/screen/header/button[@id='help-btn']\",\"value\":\"help\"}",
+      "kind": "wrong_button_action",
+      "name": "wrong_button_action_02761",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-2761\"><header><button id=\"help-btn\" action=\"cancel\" kind=\"danger\" label=\"Help\"/></header><body><field id=\"zip-field\" type=\"email\" required=\"true\" label=\"Zip\"/></body></screen>\nExpectation: button help-btn should trigger help.\nFix: "
+    },
+    {
+      "expected": "{\"op\":\"move\",\"path\":\"/form/body/button[@id='submit-btn']\",\"to\":\"/form/header\"}",
+      "kind": "misplaced_node",
+      "name": "misplaced_node_03701",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-3701\"><header></header><body><button id=\"submit-btn\" action=\"submit\" kind=\"primary\" label=\"Submit\"/><field id=\"age-field\" type=\"select\" required=\"true\" label=\"Age\"/></body></form>\nExpectation: buttons belong under header before body fields.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"type\",\"op\":\"set_attr\",\"path\":\"/screen/body/field[@id='age-field']\",\"value\":\"email\"}",
+      "kind": "wrong_field_type",
+      "name": "wrong_field_type_02547",
+      "prompt": "XML schema: UIFlow.v2\nXML: <screen id=\"screen-2547\"><header><button id=\"delete-btn\" action=\"delete\" kind=\"secondary\" label=\"Delete\"/></header><body><field id=\"age-field\" type=\"select\" required=\"true\" label=\"Age\"/></body></screen>\nExpectation: field age-field should use type email.\nFix: "
+    },
+    {
+      "expected": "{\"attr\":\"label\",\"op\":\"set_attr\",\"path\":\"/form/body/field[@id='phone-field']\",\"value\":\"Customer Phone\"}",
+      "kind": "rename_field_label",
+      "name": "rename_field_label_01888",
+      "prompt": "XML schema: UIFlow.v2\nXML: <form id=\"form-1888\"><header><button id=\"back-btn\" action=\"back\" kind=\"primary\" label=\"Back\"/></header><body><field id=\"phone-field\" type=\"number\" required=\"true\" label=\"Phone\"/></body></form>\nExpectation: change the visible field label to Customer Phone.\nFix: "
+    }
+  ]
+}

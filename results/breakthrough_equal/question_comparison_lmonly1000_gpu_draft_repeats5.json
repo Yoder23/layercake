@@ -1,0 +1,231 @@
+{
+  "scope": "Same trained LayerCake and same trained BPE-token transformer, asked the same two prompts on the requested device. Quality is reported as raw text plus simple repetition/printability metrics; these are not instruction-tuned task-accuracy scores.",
+  "device": "cuda",
+  "layercake_mode": "draft",
+  "cpu_threads": null,
+  "new_bytes": 256,
+  "repeats": 5,
+  "training": {
+    "layercake": {
+      "artifact": "results\\breakthrough_equal\\northstar_transprior_b32_seed9007_lmonly1000_cumulative.json",
+      "parameters": 14792160,
+      "eval_bpb": 1.8946551169318628,
+      "eval_bytes": 1000000,
+      "train_seconds": 434.88419556617737,
+      "train_bytes": 53248000
+    },
+    "transformer": {
+      "artifact": "results\\breakthrough_equal\\bpe_matched_seed9002.json",
+      "parameters": 14905792,
+      "eval_bpb": 1.906938426656608,
+      "eval_bytes": 1000000,
+      "train_seconds": 402.0519015789032,
+      "train_bytes": 66080245.246831246
+    }
+  },
+  "samples": [
+    {
+      "name": "xml_json_schema",
+      "prompt": "Question: Given an XML node <item id=\"42\">ok</item>, produce the matching JSON object. Answer:",
+      "layercake": {
+        "seconds": 0.3217429400188848,
+        "bytes_per_second": 804.6057936094187,
+        "timing": {
+          "seconds": {
+            "mean": 0.3217429400188848,
+            "median": 0.3228758000768721,
+            "min": 0.2751513000112027,
+            "max": 0.38134980003815144,
+            "stdev": 0.03869544974722244
+          },
+          "bytes_per_second": {
+            "mean": 804.6057936094187,
+            "median": 792.8745354685922,
+            "min": 671.2996833206388,
+            "max": 930.3972032462759,
+            "stdev": 93.56334626681247
+          },
+          "trials": [
+            {
+              "seconds": 0.38134980003815144,
+              "bytes_per_second": 671.2996833206388
+            },
+            {
+              "seconds": 0.2751513000112027,
+              "bytes_per_second": 930.3972032462759
+            },
+            {
+              "seconds": 0.32373049994930625,
+              "bytes_per_second": 790.7812209232299
+            },
+            {
+              "seconds": 0.3056073000188917,
+              "bytes_per_second": 837.6763250883564
+            },
+            {
+              "seconds": 0.3228758000768721,
+              "bytes_per_second": 792.8745354685922
+            }
+          ]
+        },
+        "text": " The company is a service of the season of the season of the season of the services and the second services and the company of the state of the company of the samplang an anding thentimentional se of theran stashiplassing thing therals therall sells thing ",
+        "printable_ratio": 1.0,
+        "word_count": 45,
+        "distinct_word_trigram": 0.7906976744186046,
+        "max_repeat_8gram": 7
+      },
+      "transformer": {
+        "seconds": 0.38839640002697706,
+        "bytes_per_second": 659.7606195971645,
+        "timing": {
+          "seconds": {
+            "mean": 0.38839640002697706,
+            "median": 0.39350819995161146,
+            "min": 0.3738346000900492,
+            "max": 0.40547640004660934,
+            "stdev": 0.01352217324904949
+          },
+          "bytes_per_second": {
+            "mean": 659.7606195971645,
+            "median": 650.5582349528664,
+            "min": 631.3561035132326,
+            "max": 684.7948262101335,
+            "stdev": 22.990755065199572
+          },
+          "trials": [
+            {
+              "seconds": 0.40547640004660934,
+              "bytes_per_second": 631.3561035132326
+            },
+            {
+              "seconds": 0.39350819995161146,
+              "bytes_per_second": 650.5582349528664
+            },
+            {
+              "seconds": 0.3938653999939561,
+              "bytes_per_second": 649.9682378902243
+            },
+            {
+              "seconds": 0.3752974000526592,
+              "bytes_per_second": 682.1256954193656
+            },
+            {
+              "seconds": 0.3738346000900492,
+              "bytes_per_second": 684.7948262101335
+            }
+          ]
+        },
+        "text": " \"This is a great way to be aware of the mobile phone. \"It's a great way to be aware of the mobile phone. \"I'm not a great way to be aware of the mobile. \"I'm not a lot of the mobile phone.\" \"I'm not aware of the \"it\".\" \"I'm not a bit more than the \"mail\".",
+        "printable_ratio": 1.0,
+        "word_count": 56,
+        "distinct_word_trigram": 0.6666666666666666,
+        "max_repeat_8gram": 5
+      },
+      "speed_ratio_layercake_over_transformer": 1.2195420122236056
+    },
+    {
+      "name": "screen_edit_action",
+      "prompt": "Question: A user says move the Save button to the top right of the app. What edit action should be taken? Answer:",
+      "layercake": {
+        "seconds": 0.3012081199791282,
+        "bytes_per_second": 850.6140630413714,
+        "timing": {
+          "seconds": {
+            "mean": 0.3012081199791282,
+            "median": 0.29947399999946356,
+            "min": 0.29116360004991293,
+            "max": 0.31343459989875555,
+            "stdev": 0.009713288907967002
+          },
+          "bytes_per_second": {
+            "mean": 850.6140630413714,
+            "median": 854.8321390186079,
+            "min": 816.757307848885,
+            "max": 879.2307828180275,
+            "stdev": 27.26865463546819
+          },
+          "trials": [
+            {
+              "seconds": 0.29116360004991293,
+              "bytes_per_second": 879.2307828180275
+            },
+            {
+              "seconds": 0.293113199993968,
+              "bytes_per_second": 873.3827067674476
+            },
+            {
+              "seconds": 0.30885519995354116,
+              "bytes_per_second": 828.8673787538893
+            },
+            {
+              "seconds": 0.31343459989875555,
+              "bytes_per_second": 816.757307848885
+            },
+            {
+              "seconds": 0.29947399999946356,
+              "bytes_per_second": 854.8321390186079
+            }
+          ]
+        },
+        "text": " oThheand  ath tanbloong ast ath tthpps  aanr ias tihaanr ian gioola aanr ian g oon  aanr ian gioona tanke tanlly  aanr ian giooli aanr ian giook theriel sterals thing theragest thing wills there se therealional sestologral stroome sesseming thing an somes",
+        "printable_ratio": 1.0,
+        "word_count": 41,
+        "distinct_word_trigram": 1.0,
+        "max_repeat_8gram": 5
+      },
+      "transformer": {
+        "seconds": 0.3773494600318372,
+        "bytes_per_second": 679.3312846159278,
+        "timing": {
+          "seconds": {
+            "mean": 0.3773494600318372,
+            "median": 0.3853992000222206,
+            "min": 0.35194680001586676,
+            "max": 0.38742730009835213,
+            "stdev": 0.01516804172873709
+          },
+          "bytes_per_second": {
+            "mean": 679.3312846159278,
+            "median": 664.2463191029977,
+            "min": 660.769129937441,
+            "max": 727.3826612103272,
+            "stdev": 28.462647376558728
+          },
+          "trials": [
+            {
+              "seconds": 0.3873963000951335,
+              "bytes_per_second": 660.8220056235274
+            },
+            {
+              "seconds": 0.37457769992761314,
+              "bytes_per_second": 683.4363072053457
+            },
+            {
+              "seconds": 0.35194680001586676,
+              "bytes_per_second": 727.3826612103272
+            },
+            {
+              "seconds": 0.3853992000222206,
+              "bytes_per_second": 664.2463191029977
+            },
+            {
+              "seconds": 0.38742730009835213,
+              "bytes_per_second": 660.769129937441
+            }
+          ]
+        },
+        "text": " The Social Social Social Social Social Social Social Social Society is the first time of the Society of the Social Society of the Society of the Social Security Society. The Social Security Social Social Security Social Social Social Social Society is the",
+        "printable_ratio": 1.0,
+        "word_count": 42,
+        "distinct_word_trigram": 0.575,
+        "max_repeat_8gram": 17
+      },
+      "speed_ratio_layercake_over_transformer": 1.252134389073928
+    }
+  ],
+  "summary": {
+    "mean_layercake_bytes_per_second": 827.609928325395,
+    "mean_transformer_bytes_per_second": 669.5459521065461,
+    "mean_speed_ratio_layercake_over_transformer": 1.2360763674569955
+  }
+}

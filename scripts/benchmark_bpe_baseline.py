@@ -65,6 +65,8 @@ def main():
     parser.add_argument("--heads", type=int, default=4)
     parser.add_argument("--general-bytes", type=int, default=8_000_000)
     parser.add_argument("--domain-bytes", type=int, default=2_000_000)
+    parser.add_argument("--eval-bytes", type=int, default=200_000)
+    parser.add_argument("--domain-eval-bytes", type=int, default=100_000)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--artifact")
     parser.add_argument("--output", required=True)
@@ -79,8 +81,8 @@ def main():
     domain = load_python_bytes(
         root.parent / "layercakeogwithdecoder", args.domain_bytes
     )
-    general_train, general_eval = general[:-200_000], general[-200_000:]
-    domain_eval = domain[-100_000:]
+    general_train, general_eval = general[:-args.eval_bytes], general[-args.eval_bytes:]
+    domain_eval = domain[-args.domain_eval_bytes:]
     work = root / "runs_experiment/bpe_baseline"
     work.mkdir(parents=True, exist_ok=True)
     corpus = work / "corpus.txt"
@@ -148,6 +150,8 @@ def main():
         "seed": args.seed,
         "train_tokens": train_tokens.numel(),
         "train_bytes": general_train.numel(),
+        "eval_bytes": general_eval.numel(),
+        "domain_eval_bytes": domain_eval.numel(),
         "estimated_bytes_per_update": (
             args.batch * args.seq * general_train.numel() / train_tokens.numel()
         ),

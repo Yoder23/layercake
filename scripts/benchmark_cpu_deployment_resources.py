@@ -46,7 +46,12 @@ def memory_info() -> dict[str, int]:
         import resource
 
         peak = int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) * 1024
-        return {"rss_bytes": peak, "peak_rss_bytes": peak}
+        return {
+            "rss_bytes": peak,
+            "peak_rss_bytes": peak,
+            "private_bytes": peak,
+            "peak_private_bytes": peak,
+        }
     counters = PROCESS_MEMORY_COUNTERS()
     counters.cb = ctypes.sizeof(counters)
     ctypes.windll.kernel32.GetCurrentProcess.restype = wintypes.HANDLE
@@ -65,6 +70,8 @@ def memory_info() -> dict[str, int]:
     return {
         "rss_bytes": int(counters.WorkingSetSize),
         "peak_rss_bytes": int(counters.PeakWorkingSetSize),
+        "private_bytes": int(counters.PagefileUsage),
+        "peak_private_bytes": int(counters.PeakPagefileUsage),
     }
 
 
@@ -136,7 +143,12 @@ def build_patch_model_only(artifact: dict, device: torch.device) -> CausalBytePa
 
 @torch.inference_mode()
 def run_layercake(
-    artifact_path: Path, prompt_len: int, generated_bytes: int, repeats: int
+    artifact_path: Path,
+    prompt_len: int,
+    generated_bytes: int,
+    repeats: int,
+    *,
+    fast_prefill: bool = False,
 ) -> dict:
     torch.set_num_threads(1)
     device = torch.device("cpu")
@@ -145,15 +157,23 @@ def run_layercake(
     model = build_patch_model_only(artifact, device)
     model.eval()
     after_load = memory_info()
+    max_prompt_len = max(
+        model.patch_size,
+        (model.patch_pos.num_embeddings - 1) * model.patch_size,
+    )
+    prompt_len = min(prompt_len, max_prompt_len)
     prompt = torch.arange(prompt_len, dtype=torch.long, device=device).remainder(251)
     prompt = prompt.unsqueeze(0)
-    _ = model.begin_cached_generation(prompt)
+    _ = model.begin_cached_generation(prompt, fast_prefill_if_aligned=fast_prefill)
     prefill_times = []
     generation_times = []
     generated_counts = []
     for _ in range(repeats):
         started = time.perf_counter()
-        state = model.begin_cached_generation(prompt)
+        state = model.begin_cached_generation(
+            prompt,
+            fast_prefill_if_aligned=fast_prefill,
+        )
         prefill_times.append(time.perf_counter() - started)
         started = time.perf_counter()
         emitted = 0
@@ -167,11 +187,18 @@ def run_layercake(
     generation_seconds = statistics.median(generation_times)
     after_generation = memory_info()
     emitted = int(statistics.median(generated_counts))
-    profiled_state = model.begin_cached_generation(prompt, profile=True)
+    profiled_state = model.begin_cached_generation(
+        prompt,
+        profile=True,
+        fast_prefill_if_aligned=fast_prefill,
+    )
     return {
         "model": "layercake",
+        "fast_prefill_if_aligned": fast_prefill,
+        "fast_prefill_active": bool(profiled_state.get("fast_prefill_active", False)),
         "artifact_bytes": artifact_bytes(artifact_path),
         "parameter_bytes": parameter_bytes(model),
+        "prompt_len": prompt_len,
         "loaded_at": loaded_at,
         "after_load": after_load,
         "after_prefill": after_prefill,
@@ -272,7 +299,11 @@ def run_child(args: argparse.Namespace) -> int:
     path = Path(args.artifact)
     if args.model == "layercake":
         result = run_layercake(
-            path, args.prompt_len, args.generated_bytes, args.repeats
+            path,
+            args.prompt_len,
+            args.generated_bytes,
+            args.repeats,
+            fast_prefill=args.fast_layercake_prefill,
         )
     else:
         result = run_bpe(path, args.prompt_len, args.generated_bytes, args.repeats)
@@ -286,6 +317,8 @@ def invoke_child(
     prompt_len: int,
     generated_bytes: int,
     repeats: int,
+    *,
+    fast_layercake_prefill: bool = False,
 ) -> dict:
     command = [
         sys.executable,
@@ -302,6 +335,8 @@ def invoke_child(
         "--repeats",
         str(repeats),
     ]
+    if model == "layercake" and fast_layercake_prefill:
+        command.append("--fast-layercake-prefill")
     completed = subprocess.run(
         command,
         check=True,
@@ -340,6 +375,7 @@ def main() -> int:
     parser.add_argument("--prompt-len", type=int, default=128)
     parser.add_argument("--generated-bytes", type=int, default=64)
     parser.add_argument("--repeats", type=int, default=5)
+    parser.add_argument("--fast-layercake-prefill", action="store_true")
     parser.add_argument(
         "--output", default="results/cpu_deployment_resources_certificate.json"
     )
@@ -350,9 +386,10 @@ def main() -> int:
             raise SystemExit("--child requires --model and --artifact")
         return run_child(args)
 
+    layercake_source = ROOT / args.layercake
     layercake_artifact = export_patch_only(
-        ROOT / args.layercake,
-        ROOT / "runs_experiment/scale15m_transition_lw280_2300_patch_only.pt",
+        layercake_source,
+        ROOT / "runs_experiment" / f"{layercake_source.stem}_patch_only.pt",
     )
     layercake = invoke_child(
         "layercake",
@@ -360,6 +397,7 @@ def main() -> int:
         args.prompt_len,
         args.generated_bytes,
         args.repeats,
+        fast_layercake_prefill=args.fast_layercake_prefill,
     )
     bpe = invoke_child(
         "bpe", ROOT / args.bpe, args.prompt_len, args.generated_bytes, args.repeats
@@ -400,6 +438,10 @@ def main() -> int:
         },
         "layercake": layercake,
         "bpe": bpe,
+        "layercake_deployment_mode": {
+            "fast_prefill_if_aligned": bool(args.fast_layercake_prefill),
+            "fast_prefill_active": bool(layercake.get("fast_prefill_active", False)),
+        },
         "metrics": {
             "repeats": args.repeats,
             "layercake_peak_rss_bytes": layercake["peak_rss_bytes"],

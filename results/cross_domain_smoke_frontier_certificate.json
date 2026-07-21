@@ -1,0 +1,144 @@
+{
+  "domains": {
+    "game_dialogue": {
+      "failed": [],
+      "metrics": {
+        "bpb": 2.2185194418554466,
+        "compression_ratio": 0.25014034431137727,
+        "eval_bytes": 256,
+        "max_logit_diff": 0.0,
+        "ppl": 4.654155591682168,
+        "predicted_utf8": "here before you enter the ruins.",
+        "quantized_payload_bytes": 128328,
+        "top1_byte_accuracy": 0.73779296875,
+        "train_bytes": 343,
+        "training_seconds": 1.146085500717163,
+        "transfer_ppl_ratio": 1.0
+      },
+      "required_gates": {
+        "bpb_under_3": true,
+        "custom_file_used": true,
+        "generation_equal": true,
+        "generation_printable": true,
+        "int8_quantized": true,
+        "max_logit_diff_exact": true,
+        "payload_compressed": true,
+        "ppl_ratio_exact": true,
+        "top1_accuracy_over_50pct": true,
+        "trained": true,
+        "transfer_exact_status": true
+      },
+      "status": "PASS"
+    },
+    "game_lore": {
+      "failed": [],
+      "metrics": {
+        "bpb": 2.219217347452648,
+        "compression_ratio": 0.25014034431137727,
+        "eval_bytes": 256,
+        "max_logit_diff": 0.0,
+        "ppl": 4.656407590145744,
+        "predicted_utf8": "th the river shrine when the val",
+        "quantized_payload_bytes": 128328,
+        "top1_byte_accuracy": 0.7353515625,
+        "train_bytes": 349,
+        "training_seconds": 1.105518102645874,
+        "transfer_ppl_ratio": 1.0
+      },
+      "required_gates": {
+        "bpb_under_3": true,
+        "custom_file_used": true,
+        "generation_equal": true,
+        "generation_printable": true,
+        "int8_quantized": true,
+        "max_logit_diff_exact": true,
+        "payload_compressed": true,
+        "ppl_ratio_exact": true,
+        "top1_accuracy_over_50pct": true,
+        "trained": true,
+        "transfer_exact_status": true
+      },
+      "status": "PASS"
+    },
+    "game_quest_state": {
+      "failed": [],
+      "metrics": {
+        "bpb": 2.1568370042102463,
+        "compression_ratio": 0.25014034431137727,
+        "eval_bytes": 256,
+        "max_logit_diff": 0.0,
+        "ppl": 4.45936102751851,
+        "predicted_utf8": "re status=rumor source=Child loc",
+        "quantized_payload_bytes": 128328,
+        "top1_byte_accuracy": 0.75146484375,
+        "train_bytes": 285,
+        "training_seconds": 1.2947735786437988,
+        "transfer_ppl_ratio": 1.0
+      },
+      "required_gates": {
+        "bpb_under_3": true,
+        "custom_file_used": true,
+        "generation_equal": true,
+        "generation_printable": true,
+        "int8_quantized": true,
+        "max_logit_diff_exact": true,
+        "payload_compressed": true,
+        "ppl_ratio_exact": true,
+        "top1_accuracy_over_50pct": true,
+        "trained": true,
+        "transfer_exact_status": true
+      },
+      "status": "PASS"
+    },
+    "technical_text": {
+      "failed": [],
+      "metrics": {
+        "bpb": 2.3710874872103056,
+        "compression_ratio": 0.25014034431137727,
+        "eval_bytes": 256,
+        "max_logit_diff": 0.0,
+        "ppl": 5.173309435350189,
+        "predicted_utf8": "eiver logits before promoting tr",
+        "quantized_payload_bytes": 128328,
+        "top1_byte_accuracy": 0.7197265625,
+        "train_bytes": 453,
+        "training_seconds": 1.326847791671753,
+        "transfer_ppl_ratio": 1.0
+      },
+      "required_gates": {
+        "bpb_under_3": true,
+        "custom_file_used": true,
+        "generation_equal": true,
+        "generation_printable": true,
+        "int8_quantized": true,
+        "max_logit_diff_exact": true,
+        "payload_compressed": true,
+        "ppl_ratio_exact": true,
+        "top1_accuracy_over_50pct": true,
+        "trained": true,
+        "transfer_exact_status": true
+      },
+      "status": "PASS"
+    }
+  },
+  "failed_domains": [],
+  "metrics": {
+    "max_transfer_logit_diff": 0.0,
+    "mean_bpb": 2.2414153201821616,
+    "min_top1_byte_accuracy": 0.7197265625
+  },
+  "open_requirements": {
+    "large_external_corpora": false,
+    "matched_transformer_adapter_per_domain": false,
+    "multi_seed_per_domain": false,
+    "task_level_quality_per_domain": false
+  },
+  "required_gates": {
+    "all_domains_pass": true,
+    "all_quality_smoke_gates_pass": true,
+    "all_transfers_exact": true,
+    "four_domains_tested": true
+  },
+  "scope": "Cross-domain portable payload smoke across dialogue, lore, quest/state, and technical text. This tests workflow robustness and exact transfer across varied local text styles. It is not a universal all-corpora dominance claim.",
+  "status": "PASS"
+}

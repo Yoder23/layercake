@@ -27,6 +27,8 @@ def main() -> None:
     parser.add_argument("--batch", type=int, default=8)
     parser.add_argument("--general-bytes", type=int, default=20_000_000)
     parser.add_argument("--domain-bytes", type=int, default=2_000_000)
+    parser.add_argument("--eval-bytes", type=int, default=200_000)
+    parser.add_argument("--domain-eval-bytes", type=int, default=100_000)
     parser.add_argument("--patch-size", type=int, default=4)
     parser.add_argument("--d-byte", type=int, default=48)
     parser.add_argument("--d-model", type=int, default=384)
@@ -43,6 +45,7 @@ def main() -> None:
             "transformer",
             "patch_transformer",
             "window_transformer",
+            "abi_patch_cell",
         ],
         default="gru",
     )
@@ -76,6 +79,16 @@ def main() -> None:
     parser.add_argument("--mtp-depth", type=int, default=0)
     parser.add_argument("--mtp-weight", type=float, default=0.2)
     parser.add_argument("--empirical-transition-head", action="store_true")
+    parser.add_argument("--transition-logit-scale", type=float, default=1.0)
+    parser.add_argument("--context-logit-scale", type=float, default=1.0)
+    parser.add_argument("--trainable-prior-gates", action="store_true")
+    parser.add_argument("--dynamic-prior-gates", action="store_true")
+    parser.add_argument("--prior-dropout", type=float, default=0.0)
+    parser.add_argument("--freeze-transition-head", action="store_true")
+    parser.add_argument("--freeze-context-head", action="store_true")
+    parser.add_argument("--repeat-suppression-window", type=int, default=0)
+    parser.add_argument("--repeat-suppression-scale", type=float, default=0.0)
+    parser.add_argument("--trainable-repeat-suppression", action="store_true")
     parser.add_argument("--patch-unit-buckets", type=int, default=0)
     parser.add_argument("--patch-prediction", action="store_true")
     parser.add_argument("--patch-prediction-weight", type=float, default=0.5)
@@ -155,8 +168,8 @@ def main() -> None:
     domain = load_python_bytes(
         root.parent / "layercakeogwithdecoder", args.domain_bytes
     )
-    general_train, general_eval = general[:-200_000], general[-200_000:]
-    domain_eval = domain[-100_000:]
+    general_train, general_eval = general[:-args.eval_bytes], general[-args.eval_bytes:]
+    domain_eval = domain[-args.domain_eval_bytes:]
     transition_logits = None
     if args.empirical_transition_head:
         transition_ids = general_train[:-1] * 256 + general_train[1:]
@@ -223,6 +236,16 @@ def main() -> None:
         context_buckets=args.context_buckets,
         context_order=args.context_order,
         context_logits=context_logits,
+        transition_logit_scale=args.transition_logit_scale,
+        context_logit_scale=args.context_logit_scale,
+        trainable_prior_gates=args.trainable_prior_gates,
+        dynamic_prior_gates=args.dynamic_prior_gates,
+        prior_dropout=args.prior_dropout,
+        trainable_transition_head=not args.freeze_transition_head,
+        trainable_context_head=not args.freeze_context_head,
+        repeat_suppression_window=args.repeat_suppression_window,
+        repeat_suppression_scale=args.repeat_suppression_scale,
+        trainable_repeat_suppression=args.trainable_repeat_suppression,
         local_position_embeddings=args.local_position_embeddings,
         modern_blocks=args.modern_blocks,
         fused_attention=args.fused_attention,
@@ -417,6 +440,16 @@ def main() -> None:
         "conv_layers": args.conv_layers,
         "mtp_depth": args.mtp_depth,
         "empirical_transition_head": args.empirical_transition_head,
+        "transition_logit_scale": args.transition_logit_scale,
+        "context_logit_scale": args.context_logit_scale,
+        "trainable_prior_gates": args.trainable_prior_gates,
+        "dynamic_prior_gates": args.dynamic_prior_gates,
+        "prior_dropout": args.prior_dropout,
+        "freeze_transition_head": args.freeze_transition_head,
+        "freeze_context_head": args.freeze_context_head,
+        "repeat_suppression_window": args.repeat_suppression_window,
+        "repeat_suppression_scale": args.repeat_suppression_scale,
+        "trainable_repeat_suppression": args.trainable_repeat_suppression,
         "patch_unit_buckets": args.patch_unit_buckets,
         "patch_prediction": args.patch_prediction,
         "patch_prediction_stride": args.patch_prediction_stride,
@@ -479,6 +512,8 @@ def main() -> None:
         "elapsed_seconds": elapsed,
         "estimated_bytes_per_update": args.batch * args.seq,
         "estimated_total_training_bytes": args.steps * args.batch * args.seq,
+        "eval_bytes": args.eval_bytes,
+        "domain_eval_bytes": args.domain_eval_bytes,
         "parameters": sum(p.numel() for p in patch.parameters()),
         "history": history,
         "profile_seconds_total": profile_totals,

@@ -1,0 +1,25 @@
+{
+  "extends": "northstar_v18_supervised_context_copy.json",
+  "name": "northstar_v20_pointer_only_casefold",
+  "description": "Freeze the exact syntax/recurrent decoder and train only contextual copy projections and gate with correctly normalized case-folded copy supervision.",
+  "model": {
+    "patch_generation_lowercase_copy": true
+  },
+  "training": {
+    "seed": 13221,
+    "steps": 68000,
+    "lr": 0.0001,
+    "min_lr": 0.00001,
+    "warmup_steps": 100,
+    "lr_decay_steps": 5900,
+    "lr_step_offset": 62000,
+    "patch_prediction_copy_loss_weight": 1.0,
+    "trainable_parameter_patterns": ["patch_generator.copy_*"],
+    "resume_from": "runs_experiment/northstar_v18_supervised_context_copy/latest.pt",
+    "resume_strict": true,
+    "log_interval": 500,
+    "save_interval": 3000,
+    "eval_seed": 13222,
+    "out_dir": "runs_experiment/northstar_v20_pointer_only_casefold"
+  }
+}

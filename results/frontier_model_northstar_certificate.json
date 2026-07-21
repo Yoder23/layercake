@@ -1,0 +1,60 @@
+{
+  "certificates": {
+    "base_frontier": "results/scale15m_transition_frontier_certificate.json",
+    "cpu_deployment_resources": "results/cpu_deployment_resources_certificate.json",
+    "cross_backend_scorecard": "results/cross_backend_quality_scorecard.json",
+    "cross_domain_adapter_frontier": "results/cross_domain_adapter_frontier_certificate.json",
+    "cross_domain_smoke": "results/cross_domain_smoke_frontier_certificate.json",
+    "dominance_matrix": "results/transformer_dominance_matrix.json",
+    "game_domain_training_workflow": "results/game_domain_training_workflow_certificate.json",
+    "game_ready_mobile_proxy": "results/game_ready_mobile_llm_certificate.json",
+    "many_domain_game_layers": "results/many_domain_game_layers_certificate.json",
+    "receiver_frontier": "results/receiver_frontier_certificate.json"
+  },
+  "claim_boundary": "PASS status means the currently promoted frontier evidence is internally consistent. northstar_claim_status remains OPEN until GPU generation speed, 20M training-time dominance, real mobile/device latency, battery/thermal, native int8, and trained game-domain/task gates pass.",
+  "failed_promoted_gates": [],
+  "key_metrics": {
+    "base_bpb": 2.0382150492670745,
+    "bpe_bpb": 2.049247849357011,
+    "cpu_deployment_artifact_ratio": 0.9600214008417972,
+    "cpu_deployment_peak_rss_ratio": 0.9912663378970238,
+    "cpu_generation_speed_ratio": 2.7757501977059387,
+    "cross_domain_adapter_max_bpb_delta": -0.001899247409140603,
+    "cross_domain_adapter_min_training_speed_ratio": 1.135827301821464,
+    "cross_domain_mean_bpb": 2.2414153201821616,
+    "cross_domain_min_top1_byte_accuracy": 0.7197265625,
+    "game_workflow_domain_bpb": 2.2185194418554466,
+    "game_workflow_top1_byte_accuracy": 0.73779296875,
+    "gpu_bpe_bytes_per_second": 840.159078840958,
+    "gpu_layercake_bytes_per_second": 244.2212110309875,
+    "many_domain_count": 3,
+    "many_domain_max_interference": 0.0,
+    "receiver_cpu_generation_speed_ratio": 1.4696922589993437
+  },
+  "northstar_claim_status": "OPEN",
+  "open_northstar_items": {
+    "battery_or_thermal_measurement": true,
+    "domain_routing_policy_eval": true,
+    "full_corpus_20m_training_time": true,
+    "gpu_generation_speed": true,
+    "isolated_cpu_prefill_microbench": true,
+    "native_int8_runtime": true,
+    "real_mobile_device_latency": true,
+    "task_level_npc_eval": true,
+    "trained_game_dialogue_payload": true,
+    "trained_game_lore_payload": true,
+    "trained_game_quest_state_payload": true
+  },
+  "promoted_gates": {
+    "base_frontier_source_core": true,
+    "cross_backend_promoted_scorecard": true,
+    "cross_domain_adapter_frontier": true,
+    "cross_domain_smoke_transfer_workflow": true,
+    "game_domain_training_deployment_workflow": true,
+    "game_ready_cpu_mobile_proxy": true,
+    "many_domain_install_migration_isolation": true,
+    "receiver_after_transfer": true,
+    "transformer_dominance_matrix_promoted_tiers": true
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,38 @@
+{
+  "name": "xml_fix_bpe_1p3m",
+  "model": {
+    "d_model": 192,
+    "layers": 4,
+    "heads": 6,
+    "ff_mult": 4,
+    "dropout": 0.05
+  },
+  "tokenizer": {
+    "vocab_size": 1024,
+    "model_type": "bpe",
+    "byte_fallback": true
+  },
+  "training": {
+    "data_roots": ["data/xml_fix_domain/train.jsonl"],
+    "eval_data_roots": ["data/xml_fix_domain/eval.jsonl"],
+    "include_suffixes": [".jsonl"],
+    "device": "cuda",
+    "seq_len": 256,
+    "micro_batch_size": 8,
+    "steps": 800,
+    "lr": 0.0008,
+    "min_lr": 0.00008,
+    "warmup_steps": 50,
+    "lr_decay_steps": 800,
+    "weight_decay": 0.01,
+    "betas": [0.9, 0.95],
+    "corpus_bytes": 4000000,
+    "eval_bytes": 65536,
+    "eval_batches": 8,
+    "matmul_precision": "high",
+    "out_dir": "runs_experiment/xml_fix_bpe_1p3m",
+    "metrics_path": "training_metrics.json",
+    "log_interval": 100,
+    "save_optimizer": false
+  }
+}

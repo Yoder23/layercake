@@ -1,0 +1,55 @@
+{
+  "name": "breakthrough_equal_15m_bpe_v4",
+  "description": "Equal-size tokenizer transformer comparator for breakthrough_equal_15m_layercake_v4.",
+  "tokenizer": {
+    "vocab_size": 4096,
+    "model_type": "bpe",
+    "byte_fallback": true
+  },
+  "model": {
+    "d_model": 512,
+    "layers": 3,
+    "heads": 8,
+    "ff_mult": 4,
+    "dropout": 0.05
+  },
+  "training": {
+    "device": "cuda",
+    "seed": 8234,
+    "matmul_precision": "high",
+    "seq_len": 384,
+    "micro_batch_size": 4,
+    "grad_accum_steps": 1,
+    "steps": 4000,
+    "lr": 0.0002,
+    "min_lr": 0.00004,
+    "warmup_steps": 200,
+    "lr_decay_steps": 4000,
+    "weight_decay": 0.01,
+    "log_interval": 200,
+    "save_optimizer": false,
+    "metrics_path": "training_metrics.json",
+    "corpus_bytes": 24000000,
+    "eval_bytes": 1000000,
+    "eval_batches": 32,
+    "read_block_bytes": 1048576,
+    "include_suffixes": [".jsonl", ".json", ".txt", ".md", ".csv"],
+    "data_roots": [
+      "./data/game_domains/ember-road.companion_train_expanded_v1.txt",
+      "./data/game_domains/ember-road.companion_train_expanded_v1.txt",
+      "./data/game_domains/ember-road.companion_train_expanded_v1.txt",
+      "./data/game_domains/ember-road.companion_responses.txt",
+      "./data/game_domains/ember-road.instructions.txt",
+      "./data/game_domains/ember-road.rulebook.repeated.txt",
+      "./data/curriculum/companion_dialogue_curriculum.txt",
+      "./data/curriculum/english_school_curriculum.txt",
+      "../layercakeogwithdecoder/data/v6/redpajama_english_train.jsonl"
+    ],
+    "eval_data_roots": [
+      "./data/game_domains/ember-road.generalization_prompts.json",
+      "./data/game_domains/ember-road.rulebook.json",
+      "../layercakeogwithdecoder/data/v6/redpajama_english_eval.jsonl"
+    ],
+    "out_dir": "runs_experiment/breakthrough_equal_15m_bpe_v4"
+  }
+}

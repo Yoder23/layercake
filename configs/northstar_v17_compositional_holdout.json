@@ -1,0 +1,19 @@
+{
+  "extends": "northstar_v16_role_copy_grounding.json",
+  "name": "northstar_v17_compositional_holdout",
+  "description": "Train the held-out request forms on other XML values and button/position pairs while excluding all 20 exact evaluation combinations, yielding a compositional relevance split.",
+  "training": {
+    "seed": 13191,
+    "steps": 56000,
+    "lr": 0.00005,
+    "min_lr": 0.000005,
+    "warmup_steps": 100,
+    "lr_decay_steps": 3900,
+    "lr_step_offset": 52000,
+    "resume_from": "runs_experiment/northstar_v16_role_copy_grounding/latest.pt",
+    "log_interval": 500,
+    "save_interval": 2000,
+    "eval_seed": 13192,
+    "out_dir": "runs_experiment/northstar_v17_compositional_holdout"
+  }
+}

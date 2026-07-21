@@ -1,0 +1,44 @@
+{
+  "extends": "northstar_v21_semantic_pointer.json",
+  "name": "northstar_v23_shared3_routed_tail",
+  "description": "15M-class migration-compatible LayerCake with a frozen three-layer foundation and five selectable one-layer domain cakes. One domain cake is active and optimizer-resident per homogeneous batch.",
+  "model": {
+    "d_model": 384,
+    "d_abi": 128,
+    "layers": 4,
+    "shared_cake_layers": 3,
+    "local_decoder": "routed_window_transformer",
+    "local_width": 384,
+    "local_layers": 0,
+    "routed_cake_experts": 5,
+    "default_cake_route": 0
+  },
+  "training": {
+    "seed": 13321,
+    "micro_batch_size": 128,
+    "grad_accum_steps": 1,
+    "cake_route": 0,
+    "cake_sparse_optimizer": true,
+    "trainable_parameter_patterns": null,
+    "frozen_parameter_patterns": [
+      "byte_emb.*",
+      "patch_proj.*",
+      "patch_pos.*",
+      "core.0.*",
+      "core.1.*",
+      "core.2.*",
+      "to_abi.*",
+      "from_abi.*",
+      "bos_context",
+      "local_in.*",
+      "local_offsets.*",
+      "local_norm.*",
+      "head.*",
+      "patch_generator.*",
+      "transition_head.*"
+    ],
+    "resume_from": "runs_experiment/northstar_v23_shared3_routed_tail/migrated_v22.pt",
+    "resume_strict": true,
+    "out_dir": "runs_experiment/northstar_v23_shared3_routed_tail"
+  }
+}

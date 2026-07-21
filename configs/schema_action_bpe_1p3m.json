@@ -1,0 +1,41 @@
+{
+  "name": "schema_action_bpe_1p3m_fresh",
+  "model": {
+    "d_model": 160,
+    "dropout": 0.05,
+    "ff_mult": 4,
+    "heads": 4,
+    "layers": 3
+  },
+  "tokenizer": {
+    "byte_fallback": true,
+    "model_type": "bpe",
+    "vocab_size": 1024
+  },
+  "training": {
+    "betas": [0.9, 0.95],
+    "corpus_bytes": 4000000,
+    "data_roots": ["data/schema_action_domain/train.jsonl"],
+    "device": "cuda",
+    "eval_batches": 8,
+    "eval_bytes": 65536,
+    "eval_data_roots": ["data/schema_action_domain/eval.jsonl"],
+    "grad_accum_steps": 1,
+    "include_suffixes": [".jsonl"],
+    "log_interval": 50,
+    "lr": 0.0006,
+    "lr_decay_steps": 600,
+    "matmul_precision": "high",
+    "metrics_path": "training_metrics.json",
+    "micro_batch_size": 8,
+    "min_lr": 0.00008,
+    "out_dir": "runs_experiment/schema_action_bpe_1p3m",
+    "read_block_bytes": 1048576,
+    "save_optimizer": false,
+    "seed": 2202,
+    "seq_len": 256,
+    "steps": 600,
+    "warmup_steps": 30,
+    "weight_decay": 0.01
+  }
+}

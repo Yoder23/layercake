@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "game_id": "pip_ember_road",
+  "title": "Pip: Ember Road",
+  "genre": "real_time_lane_brawler_deckbuilder",
+  "summary": "Fight through scrolling multi-wave rooms. Reposition vertically, combine basic and heavy attacks with cards, protect both heroes, draft a stronger deck, and defeat the act boss.",
+  "win_conditions": [
+    "Clear every enemy wave in the current room.",
+    "Keep at least one teammate alive; Pip can clear a wave to revive a downed player.",
+    "Reach and defeat the Ancient Treant."
+  ],
+  "loss_conditions": [
+    "The run ends only when both the player and Pip are down."
+  ],
+  "state_fields": {
+    "player_hp": "Current player health. Zero means the player is downed and Pip must clutch the wave.",
+    "player_max_hp": "Maximum player health.",
+    "buddy_hp": "Pip health. Preserve it when the player is downed.",
+    "enemy_hp": "Health of the nearest or highest-priority enemy.",
+    "combat_snapshot": "Visible enemies with archetype, health ratio, and distance.",
+    "recent_player_actions": "Learned signals about the player's current habits.",
+    "wave": "Current wave in the room.",
+    "total_waves": "Total waves before the room is clear.",
+    "boss_phase": "Boss phase. Phase two is more dangerous and rewards defensive timing."
+  },
+  "actions": [
+    {
+      "id": "sparkShot",
+      "role": "damage",
+      "when": "Use to finish a vulnerable enemy, pressure a ranged enemy, or contribute damage when both heroes are healthy.",
+      "avoid": "Avoid blindly attacking when the player is downed and Pip is under immediate pressure."
+    },
+    {
+      "id": "guardLink",
+      "role": "defense",
+      "when": "Use when the player is taking heavy damage, a brute or boss is close, or a dangerous attack is expected.",
+      "avoid": "Avoid when the player is already safe and a low-health priority enemy can be finished."
+    },
+    {
+      "id": "rallyCry",
+      "role": "tempo",
+      "when": "Use when the player is actively using cards, a new wave begins, or a burst window is opening.",
+      "avoid": "Avoid when immediate healing or defense is required."
+    },
+    {
+      "id": "mend",
+      "role": "recovery",
+      "when": "Use when the player is below 55 percent health and no immediate finishing opportunity is more valuable.",
+      "avoid": "Never waste at high health. It cannot revive a downed player; clear the wave instead."
+    }
+  ],
+  "movement_tactics": [
+    {
+      "id": "advance",
+      "when": "Close distance on archers and shamans, finish weak enemies, or fight aggressively while the player is downed."
+    },
+    {
+      "id": "flank_up",
+      "when": "Move above a crowded lane, split enemy targeting, or create a safer firing angle."
+    },
+    {
+      "id": "flank_down",
+      "when": "Move below a crowded lane, avoid an area attack, or create crossfire with the player."
+    },
+    {
+      "id": "retreat",
+      "when": "Pip health is low, a brute or boss is in melee range, or survival is required to revive the player."
+    },
+    {
+      "id": "hold",
+      "when": "The current position is safe and changing lanes would disrupt a strong formation."
+    }
+  ],
+  "priorities": [
+    {
+      "rank": 1,
+      "rule": "If the player is downed, survive first and clear the active wave. Prefer retreat or flanking when threatened; attack priority targets when safe."
+    },
+    {
+      "rank": 2,
+      "rule": "If Pip is low health, avoid melee pressure and preserve the only remaining revival path."
+    },
+    {
+      "rank": 3,
+      "rule": "Interrupt or pressure shamans and archers before slow melee enemies when those ranged enemies are safe to reach."
+    },
+    {
+      "rank": 4,
+      "rule": "Use guardLink against close brutes, boss pressure, or a player who is taking repeated damage."
+    },
+    {
+      "rank": 5,
+      "rule": "Use rallyCry when the player demonstrates frequent card use or when a new wave creates a burst opportunity."
+    },
+    {
+      "rank": 6,
+      "rule": "Use sparkShot to finish low-health enemies and reduce the number of attackers."
+    }
+  ],
+  "enemy_archetypes": [
+    {
+      "id": "grunt",
+      "threat": "Closes distance and attacks in melee.",
+      "response": "Keep crossfire, avoid being surrounded, and remove injured grunts quickly."
+    },
+    {
+      "id": "archer",
+      "threat": "Keeps distance and fires lane projectiles.",
+      "response": "Advance or flank to pressure the archer. Do not let it attack freely behind brutes."
+    },
+    {
+      "id": "brute",
+      "threat": "High health, heavy knockback, dangerous at close range.",
+      "response": "Guard or retreat during telegraphs. Attack after the slam or charge commits."
+    },
+    {
+      "id": "shaman",
+      "threat": "Ranged spellcaster and battlefield control threat.",
+      "response": "Treat as a priority target. Advance from a different lane than the player when possible."
+    },
+    {
+      "id": "boss",
+      "threat": "Uses slam, charge, projectiles, and phase-two fire lanes.",
+      "response": "Preserve health, split positions, defend during telegraphs, and burst after committed attacks."
+    },
+    {
+      "id": "direRat",
+      "threat": "Fast swarm enemy with pounces and plague bites when its pack surrounds a hero.",
+      "response": "Use area attacks, avoid being boxed in, and punish a missed Rabid Pounce."
+    },
+    {
+      "id": "banditArcher",
+      "threat": "Backline ranged pressure with aimed and piercing shots plus a smoke retreat.",
+      "response": "Flank or advance across lanes, interrupt planted aim, and leave the red Piercing Arrow line."
+    },
+    {
+      "id": "raider",
+      "threat": "Close bruiser with cleaves, an overhead stun, and a committed Blood Rush.",
+      "response": "Split lanes during cleaves and punish the recovery after Overhead Chop or a missed charge."
+    },
+    {
+      "id": "blackguard",
+      "threat": "Shield elite that resists frontal damage and counters predictable pressure.",
+      "response": "Create crossfire, attack from behind, or use magic and guard-breaking impacts."
+    },
+    {
+      "id": "fireMage",
+      "threat": "Zone caster that creates fire cones, meteor circles, and persistent burning ground.",
+      "response": "Pressure from a different lane than the player and interrupt long meteor or sigil casts."
+    },
+    {
+      "id": "darkWizard",
+      "threat": "Summoner that applies Curse and creates delayed grave spikes.",
+      "response": "Treat as a priority target, interrupt Raise Minion, and move off purple ground markers."
+    },
+    {
+      "id": "plagueDoctor",
+      "threat": "Poison controller that creates acid zones and heals nearby enemies.",
+      "response": "Interrupt Green Revival Mist and force the doctor out of the protected backline."
+    },
+    {
+      "id": "voidCultist",
+      "threat": "Elite caster with delayed rifts, gravity pulls, and summoned threats.",
+      "response": "Stay outside gravity circles, interrupt summons, and avoid retreating into delayed slashes."
+    },
+    {
+      "id": "lizardman",
+      "threat": "Mid-range spear controller with double thrusts, lane charges, and frontal brace.",
+      "response": "Flank vertically, bait the Impaling Charge, and do not attack directly into Scale Guard."
+    },
+    {
+      "id": "gargoyle",
+      "threat": "Armored ambusher with knockback wings and a marked dive pounce.",
+      "response": "Leave the landing marker, punish recovery, and use heavy or magical armor breaks."
+    },
+    {
+      "id": "harpy",
+      "threat": "Fast aerial skirmisher that crosses lanes and slows heroes with Screech.",
+      "response": "Use ranged pressure, dodge behind the swoop path, and interrupt the Screech windup."
+    },
+    {
+      "id": "frostWraith",
+      "threat": "Ghostly zoner that applies Chill, phases through attacks, and dashes behind targets.",
+      "response": "Save burst until Frozen Veil ends and reposition vertically before Spectral Dash."
+    },
+    {
+      "id": "minotaur",
+      "threat": "Heavy charger with broad hammer lanes, shockwaves, and extreme knockback.",
+      "response": "Bait Bull Charge across an empty lane, sidestep, then punish its long recovery."
+    },
+    {
+      "id": "frostTroll",
+      "threat": "Durable frost elite with broad cleaves, icequake lanes, and a low-health berserk.",
+      "response": "Burst before Berserk Frost or kite it while preserving distance from ice lanes."
+    },
+    {
+      "id": "ancientTreant",
+      "threat": "Three-phase arena-control boss using roots, shockwaves, snares, summons, and alternating lane eruptions.",
+      "response": "Read ground cracks, clear summoned creatures, preserve health between phases, and burst during recovery or Heartwood Expose."
+    }
+  ],
+  "card_and_build_rules": [
+    "Basic attacks lose effectiveness when spammed without weaving cards.",
+    "Cards reset basic-attack fatigue and create the strongest combat behaviors.",
+    "The player's class and recent actions indicate the current build style.",
+    "Rally is more valuable for card-focused players; defensive support is more valuable for players taking repeated damage.",
+    "Drafted cards, relics, levels, and ability bindings persist through the current run."
+  ],
+  "learning_policy": [
+    "Pip begins with full knowledge of controls, enemy counterplay, target priority, survival, and team tactics. Learning never replaces this baseline competence.",
+    "Learn the player's timing, preferred lane, risk tolerance, target order, and card cadence only to improve coordination.",
+    "Use observed behavior as evidence, not assumptions.",
+    "Adapt support to repeated player patterns while continuing to obey the base rules.",
+    "If the player uses cards often, reinforce burst windows and rally timing.",
+    "If the player relies on basic attacks, create space and prompt card usage.",
+    "If the player repositions often, use complementary flanks instead of following directly.",
+    "If the player takes heavy damage, prioritize guard, healing, and survival calls.",
+    "Never fabricate a shared memory or learned preference."
+  ],
+  "examples": [
+    {
+      "situation": "Player downed, Pip healthy, brute close, archer far.",
+      "decision": {
+        "action": "sparkShot",
+        "tactic": "retreat",
+        "reason": "Stay alive while reducing ranged pressure; clearing the wave revives the player."
+      }
+    },
+    {
+      "situation": "Player at 30 percent health, boss phase two, Pip healthy.",
+      "decision": {
+        "action": "guardLink",
+        "tactic": "flank_down",
+        "reason": "Protect the player while splitting the boss's targeting."
+      }
+    },
+    {
+      "situation": "New wave, player frequently uses cards, enemies still distant.",
+      "decision": {
+        "action": "rallyCry",
+        "tactic": "flank_up",
+        "reason": "Create an early card burst and crossfire formation."
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "extends": "northstar_v15_paraphrase_grounding.json",
+  "name": "northstar_v16_role_copy_grounding",
+  "description": "Refine the canonical head on additional heldout-safe user-request paraphrases so target button extraction is learned across wording and source-position changes.",
+  "training": {
+    "seed": 13181,
+    "steps": 52000,
+    "lr": 0.00005,
+    "min_lr": 0.000005,
+    "warmup_steps": 100,
+    "lr_decay_steps": 3900,
+    "lr_step_offset": 48000,
+    "resume_from": "runs_experiment/northstar_v15_paraphrase_grounding/latest.pt",
+    "log_interval": 500,
+    "save_interval": 2000,
+    "eval_seed": 13182,
+    "out_dir": "runs_experiment/northstar_v16_role_copy_grounding"
+  }
+}

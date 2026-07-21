@@ -1,0 +1,104 @@
+{
+  "claim_boundary": "The v22 release proves bounded quality, generation speed, deployment, and transfer gates. It does not prove faster full-core training.",
+  "evidence": {
+    "favorable_lower_bound": {
+      "bytes": 22814,
+      "path": "results/breakthrough_equal/northstar_v22_training_speed_favorable_lower_bound.json",
+      "sha256": "8e35869f68e048fc0a495a7ac9b631fcaa4990fa3b16ef9c56691873cb18256f"
+    },
+    "historical_time_to_quality": {
+      "bytes": 2925,
+      "path": "results/breakthrough_equal/measured_equal_size_dominance_transprior_certificate.json",
+      "sha256": "fa11733dd7ab7ac27b263def2364446f481b078a0e7b55ce55c68c2a3dc26ebb"
+    },
+    "recipe": {
+      "bytes": 22900,
+      "path": "results/breakthrough_equal/northstar_v22_training_speed_recipe.json",
+      "sha256": "fecb68b9afe5a4898c8a15acf44a563fef8371436f750cd09206237d8088d86e"
+    }
+  },
+  "failed_measurement_integrity": [],
+  "failed_training_northstar": [
+    "recipe_cpu_minimum_at_least_5x",
+    "recipe_gpu_minimum_at_least_5x",
+    "favorable_lower_bound_cpu_minimum_at_least_5x",
+    "favorable_lower_bound_gpu_minimum_at_least_5x",
+    "historical_equal_quality_time_to_quality_at_least_5x"
+  ],
+  "measurement_integrity_gates": {
+    "historical_equal_size_certificate_passed": true,
+    "historical_quality_was_matched": true,
+    "lower_bound_benchmark_schema": true,
+    "lower_bound_cpu_and_cuda_present": true,
+    "lower_bound_cpu_finite_baseline_losses": true,
+    "lower_bound_cpu_finite_losses": true,
+    "lower_bound_cpu_hardware_recorded": true,
+    "lower_bound_cpu_logical_batch_matched": true,
+    "lower_bound_cpu_median_recomputed": true,
+    "lower_bound_cpu_minimum_recomputed": true,
+    "lower_bound_cpu_parameters_matched": true,
+    "lower_bound_cpu_repeat_ratios_recomputed": true,
+    "lower_bound_cuda_finite_baseline_losses": true,
+    "lower_bound_cuda_finite_losses": true,
+    "lower_bound_cuda_hardware_recorded": true,
+    "lower_bound_cuda_logical_batch_matched": true,
+    "lower_bound_cuda_median_recomputed": true,
+    "lower_bound_cuda_minimum_recomputed": true,
+    "lower_bound_cuda_parameters_matched": true,
+    "lower_bound_cuda_repeat_ratios_recomputed": true,
+    "lower_bound_expected_layercake_mode": true,
+    "lower_bound_positive_measurement_window": true,
+    "lower_bound_three_repeats": true,
+    "recipe_benchmark_schema": true,
+    "recipe_cpu_and_cuda_present": true,
+    "recipe_cpu_finite_baseline_losses": true,
+    "recipe_cpu_finite_losses": true,
+    "recipe_cpu_hardware_recorded": true,
+    "recipe_cpu_logical_batch_matched": true,
+    "recipe_cpu_median_recomputed": true,
+    "recipe_cpu_minimum_recomputed": true,
+    "recipe_cpu_parameters_matched": true,
+    "recipe_cpu_repeat_ratios_recomputed": true,
+    "recipe_cuda_finite_baseline_losses": true,
+    "recipe_cuda_finite_losses": true,
+    "recipe_cuda_hardware_recorded": true,
+    "recipe_cuda_logical_batch_matched": true,
+    "recipe_cuda_median_recomputed": true,
+    "recipe_cuda_minimum_recomputed": true,
+    "recipe_cuda_parameters_matched": true,
+    "recipe_cuda_repeat_ratios_recomputed": true,
+    "recipe_expected_layercake_mode": true,
+    "recipe_positive_measurement_window": true,
+    "recipe_three_repeats": true
+  },
+  "measurement_status": "PASS",
+  "metrics": {
+    "favorable_lower_bound": {
+      "cpu_median_throughput_ratio": 0.7500367956664246,
+      "cpu_minimum_throughput_ratio": 0.7134458160390349,
+      "gpu_median_throughput_ratio": 1.0103251996509985,
+      "gpu_minimum_throughput_ratio": 0.9808556949421353,
+      "gpu_peak_memory_ratio_transformer_over_layercake": 0.7987215749509314,
+      "tensor_state_ratio_transformer_over_layercake": 1.0192861190423586
+    },
+    "historical_equal_quality_time_to_quality_ratio": 1.1073306959367206,
+    "recipe": {
+      "cpu_median_throughput_ratio": 0.7219387554034304,
+      "cpu_minimum_throughput_ratio": 0.7084844888222587,
+      "gpu_median_throughput_ratio": 1.044966346617519,
+      "gpu_minimum_throughput_ratio": 0.9713237971324291,
+      "gpu_peak_memory_ratio_transformer_over_layercake": 0.7700021422263067,
+      "tensor_state_ratio_transformer_over_layercake": 1.0149896215735494
+    }
+  },
+  "required_architecture_change": "A 5x dense full-core result cannot come from the current optimizer path, whose active parameters and optimizer state are nearly the same size as the transformer. It requires a quality-validated sparse/conditional update path, materially fewer active parameters, or at least 5x time-to-quality data efficiency under a locked convergence protocol.",
+  "schema_version": 1,
+  "training_northstar_gates": {
+    "favorable_lower_bound_cpu_minimum_at_least_5x": false,
+    "favorable_lower_bound_gpu_minimum_at_least_5x": false,
+    "historical_equal_quality_time_to_quality_at_least_5x": false,
+    "recipe_cpu_minimum_at_least_5x": false,
+    "recipe_gpu_minimum_at_least_5x": false
+  },
+  "training_northstar_status": "OPEN"
+}

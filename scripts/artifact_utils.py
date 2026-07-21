@@ -9,6 +9,19 @@ from layercake.input_interfaces import InputInterfaceSpec
 
 
 def build_models(artifact: dict, device: torch.device):
+    if "model_config" in artifact and "model" in artifact:
+        config = artifact["model_config"]
+        byte = CausalByteLM(
+            d_model=config.get("d_model", 128),
+            d_abi=config.get("d_abi", 64),
+            layers=config.get("layers", 3),
+            heads=config.get("heads", 4),
+            max_len=config.get("max_patches", 128) * config.get("patch_size", 4),
+        ).to(device)
+        patch = CausalBytePatchLM(**config).to(device)
+        patch.load_state_dict(artifact["model"], strict=True)
+        return byte, patch
+
     args = artifact["args"]
     byte = CausalByteLM(
         d_model=args.get("d_model", 128), d_abi=args.get("d_abi", 64),

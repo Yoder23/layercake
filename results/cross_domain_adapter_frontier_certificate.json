@@ -1,0 +1,122 @@
+{
+  "domains": {
+    "game_dialogue": {
+      "failed": [],
+      "metrics": {
+        "adapter_domain_bpb": 2.561194630505376,
+        "adapter_payload_bytes": 383008,
+        "adapter_training_seconds": 0.9177298545837402,
+        "domain_bpb_delta": -0.37855145755051467,
+        "layercake_domain_bpb": 2.182643172954861,
+        "layercake_payload_bytes": 128328,
+        "layercake_training_seconds": 0.5937340259552002,
+        "payload_ratio": 0.33505305372211547,
+        "training_speed_ratio_adapter_over_layercake": 1.5456918661639698,
+        "transfer_max_logit_diff": 0.0,
+        "transfer_ppl_ratio": 1.0
+      },
+      "required_gates": {
+        "adapter_had_same_domain_file": true,
+        "adapter_trained": true,
+        "layercake_faster_domain_training": true,
+        "layercake_lower_domain_bpb": true,
+        "layercake_smaller_payload": true,
+        "layercake_transfer_exact": true
+      },
+      "status": "PASS"
+    },
+    "game_lore": {
+      "failed": [],
+      "metrics": {
+        "adapter_domain_bpb": 2.2211165948617886,
+        "adapter_payload_bytes": 383008,
+        "adapter_training_seconds": 1.6243174076080322,
+        "domain_bpb_delta": -0.001899247409140603,
+        "layercake_domain_bpb": 2.219217347452648,
+        "layercake_payload_bytes": 128328,
+        "layercake_training_seconds": 1.105518102645874,
+        "payload_ratio": 0.33505305372211547,
+        "training_speed_ratio_adapter_over_layercake": 1.4692816008353895,
+        "transfer_max_logit_diff": 0.0,
+        "transfer_ppl_ratio": 1.0
+      },
+      "required_gates": {
+        "adapter_had_same_domain_file": true,
+        "adapter_trained": true,
+        "layercake_faster_domain_training": true,
+        "layercake_lower_domain_bpb": true,
+        "layercake_smaller_payload": true,
+        "layercake_transfer_exact": true
+      },
+      "status": "PASS"
+    },
+    "game_quest_state": {
+      "failed": [],
+      "metrics": {
+        "adapter_domain_bpb": 3.4074789731978194,
+        "adapter_payload_bytes": 383008,
+        "adapter_training_seconds": 1.6289353370666504,
+        "domain_bpb_delta": -1.2506419689875732,
+        "layercake_domain_bpb": 2.1568370042102463,
+        "layercake_payload_bytes": 128328,
+        "layercake_training_seconds": 1.2947735786437988,
+        "payload_ratio": 0.33505305372211547,
+        "training_speed_ratio_adapter_over_layercake": 1.258085092200342,
+        "transfer_max_logit_diff": 0.0,
+        "transfer_ppl_ratio": 1.0
+      },
+      "required_gates": {
+        "adapter_had_same_domain_file": true,
+        "adapter_trained": true,
+        "layercake_faster_domain_training": true,
+        "layercake_lower_domain_bpb": true,
+        "layercake_smaller_payload": true,
+        "layercake_transfer_exact": true
+      },
+      "status": "PASS"
+    },
+    "technical_text": {
+      "failed": [],
+      "metrics": {
+        "adapter_domain_bpb": 2.3312130355104137,
+        "adapter_payload_bytes": 383008,
+        "adapter_training_seconds": 1.674131155014038,
+        "domain_bpb_delta": -0.07529906191256464,
+        "layercake_domain_bpb": 2.255913973597849,
+        "layercake_payload_bytes": 128328,
+        "layercake_training_seconds": 1.473931074142456,
+        "payload_ratio": 0.33505305372211547,
+        "training_speed_ratio_adapter_over_layercake": 1.135827301821464,
+        "transfer_max_logit_diff": 0.0,
+        "transfer_ppl_ratio": 1.0
+      },
+      "required_gates": {
+        "adapter_had_same_domain_file": true,
+        "adapter_trained": true,
+        "layercake_faster_domain_training": true,
+        "layercake_lower_domain_bpb": true,
+        "layercake_smaller_payload": true,
+        "layercake_transfer_exact": true
+      },
+      "status": "PASS"
+    }
+  },
+  "failed_domains": [],
+  "metrics": {
+    "max_domain_bpb_delta": -0.001899247409140603,
+    "max_payload_ratio": 0.33505305372211547,
+    "min_training_speed_ratio_adapter_over_layercake": 1.135827301821464
+  },
+  "open_requirements": {
+    "large_external_corpora": false,
+    "multi_seed_per_domain": false,
+    "real_mobile_adapter_runtime_per_domain": false,
+    "task_level_quality_per_domain": false
+  },
+  "required_gates": {
+    "all_domains_beat_adapter": true,
+    "four_domains_tested": true
+  },
+  "scope": "Cross-domain smoke comparison against matched BPE residual adapters. Each LayerCake portable payload must beat the adapter on domain BPB, training seconds, payload size, and exact source/receiver transfer. This is a small-fixture smoke gate, not a large external-corpus claim.",
+  "status": "PASS"
+}

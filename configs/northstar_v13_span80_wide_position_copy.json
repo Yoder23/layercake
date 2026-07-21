@@ -1,0 +1,27 @@
+{
+  "extends": "northstar_v10_span80_prompt_boundary.json",
+  "name": "northstar_v13_span80_wide_position_copy",
+  "description": "Higher-capacity local-only decoder with relative source-position and previous-byte copy keys. The frozen 14.72M-parameter global core is loaded shape-exactly while the sub-million-parameter deployment head is reinitialized and trained at the Answer boundary.",
+  "model": {
+    "patch_generation_width": 256,
+    "patch_generation_position_copy": true,
+    "patch_prediction_rollout_training": false,
+    "patch_prediction_rollout_mix": 0.0
+  },
+  "training": {
+    "seed": 13151,
+    "steps": 34000,
+    "lr": 0.0002,
+    "min_lr": 0.00002,
+    "warmup_steps": 200,
+    "lr_decay_steps": 9800,
+    "lr_step_offset": 24000,
+    "resume_from": "runs_experiment/northstar_v10_span80_prompt_boundary/latest.pt",
+    "resume_strict": false,
+    "resume_ignore_shape_mismatch": true,
+    "log_interval": 500,
+    "save_interval": 5000,
+    "eval_seed": 13152,
+    "out_dir": "runs_experiment/northstar_v13_span80_wide_position_copy"
+  }
+}

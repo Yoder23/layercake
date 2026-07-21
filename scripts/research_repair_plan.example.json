@@ -1,0 +1,50 @@
+{
+  "scale20": [
+    "python scripts/verify_scale20m_frontier.py"
+  ],
+  "scale24": [
+    "python scripts/verify_scale_candidate.py --metrics results/scale24m_layercake_seed7001.json --baseline results/scale24m_bpe_seed7001.json --transfer results/northstar_lossless_domain_seed6263_to_5m_int8.json --output results/certificates/scale24m_layercake_seed7001_certificate.json"
+  ],
+  "scale25": [
+    "python scripts/verify_scale_candidate.py --metrics results/scale25m_layercake_4x4_seed7002.json --baseline results/scale26m_bpe512_seed6250.json --transfer results/scale26m_lossless_domain_to_5m_int8.json --output results/certificates/scale25m_layercake_4x4_seed7002_certificate.json"
+  ],
+  "medium": [
+    "python ../layercakeogwithdecoder/FAIR_SCALING_EXPERIMENT.py --scale 48M --steps 20000 --device cuda --train-data ../layercakeogwithdecoder/data/tokens/c4_train_8_6B_CLEAN.npy --val-data ../layercakeogwithdecoder/data/tokens/val_ids_10M.npy --train-bytes 100000000"
+  ],
+  "large150": [
+    "python ../layercakeogwithdecoder/FAIR_SCALING_EXPERIMENT.py --scale 150M --steps 20000 --device cuda --train-data ../layercakeogwithdecoder/data/tokens/c4_train_8_6B_CLEAN.npy --val-data ../layercakeogwithdecoder/data/tokens/val_ids_10M.npy --train-bytes 100000000"
+  ],
+  "large350": [
+    "python ../layercakeogwithdecoder/FAIR_SCALING_EXPERIMENT.py --scale 350M --steps 20000 --device cuda --train-data ../layercakeogwithdecoder/data/tokens/c4_train_8_6B_CLEAN.npy --val-data ../layercakeogwithdecoder/data/tokens/val_ids_10M.npy --train-bytes 100000000"
+  ],
+  "platform_cpu_quality": [
+    "python scripts/benchmark_generation_quality.py --layercake runs_experiment/scale15m_transition_lw280_2300_noprofile.pt --bpe runs_experiment/scale15m_bpe_matched.pt --device cpu --cpu-threads 1 --new-bytes 128 --no-repeat-ngram 8 --output results/dominance/cpu_generation_quality_refresh.json"
+  ],
+  "platform_cpu_training": [
+    "python scripts/benchmark_training_cost.py --output results/training_cost_static_v2.json"
+  ],
+  "platform_cpu_generation": [
+    "python scripts/benchmark_generation.py --layercake runs_experiment/scale15m_transition_lw280_2300_noprofile.pt --bpe runs_experiment/scale15m_bpe_matched.pt --device cpu --cpu-threads 1 --layercake-mode stateful_cached --new-bytes 64 --output results/dominance/cpu_generation_refresh.json"
+  ],
+  "platform_cpu_prefill": [
+    "python scripts/benchmark_cpu_deployment_resources.py --layercake runs_experiment/scale15m_transition_lw280_2300_noprofile.pt --bpe runs_experiment/scale15m_bpe_matched.pt --repeats 7 --output results/cpu_deployment_resources_certificate.json"
+  ],
+  "platform_memory": [
+    "python scripts/benchmark_cpu_deployment_resources.py --layercake runs_experiment/scale15m_transition_lw280_2300_noprofile.pt --bpe runs_experiment/scale15m_bpe_matched.pt --repeats 7 --output results/cpu_deployment_resources_certificate.json"
+  ],
+  "platform_mobile": [
+    "python scripts/benchmark_cpu_mobile_proxy.py"
+  ],
+  "platform_gpu_generation": [
+    "python scripts/benchmark_generation.py --layercake runs_experiment/scale15m_transition_lw280_2300_noprofile.pt --bpe runs_experiment/scale15m_bpe_matched.pt --device cuda --layercake-mode stateful_cached --new-bytes 64 --output results/dominance/gpu_generation_refresh.json"
+  ],
+  "platform_gpu_prefill": [
+    "python scripts/benchmark_generation.py --layercake runs_experiment/scale15m_transition_lw280_2300_noprofile.pt --bpe runs_experiment/scale15m_bpe_matched.pt --device cuda --layercake-mode stateful_cached --new-bytes 32 --output results/dominance/gpu_prefill_refresh.json"
+  ],
+  "platform_mobile_real_device": [
+    "python scripts/benchmark_portable_domain_mobile.py --decoder runs_experiment/portable_python_gru148k_int8_v1.pt --device cpu --threads 1 --output results/portable_domain_mobile_cpu_int8.json"
+  ],
+  "transfer": [
+    "python scripts/eval_transfer_matrix.py --output results/transfer_matrix_v2.json"
+  ]
+}

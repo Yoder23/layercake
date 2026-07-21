@@ -1,0 +1,59 @@
+{
+  "extends": "northstar_v6_patch4_grounded_mix_bpe.json",
+  "name": "northstar_v22_fair_corrected_bpe",
+  "description": "Strict continuation of the equal-size BPE transformer on the corrected heldout-safe contract. Fixed-byte mixing gives the baseline its declared exposure; 75% task data and 25% language replay provide at least the Layercake decoder lineage's corrected-task byte budget while preserving general-language quality.",
+  "training": {
+    "seed": 13240,
+    "micro_batch_size": 16,
+    "grad_accum_steps": 1,
+    "steps": 9000,
+    "lr": 0.00012,
+    "min_lr": 0.000012,
+    "warmup_steps": 200,
+    "lr_decay_steps": 6800,
+    "lr_step_offset": 2000,
+    "resume_from": "runs_experiment/northstar_v6_patch4_grounded_mix_bpe/latest.pt",
+    "resume_step": 2000,
+    "resume_strict": true,
+    "resume_optimizer": false,
+    "resume_cumulative_train_bytes": 10383220.665831348,
+    "log_interval": 100,
+    "save_interval": 1000,
+    "save_optimizer": false,
+    "corpus_bytes": 24000000,
+    "eval_bytes": 1000000,
+    "eval_batches": 32,
+    "mix_block_bytes": 16384,
+    "data_mix": [
+      {
+        "name": "lm_replay",
+        "weight": 0.25,
+        "include_suffixes": [".jsonl", ".json", ".txt", ".md", ".csv"],
+        "data_roots": [
+          "./data/game_domains/ember-road.companion_train_expanded_v1.txt",
+          "./data/game_domains/ember-road.companion_responses.txt",
+          "./data/game_domains/ember-road.instructions.txt",
+          "./data/game_domains/ember-road.rulebook.repeated.txt",
+          "./data/curriculum/companion_dialogue_curriculum.txt",
+          "./data/curriculum/english_school_curriculum.txt",
+          "../layercakeogwithdecoder/data/v6/redpajama_english_train.jsonl"
+        ]
+      },
+      {
+        "name": "question_relevance",
+        "weight": 0.28125,
+        "include_suffixes": [".jsonl"],
+        "row_preserve_jsonl_examples": true,
+        "data_roots": ["data/question_relevance/question_relevance_train.jsonl"]
+      },
+      {
+        "name": "schema_action_grounding",
+        "weight": 0.46875,
+        "include_suffixes": [".jsonl"],
+        "row_preserve_jsonl_examples": true,
+        "data_roots": ["data/schema_action_domain/train.jsonl"]
+      }
+    ],
+    "out_dir": "runs_experiment/northstar_v22_fair_corrected_bpe"
+  }
+}

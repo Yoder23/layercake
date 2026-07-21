@@ -1,0 +1,2081 @@
+{
+  "benchmark_mode": "fair_neural",
+  "checkpoint_parameters": {
+    "layercake": 15190449,
+    "ratio_layercake_over_transformer": 1.0160259137140581,
+    "transformer": 14950848
+  },
+  "cpu_threads": 1,
+  "deployment_artifact_bytes": {
+    "layercake": 60937089,
+    "ratio_layercake_over_transformer": 1.0110607431472267,
+    "transformer": 60270453
+  },
+  "device": "cpu",
+  "dynamic_int8": false,
+  "dynamic_int8_engine": null,
+  "dynamic_int8_module_types": [],
+  "environment": {
+    "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+    "cuda_available": true,
+    "device_type": "cpu",
+    "gpu": null,
+    "gpu_compute_capability": null,
+    "gpu_total_memory_bytes": null,
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.10.0",
+    "torch": "2.7.1+cu118",
+    "torch_cuda": "11.8"
+  },
+  "layercake_cuda_graph_runtime": null,
+  "layercake_deployment_scope": "full checkpoint",
+  "layercake_direct_domain_cache": false,
+  "layercake_neural_mode": "patch",
+  "layercake_structured_schema_head": false,
+  "max_new_bytes": 128,
+  "no_repeat_ngram": 0,
+  "repeats": 3,
+  "scope": "Fresh schema/action benchmark: train LayerCake and BPE transformer on the same generated XML/JSON/app-edit corpus, then ask seen and held-out task questions. Quality is parsed JSON exactness and character similarity, not a flat rubric score.",
+  "splits": {
+    "heldout": {
+      "samples": [
+        {
+          "expected": "{\"attrs\":{\"id\":\"000\"},\"tag\":\"item\",\"text\":\"ok\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 3968.555809374423,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"000\"},\"tag\":\"item\",\"text\":\"ok\"}",
+            "latency_per_answer_seconds": 0.020158466667150304,
+            "max_repeat_8gram": 4,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "000"
+              },
+              "tag": "item",
+              "text": "ok"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"000\"},\"tag\":\"item\",\"text\":\"ok\"}}ok\"}}}ok\"}}}ok\"}}}ok\"}}}anc\":\"00",
+            "seconds": 0.020158466667150304,
+            "timing_trials": [
+              0.022756000005756505,
+              0.01838359999965178,
+              0.019335799996042624
+            ]
+          },
+          "name": "heldout_xml_0000",
+          "prompt": "Question: Convert XML node <item id=\"000\">ok</item> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 22.379640351171737,
+          "transformer": {
+            "bytes_per_second": 177.3288465364744,
+            "char_similarity": 0.9787234042553191,
+            "edit_distance": 1,
+            "estimated_generated_calls": null,
+            "exact_json_match": false,
+            "extracted_json": "{\"attrs\":{\"id\":\"00\"},\"tag\":\"item\",\"text\":\"ok\"}",
+            "latency_per_answer_seconds": 0.2650442999996206,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "00"
+              },
+              "tag": "item",
+              "text": "ok"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"00\"},\"tag\":\"item\",\"text\":\"ok\"}",
+            "seconds": 0.2650442999996206,
+            "timing_trials": [
+              0.2628194999997504,
+              0.2591718999974546,
+              0.2731415000016568
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"role\":\"013\"},\"tag\":\"item\",\"text\":\"email\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 4147.613566883556,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"role\":\"013\"},\"tag\":\"item\",\"text\":\"email\"}",
+            "latency_per_answer_seconds": 0.01928819999981594,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "role": "013"
+              },
+              "tag": "item",
+              "text": "email"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"role\":\"013\"},\"tag\":\"item\",\"text\":\"email\"}}}anc\":\"toxex\"}}aes\"}}}anc\":",
+            "seconds": 0.01928819999981594,
+            "timing_trials": [
+              0.02038850000099046,
+              0.018658599998161662,
+              0.018817500000295695
+            ]
+          },
+          "name": "heldout_xml_0011",
+          "prompt": "Question: Convert XML node <item role=\"013\">email</item> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 25.272875474772885,
+          "transformer": {
+            "bytes_per_second": 164.11324350581555,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"role\":\"013\"},\"tag\":\"item\",\"text\":\"email\"}",
+            "latency_per_answer_seconds": 0.322947733332209,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "role": "013"
+              },
+              "tag": "item",
+              "text": "email"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"role\":\"013\"},\"tag\":\"item\",\"text\":\"email\"}",
+            "seconds": 0.322947733332209,
+            "timing_trials": [
+              0.3126205000007758,
+              0.33585429999948246,
+              0.3203683999963687
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"state\":\"026\"},\"tag\":\"item\",\"text\":\"active\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 4038.6566756474253,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"state\":\"026\"},\"tag\":\"item\",\"text\":\"active\"}",
+            "latency_per_answer_seconds": 0.01980856666583956,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "state": "026"
+              },
+              "tag": "item",
+              "text": "active"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"state\":\"026\"},\"tag\":\"item\",\"text\":\"active\"}}}anc\":\"statex\"}\"act\"}}act",
+            "seconds": 0.01980856666583956,
+            "timing_trials": [
+              0.020062800002051517,
+              0.018393300000752788,
+              0.020969599994714372
+            ]
+          },
+          "name": "heldout_xml_0022",
+          "prompt": "Question: Convert XML node <item state=\"026\">active</item> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 22.858877557289524,
+          "transformer": {
+            "bytes_per_second": 176.67782092649287,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"state\":\"026\"},\"tag\":\"item\",\"text\":\"active\"}",
+            "latency_per_answer_seconds": 0.31130109999988537,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "state": "026"
+              },
+              "tag": "item",
+              "text": "active"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"state\":\"026\"},\"tag\":\"item\",\"text\":\"active\"}",
+            "seconds": 0.31130109999988537,
+            "timing_trials": [
+              0.29738089999591466,
+              0.3157294000047841,
+              0.3207929999989574
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"101\"},\"tag\":\"button\",\"text\":\"save\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 3879.465021491751,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"101\"},\"tag\":\"button\",\"text\":\"save\"}",
+            "latency_per_answer_seconds": 0.02062140000149763,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "101"
+              },
+              "tag": "button",
+              "text": "save"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"101\"},\"tag\":\"button\",\"text\":\"save\"}}}anc\":\"sove\"},\"tag\":\"button\"",
+            "seconds": 0.02062140000149763,
+            "timing_trials": [
+              0.02165679999598069,
+              0.01958050000393996,
+              0.020626900004572235
+            ]
+          },
+          "name": "heldout_xml_0033",
+          "prompt": "Question: Convert XML node <button id=\"101\">save</button> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 24.096645429988286,
+          "transformer": {
+            "bytes_per_second": 160.99606199391368,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"101\"},\"tag\":\"button\",\"text\":\"save\"}",
+            "latency_per_answer_seconds": 0.3229892666689314,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "101"
+              },
+              "tag": "button",
+              "text": "save"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"101\"},\"tag\":\"button\",\"text\":\"save\"}",
+            "seconds": 0.3229892666689314,
+            "timing_trials": [
+              0.33102119999966817,
+              0.3090393000020413,
+              0.32890730000508483
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"role\":\"114\"},\"tag\":\"button\",\"text\":\"name\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 3795.366490426899,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"role\":\"114\"},\"tag\":\"button\",\"text\":\"name\"}",
+            "latency_per_answer_seconds": 0.02107833333138842,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "role": "114"
+              },
+              "tag": "button",
+              "text": "name"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"role\":\"114\"},\"tag\":\"button\",\"text\":\"name\"}}}amame\"}}-rolex\"}}xame\":\"b",
+            "seconds": 0.02107833333138842,
+            "timing_trials": [
+              0.02393599999777507,
+              0.018996999999217223,
+              0.02030199999717297
+            ]
+          },
+          "name": "heldout_xml_0044",
+          "prompt": "Question: Convert XML node <button role=\"114\">name</button> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 24.852003551880806,
+          "transformer": {
+            "bytes_per_second": 152.71873281780796,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"role\":\"114\"},\"tag\":\"button\",\"text\":\"name\"}",
+            "latency_per_answer_seconds": 0.35359120000309,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "role": "114"
+              },
+              "tag": "button",
+              "text": "name"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"role\":\"114\"},\"tag\":\"button\",\"text\":\"name\"}",
+            "seconds": 0.35359120000309,
+            "timing_trials": [
+              0.3562387000056333,
+              0.3509304000035627,
+              0.35360450000007404
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"state\":\"127\"},\"tag\":\"button\",\"text\":\"hidden\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 4094.1308922709877,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"state\":\"127\"},\"tag\":\"button\",\"text\":\"hidden\"}",
+            "latency_per_answer_seconds": 0.019540166669078946,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "state": "127"
+              },
+              "tag": "button",
+              "text": "hidden"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"state\":\"127\"},\"tag\":\"button\",\"text\":\"hidden\"}}}hid\":\"hidden\"}}}hid\":\"",
+            "seconds": 0.019540166669078946,
+            "timing_trials": [
+              0.01939950000087265,
+              0.02015450000180863,
+              0.019066500004555564
+            ]
+          },
+          "name": "heldout_xml_0055",
+          "prompt": "Question: Convert XML node <button state=\"127\">hidden</button> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 26.619213052625874,
+          "transformer": {
+            "bytes_per_second": 153.8036035917718,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"state\":\"127\"},\"tag\":\"button\",\"text\":\"hidden\"}",
+            "latency_per_answer_seconds": 0.37060249999922235,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "state": "127"
+              },
+              "tag": "button",
+              "text": "hidden"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"state\":\"127\"},\"tag\":\"button\",\"text\":\"hidden\"}",
+            "seconds": 0.37060249999922235,
+            "timing_trials": [
+              0.3712145000026794,
+              0.3727915999988909,
+              0.36780139999609673
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"202\"},\"tag\":\"field\",\"text\":\"cancel\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 4014.0424580389017,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"202\"},\"tag\":\"field\",\"text\":\"cancel\"}",
+            "latency_per_answer_seconds": 0.019930033335792057,
+            "max_repeat_8gram": 3,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "202"
+              },
+              "tag": "field",
+              "text": "cancel"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"202\"},\"tag\":\"field\",\"text\":\"cancel\"}}}cancel\"}}}cancel\"}}}ancel\"",
+            "seconds": 0.019930033335792057,
+            "timing_trials": [
+              0.01872880000155419,
+              0.02155730000231415,
+              0.019504000003507826
+            ]
+          },
+          "name": "heldout_xml_0066",
+          "prompt": "Question: Convert XML node <field id=\"202\">cancel</field> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 23.453116045454024,
+          "transformer": {
+            "bytes_per_second": 171.1517757495151,
+            "char_similarity": 0.8846153846153846,
+            "edit_distance": 6,
+            "estimated_generated_calls": null,
+            "exact_json_match": false,
+            "extracted_json": "{\"attrs\":{\"id\":\"203\"},\"tag\":\"field\",\"text\":\"email\"}",
+            "latency_per_answer_seconds": 0.30382389999916387,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "203"
+              },
+              "tag": "field",
+              "text": "email"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"203\"},\"tag\":\"field\",\"text\":\"email\"}",
+            "seconds": 0.30382389999916387,
+            "timing_trials": [
+              0.3053823999944143,
+              0.3055566000039107,
+              0.30053269999916665
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"role\":\"215\"},\"tag\":\"field\",\"text\":\"ready\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 3888.4910384943046,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"role\":\"215\"},\"tag\":\"field\",\"text\":\"ready\"}",
+            "latency_per_answer_seconds": 0.020573533334148426,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "role": "215"
+              },
+              "tag": "field",
+              "text": "ready"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"role\":\"215\"},\"tag\":\"field\",\"text\":\"ready\"}}}ady\"}}xext\":\"ready\"}}}xex",
+            "seconds": 0.020573533334148426,
+            "timing_trials": [
+              0.02122080000117421,
+              0.020932799998263363,
+              0.019567000003007706
+            ]
+          },
+          "name": "heldout_xml_0077",
+          "prompt": "Question: Convert XML node <field role=\"215\">ready</field> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 21.282899603498407,
+          "transformer": {
+            "bytes_per_second": 182.70494673832545,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"role\":\"215\"},\"tag\":\"field\",\"text\":\"ready\"}",
+            "latency_per_answer_seconds": 0.29555849999693845,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "role": "215"
+              },
+              "tag": "field",
+              "text": "ready"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"role\":\"215\"},\"tag\":\"field\",\"text\":\"ready\"}",
+            "seconds": 0.29555849999693845,
+            "timing_trials": [
+              0.2926041999962763,
+              0.29093619999912335,
+              0.30313509999541566
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3325.6520009852643,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-left\"}}",
+            "latency_per_answer_seconds": 0.024055433333463345,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#save",
+              "to": {
+                "anchor": "top-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-left\"}}}anchor\":\"top-lef",
+            "seconds": 0.024055433333463345,
+            "timing_trials": [
+              0.023431800000253133,
+              0.02482659999805037,
+              0.023907900002086535
+            ]
+          },
+          "name": "heldout_edit_0264",
+          "prompt": "Question: A user says move button#save to the top-left of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 21.7843768489802,
+          "transformer": {
+            "bytes_per_second": 152.66225075154946,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-left\"}}",
+            "latency_per_answer_seconds": 0.41922610000134836,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#save",
+              "to": {
+                "anchor": "top-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-left\"}}",
+            "seconds": 0.41922610000134836,
+            "timing_trials": [
+              0.43571720000181813,
+              0.40904800000134856,
+              0.41291310000087833
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3866.733045223477,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.02068930000192874,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#save",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}}anchor\":\"bott",
+            "seconds": 0.02068930000192874,
+            "timing_trials": [
+              0.02042030000302475,
+              0.021807700002682395,
+              0.01983990000007907
+            ]
+          },
+          "name": "heldout_edit_0275",
+          "prompt": "Question: A user says move button#save to the bottom-left of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 26.04183338392484,
+          "transformer": {
+            "bytes_per_second": 148.4815983658947,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.45123436666472116,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#save",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "seconds": 0.45123436666472116,
+            "timing_trials": [
+              0.44919320000190055,
+              0.4577359999966575,
+              0.44677389999560546
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3774.825374872098,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}",
+            "latency_per_answer_seconds": 0.021193033334081218,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#cancel",
+              "to": {
+                "anchor": "top-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}}anchor\":\"top-l",
+            "seconds": 0.021193033334081218,
+            "timing_trials": [
+              0.021969599998556077,
+              0.021120600002177525,
+              0.020488900001510046
+            ]
+          },
+          "name": "heldout_edit_0286",
+          "prompt": "Question: A user says move button#cancel to the top-left of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 25.148401396343797,
+          "transformer": {
+            "bytes_per_second": 150.10200113240205,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}",
+            "latency_per_answer_seconds": 0.4397010000005442,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#cancel",
+              "to": {
+                "anchor": "top-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}",
+            "seconds": 0.4397010000005442,
+            "timing_trials": [
+              0.4418498000013642,
+              0.4352273999975296,
+              0.44202580000273883
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"bottom-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3654.0414456851468,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.02189356666834404,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#cancel",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"bottom-left\"}}}anchor\":\"bo",
+            "seconds": 0.02189356666834404,
+            "timing_trials": [
+              0.02235579999978654,
+              0.021699500000977423,
+              0.021625400004268158
+            ]
+          },
+          "name": "heldout_edit_0297",
+          "prompt": "Question: A user says move button#cancel to the bottom-left of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 25.834945048399653,
+          "transformer": {
+            "bytes_per_second": 141.43794147189396,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.4878464666689979,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#cancel",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "seconds": 0.4878464666689979,
+            "timing_trials": [
+              0.5013127000056556,
+              0.4849508999977843,
+              0.47727580000355374
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"top-right\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 4104.879675534397,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"top-right\"}}",
+            "latency_per_answer_seconds": 0.01948900000085511,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "field#email",
+              "to": {
+                "anchor": "top-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"top-right\"}}}anchor\":\"top-ri",
+            "seconds": 0.01948900000085511,
+            "timing_trials": [
+              0.019613600001321174,
+              0.01867579999816371,
+              0.020177600003080443
+            ]
+          },
+          "name": "heldout_edit_0308",
+          "prompt": "Question: A user says move field#email to the top-right of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 23.028400240478803,
+          "transformer": {
+            "bytes_per_second": 178.25292389694238,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"top-right\"}}",
+            "latency_per_answer_seconds": 0.36465039999893634,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "field#email",
+              "to": {
+                "anchor": "top-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"top-right\"}}",
+            "seconds": 0.36465039999893634,
+            "timing_trials": [
+              0.3668238999962341,
+              0.36471809999784455,
+              0.36240920000273036
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"bottom-right\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3588.940678701221,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"bottom-right\"}}",
+            "latency_per_answer_seconds": 0.022290700003698777,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "field#email",
+              "to": {
+                "anchor": "bottom-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"bottom-right\"}}}anchor\":\"bot",
+            "seconds": 0.022290700003698777,
+            "timing_trials": [
+              0.024174000005587004,
+              0.020422100002178922,
+              0.02227600000333041
+            ]
+          },
+          "name": "heldout_edit_0319",
+          "prompt": "Question: A user says move field#email to the bottom-right of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 21.529942537321812,
+          "transformer": {
+            "bytes_per_second": 166.69532082957718,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"bottom-right\"}}",
+            "latency_per_answer_seconds": 0.40792986666686676,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "field#email",
+              "to": {
+                "anchor": "bottom-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"bottom-right\"}}",
+            "seconds": 0.40792986666686676,
+            "timing_trials": [
+              0.40517890000046464,
+              0.40814269999827957,
+              0.4104680000018561
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"center\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3820.1048934282426,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"center\"}}",
+            "latency_per_answer_seconds": 0.020941833334897336,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "field#email",
+              "to": {
+                "anchor": "center"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"center\"}}center\"}}}anchor\":\"",
+            "seconds": 0.020941833334897336,
+            "timing_trials": [
+              0.02151709999452578,
+              0.019802500006335322,
+              0.021505900003830902
+            ]
+          },
+          "name": "heldout_edit_0330",
+          "prompt": "Question: A user says move field#email to the center of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 19.67205734332589,
+          "transformer": {
+            "bytes_per_second": 194.18939395905554,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"center\"}}",
+            "latency_per_answer_seconds": 0.31927593333481735,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "field#email",
+              "to": {
+                "anchor": "center"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"center\"}}",
+            "seconds": 0.31927593333481735,
+            "timing_trials": [
+              0.31584330000623595,
+              0.32308939999347785,
+              0.3188951000047382
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"panel#settings\",\"to\":{\"anchor\":\"bottom-right\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3763.9796556760903,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"panel#settings\",\"to\":{\"anchor\":\"bottom-right\"}}",
+            "latency_per_answer_seconds": 0.021254100000078324,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "panel#settings",
+              "to": {
+                "anchor": "bottom-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"panel#settings\",\"to\":{\"anchor\":\"bottom-right\"}}}anchor\":\"",
+            "seconds": 0.021254100000078324,
+            "timing_trials": [
+              0.019717299997864757,
+              0.022496999998111278,
+              0.021548000004258938
+            ]
+          },
+          "name": "heldout_edit_0341",
+          "prompt": "Question: A user says move panel#settings to the bottom-right of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 24.26735936252611,
+          "transformer": {
+            "bytes_per_second": 155.10462425872606,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"panel#settings\",\"to\":{\"anchor\":\"bottom-right\"}}",
+            "latency_per_answer_seconds": 0.4577555333332081,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "panel#settings",
+              "to": {
+                "anchor": "bottom-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"panel#settings\",\"to\":{\"anchor\":\"bottom-right\"}}",
+            "seconds": 0.4577555333332081,
+            "timing_trials": [
+              0.4589497000051779,
+              0.4522904999976163,
+              0.46202639999683015
+            ]
+          }
+        }
+      ],
+      "summary": {
+        "layercake": {
+          "exact_json_accuracy": 1.0,
+          "mean_bytes_per_second": 3857.8424201708867,
+          "mean_char_similarity": 1.0,
+          "mean_estimated_generated_calls": 1.0,
+          "mean_latency_per_answer_seconds": 0.020800354167628637,
+          "median_bytes_per_second": 3873.0990333576137,
+          "parseable_json_rate": 1.0
+        },
+        "mean_speed_ratio_layercake_over_transformer": 23.632661701748916,
+        "transformer": {
+          "exact_json_accuracy": 0.875,
+          "mean_bytes_per_second": 164.15131790788487,
+          "mean_char_similarity": 0.991458674304419,
+          "mean_estimated_generated_calls": null,
+          "mean_latency_per_answer_seconds": 0.3683423854167813,
+          "median_bytes_per_second": 162.5546527498646,
+          "parseable_json_rate": 1.0
+        }
+      }
+    },
+    "seen": {
+      "samples": [
+        {
+          "expected": "{\"attrs\":{\"id\":\"001\"},\"tag\":\"item\",\"text\":\"save\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 3813.597700474366,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"001\"},\"tag\":\"item\",\"text\":\"save\"}",
+            "latency_per_answer_seconds": 0.020977566666260827,
+            "max_repeat_8gram": 3,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "001"
+              },
+              "tag": "item",
+              "text": "save"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"001\"},\"tag\":\"item\",\"text\":\"save\"}}}anc\":\"001\"}}}anc\":\"001\"},\"tag",
+            "seconds": 0.020977566666260827,
+            "timing_trials": [
+              0.021726099999796133,
+              0.021214500004134607,
+              0.019992099994851742
+            ]
+          },
+          "name": "seen_xml_0001",
+          "prompt": "Question: Convert XML node <item id=\"001\">save</item> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 23.110755458168846,
+          "transformer": {
+            "bytes_per_second": 165.01397833476673,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"001\"},\"tag\":\"item\",\"text\":\"save\"}",
+            "latency_per_answer_seconds": 0.30300463333211763,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "001"
+              },
+              "tag": "item",
+              "text": "save"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"001\"},\"tag\":\"item\",\"text\":\"save\"}",
+            "seconds": 0.30300463333211763,
+            "timing_trials": [
+              0.2953581999972812,
+              0.301514099999622,
+              0.3121415999994497
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"state\":\"022\"},\"tag\":\"item\",\"text\":\"cancel\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 3157.2798982409636,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"state\":\"022\"},\"tag\":\"item\",\"text\":\"cancel\"}",
+            "latency_per_answer_seconds": 0.025338266665736835,
+            "max_repeat_8gram": 3,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "state": "022"
+              },
+              "tag": "item",
+              "text": "cancel"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"state\":\"022\"},\"tag\":\"item\",\"text\":\"cancel\"}}}cancel\"}}}cancel\"}}}canc",
+            "seconds": 0.025338266665736835,
+            "timing_trials": [
+              0.02656340000248747,
+              0.025654299999587238,
+              0.023797099995135795
+            ]
+          },
+          "name": "seen_xml_0018",
+          "prompt": "Question: Convert XML node <item state=\"022\">cancel</item> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 19.73056730159176,
+          "transformer": {
+            "bytes_per_second": 160.01972218945022,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"state\":\"022\"},\"tag\":\"item\",\"text\":\"cancel\"}",
+            "latency_per_answer_seconds": 0.3437076333308748,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "state": "022"
+              },
+              "tag": "item",
+              "text": "cancel"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"state\":\"022\"},\"tag\":\"item\",\"text\":\"cancel\"}",
+            "seconds": 0.3437076333308748,
+            "timing_trials": [
+              0.3497877999980119,
+              0.33937629999854835,
+              0.34195879999606404
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"103\"},\"tag\":\"button\",\"text\":\"email\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 3802.227155086439,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"103\"},\"tag\":\"button\",\"text\":\"email\"}",
+            "latency_per_answer_seconds": 0.02104029999706351,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "103"
+              },
+              "tag": "button",
+              "text": "email"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"103\"},\"tag\":\"button\",\"text\":\"email\"}}}anc\":\"email\",\"to\":{\"anc\":\"",
+            "seconds": 0.02104029999706351,
+            "timing_trials": [
+              0.022040899995772634,
+              0.021091599999635946,
+              0.019988399995781947
+            ]
+          },
+          "name": "seen_xml_0035",
+          "prompt": "Question: Convert XML node <button id=\"103\">email</button> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 23.681617045141973,
+          "transformer": {
+            "bytes_per_second": 160.5560611776899,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"103\"},\"tag\":\"button\",\"text\":\"email\"}",
+            "latency_per_answer_seconds": 0.3301027666675509,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "103"
+              },
+              "tag": "button",
+              "text": "email"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"103\"},\"tag\":\"button\",\"text\":\"email\"}",
+            "seconds": 0.3301027666675509,
+            "timing_trials": [
+              0.32746380000025965,
+              0.32919240000046557,
+              0.33365210000192747
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"state\":\"124\"},\"tag\":\"button\",\"text\":\"name\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 4036.0214921777833,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"state\":\"124\"},\"tag\":\"button\",\"text\":\"name\"}",
+            "latency_per_answer_seconds": 0.019821499998215586,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "state": "124"
+              },
+              "tag": "button",
+              "text": "name"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"state\":\"124\"},\"tag\":\"button\",\"text\":\"name\"}}}amame\"}}-24\"},\"tag\":\"but",
+            "seconds": 0.019821499998215586,
+            "timing_trials": [
+              0.01896619999752147,
+              0.02114669999718899,
+              0.019351599999936298
+            ]
+          },
+          "name": "seen_xml_0052",
+          "prompt": "Question: Convert XML node <button state=\"124\">name</button> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 25.441010108401414,
+          "transformer": {
+            "bytes_per_second": 158.6423445838325,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"state\":\"124\"},\"tag\":\"button\",\"text\":\"name\"}",
+            "latency_per_answer_seconds": 0.34669180000006844,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "state": "124"
+              },
+              "tag": "button",
+              "text": "name"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"state\":\"124\"},\"tag\":\"button\",\"text\":\"name\"}",
+            "seconds": 0.34669180000006844,
+            "timing_trials": [
+              0.338746400004311,
+              0.3498650999972597,
+              0.3514638999986346
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"205\"},\"tag\":\"field\",\"text\":\"ready\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 4093.069580019374,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"205\"},\"tag\":\"field\",\"text\":\"ready\"}",
+            "latency_per_answer_seconds": 0.019545233335520606,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "205"
+              },
+              "tag": "field",
+              "text": "ready"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"205\"},\"tag\":\"field\",\"text\":\"ready\"}}}read\"}}}xext\":\"ready\"}}}xex",
+            "seconds": 0.019545233335520606,
+            "timing_trials": [
+              0.021598200000880752,
+              0.018359699999564327,
+              0.01867780000611674
+            ]
+          },
+          "name": "seen_xml_0069",
+          "prompt": "Question: Convert XML node <field id=\"205\">ready</field> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 21.687761496447223,
+          "transformer": {
+            "bytes_per_second": 188.72715751184737,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"205\"},\"tag\":\"field\",\"text\":\"ready\"}",
+            "latency_per_answer_seconds": 0.27553003333256737,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "205"
+              },
+              "tag": "field",
+              "text": "ready"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"205\"},\"tag\":\"field\",\"text\":\"ready\"}",
+            "seconds": 0.27553003333256737,
+            "timing_trials": [
+              0.2736287000006996,
+              0.27675369999633403,
+              0.2762077000006684
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"state\":\"226\"},\"tag\":\"field\",\"text\":\"active\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 3654.019192691195,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"state\":\"226\"},\"tag\":\"field\",\"text\":\"active\"}",
+            "latency_per_answer_seconds": 0.02189370000026732,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "state": "226"
+              },
+              "tag": "field",
+              "text": "active"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"state\":\"226\"},\"tag\":\"field\",\"text\":\"active\"}}}anc\":\"field\"},\"tag\":\"fi",
+            "seconds": 0.02189370000026732,
+            "timing_trials": [
+              0.021632800002407748,
+              0.02061219999450259,
+              0.023436100003891625
+            ]
+          },
+          "name": "seen_xml_0086",
+          "prompt": "Question: Convert XML node <field state=\"226\">active</field> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 21.07485149541173,
+          "transformer": {
+            "bytes_per_second": 173.38291534280668,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"state\":\"226\"},\"tag\":\"field\",\"text\":\"active\"}",
+            "latency_per_answer_seconds": 0.3229845333335106,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "state": "226"
+              },
+              "tag": "field",
+              "text": "active"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"state\":\"226\"},\"tag\":\"field\",\"text\":\"active\"}",
+            "seconds": 0.3229845333335106,
+            "timing_trials": [
+              0.31891880000330275,
+              0.3175898999979836,
+              0.33244489999924554
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"id\":\"307\"},\"tag\":\"panel\",\"text\":\"hidden\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 3361.0244405180247,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"307\"},\"tag\":\"panel\",\"text\":\"hidden\"}",
+            "latency_per_answer_seconds": 0.023802266664764222,
+            "max_repeat_8gram": 3,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "307"
+              },
+              "tag": "panel",
+              "text": "hidden"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"id\":\"307\"},\"tag\":\"panel\",\"text\":\"hidden\"}}}hid\":\"307\"}}}anc\":\"307\"},\"",
+            "seconds": 0.023802266664764222,
+            "timing_trials": [
+              0.022527399996761233,
+              0.026008399996499065,
+              0.02287100000103237
+            ]
+          },
+          "name": "seen_xml_0103",
+          "prompt": "Question: Convert XML node <panel id=\"307\">hidden</panel> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 22.237704544629473,
+          "transformer": {
+            "bytes_per_second": 151.140799347014,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"id\":\"307\"},\"tag\":\"panel\",\"text\":\"hidden\"}",
+            "latency_per_answer_seconds": 0.3506663999990754,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "id": "307"
+              },
+              "tag": "panel",
+              "text": "hidden"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"id\":\"307\"},\"tag\":\"panel\",\"text\":\"hidden\"}",
+            "seconds": 0.3506663999990754,
+            "timing_trials": [
+              0.34403480000037234,
+              0.35326699999859557,
+              0.35469739999825833
+            ]
+          }
+        },
+        {
+          "expected": "{\"attrs\":{\"kind\":\"330\"},\"tag\":\"panel\",\"text\":\"ok\"}",
+          "kind": "xml",
+          "layercake": {
+            "bytes_per_second": 4209.1823317160515,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"kind\":\"330\"},\"tag\":\"panel\",\"text\":\"ok\"}",
+            "latency_per_answer_seconds": 0.019006066664587706,
+            "max_repeat_8gram": 4,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "kind": "330"
+              },
+              "tag": "panel",
+              "text": "ok"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"attrs\":{\"kind\":\"330\"},\"tag\":\"panel\",\"text\":\"ok\"}}ok\"}}}ok\"}}}ok\"}}}ok\"}}}ok\"}}",
+            "seconds": 0.019006066664587706,
+            "timing_trials": [
+              0.01894170000014128,
+              0.018849399995815475,
+              0.019227099997806363
+            ]
+          },
+          "name": "seen_xml_0120",
+          "prompt": "Question: Convert XML node <panel kind=\"330\">ok</panel> to canonical JSON. Answer: ",
+          "speed_ratio_layercake_over_transformer": 25.932777847909232,
+          "transformer": {
+            "bytes_per_second": 162.31127866062397,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"attrs\":{\"kind\":\"330\"},\"tag\":\"panel\",\"text\":\"ok\"}",
+            "latency_per_answer_seconds": 0.3142110666667577,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "attrs": {
+                "kind": "330"
+              },
+              "tag": "panel",
+              "text": "ok"
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"attrs\":{\"kind\":\"330\"},\"tag\":\"panel\",\"text\":\"ok\"}",
+            "seconds": 0.3142110666667577,
+            "timing_trials": [
+              0.31454919999669073,
+              0.3179586999976891,
+              0.3101253000058932
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-right\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3972.983710449315,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-right\"}}",
+            "latency_per_answer_seconds": 0.020136000001609016,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#save",
+              "to": {
+                "anchor": "top-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-right\"}}}anchor\":\"top-ri",
+            "seconds": 0.020136000001609016,
+            "timing_trials": [
+              0.020089600002393126,
+              0.019325900000694674,
+              0.020992500001739245
+            ]
+          },
+          "name": "seen_edit_0256",
+          "prompt": "Question: A user says move button#save to the top-right of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 23.36332426476314,
+          "transformer": {
+            "bytes_per_second": 170.0521580501889,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-right\"}}",
+            "latency_per_answer_seconds": 0.38223566666420083,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#save",
+              "to": {
+                "anchor": "top-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"top-right\"}}",
+            "seconds": 0.38223566666420083,
+            "timing_trials": [
+              0.386107099999208,
+              0.37574759999552043,
+              0.38485229999787407
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3926.6758724419515,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.020373466667175915,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#save",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}}anchor\":\"bott",
+            "seconds": 0.020373466667175915,
+            "timing_trials": [
+              0.02115559999947436,
+              0.019450400002824608,
+              0.020514399999228772
+            ]
+          },
+          "name": "seen_edit_0273",
+          "prompt": "Question: A user says move button#save to the bottom-left of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 26.35394567864518,
+          "transformer": {
+            "bytes_per_second": 148.9976461332608,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.4496715333346704,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#save",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#save\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "seconds": 0.4496715333346704,
+            "timing_trials": [
+              0.44831469999917317,
+              0.4491985000058776,
+              0.45150139999896055
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3621.422524621259,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}",
+            "latency_per_answer_seconds": 0.022090766668649547,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#cancel",
+              "to": {
+                "anchor": "top-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}}anchor\":\"top-l",
+            "seconds": 0.022090766668649547,
+            "timing_trials": [
+              0.023501700001361314,
+              0.020672600003308617,
+              0.022098000001278706
+            ]
+          },
+          "name": "seen_edit_0290",
+          "prompt": "Question: A user says move button#cancel to the top-left of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 24.347824096616844,
+          "transformer": {
+            "bytes_per_second": 148.73700870561404,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}",
+            "latency_per_answer_seconds": 0.44373623333134066,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "button#cancel",
+              "to": {
+                "anchor": "top-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"button#cancel\",\"to\":{\"anchor\":\"top-left\"}}",
+            "seconds": 0.44373623333134066,
+            "timing_trials": [
+              0.45134369999868795,
+              0.44295140000031097,
+              0.4369135999950231
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"top-right\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3953.2462739250172,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"top-right\"}}",
+            "latency_per_answer_seconds": 0.02023653333405188,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "field#email",
+              "to": {
+                "anchor": "top-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"top-right\"}}}anchor\":\"top-ri",
+            "seconds": 0.02023653333405188,
+            "timing_trials": [
+              0.021817300003021955,
+              0.018952400001580827,
+              0.019939899997552857
+            ]
+          },
+          "name": "seen_edit_0307",
+          "prompt": "Question: A user says move field#email to the top-right of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 22.2240598616255,
+          "transformer": {
+            "bytes_per_second": 177.88137264474915,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"top-right\"}}",
+            "latency_per_answer_seconds": 0.3654120666687959,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "field#email",
+              "to": {
+                "anchor": "top-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"top-right\"}}",
+            "seconds": 0.3654120666687959,
+            "timing_trials": [
+              0.36763340000470635,
+              0.3699570000026142,
+              0.3586457999990671
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"bottom-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3535.4792711286714,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.022627766666118987,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "field#email",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"bottom-left\"}}}aeld#epain\",-",
+            "seconds": 0.022627766666118987,
+            "timing_trials": [
+              0.024079000002529938,
+              0.02151679999951739,
+              0.022287499996309634
+            ]
+          },
+          "name": "seen_edit_0324",
+          "prompt": "Question: A user says move field#email to the bottom-left of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 22.796935681105218,
+          "transformer": {
+            "bytes_per_second": 155.0857238264256,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.43201913333420333,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "field#email",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"field#email\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "seconds": 0.43201913333420333,
+            "timing_trials": [
+              0.4268260000026203,
+              0.43634670000028564,
+              0.432884699999704
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"modal#help\",\"to\":{\"anchor\":\"top-right\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3864.1120593157716,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"modal#help\",\"to\":{\"anchor\":\"top-right\"}}",
+            "latency_per_answer_seconds": 0.02070333333297943,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "modal#help",
+              "to": {
+                "anchor": "top-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"modal#help\",\"to\":{\"anchor\":\"top-right\"}}}anchor\":\"top-rig",
+            "seconds": 0.02070333333297943,
+            "timing_trials": [
+              0.02015199999732431,
+              0.022095499996794388,
+              0.019862500004819594
+            ]
+          },
+          "name": "seen_edit_0358",
+          "prompt": "Question: A user says move modal#help to the top-right of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 23.797005313487404,
+          "transformer": {
+            "bytes_per_second": 162.3780811245906,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"modal#help\",\"to\":{\"anchor\":\"top-right\"}}",
+            "latency_per_answer_seconds": 0.3941418666654499,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "modal#help",
+              "to": {
+                "anchor": "top-right"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"modal#help\",\"to\":{\"anchor\":\"top-right\"}}",
+            "seconds": 0.3941418666654499,
+            "timing_trials": [
+              0.3957053999984055,
+              0.3996525999973528,
+              0.3870676000005915
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"move\",\"target\":\"modal#help\",\"to\":{\"anchor\":\"bottom-left\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 3674.6130169550433,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"modal#help\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.0217710000021422,
+            "max_repeat_8gram": 2,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "modal#help",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"move\",\"target\":\"modal#help\",\"to\":{\"anchor\":\"bottom-left\"}}}anchor\":\"botto",
+            "seconds": 0.0217710000021422,
+            "timing_trials": [
+              0.023732000001473352,
+              0.022397500004444737,
+              0.019183500000508502
+            ]
+          },
+          "name": "seen_edit_0375",
+          "prompt": "Question: A user says move modal#help to the bottom-left of the app. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 25.731290208747872,
+          "transformer": {
+            "bytes_per_second": 142.80718095145437,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"move\",\"target\":\"modal#help\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "latency_per_answer_seconds": 0.46216163333156146,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "move",
+              "target": "modal#help",
+              "to": {
+                "anchor": "bottom-left"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"move\",\"target\":\"modal#help\",\"to\":{\"anchor\":\"bottom-left\"}}",
+            "seconds": 0.46216163333156146,
+            "timing_trials": [
+              0.45357530000183033,
+              0.46163009999872884,
+              0.4712794999941252
+            ]
+          }
+        },
+        {
+          "expected": "{\"op\":\"resize\",\"target\":\"button#save\",\"to\":{\"size\":\"compact\"}}",
+          "kind": "edit",
+          "layercake": {
+            "bytes_per_second": 4050.7217882753666,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": 1,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"resize\",\"target\":\"button#save\",\"to\":{\"size\":\"compact\"}}",
+            "latency_per_answer_seconds": 0.019749566665268503,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "resize",
+              "target": "button#save",
+              "to": {
+                "size": "compact"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": "{\"op\":\"resize\",\"target\":\"button#save\",\"to\":{\"size\":\"compact\"}}}compareht\"}}}ampr",
+            "seconds": 0.019749566665268503,
+            "timing_trials": [
+              0.019809799996437505,
+              0.019379400000616442,
+              0.020059499998751562
+            ]
+          },
+          "name": "seen_edit_0392",
+          "prompt": "Question: A user says resize button#save to compact. What JSON edit action should be taken? Answer: ",
+          "speed_ratio_layercake_over_transformer": 21.905195376365363,
+          "transformer": {
+            "bytes_per_second": 184.9205961726275,
+            "char_similarity": 1.0,
+            "edit_distance": 0,
+            "estimated_generated_calls": null,
+            "exact_json_match": true,
+            "extracted_json": "{\"op\":\"resize\",\"target\":\"button#save\",\"to\":{\"size\":\"compact\"}}",
+            "latency_per_answer_seconds": 0.34068676666599157,
+            "max_repeat_8gram": 1,
+            "parseable_json": true,
+            "parsed_json": {
+              "op": "resize",
+              "target": "button#save",
+              "to": {
+                "size": "compact"
+              }
+            },
+            "printable_ratio": 1.0,
+            "raw_text": " {\"op\":\"resize\",\"target\":\"button#save\",\"to\":{\"size\":\"compact\"}}",
+            "seconds": 0.34068676666599157,
+            "timing_trials": [
+              0.34743149999849265,
+              0.33578980000311276,
+              0.33883899999636924
+            ]
+          }
+        }
+      ],
+      "summary": {
+        "layercake": {
+          "exact_json_accuracy": 1.0,
+          "mean_bytes_per_second": 3795.354769252287,
+          "mean_char_similarity": 1.0,
+          "mean_estimated_generated_calls": 1.0,
+          "mean_latency_per_answer_seconds": 0.021194583333150756,
+          "median_bytes_per_second": 3838.8548798950687,
+          "parseable_json_rate": 1.0
+        },
+        "mean_speed_ratio_layercake_over_transformer": 23.338539111191135,
+        "transformer": {
+          "exact_json_accuracy": 1.0,
+          "mean_bytes_per_second": 163.1658765473089,
+          "mean_char_similarity": 1.0,
+          "mean_estimated_generated_calls": null,
+          "mean_latency_per_answer_seconds": 0.36606023541617105,
+          "median_bytes_per_second": 161.43366991915696,
+          "parseable_json_rate": 1.0
+        }
+      }
+    }
+  },
+  "stop_after_json": true,
+  "training": {
+    "layercake": {
+      "eval_bpb": 1.9088364738222183,
+      "latest": {
+        "bpb": 3.26425034038019,
+        "bytes_per_step": 2048,
+        "counted_pretrain_seconds": 0.128810899797827,
+        "data_seconds_per_step": 0.00033993079606443644,
+        "domain_cache_initialization": {
+          "status": "DISABLED"
+        },
+        "elapsed_seconds": 158.40914389980026,
+        "eval_bpb": 1.9088364738222183,
+        "eval_bytes": 1000000,
+        "forward_backward_seconds_per_step": 0.017623886603396387,
+        "gib_per_hour": 3.034243122813544,
+        "loss": 2.2626059200763704,
+        "lr": 1.000000355818132e-05,
+        "optimizer_seconds_per_step": 0.001638590204063803,
+        "parameter_filter": {
+          "enabled": true,
+          "frozen_parameter_count": 115,
+          "frozen_params_after_filter": 15121072,
+          "frozen_patterns": [],
+          "total_params": 15190449,
+          "trainable_parameter_names": [
+            "patch_generator.copy_query.weight",
+            "patch_generator.copy_key.weight",
+            "patch_generator.copy_gate.weight",
+            "patch_generator.copy_gate.bias",
+            "patch_generator.copy_position_key.weight",
+            "patch_generator.copy_previous_key.weight",
+            "patch_generator.copy_next_key.weight",
+            "patch_generator.copy_next2_key.weight",
+            "patch_generator.copy_context_key.weight"
+          ],
+          "trainable_params_after_filter": 69377,
+          "trainable_patterns": [
+            "patch_generator.copy_*"
+          ]
+        },
+        "prior_initialization": {
+          "status": "DISABLED"
+        },
+        "projected_total_hours": 0.044002539972166736,
+        "remaining_hours": 0.0,
+        "resume_load": {
+          "mismatched_keys": [],
+          "missing_keys": [
+            "patch_generator.copy_context_key.weight"
+          ],
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\runs_experiment\\northstar_v18_supervised_context_copy\\latest.pt",
+          "status": "LOADED",
+          "strict": false,
+          "unexpected_keys": []
+        },
+        "step": 70000,
+        "steps": 70000,
+        "steps_per_second": 441.89368288157425,
+        "train_bytes": 143360000,
+        "trainable_params": 69377
+      },
+      "parameters": 15190449,
+      "path": "runs_experiment\\northstar_v21_semantic_pointer\\training_metrics.json",
+      "status": "COMPLETE",
+      "train_bytes": 143360000,
+      "train_seconds": 158.40914389980026
+    },
+    "transformer": {
+      "eval_bpb": 2.714944438726752,
+      "latest": {
+        "artifact": "runs_experiment\\northstar_v22_fair_corrected_bpe\\latest.pt",
+        "bpb": 0.04382682446897592,
+        "bytes_per_step": 21283.15533862872,
+        "cumulative_train_bytes": 159365308.03623238,
+        "elapsed_seconds": 793.8556148998905,
+        "elapsed_total_seconds": 813.4683423999231,
+        "eval_bpb": 2.714944438726752,
+        "gib_per_hour": 0.6292093459791099,
+        "loss": 0.10523259334266186,
+        "lr": 1.2000005762960945e-05,
+        "phase_step": 7000,
+        "phase_steps": 7000,
+        "phase_train_bytes": 148982087.37040102,
+        "projected_total_hours": 0.2205154485833029,
+        "resume_cumulative_train_bytes": 10383220.665831348,
+        "resume_step": 2000,
+        "step": 9000,
+        "steps": 9000,
+        "steps_per_second": 8.817724367777808,
+        "tokenizer_seconds": 19.612727500032634,
+        "train_bytes": 148982087.37040102,
+        "trainable_params": 14950848
+      },
+      "parameters": 14950848,
+      "path": "runs_experiment\\northstar_v22_fair_corrected_bpe\\training_metrics.json",
+      "status": "COMPLETE",
+      "train_bytes": 148982087.37040102,
+      "train_seconds": 813.4683423999231
+    }
+  }
+}

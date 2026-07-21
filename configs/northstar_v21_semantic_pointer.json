@@ -1,0 +1,26 @@
+{
+  "extends": "northstar_v18_supervised_context_copy.json",
+  "name": "northstar_v21_semantic_pointer",
+  "description": "Freeze syntax and train a case-folded pointer whose source keys include a 33-byte semantic context window, enabling role-based dynamic value extraction.",
+  "model": {
+    "patch_generation_lowercase_copy": true,
+    "patch_generation_semantic_copy": true
+  },
+  "training": {
+    "seed": 13231,
+    "steps": 70000,
+    "lr": 0.0001,
+    "min_lr": 0.00001,
+    "warmup_steps": 100,
+    "lr_decay_steps": 7900,
+    "lr_step_offset": 62000,
+    "patch_prediction_copy_loss_weight": 1.0,
+    "trainable_parameter_patterns": ["patch_generator.copy_*"],
+    "resume_from": "runs_experiment/northstar_v18_supervised_context_copy/latest.pt",
+    "resume_strict": false,
+    "log_interval": 500,
+    "save_interval": 4000,
+    "eval_seed": 13232,
+    "out_dir": "runs_experiment/northstar_v21_semantic_pointer"
+  }
+}

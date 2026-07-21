@@ -1,0 +1,85 @@
+{
+  "claim_boundary": "PASS means every promoted dominance tier has required transformer gates. OPEN tiers are retained evidence and cannot be marketed as wins.",
+  "failed_promoted_tiers": {},
+  "promoted_tiers": {
+    "full_corpus_15m_source_and_transfer": {
+      "failed": [],
+      "required_gates": {
+        "source_at_least_0_5pct_better_general_bpb": true,
+        "source_at_least_10pct_faster_cpu_generation": true,
+        "source_at_least_1pct_faster_training": true,
+        "source_at_least_2pct_smaller_than_bpe": true,
+        "source_generation_alpha_space": true,
+        "source_generation_distinct_trigrams": true,
+        "source_generation_no_repeated_4gram": true,
+        "source_generation_no_repeated_8gram": true,
+        "source_generation_printable": true,
+        "source_uses_no_more_training_bytes": true,
+        "transfer_generation_exact": true,
+        "transfer_max_logit_diff_exact": true,
+        "transfer_ppl_ratio_exact": true,
+        "transferred_domain_at_least_10pct_better_than_adapter": true
+      },
+      "scope": "15M-class transition-head LayerCake source/core rematch plus lossless transfer into the existing 5.40M receiver. This is not a 20M BPE win; the 20M time gate remains open.",
+      "status": "PASS"
+    },
+    "local_methodology_ladder": {
+      "failed": [],
+      "required_gates": {
+        "10_4m": true,
+        "12_8m": true,
+        "19_4m": true,
+        "1m": true,
+        "25_6m": true,
+        "276k": true,
+        "2_7m": true,
+        "474k": true,
+        "5_8m": true,
+        "735k": true,
+        "8_8m": true
+      },
+      "scope": "Local Tier-1-style scaling frontier. Probes are retained as pass/fail evidence for the scale ladder.",
+      "status": "PASS"
+    },
+    "receiver_after_lossless_transfer": {
+      "failed": [],
+      "required_gates": {
+        "receiver_better_general_bpb": true,
+        "receiver_faster_cpu_generation": true,
+        "receiver_faster_training": true,
+        "receiver_smaller_than_transformer": true,
+        "transfer_generation_exact": true,
+        "transfer_max_logit_diff_exact": true,
+        "transfer_ppl_ratio_exact": true,
+        "transferred_domain_beats_transformer": true
+      },
+      "scope": "Source dominance plus receiver-after-lossless-transfer dominance. Local frontier probes are smoke/local scale; locked receiver certificate carries exact transfer.",
+      "status": "PASS"
+    }
+  },
+  "status": "PASS",
+  "unpromoted_tiers": {
+    "full_corpus_20m_source": {
+      "artifact": "results/scale20m_transition_lw336_conv2_2500.json",
+      "failed": [
+        "training_time_beats_bpe20"
+      ],
+      "metrics": {
+        "bpe_bpb": 2.0153977959627896,
+        "bpe_parameters": 20606656,
+        "bpe_training_seconds": 113.45620536804199,
+        "layercake_bpb": 2.0064663238579112,
+        "layercake_parameters": 15547248,
+        "layercake_training_seconds": 134.8734917640686
+      },
+      "reason": "Quality, parameter, and training-byte gates pass, but training-time dominance does not. This tier is intentionally excluded from promoted dominance claims until every required gate passes.",
+      "required_gates": {
+        "params_below_bpe20": true,
+        "quality_beats_bpe20": true,
+        "training_bytes_no_more_than_bpe20": true,
+        "training_time_beats_bpe20": false
+      },
+      "status": "OPEN"
+    }
+  }
+}

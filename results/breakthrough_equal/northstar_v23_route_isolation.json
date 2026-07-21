@@ -1,0 +1,42 @@
+{
+  "base_checkpoint": "runs_experiment/northstar_v23_shared3_routed_tail/migrated_v22.pt",
+  "changed_tensor_count": 11,
+  "changed_tensor_prefix": "core.3.experts.4.",
+  "changed_tensors": [
+    "core.3.experts.4.attn_norm.weight",
+    "core.3.experts.4.attn_norm.bias",
+    "core.3.experts.4.qkv.weight",
+    "core.3.experts.4.qkv.bias",
+    "core.3.experts.4.attn_out.weight",
+    "core.3.experts.4.attn_out.bias",
+    "core.3.experts.4.ffn_norm.weight",
+    "core.3.experts.4.ffn_norm.bias",
+    "core.3.experts.4.gate.weight",
+    "core.3.experts.4.up.weight",
+    "core.3.experts.4.down.weight"
+  ],
+  "gates": {
+    "only_route_four_tensors_changed": true,
+    "optimizer_fraction_of_total_below_12_percent": true,
+    "route_four_behavior_changed": true,
+    "route_zero_abi_bit_exact": true,
+    "route_zero_generation_bit_exact": true,
+    "route_zero_patch_logits_bit_exact": true,
+    "sparse_optimizer_enabled": true,
+    "training_loss_decreased": true
+  },
+  "legacy_next_byte_decoder_note": "The compatibility-only local decoder reuses experts 1-4, so training route 4 is intentionally outside the generation-path isolation claim.",
+  "legacy_next_byte_logits_bit_exact": false,
+  "route_zero_generation_path_bit_exact": true,
+  "schema_version": 1,
+  "status": "PASS",
+  "trained_checkpoint": "runs_experiment/northstar_v23_route4_schema_training/latest.pt",
+  "training": {
+    "final_logged_loss": 0.03234493274505212,
+    "first_logged_loss": 0.11121460128946183,
+    "logical_total_parameters": 15193137,
+    "loss_ratio_final_over_first": 0.2908335090000181,
+    "optimizer_fraction_of_total": 0.1166674137144949,
+    "optimizer_parameters": 1772544
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "artifacts": {
+    "quantized": "results/game_dialogue_smoke_gru_int8.json",
+    "train": "results/game_dialogue_smoke_gru_train.json",
+    "transfer": "results/game_dialogue_smoke_gru_lossless_transfer.json"
+  },
+  "failed_required": [],
+  "metrics": {
+    "compression_ratio": 0.25014034431137727,
+    "domain_bpb": 2.2185194418554466,
+    "domain_ppl": 4.654155591682168,
+    "domain_top1_byte_accuracy": 0.73779296875,
+    "eval_bytes": 256,
+    "generation_equal_after_transfer": true,
+    "parameters": 128256,
+    "predicted_utf8": "here before you enter the ruins.",
+    "quantized_payload_bytes": 128328,
+    "train_bytes": 343,
+    "training_seconds": 1.146085500717163,
+    "transfer_max_logit_diff": 0.0,
+    "transfer_ppl_ratio": 1.0
+  },
+  "open_requirements_for_production_game_domain": {
+    "human_or_model_judged_dialogue_quality": false,
+    "large_heldout_game_eval": false,
+    "multi_domain_routing_policy": false,
+    "npc_dialogue_task_rubric": false,
+    "user_game_corpus": false
+  },
+  "required_gates": {
+    "custom_game_domain_file_was_used": true,
+    "int8_quantized_payload_created": true,
+    "quantized_payload_smaller_than_fp32": true,
+    "smoke_domain_bpb_under_3": true,
+    "smoke_domain_top1_accuracy_over_50pct": true,
+    "smoke_generation_printable": true,
+    "source_receiver_transfer_exact": true,
+    "training_completed": true,
+    "training_records_byte_counts": true,
+    "transfer_generation_exact": true,
+    "transfer_max_logit_diff_exact": true,
+    "transfer_ppl_ratio_exact": true
+  },
+  "scope": "Game-domain training/deployment workflow smoke. This proves a custom game-style text file can train a portable domain payload, quantize it, install it into separate LayerCake runtimes, and migrate it exactly. It is not a production game-dialogue quality claim.",
+  "status": "PASS"
+}

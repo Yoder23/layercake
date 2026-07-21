@@ -32,8 +32,8 @@ import torch
 import torch.nn as nn
 
 # ── Paths ──────────────────────────────────────────────────────────────────
-ROOT     = Path(__file__).parent
-SRC      = Path("C:/Python310/layercake_merged_nextgen_perfectA_option1_full_ready/layercakeogwithdecoder")
+ROOT     = Path(__file__).resolve().parent
+SRC      = ROOT.parent / "layercakeogwithdecoder"
 RUNS     = SRC / "runs"
 DATA     = SRC / "data/tokens"
 

@@ -1,0 +1,20 @@
+{
+  "extends": "northstar_v9_patch4_span80_grounded_continuation.json",
+  "name": "northstar_v10_span80_prompt_boundary",
+  "description": "Deployment-matched 80-byte decoder continuation: compute supervision only for the source patch ending exactly at the Answer boundary, which is the context used by one-shot inference.",
+  "training": {
+    "seed": 13121,
+    "steps": 24000,
+    "lr": 0.0001,
+    "min_lr": 0.00001,
+    "warmup_steps": 100,
+    "lr_decay_steps": 3900,
+    "lr_step_offset": 20000,
+    "patch_prediction_answer_start_only": true,
+    "resume_from": "runs_experiment/northstar_v9_patch4_span80_grounded_continuation/latest.pt",
+    "log_interval": 250,
+    "save_interval": 2000,
+    "eval_seed": 13122,
+    "out_dir": "runs_experiment/northstar_v10_span80_prompt_boundary"
+  }
+}

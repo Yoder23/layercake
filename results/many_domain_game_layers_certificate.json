@@ -1,0 +1,54 @@
+{
+  "domain_ids": [
+    "game_dialogue",
+    "game_lore",
+    "game_quest_state"
+  ],
+  "failed_required": [],
+  "metrics": {
+    "installed_domains": 3,
+    "max_cross_domain_interference": 0.0,
+    "unique_payload_hashes": 1,
+    "unique_spec_hashes": 3
+  },
+  "open_requirements_for_real_game_domains": {
+    "domain_routing_policy_eval": false,
+    "task_level_npc_eval": false,
+    "trained_game_dialogue_payload": false,
+    "trained_game_lore_payload": false,
+    "trained_game_quest_state_payload": false
+  },
+  "per_domain": {
+    "game_dialogue": {
+      "generated_utf8": "\r\n                                                              ",
+      "generation_equal": true,
+      "max_logit_diff": 0.0,
+      "payload_hash": "3604b154e85ff4aed8c7b9b8f96ee9ebe27b32256c499ce5aaf1e97e7e80fd4e",
+      "spec_hash": "e41541c1c1e37efaec11405014f695b656c5572b157c5db3912e1689df978e3e"
+    },
+    "game_lore": {
+      "generated_utf8": "\r\n                                                              ",
+      "generation_equal": true,
+      "max_logit_diff": 0.0,
+      "payload_hash": "3604b154e85ff4aed8c7b9b8f96ee9ebe27b32256c499ce5aaf1e97e7e80fd4e",
+      "spec_hash": "4bdb935ff0745b81c978ceda2bf42b0fc1b504458d8bb04ffd09c13727fafb38"
+    },
+    "game_quest_state": {
+      "generated_utf8": "\r\n                                                              ",
+      "generation_equal": true,
+      "max_logit_diff": 0.0,
+      "payload_hash": "3604b154e85ff4aed8c7b9b8f96ee9ebe27b32256c499ce5aaf1e97e7e80fd4e",
+      "spec_hash": "d77b990fa66085467789554b858ca2e0a09d4450e371e608e05bc59220fac671"
+    }
+  },
+  "required_gates": {
+    "all_domains_generation_exact_after_transfer": true,
+    "all_domains_transfer_exact_logits": true,
+    "domain_specs_are_distinct": true,
+    "installing_other_domains_does_not_change_selected_domain": true,
+    "payload_function_reused": true,
+    "three_domains_installed": true
+  },
+  "scope": "Many-domain game-layer proxy. This verifies install/migration/isolation mechanics for multiple game-named domains using renamed copies of the current portable payload. It does not prove game-dialogue quality until a real game corpus payload is trained and evaluated.",
+  "status": "PASS"
+}

@@ -1,0 +1,55 @@
+{
+  "name": "production_companion_16m_bpe_redpajama_game_phase3",
+  "description": "Same-recipe BPE transformer baseline for the 15M LayerCake phase-3 digital companion run. Trained on the same RedPajama + Ember Road + companion data roots with tokenizer time counted.",
+  "tokenizer": {
+    "vocab_size": 4096,
+    "model_type": "bpe",
+    "byte_fallback": true
+  },
+  "model": {
+    "d_model": 448,
+    "layers": 5,
+    "heads": 7,
+    "ff_mult": 4,
+    "dropout": 0.05
+  },
+  "training": {
+    "device": "cuda",
+    "seed": 5236,
+    "matmul_precision": "high",
+    "seq_len": 256,
+    "micro_batch_size": 1,
+    "grad_accum_steps": 4,
+    "steps": 11000,
+    "lr": 0.00032,
+    "min_lr": 0.00006,
+    "warmup_steps": 500,
+    "lr_decay_steps": 11000,
+    "weight_decay": 0.01,
+    "log_interval": 250,
+    "save_optimizer": false,
+    "metrics_path": "training_metrics.json",
+    "corpus_bytes": 45056000,
+    "eval_bytes": 200000,
+    "eval_batches": 16,
+    "read_block_bytes": 1048576,
+    "include_suffixes": [".jsonl", ".json", ".txt", ".md", ".csv"],
+    "data_roots": [
+      "./data/game_domains/ember-road.companion_responses.txt",
+      "./data/game_domains/ember-road.rulebook.repeated.txt",
+      "./data/game_domains/ember-road.instructions.txt",
+      "./data/game_domains/ember-road.rulebook.json",
+      "./data/curriculum/companion_dialogue_curriculum.txt",
+      "./data/curriculum/english_school_curriculum.txt",
+      "../layercakeogwithdecoder/data/v6/redpajama_english_train.jsonl"
+    ],
+    "eval_data_roots": [
+      "./data/game_domains/ember-road.companion_responses.txt",
+      "./data/game_domains/ember-road.instructions.txt",
+      "./data/game_domains/ember-road.rulebook.json",
+      "./data/curriculum/companion_dialogue_curriculum.txt",
+      "../layercakeogwithdecoder/data/v6/redpajama_english_eval.jsonl"
+    ],
+    "out_dir": "runs_experiment/production_companion_16m_bpe_redpajama_game_phase3"
+  }
+}

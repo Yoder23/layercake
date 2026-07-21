@@ -1,0 +1,93 @@
+{
+  "claim_boundary": "PASS means promoted CPU/mobile-proxy, training, latency, and domain gates pass. OPEN GPU generation prevents any across-the-board CPU+GPU dominance claim.",
+  "failed_promoted_groups": {},
+  "metrics": {
+    "bpe_generation_sample_cpu": "istake. Thenalistic is a greatesthelor to the mistake of the mistake. Thenalistic is the most important thing that is the most i",
+    "bpe_prefill_ms": 5.6325000477954745,
+    "cpu_bpe_bytes_per_second": 146.82793727972984,
+    "cpu_layercake_bytes_per_second": 317.1470245104897,
+    "gpu_bpe_bytes_per_second": 840.159078840958,
+    "gpu_layercake_bytes_per_second": 244.2212110309875,
+    "layercake_generation_sample_cpu": "ore than a straight of this products are all those times at three to thursday an interesting thysis as too much assessment toget",
+    "layercake_prefill_ms": 2.958531000185758
+  },
+  "open_or_failing_scorecard": {
+    "gpu_generation": {
+      "failed": [
+        "gpu_generation_faster_than_bpe"
+      ],
+      "reason": "GPU generation quality gates pass, but LayerCake generation is slower than BPE on the retained CUDA benchmark. This blocks any across-the-board GPU claim.",
+      "required_gates": {
+        "gpu_generation_faster_than_bpe": false,
+        "gpu_generation_quality_gates_pass": true
+      },
+      "status": "OPEN"
+    }
+  },
+  "promoted_scorecard": {
+    "cpu_generation": {
+      "failed": [],
+      "required_gates": {
+        "cpu_generation_at_least_2x_bpe": true,
+        "cpu_generation_faster_than_bpe": true,
+        "cpu_generation_quality_gates_pass": true
+      },
+      "status": "PASS"
+    },
+    "domain_layers": {
+      "failed": [],
+      "required_gates": {
+        "domain_cpu_faster_than_adapter": true,
+        "domain_payload_smaller_than_adapter": true,
+        "domain_quality_beats_adapter": true,
+        "domain_training_faster_than_adapter": true,
+        "domain_transfer_exact": true
+      },
+      "status": "PASS"
+    },
+    "game_ready_cpu_mobile_proxy": {
+      "failed": [],
+      "required_gates": {
+        "core_better_bpb_than_bpe": true,
+        "core_faster_training_than_bpe": true,
+        "core_frontier_promoted": true,
+        "core_smaller_than_bpe": true,
+        "core_uses_fewer_training_bytes": true,
+        "cpu_deployment_artifact_smaller_than_bpe": true,
+        "cpu_deployment_generation_faster_than_bpe": true,
+        "cpu_deployment_peak_memory_measured_and_no_worse_than_bpe": true,
+        "cpu_generation_at_least_2x_bpe": true,
+        "domain_cpu_at_least_2x_adapter": true,
+        "domain_payload_smaller_than_adapter": true,
+        "domain_quality_beats_adapter": true,
+        "domain_training_faster_than_adapter": true,
+        "dominance_matrix_promoted_tiers_pass": true,
+        "english_generation_alpha_space": true,
+        "english_generation_diverse": true,
+        "english_generation_no_8gram_loop": true,
+        "english_generation_printable": true,
+        "lossless_transfer_exact": true,
+        "receiver_after_transfer_beats_transformer": true
+      },
+      "status": "PASS"
+    },
+    "latency": {
+      "failed": [],
+      "required_gates": {
+        "batch1_prefill_faster_than_bpe": true
+      },
+      "status": "PASS"
+    },
+    "training_quality_cost": {
+      "failed": [],
+      "required_gates": {
+        "faster_training_than_bpe": true,
+        "fewer_training_bytes_than_bpe": true,
+        "lower_bpb_than_bpe": true,
+        "smaller_core_than_bpe": true
+      },
+      "status": "PASS"
+    }
+  },
+  "status": "PASS"
+}

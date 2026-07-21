@@ -23,30 +23,62 @@ def generate_layercake(
     mode: str,
     no_repeat_ngram: int = 0,
 ):
-    generated = prompt.clone()
-    state = (
-        model.begin_cached_generation(prompt)
-        if mode == "stateful_cached"
-        else None
-    )
+    state = None
+    cached_draft = False
+    if mode == "stateful_cached":
+        state = model.begin_cached_generation(prompt)
+    elif (
+        mode == "draft_cached"
+        and no_repeat_ngram <= 1
+        and hasattr(model, "begin_patch_prediction_cached_generation")
+    ):
+        try:
+            state = model.begin_patch_prediction_cached_generation(prompt)
+            cached_draft = True
+        except RuntimeError:
+            state = None
+    if mode == "stateful_cached" or cached_draft:
+        continuation = torch.empty(
+            prompt.shape[0],
+            new_bytes,
+            dtype=prompt.dtype,
+            device=prompt.device,
+        )
+        emitted = 0
+    else:
+        generated = prompt.clone()
     started = time.perf_counter()
-    while generated.shape[1] - prompt.shape[1] < new_bytes:
-        context = generated[:, -model.patch_pos.num_embeddings * model.patch_size :]
+    while True:
+        if (mode == "stateful_cached" or cached_draft) and emitted >= new_bytes:
+            break
+        if mode != "stateful_cached" and not cached_draft and generated.shape[1] - prompt.shape[1] >= new_bytes:
+            break
+        context = None
+        if mode != "stateful_cached" and not cached_draft:
+            context = generated[:, -model.patch_pos.num_embeddings * model.patch_size :]
         if mode == "stateful_cached":
             next_patch = model.cached_generation_step(
                 state, no_repeat_ngram=no_repeat_ngram
             )
+        elif cached_draft:
+            next_patch = model.cached_patch_prediction_step(state)
         elif mode == "cached":
             next_patch = model.generate_cached_patch(context)
         elif mode == "verified":
             next_patch = model.generate_verified_patch(context)
         else:
             next_patch = model.generate_next_patch(context)
-        generated = torch.cat([generated, next_patch], dim=1)
+        if mode == "stateful_cached" or cached_draft:
+            take = min(next_patch.shape[1], new_bytes - emitted)
+            continuation[:, emitted : emitted + take] = next_patch[:, :take]
+            emitted += take
+        else:
+            generated = torch.cat([generated, next_patch], dim=1)
     if prompt.device.type == "cuda":
         torch.cuda.synchronize()
     elapsed = time.perf_counter() - started
-    continuation = generated[:, prompt.shape[1] : prompt.shape[1] + new_bytes]
+    if mode != "stateful_cached" and not cached_draft:
+        continuation = generated[:, prompt.shape[1] : prompt.shape[1] + new_bytes]
     return continuation, elapsed
 
 
@@ -76,7 +108,7 @@ def main() -> None:
     parser.add_argument("--new-bytes", type=int, default=64)
     parser.add_argument(
         "--layercake-mode",
-        choices=["draft", "verified", "cached", "stateful_cached"],
+        choices=["draft", "draft_cached", "verified", "cached", "stateful_cached"],
         default="draft",
     )
     parser.add_argument("--prompt-bytes", type=int, default=128)

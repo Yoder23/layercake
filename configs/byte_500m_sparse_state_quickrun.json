@@ -1,0 +1,67 @@
+{
+  "name": "layercake_byte_500m_sparse_state_quickrun",
+  "description": "Quick stand-up run at 500M with sparse-state patch core for dense-attention throughput comparison",
+  "model": {
+    "patch_size": 2,
+    "d_byte": 96,
+    "d_model": 1280,
+    "d_abi": 320,
+    "layers": 24,
+    "heads": 16,
+    "max_patches": 256,
+    "continuous_local": false,
+    "direct_global_context": true,
+    "local_decoder": "window_transformer",
+    "local_layers": 4,
+    "local_width": 768,
+    "modern_blocks": true,
+    "fused_attention": true,
+    "local_window": 64,
+    "patch_unit_buckets": 0,
+    "dropout": 0.1,
+    "qk_norm": true,
+    "global_block": "sparse_state_patch",
+    "sparse_state_local_window": 32,
+    "sparse_state_dilated_offsets": [32, 48, 64, 96],
+    "sparse_state_chunk_size": 16
+  },
+  "training": {
+    "device": "cuda",
+    "matmul_precision": "high",
+    "dataloader_workers": 2,
+    "pin_memory": true,
+    "persistent_workers": true,
+    "compile_model": false,
+    "optimizer_fused": true,
+    "seq_len": 512,
+    "micro_batch_size": 1,
+    "grad_accum_steps": 2,
+    "steps": 30,
+    "lr": 0.0001,
+    "weight_decay": 0.01,
+    "log_interval": 5,
+    "save_interval": 30,
+    "keep_last_n": 1,
+    "save_optimizer": false,
+    "metrics_path": "training_metrics.json",
+    "throughput_guard": {
+      "warmup_steps": 10,
+      "max_projected_hours": 0.5,
+      "abort_on_fail": false
+    },
+    "include_suffixes": [
+      ".jsonl",
+      ".json",
+      ".txt",
+      ".md",
+      ".csv",
+      ".py"
+    ],
+    "data_roots": [
+      "../data",
+      "./data",
+      "../"
+    ],
+    "out_dir": "runs_experiment/byte_500m_sparse_state_quickrun"
+  }
+}

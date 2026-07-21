@@ -1,0 +1,612 @@
+{
+  "architecture_inputs": {
+    "layercake_config": "configs/northstar_v6_patch4_grounded_mix_layercake.json",
+    "transformer_bytes_per_token_source": "runs_experiment/northstar_v22_fair_corrected_bpe/training_metrics.json",
+    "transformer_config": "configs/northstar_v22_fair_corrected_bpe.json"
+  },
+  "benchmark": "northstar_v22_full_core_training_speed",
+  "claim_scope": "Matched-parameter full-core steady-state training throughput on the recorded CPU and GPU; this does not measure convergence or time-to-quality.",
+  "devices": {
+    "cpu": {
+      "device": "cpu",
+      "environment": {
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+        "cuda_available": true,
+        "device_type": "cpu",
+        "gpu": null,
+        "gpu_compute_capability": null,
+        "gpu_total_memory_bytes": null,
+        "platform": "Windows-10-10.0.26200-SP0",
+        "python": "3.10.0",
+        "torch": "2.7.1+cu118",
+        "torch_cuda": "11.8"
+      },
+      "excluded_from_timing": [
+        "model initialization",
+        "tokenizer training/encoding",
+        "checkpoint I/O",
+        "evaluation",
+        "warmup"
+      ],
+      "gates": {
+        "all_losses_finite": true,
+        "all_trainable_layercake_parameters_receive_gradients": false,
+        "all_trainable_transformer_parameters_receive_gradients": true,
+        "logical_bytes_per_step_within_1_percent": true,
+        "minimum_repeat_training_throughput_at_least_5x": false,
+        "parameter_count_within_5_percent": true
+      },
+      "layercake": {
+        "all_losses_finite": true,
+        "logical_bytes_per_second": {
+          "maximum": 1041.7290477671509,
+          "median": 1007.7638824971004,
+          "minimum": 858.7416404766846,
+          "values": [
+            1041.7290477671509,
+            858.7416404766846,
+            1007.7638824971004
+          ]
+        },
+        "maximum_cuda_peak_memory_allocated_bytes": null,
+        "maximum_tensor_state_bytes": 235681200,
+        "measured_seconds": {
+          "median": 3.0483330999995815,
+          "values": [
+            2.948943399998825,
+            3.5773274000021047,
+            3.0483330999995815
+          ]
+        },
+        "minimum_gradient_parameter_fraction": 0.9932993111259535,
+        "repeats": 3,
+        "total_parameters": 14804448,
+        "trainable_parameters": 14804448
+      },
+      "layercake_training_mode": "recipe",
+      "ratios": {
+        "cuda_peak_memory_transformer_over_layercake": null,
+        "median_training_throughput_layercake_over_transformer": 0.7219387554034304,
+        "minimum_training_throughput_layercake_over_transformer": 0.7084844888222587,
+        "parameter_count_layercake_over_transformer": 0.9902079132902696,
+        "tensor_state_bytes_transformer_over_layercake": 1.0149896215735494,
+        "training_throughput_layercake_over_transformer_per_repeat": [
+          0.750133319357881,
+          0.7219387554034304,
+          0.7084844888222587
+        ]
+      },
+      "repeat_details": {
+        "layercake": [
+          {
+            "cuda_peak_memory_allocated_bytes": null,
+            "final_loss": 2.8568530082702637,
+            "finite_loss": true,
+            "gradient_parameter_fraction": 0.9932993111259535,
+            "gradient_parameters": 14705248,
+            "initialization_seconds_excluded": 1.1505490999988979,
+            "logical_bytes_per_second": 1041.7290477671509,
+            "logical_bytes_per_step": 256.0,
+            "measured_seconds": 2.948943399998825,
+            "measured_steps": 12,
+            "name": "layercake",
+            "repeat": 0,
+            "shape_including_target": [
+              1,
+              257
+            ],
+            "steps_per_second": 4.069254092840433,
+            "tensor_state_bytes": {
+              "gradients": 58820992,
+              "optimizer": 117642416,
+              "parameters": 59217792,
+              "total": 235681200
+            },
+            "total_parameters": 14804448,
+            "trainable_parameters": 14804448,
+            "warmup_seconds_excluded": 0.8094599000032758,
+            "warmup_steps": 3
+          },
+          {
+            "cuda_peak_memory_allocated_bytes": null,
+            "final_loss": 2.818779230117798,
+            "finite_loss": true,
+            "gradient_parameter_fraction": 0.9932993111259535,
+            "gradient_parameters": 14705248,
+            "initialization_seconds_excluded": 0.056363199997576885,
+            "logical_bytes_per_second": 858.7416404766846,
+            "logical_bytes_per_step": 256.0,
+            "measured_seconds": 3.5773274000021047,
+            "measured_steps": 12,
+            "name": "layercake",
+            "repeat": 1,
+            "shape_including_target": [
+              1,
+              257
+            ],
+            "steps_per_second": 3.354459533112049,
+            "tensor_state_bytes": {
+              "gradients": 58820992,
+              "optimizer": 117642416,
+              "parameters": 59217792,
+              "total": 235681200
+            },
+            "total_parameters": 14804448,
+            "trainable_parameters": 14804448,
+            "warmup_seconds_excluded": 0.9596086000019568,
+            "warmup_steps": 3
+          },
+          {
+            "cuda_peak_memory_allocated_bytes": null,
+            "final_loss": 2.8083534240722656,
+            "finite_loss": true,
+            "gradient_parameter_fraction": 0.9932993111259535,
+            "gradient_parameters": 14705248,
+            "initialization_seconds_excluded": 0.0640958000003593,
+            "logical_bytes_per_second": 1007.7638824971004,
+            "logical_bytes_per_step": 256.0,
+            "measured_seconds": 3.0483330999995815,
+            "measured_steps": 12,
+            "name": "layercake",
+            "repeat": 2,
+            "shape_including_target": [
+              1,
+              257
+            ],
+            "steps_per_second": 3.9365776660042986,
+            "tensor_state_bytes": {
+              "gradients": 58820992,
+              "optimizer": 117642416,
+              "parameters": 59217792,
+              "total": 235681200
+            },
+            "total_parameters": 14804448,
+            "trainable_parameters": 14804448,
+            "warmup_seconds_excluded": 0.8719968999939738,
+            "warmup_steps": 3
+          }
+        ],
+        "transformer": [
+          {
+            "cuda_peak_memory_allocated_bytes": null,
+            "final_loss": 4.483104705810547,
+            "finite_loss": true,
+            "gradient_parameter_fraction": 1.0,
+            "gradient_parameters": 14950848,
+            "initialization_seconds_excluded": 0.029617600004712585,
+            "logical_bytes_per_second": 1388.7252050860475,
+            "logical_bytes_per_step": 256.3400870863485,
+            "measured_seconds": 2.2150393999982043,
+            "measured_steps": 12,
+            "name": "transformer",
+            "repeat": 0,
+            "shape_including_target": [
+              1,
+              75
+            ],
+            "steps_per_second": 5.417510857824799,
+            "tensor_state_bytes": {
+              "gradients": 59803392,
+              "optimizer": 119607188,
+              "parameters": 59803392,
+              "total": 239213972
+            },
+            "total_parameters": 14950848,
+            "trainable_parameters": 14950848,
+            "warmup_seconds_excluded": 0.5774840000012773,
+            "warmup_steps": 3
+          },
+          {
+            "cuda_peak_memory_allocated_bytes": null,
+            "final_loss": 4.393975734710693,
+            "finite_loss": true,
+            "gradient_parameter_fraction": 1.0,
+            "gradient_parameters": 14950848,
+            "initialization_seconds_excluded": 0.031362599998828955,
+            "logical_bytes_per_second": 1189.4937542129962,
+            "logical_bytes_per_step": 256.3400870863485,
+            "measured_seconds": 2.586042200004158,
+            "measured_steps": 12,
+            "name": "transformer",
+            "repeat": 1,
+            "shape_including_target": [
+              1,
+              75
+            ],
+            "steps_per_second": 4.640295506384508,
+            "tensor_state_bytes": {
+              "gradients": 59803392,
+              "optimizer": 119607188,
+              "parameters": 59803392,
+              "total": 239213972
+            },
+            "total_parameters": 14950848,
+            "trainable_parameters": 14950848,
+            "warmup_seconds_excluded": 0.4816002000006847,
+            "warmup_steps": 3
+          },
+          {
+            "cuda_peak_memory_allocated_bytes": null,
+            "final_loss": 4.497093677520752,
+            "finite_loss": true,
+            "gradient_parameter_fraction": 1.0,
+            "gradient_parameters": 14950848,
+            "initialization_seconds_excluded": 0.030366300001333002,
+            "logical_bytes_per_second": 1422.4219420418724,
+            "logical_bytes_per_step": 256.3400870863485,
+            "measured_seconds": 2.1625658000048134,
+            "measured_steps": 12,
+            "name": "transformer",
+            "repeat": 2,
+            "shape_including_target": [
+              1,
+              75
+            ],
+            "steps_per_second": 5.548964105496022,
+            "tensor_state_bytes": {
+              "gradients": 59803392,
+              "optimizer": 119607188,
+              "parameters": 59803392,
+              "total": 239213972
+            },
+            "total_parameters": 14950848,
+            "trainable_parameters": 14950848,
+            "warmup_seconds_excluded": 0.5428536999970675,
+            "warmup_steps": 3
+          }
+        ]
+      },
+      "status": "FAIL",
+      "timing_scope": "steady-state complete optimizer steps: zero_grad + forward + loss + backward + gradient clipping + AdamW update",
+      "transformer": {
+        "all_losses_finite": true,
+        "logical_bytes_per_second": {
+          "maximum": 1422.4219420418724,
+          "median": 1388.7252050860475,
+          "minimum": 1189.4937542129962,
+          "values": [
+            1388.7252050860475,
+            1189.4937542129962,
+            1422.4219420418724
+          ]
+        },
+        "maximum_cuda_peak_memory_allocated_bytes": null,
+        "maximum_tensor_state_bytes": 239213972,
+        "measured_seconds": {
+          "median": 2.2150393999982043,
+          "values": [
+            2.2150393999982043,
+            2.586042200004158,
+            2.1625658000048134
+          ]
+        },
+        "minimum_gradient_parameter_fraction": 1.0,
+        "repeats": 3,
+        "total_parameters": 14950848,
+        "trainable_parameters": 14950848
+      },
+      "workload": {
+        "batch_size": 1,
+        "layercake_bytes_per_step": 256.0,
+        "logical_batch_bytes_ratio_layercake_over_transformer": 0.9986732972972974,
+        "raw_sequence_bytes": 256,
+        "transformer_bytes_per_step": 256.3400870863485,
+        "transformer_bytes_per_token": 3.4640552308966015,
+        "transformer_tokens_per_sequence": 74
+      }
+    },
+    "cuda": {
+      "device": "cuda",
+      "environment": {
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900H",
+        "cuda_available": true,
+        "device_type": "cuda",
+        "gpu": "NVIDIA GeForce RTX 3080 Laptop GPU",
+        "gpu_compute_capability": "8.6",
+        "gpu_total_memory_bytes": 17179344896,
+        "platform": "Windows-10-10.0.26200-SP0",
+        "python": "3.10.0",
+        "torch": "2.7.1+cu118",
+        "torch_cuda": "11.8"
+      },
+      "excluded_from_timing": [
+        "model initialization",
+        "tokenizer training/encoding",
+        "checkpoint I/O",
+        "evaluation",
+        "warmup"
+      ],
+      "gates": {
+        "all_losses_finite": true,
+        "all_trainable_layercake_parameters_receive_gradients": false,
+        "all_trainable_transformer_parameters_receive_gradients": true,
+        "logical_bytes_per_step_within_1_percent": true,
+        "minimum_repeat_training_throughput_at_least_5x": false,
+        "parameter_count_within_5_percent": true
+      },
+      "layercake": {
+        "all_losses_finite": true,
+        "logical_bytes_per_second": {
+          "maximum": 106855.63510595686,
+          "median": 104145.36788115923,
+          "minimum": 101604.89932829243,
+          "values": [
+            106855.63510595686,
+            104145.36788115923,
+            101604.89932829243
+          ]
+        },
+        "maximum_cuda_peak_memory_allocated_bytes": 642919936,
+        "maximum_tensor_state_bytes": 235681200,
+        "measured_seconds": {
+          "median": 0.4719556999989436,
+          "values": [
+            0.45998510000208626,
+            0.4719556999989436,
+            0.4837561999956961
+          ]
+        },
+        "minimum_gradient_parameter_fraction": 0.9932993111259535,
+        "repeats": 3,
+        "total_parameters": 14804448,
+        "trainable_parameters": 14804448
+      },
+      "layercake_training_mode": "recipe",
+      "ratios": {
+        "cuda_peak_memory_transformer_over_layercake": 0.7700021422263067,
+        "median_training_throughput_layercake_over_transformer": 1.044966346617519,
+        "minimum_training_throughput_layercake_over_transformer": 0.9713237971324291,
+        "parameter_count_layercake_over_transformer": 0.9902079132902696,
+        "tensor_state_bytes_transformer_over_layercake": 1.0149896215735494,
+        "training_throughput_layercake_over_transformer_per_repeat": [
+          1.3588577914221607,
+          0.9713237971324291,
+          1.044966346617519
+        ]
+      },
+      "repeat_details": {
+        "layercake": [
+          {
+            "cuda_peak_memory_allocated_bytes": 640626176,
+            "final_loss": 5.175786018371582,
+            "finite_loss": true,
+            "gradient_parameter_fraction": 0.9932993111259535,
+            "gradient_parameters": 14705248,
+            "initialization_seconds_excluded": 0.1496906999964267,
+            "logical_bytes_per_second": 106855.63510595686,
+            "logical_bytes_per_step": 4096.0,
+            "measured_seconds": 0.45998510000208626,
+            "measured_steps": 12,
+            "name": "layercake",
+            "repeat": 0,
+            "shape_including_target": [
+              16,
+              257
+            ],
+            "steps_per_second": 26.087801539540248,
+            "tensor_state_bytes": {
+              "gradients": 58820992,
+              "optimizer": 117642416,
+              "parameters": 59217792,
+              "total": 235681200
+            },
+            "total_parameters": 14804448,
+            "trainable_parameters": 14804448,
+            "warmup_seconds_excluded": 0.38827309999760473,
+            "warmup_steps": 3
+          },
+          {
+            "cuda_peak_memory_allocated_bytes": 642919936,
+            "final_loss": 5.160496234893799,
+            "finite_loss": true,
+            "gradient_parameter_fraction": 0.9932993111259535,
+            "gradient_parameters": 14705248,
+            "initialization_seconds_excluded": 0.07054809999681311,
+            "logical_bytes_per_second": 104145.36788115923,
+            "logical_bytes_per_step": 4096.0,
+            "measured_seconds": 0.4719556999989436,
+            "measured_steps": 12,
+            "name": "layercake",
+            "repeat": 1,
+            "shape_including_target": [
+              16,
+              257
+            ],
+            "steps_per_second": 25.42611520536114,
+            "tensor_state_bytes": {
+              "gradients": 58820992,
+              "optimizer": 117642416,
+              "parameters": 59217792,
+              "total": 235681200
+            },
+            "total_parameters": 14804448,
+            "trainable_parameters": 14804448,
+            "warmup_seconds_excluded": 0.11570740000024671,
+            "warmup_steps": 3
+          },
+          {
+            "cuda_peak_memory_allocated_bytes": 642919936,
+            "final_loss": 5.1532416343688965,
+            "finite_loss": true,
+            "gradient_parameter_fraction": 0.9932993111259535,
+            "gradient_parameters": 14705248,
+            "initialization_seconds_excluded": 0.0673118999984581,
+            "logical_bytes_per_second": 101604.89932829243,
+            "logical_bytes_per_step": 4096.0,
+            "measured_seconds": 0.4837561999956961,
+            "measured_steps": 12,
+            "name": "layercake",
+            "repeat": 2,
+            "shape_including_target": [
+              16,
+              257
+            ],
+            "steps_per_second": 24.805883625071395,
+            "tensor_state_bytes": {
+              "gradients": 58820992,
+              "optimizer": 117642416,
+              "parameters": 59217792,
+              "total": 235681200
+            },
+            "total_parameters": 14804448,
+            "trainable_parameters": 14804448,
+            "warmup_seconds_excluded": 0.1223396000059438,
+            "warmup_steps": 3
+          }
+        ],
+        "transformer": [
+          {
+            "cuda_peak_memory_allocated_bytes": 495049728,
+            "final_loss": 7.044182777404785,
+            "finite_loss": true,
+            "gradient_parameter_fraction": 1.0,
+            "gradient_parameters": 14950848,
+            "initialization_seconds_excluded": 0.04918480000196723,
+            "logical_bytes_per_second": 78636.3634079202,
+            "logical_bytes_per_step": 4101.441393381576,
+            "measured_seconds": 0.6258846999990055,
+            "measured_steps": 12,
+            "name": "transformer",
+            "repeat": 0,
+            "shape_including_target": [
+              16,
+              75
+            ],
+            "steps_per_second": 19.17286043263091,
+            "tensor_state_bytes": {
+              "gradients": 59803392,
+              "optimizer": 119607188,
+              "parameters": 59803392,
+              "total": 239213972
+            },
+            "total_parameters": 14950848,
+            "trainable_parameters": 14950848,
+            "warmup_seconds_excluded": 0.192962199995236,
+            "warmup_steps": 3
+          },
+          {
+            "cuda_peak_memory_allocated_bytes": 495049728,
+            "final_loss": 7.053301811218262,
+            "finite_loss": true,
+            "gradient_parameter_fraction": 1.0,
+            "gradient_parameters": 14950848,
+            "initialization_seconds_excluded": 0.04808900000352878,
+            "logical_bytes_per_second": 107220.03124871466,
+            "logical_bytes_per_step": 4101.441393381576,
+            "measured_seconds": 0.4590308000042569,
+            "measured_steps": 12,
+            "name": "transformer",
+            "repeat": 1,
+            "shape_including_target": [
+              16,
+              75
+            ],
+            "steps_per_second": 26.142036656121366,
+            "tensor_state_bytes": {
+              "gradients": 59803392,
+              "optimizer": 119607188,
+              "parameters": 59803392,
+              "total": 239213972
+            },
+            "total_parameters": 14950848,
+            "trainable_parameters": 14950848,
+            "warmup_seconds_excluded": 0.14273940000566654,
+            "warmup_steps": 3
+          },
+          {
+            "cuda_peak_memory_allocated_bytes": 495049728,
+            "final_loss": 7.058257102966309,
+            "finite_loss": true,
+            "gradient_parameter_fraction": 1.0,
+            "gradient_parameters": 14950848,
+            "initialization_seconds_excluded": 0.0401653000008082,
+            "logical_bytes_per_second": 97232.70003592,
+            "logical_bytes_per_step": 4101.441393381576,
+            "measured_seconds": 0.5061805000004824,
+            "measured_steps": 12,
+            "name": "transformer",
+            "repeat": 2,
+            "shape_including_target": [
+              16,
+              75
+            ],
+            "steps_per_second": 23.706958288572086,
+            "tensor_state_bytes": {
+              "gradients": 59803392,
+              "optimizer": 119607188,
+              "parameters": 59803392,
+              "total": 239213972
+            },
+            "total_parameters": 14950848,
+            "trainable_parameters": 14950848,
+            "warmup_seconds_excluded": 0.11853859999973793,
+            "warmup_steps": 3
+          }
+        ]
+      },
+      "status": "FAIL",
+      "timing_scope": "steady-state complete optimizer steps: zero_grad + forward + loss + backward + gradient clipping + AdamW update",
+      "transformer": {
+        "all_losses_finite": true,
+        "logical_bytes_per_second": {
+          "maximum": 107220.03124871466,
+          "median": 97232.70003592,
+          "minimum": 78636.3634079202,
+          "values": [
+            78636.3634079202,
+            107220.03124871466,
+            97232.70003592
+          ]
+        },
+        "maximum_cuda_peak_memory_allocated_bytes": 495049728,
+        "maximum_tensor_state_bytes": 239213972,
+        "measured_seconds": {
+          "median": 0.5061805000004824,
+          "values": [
+            0.6258846999990055,
+            0.4590308000042569,
+            0.5061805000004824
+          ]
+        },
+        "minimum_gradient_parameter_fraction": 1.0,
+        "repeats": 3,
+        "total_parameters": 14950848,
+        "trainable_parameters": 14950848
+      },
+      "workload": {
+        "batch_size": 16,
+        "layercake_bytes_per_step": 4096.0,
+        "logical_batch_bytes_ratio_layercake_over_transformer": 0.9986732972972974,
+        "raw_sequence_bytes": 256,
+        "transformer_bytes_per_step": 4101.441393381576,
+        "transformer_bytes_per_token": 3.4640552308966015,
+        "transformer_tokens_per_sequence": 74
+      }
+    }
+  },
+  "failed_required": [
+    "all_cpu_and_cuda_gates_pass"
+  ],
+  "protocol": {
+    "cpu_batch_size": 1,
+    "cpu_threads": 1,
+    "gpu_batch_size": 16,
+    "layercake_training_mode": "recipe",
+    "measured_steps": 12,
+    "optimizer": "AdamW; fused on CUDA",
+    "precision": {
+      "cpu": "float32",
+      "cuda": "AMP float16"
+    },
+    "raw_sequence_bytes": 256,
+    "repeat_order": "alternating LayerCake-first / transformer-first",
+    "repeats": 3,
+    "warmup_steps": 3
+  },
+  "required_gates": {
+    "all_cpu_and_cuda_gates_pass": false,
+    "cpu_and_cuda_measured": true
+  },
+  "schema_version": 1,
+  "status": "FAIL"
+}

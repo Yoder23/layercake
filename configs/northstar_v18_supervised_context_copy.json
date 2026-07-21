@@ -1,0 +1,24 @@
+{
+  "extends": "northstar_v17_compositional_holdout.json",
+  "name": "northstar_v18_supervised_context_copy",
+  "description": "Add forward-byte context to source copy keys and a copy-only auxiliary objective on answer bytes present in the prompt, while retaining the frozen core and canonical task loss.",
+  "model": {
+    "patch_generation_contextual_copy": true
+  },
+  "training": {
+    "seed": 13201,
+    "steps": 62000,
+    "lr": 0.00005,
+    "min_lr": 0.000005,
+    "warmup_steps": 100,
+    "lr_decay_steps": 5900,
+    "lr_step_offset": 56000,
+    "patch_prediction_copy_loss_weight": 0.25,
+    "resume_from": "runs_experiment/northstar_v17_compositional_holdout/latest.pt",
+    "resume_strict": false,
+    "log_interval": 500,
+    "save_interval": 3000,
+    "eval_seed": 13202,
+    "out_dir": "runs_experiment/northstar_v18_supervised_context_copy"
+  }
+}

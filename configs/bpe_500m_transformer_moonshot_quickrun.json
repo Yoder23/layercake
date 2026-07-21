@@ -1,0 +1,44 @@
+{
+  "name": "bpe_500m_transformer_moonshot_quickrun",
+  "description": "500M-class BPE transformer quickrun comparator for the 100M LayerCake moonshot gate",
+  "tokenizer": {
+    "vocab_size": 4096,
+    "model_type": "bpe",
+    "byte_fallback": true
+  },
+  "model": {
+    "d_model": 2048,
+    "layers": 10,
+    "heads": 16,
+    "ff_mult": 4,
+    "dropout": 0.05
+  },
+  "training": {
+    "device": "cuda",
+    "matmul_precision": "high",
+    "optimizer_fused": true,
+    "seq_len": 512,
+    "micro_batch_size": 1,
+    "grad_accum_steps": 2,
+    "steps": 30,
+    "lr": 0.0001,
+    "min_lr": 0.00002,
+    "warmup_steps": 4,
+    "lr_decay_steps": 30,
+    "weight_decay": 0.01,
+    "log_interval": 5,
+    "save_optimizer": false,
+    "metrics_path": "training_metrics.json",
+    "corpus_bytes": 2000000,
+    "eval_bytes": 100000,
+    "eval_batches": 8,
+    "read_block_bytes": 1048576,
+    "include_suffixes": [".jsonl", ".json", ".txt", ".md", ".csv"],
+    "data_roots": [
+      "../layercakeogwithdecoder/data/v6/redpajama_english_train.jsonl",
+      "./data/curriculum/english_school_curriculum.txt",
+      "./data/curriculum/companion_dialogue_curriculum.txt"
+    ],
+    "out_dir": "runs_experiment/bpe_500m_transformer_moonshot_quickrun"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "name": "layercake_byte_225m_core_phaseB_polish",
+  "description": "Fast English polish continuation for 225M byte core",
+  "model": {
+    "patch_size": 2,
+    "d_byte": 64,
+    "d_model": 1024,
+    "d_abi": 256,
+    "layers": 16,
+    "heads": 16,
+    "max_patches": 1024,
+    "continuous_local": false,
+    "direct_global_context": true,
+    "local_decoder": "window_transformer",
+    "local_layers": 4,
+    "local_width": 640,
+    "modern_blocks": true,
+    "fused_attention": true,
+    "local_window": 64,
+    "patch_unit_buckets": 0,
+    "dropout": 0.1,
+    "qk_norm": true,
+    "global_block": "attention"
+  },
+  "training": {
+    "device": "cuda",
+    "matmul_precision": "high",
+    "dataloader_workers": 2,
+    "pin_memory": true,
+    "persistent_workers": true,
+    "compile_model": false,
+    "optimizer_fused": true,
+    "seq_len": 1024,
+    "micro_batch_size": 2,
+    "grad_accum_steps": 16,
+    "steps": 80000,
+    "resume_from": "runs_experiment/byte_225m_core_phaseA_curriculum/latest.pt",
+    "lr": 0.00012,
+    "min_lr": 0.00002,
+    "warmup_steps": 500,
+    "lr_decay_steps": 59500,
+    "lr_step_offset": 20000,
+    "weight_decay": 0.01,
+    "log_interval": 50,
+    "save_interval": 1000,
+    "keep_last_n": 1,
+    "save_optimizer": false,
+    "metrics_path": "training_metrics.json",
+    "throughput_guard": {
+      "warmup_steps": 100,
+      "max_projected_hours": 96,
+      "abort_on_fail": true
+    },
+    "read_block_bytes": 1048576,
+    "include_suffixes": [
+      ".jsonl",
+      ".json",
+      ".txt",
+      ".md",
+      ".csv"
+    ],
+    "data_roots": [
+      "../layercakeogwithdecoder/data/v6/redpajama_english_train.jsonl",
+      "./data/curriculum/english_school_curriculum.txt",
+      "./data/curriculum/companion_dialogue_curriculum.txt"
+    ],
+    "out_dir": "runs_experiment/byte_225m_core_phaseB_polish"
+  }
+}

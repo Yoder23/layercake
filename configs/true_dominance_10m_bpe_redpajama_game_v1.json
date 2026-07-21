@@ -1,0 +1,52 @@
+{
+  "name": "true_dominance_10m_bpe_redpajama_game_v1",
+  "description": "Strict 10M-class BPE transformer baseline trained on the same English + Ember Road game-domain recipe.",
+  "tokenizer": {
+    "vocab_size": 4096,
+    "model_type": "bpe",
+    "byte_fallback": true
+  },
+  "model": {
+    "d_model": 320,
+    "layers": 6,
+    "heads": 4,
+    "ff_mult": 4,
+    "dropout": 0.05
+  },
+  "training": {
+    "device": "cuda",
+    "seed": 6234,
+    "matmul_precision": "high",
+    "seq_len": 256,
+    "micro_batch_size": 4,
+    "grad_accum_steps": 1,
+    "steps": 3000,
+    "lr": 0.00035,
+    "min_lr": 0.00007,
+    "warmup_steps": 150,
+    "lr_decay_steps": 3000,
+    "weight_decay": 0.01,
+    "log_interval": 150,
+    "save_optimizer": false,
+    "metrics_path": "training_metrics.json",
+    "corpus_bytes": 20000000,
+    "eval_bytes": 200000,
+    "eval_batches": 16,
+    "read_block_bytes": 1048576,
+    "include_suffixes": [".jsonl", ".json", ".txt", ".md", ".csv"],
+    "data_roots": [
+      "./data/game_domains/ember-road.instructions.txt",
+      "./data/game_domains/ember-road.companion_responses.txt",
+      "./data/game_domains/ember-road.rulebook.repeated.txt",
+      "./data/curriculum/companion_dialogue_curriculum.txt",
+      "./data/curriculum/english_school_curriculum.txt",
+      "../layercakeogwithdecoder/data/v6/redpajama_english_train.jsonl"
+    ],
+    "eval_data_roots": [
+      "./data/game_domains/ember-road.generalization_prompts.json",
+      "./data/game_domains/ember-road.rulebook.json",
+      "../layercakeogwithdecoder/data/v6/redpajama_english_eval.jsonl"
+    ],
+    "out_dir": "runs_experiment/true_dominance_10m_bpe_redpajama_game_v1"
+  }
+}

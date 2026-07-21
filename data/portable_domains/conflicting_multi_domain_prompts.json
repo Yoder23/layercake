@@ -1,0 +1,58 @@
+[
+  {
+    "category": "atlas",
+    "prompt": "Question: In Atlas Notes, how does offline writing and sync work? Answer:",
+    "expected_keywords": ["local", "encrypted", "notebook", "cache", "sync", "Sync Review"],
+    "forbidden_keywords": ["pinned board snapshot", "Merge Snapshot", "ForgeBoard"],
+    "min_keyword_hits": 2
+  },
+  {
+    "category": "atlas",
+    "prompt": "Question: What is the Atlas Notes quick capture shortcut on desktop and mobile? Answer:",
+    "expected_keywords": ["Ctrl", "Shift", "N", "two-finger", "swipe", "Inbox"],
+    "forbidden_keywords": ["Alt", "Space", "plus button", "Today", "ForgeBoard"],
+    "min_keyword_hits": 2
+  },
+  {
+    "category": "forgeboard",
+    "prompt": "Question: In ForgeBoard, what happens to offline work after reconnecting? Answer:",
+    "expected_keywords": ["pinned", "board", "snapshot", "Merge Snapshot", "syncing"],
+    "forbidden_keywords": ["encrypted notebook cache", "Sync Review", "Atlas Notes"],
+    "min_keyword_hits": 2
+  },
+  {
+    "category": "forgeboard",
+    "prompt": "Question: What quick capture controls does ForgeBoard use? Answer:",
+    "expected_keywords": ["Alt", "Space", "long press", "plus button", "Today"],
+    "forbidden_keywords": ["Ctrl", "Shift", "two-finger", "Inbox", "Atlas Notes"],
+    "min_keyword_hits": 2
+  },
+  {
+    "category": "northwind",
+    "prompt": "Question: What is Northwind Shop's return policy? Answer:",
+    "expected_keywords": ["thirty days", "unused", "receipt", "Start Return", "prepaid label"],
+    "forbidden_keywords": ["fourteen days", "unworn", "original tags", "Request Exchange", "Harbor Outfitters"],
+    "min_keyword_hits": 2
+  },
+  {
+    "category": "northwind",
+    "prompt": "Question: How does a Northwind Shop guest track an order? Answer:",
+    "expected_keywords": ["order number", "email", "Track Order"],
+    "forbidden_keywords": ["shipment code", "billing zip", "Find Shipment", "Harbor Outfitters"],
+    "min_keyword_hits": 2
+  },
+  {
+    "category": "harbor",
+    "prompt": "Question: What is Harbor Outfitters' return policy? Answer:",
+    "expected_keywords": ["fourteen days", "unworn", "original tags", "Request Exchange"],
+    "forbidden_keywords": ["thirty days", "unused", "Start Return", "prepaid label", "Northwind Shop"],
+    "min_keyword_hits": 2
+  },
+  {
+    "category": "harbor",
+    "prompt": "Question: How can a Harbor Outfitters guest track a shipment? Answer:",
+    "expected_keywords": ["shipment code", "billing zip", "Find Shipment"],
+    "forbidden_keywords": ["order number", "email", "Track Order", "Northwind Shop"],
+    "min_keyword_hits": 2
+  }
+]

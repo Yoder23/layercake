@@ -1,0 +1,23 @@
+{
+  "extends": "northstar_v10_span80_prompt_boundary.json",
+  "name": "northstar_v12_span80_scheduled_rollout",
+  "description": "Conservative deployment-boundary scheduled conditioning: preserve teacher-forced syntax with 90 percent true predecessor bytes while injecting 10 percent current-rollout bytes to train recovery from realistic local errors.",
+  "model": {
+    "patch_prediction_rollout_training": true,
+    "patch_prediction_rollout_mix": 0.1
+  },
+  "training": {
+    "seed": 13141,
+    "steps": 26000,
+    "lr": 0.00002,
+    "min_lr": 0.000002,
+    "warmup_steps": 50,
+    "lr_decay_steps": 1950,
+    "lr_step_offset": 24000,
+    "resume_from": "runs_experiment/northstar_v10_span80_prompt_boundary/latest.pt",
+    "log_interval": 250,
+    "save_interval": 1000,
+    "eval_seed": 13142,
+    "out_dir": "runs_experiment/northstar_v12_span80_scheduled_rollout"
+  }
+}
