@@ -1,0 +1,56 @@
+{
+  "format": "layercake-final-foundation-campaign/1",
+  "selection_policy": "full_development_training_architecture_selection_split_only",
+  "device": "cuda",
+  "precision": "fp16",
+  "seeds": [9711],
+  "candidates": [
+    {"name": "fixed_expert", "routing_mode": "fixed", "route": 0, "ablation": "selected"},
+    {"name": "current_microbatch", "routing_mode": "microbatch", "route": "learned", "ablation": "selected"},
+    {"name": "current_top2", "routing_mode": "learned_top2", "route": "learned", "ablation": "selected"},
+    {"name": "deeper_global", "routing_mode": "learned_top1", "route": "learned", "ablation": "selected", "model_overrides": {"global_layers": 2}},
+    {"name": "wider_local", "routing_mode": "learned_top1", "route": "learned", "ablation": "selected", "model_overrides": {"d_local": 128}},
+    {"name": "fewer_larger_experts", "routing_mode": "learned_top1", "route": "learned", "ablation": "selected", "model_overrides": {"routed_experts": 8, "expert_expansion": 8}},
+    {"name": "shared_capacity_top1", "routing_mode": "learned_top1", "route": "learned", "ablation": "selected", "model_overrides": {"d_local": 128, "d_global": 160, "global_layers": 2, "routed_experts": 10, "expert_expansion": 3}},
+    {"name": "shared_capacity_microbatch", "routing_mode": "microbatch", "route": "learned", "ablation": "selected", "model_overrides": {"d_local": 128, "d_global": 160, "global_layers": 2, "routed_experts": 10, "expert_expansion": 3}},
+    {"name": "shared_capacity_top2", "routing_mode": "learned_top2", "route": "learned", "ablation": "selected", "model_overrides": {"d_local": 128, "d_global": 160, "global_layers": 2, "routed_experts": 10, "expert_expansion": 3}}
+  ],
+  "model": {
+    "d_byte": 48,
+    "d_local": 96,
+    "d_global": 128,
+    "local_layers": 1,
+    "local_kernel": 5,
+    "fast_patch_size": 4,
+    "slow_patch_size": 16,
+    "global_layers": 1,
+    "routed_experts": 16,
+    "expert_expansion": 4,
+    "abi_width": 64,
+    "dropout": 0.0,
+    "routing_temperature": 1.0,
+    "architecture_version": "layercake-foundation-final-quality-search/1"
+  },
+  "training": {
+    "steps": 1221,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.0008,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "routing_balance_weight": 0.02,
+    "routing_entropy_weight": 0.0,
+    "router_collapse_threshold": 0.5,
+    "evaluation_interval": 200
+  },
+  "evaluation": {"batch_size": 8, "sequence_bytes": 256, "batches": 12, "evaluate_test": false},
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_development.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  },
+  "budget": {"maximum_candidates": 9, "maximum_runs": 9, "maximum_steps_per_run": 1221, "maximum_wall_seconds": 1800, "maximum_cuda_memory_bytes": 12884901888},
+  "promotion": {"requires_causal_routing": true, "requires_all_experts_meaningfully_trained": true, "maximum_router_load_fraction": 0.5, "maximum_active_fraction": 0.42, "maximum_selection_bpb_ratio_to_fixed": 1.0},
+  "preserved_controls": {"v2_architecture_search": "results/moonshot/v2/architecture_search.json", "routing_search": "results/moonshot/final/foundation_search.json", "covers": ["current_v2", "fixed_expert", "dense_layercake", "no_routed_experts", "learned_top1", "learned_top2", "expert_choice", "microbatch", "hierarchical", "byte_transformer", "bpe_transformer", "patch_state_ablations"]}
+}

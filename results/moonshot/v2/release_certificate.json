@@ -21,7 +21,7 @@
     "cpu_vs_gpu_evidence": {
       "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\cpu_vs_gpu_evidence.json",
       "present": true,
-      "sha256": "84b52df8c6832fc56bb2d01b7ce809af75560d373d6dda795b4034f762962848"
+      "sha256": "b8586b63c984c3bbf1c70801d933cd2dad9714dab58336cfdbb6c3723f1276d9"
     },
     "development_evidence": {
       "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\development_evidence.json",
@@ -36,22 +36,22 @@
     "incremental_benchmark": {
       "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\incremental_benchmark.json",
       "present": true,
-      "sha256": "5451a3ae3199774a492d4e3d4176c9638044d6f29fa635698230aafd3ea22537"
+      "sha256": "a82029a74537f73293507676109f16bd879927f0c55fc7157f321fa96457f6eb"
     },
     "mobile_export_evidence": {
       "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\mobile_export_evidence.json",
       "present": true,
-      "sha256": "a516c29624be82ec54f7eaeb353c6d359026b3f3dc9cf50cc911722ee0567c1c"
+      "sha256": "db1112ba663eab4b6c0e449726ab90511a1d514209d5fbe9e24aba88ad5081be"
     },
     "orchestration_evidence": {
       "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\orchestration_evidence.json",
       "present": true,
-      "sha256": "9445a8b18c61dfd70ed8f719edc9e11477e19e05c1917baf2da9dd81acee8334"
+      "sha256": "a35a1ae97a35c4d6270d0688596a673d767cc09662d9ae493ef2a1405af79218"
     },
     "portability_evidence": {
       "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\portability_evidence.json",
       "present": true,
-      "sha256": "c25d27eb3e09ba85e30778e83426f4fc0d5ce0bdf2c611704d36bac03ab8f864"
+      "sha256": "22e0837afa4be0c7729cd944ee69f50376f2a3bde9b4edc9ee58ebfbecbff0a9"
     },
     "pytest_evidence": {
       "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\pytest_evidence.json",
@@ -66,7 +66,7 @@
     "routing_evidence": {
       "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\routing_evidence.json",
       "present": true,
-      "sha256": "97e8b8d43ee9507770e23fe42243a4bed6f4f2d7cd2d678ac8a7a501c15b7e5d"
+      "sha256": "a1e3a0c68be428405ea94b4a4708b07f71064ae1057dd2b71b35d8d5aa6cda04"
     }
   },
   "failed_gates": [
@@ -95,8 +95,8 @@
       "bpb_thresholds_passed": true,
       "domain_coverage_valid": false,
       "headline": {
-        "cpu_over_gpu_end_to_end_latency": 0.16880901355919523,
-        "cpu_over_gpu_useful_byte_throughput": 6.881430952576515
+        "cpu_over_gpu_end_to_end_latency": 0.1762353449999212,
+        "cpu_over_gpu_useful_byte_throughput": 6.472586899561823
       },
       "ordinary_task_quality_valid": false,
       "performance_condition_passed": true,
@@ -315,8 +315,8 @@
       "status": "PASS"
     },
     "package_security": {
-      "reason": "the complete suite includes adversarial archive, traversal, duplicate, signature, and safetensors checks",
-      "status": "PASS"
+      "reason": "security tests are not tied to a passing exact-tree suite",
+      "status": "INVALID_EVIDENCE"
     },
     "payload_identity": {
       "package": {
@@ -349,15 +349,15 @@
     },
     "repository_regression": {
       "passed": 402,
-      "reason": "complete pytest run is green and tied to the exact source tree",
-      "source_tree_sha256": "47840e04f8d5196746266a45851a36da1a432101e9cd4356903f3bddefc51519",
-      "status": "PASS"
+      "reason": "missing, failing, or source-mismatched complete pytest evidence",
+      "source_tree_sha256": "ece1478bc62b30a5473de3988b959eb957e46b42f9e59ee6301687c4a4797dfc",
+      "status": "INVALID_EVIDENCE"
     },
     "routing_accuracy": {
       "latency_milliseconds": {
-        "mean": 1.7064069182389936,
-        "p50": 1.8989500000000001,
-        "p95": 2.4542
+        "mean": 1.537683962264151,
+        "p50": 1.669,
+        "p95": 2.2679
       },
       "learned": {
         "abstention_accuracy": 1.0,
@@ -395,23 +395,23 @@
       },
       "status": "PASS",
       "sustained_1024_byte_rate": {
-        "mean": 2178.84466620492,
-        "p50": 2178.468306734564,
-        "p95": 2200.640377753675,
-        "p99": 2201.849381460944,
+        "mean": 2054.2817155042794,
+        "p50": 2059.181680190102,
+        "p95": 2085.0827802298318,
+        "p99": 2099.0729641042126,
         "raw": [
-          2200.640377753675,
-          2194.7511582992133,
-          2171.352816418481,
-          2201.849381460944,
-          2150.5033101790214,
-          2157.7241573023052,
-          2182.5321550501535,
-          2168.7127186317625,
-          2166.7720428851585,
-          2174.758403243108,
-          2182.1782102260195,
-          2194.361263009198
+          2025.1189905731108,
+          2000.6549018780368,
+          2054.117572955777,
+          2056.960531467177,
+          2085.0827802298318,
+          2026.8269548983499,
+          2061.4231630686377,
+          2099.0729641042126,
+          2064.9986559359336,
+          2061.4028289130265,
+          2074.3735857694733,
+          2041.347656257787
         ]
       }
     },
@@ -432,13 +432,15 @@
   },
   "moonshot_proven": false,
   "open_gates": [
+    "repository_regression",
     "sparse_physical_execution",
     "wrong_domain_control",
     "real_cross_host_portability",
     "cpu_vs_gpu_matched_quality",
+    "package_security",
     "physical_mobile_execution"
   ],
   "overall_status": "FAIL",
   "single_next_experiment": "Keep the frozen V2 ABI, scale the English core until it matches the transformer, then retrain the Python cake and require nonzero held-out unit-test/syntax success before any more domains or performance claims.",
-  "source_tree_sha256": "47840e04f8d5196746266a45851a36da1a432101e9cd4356903f3bddefc51519"
+  "source_tree_sha256": "ece1478bc62b30a5473de3988b959eb957e46b42f9e59ee6301687c4a4797dfc"
 }

@@ -23,37 +23,51 @@ inside tokenizer-specific or `d_model`-specific weights. A brick should be train
 copied exactly, activated sparsely, quantized, and used by independently trained LayerCake
 cores of different sizes.
 
-## Moonshot V2 evidence (July 2026)
+## Moonshot final evidence (July 2026)
 
-Moonshot V2 adds exact incremental decoding, a multiscale recurrent byte foundation,
-a semantic canonical ABI, core-conditioned `portable_fusion` cakes, three independently
-trained hosts, learned routing, a modern cached transformer control, signed package
-orchestration, and a fail-closed certificate. The largest completed run is explicitly a
-10-million-byte development experiment, not a proof-scale run.
+The final campaign fixes V2's pinned-expert training defect, implements causal physical
+top-1/top-2/expert-choice routing, and records complete negative as well as positive
+search evidence. It also adds a causal adaptive 2/4-byte architecture, resumable training,
+a bounded experiment manager, a realistic 100-prompt inference suite, and an independent
+40-gate fail-closed certificate. The largest completed English tier is 100 million bytes;
+the one-billion-byte proof tier was not promoted because the medium-scale quality gate
+already failed decisively.
 
 ```powershell
-python -m layercake.moonshot_v2 audit
-python -m layercake.moonshot_v2 search
-python -m layercake.moonshot_v2 train-hosts
-python -m layercake.moonshot_v2 train-cakes
-python -m layercake.moonshot_v2 benchmark
-python -m layercake.moonshot_v2 demo
-python -m layercake.moonshot_v2 verify
+python -m layercake.moonshot_final audit
+python -m layercake.moonshot_final search
+python -m layercake.moonshot_final train-core
+python -m layercake.moonshot_final train-hosts
+python -m layercake.moonshot_final train-domains
+python -m layercake.moonshot_final portability
+python -m layercake.moonshot_final routing
+python -m layercake.moonshot_final benchmark-cpu
+python -m layercake.moonshot_final benchmark-gpu
+python -m layercake.moonshot_final benchmark-cpu-vs-gpu
+python -m layercake.moonshot_final demo
+python -m layercake.moonshot_final verify
 ```
 
-The current status is **NOT YET PROVEN**. The V2 core reached 2.5635 held-out English
-BPB, while the 4.94%-matched transformer reached 2.1366. The Python fusion cake improved
-held-out code BPB from 7.1331 to 4.4568 and retained the locked BPB improvement across
-three actual hosts, but passed 0/8 ordinary syntax tasks and regressed unrelated English
-BPB. All five open-ended English probes were severely repetitive. The direct 600-run
-benchmark measured 6.88x CPU/GPU useful-byte throughput, but its
-status is `INVALID_EVIDENCE` because ordinary-task quality and three-domain coverage did
-not pass. Those raw timings are not a moonshot claim.
+The current status is **NOT YET PROVEN**. The best sparse adaptive pilot has 3.20M total
+and 2.76M active parameters and reached 1.8312 validation BPB after 100M bytes in 511.1
+seconds. The 3.35M BPE transformer reached a three-seed mean of 1.6790 BPB (95% CI
+1.6573-1.7007). LayerCake crossed 2.00 BPB faster (166.9 versus 262.7 seconds), but never
+matched the transformer's frozen final quality, so foundation-training speed fails.
+
+The signed Python fusion cake still improves held-out code BPB and preserves identical
+archive/tensor hashes across three actual hosts, but passes 0/8 ordinary syntax tasks and
+regresses unrelated English. Therefore semantic portability, Python capability, and the
+second/third-domain gates do not pass. The fresh realistic benchmark measures a raw 6.47x
+CPU-LayerCake/GPU-transformer useful-byte throughput ratio and a 0.176x latency ratio, but
+remains `INVALID_EVIDENCE` because matched quality and three real domains are absent.
+Those timings are not a moonshot claim.
 
 See the [V2 report](docs/MOONSHOT_V2_REPORT.md),
 [architecture](docs/MOONSHOT_ARCHITECTURE.md),
 [threat model](docs/CAKE_THREAT_MODEL.md), and
-[machine-readable certificate](results/moonshot/v2/release_certificate.json). Historical
+[machine-readable final certificate](results/moonshot/final/release_certificate.json).
+The earlier [V2 certificate](results/moonshot/v2/release_certificate.json) remains for
+reproduction. Historical
 branches below retain their original scopes and must not be read as satisfying the V2
 matched-quality CPU-versus-GPU gate.
 

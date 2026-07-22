@@ -8625,44 +8625,42 @@ class CausalVariableBytePatchLM(nn.Module):
         patch_offsets = torch.zeros(
             batch, length, dtype=torch.long, device=x.device
         )
-        all_lengths: list[list[int]] = []
-        max_count = 0
-        whitespace = {9, 10, 13, 32}
-        for row_index, row in enumerate(x.tolist()):
-            lengths = []
-            start = 0
-            patch_index = 0
-            for byte_index, value in enumerate(row):
-                current_length = byte_index - start + 1
-                patch_ids[row_index, byte_index] = patch_index
-                patch_offsets[row_index, byte_index] = current_length - 1
-                transition_break = False
-                if byte_index > start:
-                    transition_id = row[byte_index - 1] * 256 + value
-                    transition_break = bool(
-                        self.transition_boundary_table[transition_id].item()
-                    )
-                if (
-                    value in whitespace
-                    or transition_break
-                    or current_length >= self.max_patch_size
-                ):
-                    lengths.append(current_length)
-                    patch_index += 1
-                    start = byte_index + 1
-            if start < length:
-                lengths.append(length - start)
-            all_lengths.append(lengths)
-            max_count = max(max_count, len(lengths))
+        # Boundary decisions are causal but the maximum-length rule depends on
+        # time since the last boundary.  Iterate over time only, keeping every
+        # batch operation on-device; the former nested ``x.tolist()`` loop
+        # serialized all B*T decisions on the CPU and starved the GPU.
+        current_patch = torch.zeros(batch, dtype=torch.long, device=x.device)
+        current_offset = torch.zeros(batch, dtype=torch.long, device=x.device)
+        for byte_index in range(length):
+            value = x[:, byte_index]
+            patch_ids[:, byte_index] = current_patch
+            patch_offsets[:, byte_index] = current_offset
+            whitespace = (
+                (value == 9) | (value == 10) | (value == 13) | (value == 32)
+            )
+            if byte_index:
+                transition_id = x[:, byte_index - 1] * 256 + value
+                transition_break = (
+                    (current_offset > 0)
+                    & self.transition_boundary_table[transition_id]
+                )
+            else:
+                transition_break = torch.zeros_like(whitespace)
+            close = (
+                whitespace
+                | transition_break
+                | (current_offset + 1 >= self.max_patch_size)
+            )
+            current_patch = current_patch + close.long()
+            current_offset = torch.where(
+                close, torch.zeros_like(current_offset), current_offset + 1
+            )
+        max_count = int(patch_ids[:, -1].max().item()) + 1
         lengths_tensor = torch.zeros(
             batch, max_count, dtype=torch.long, device=x.device
         )
-        valid = torch.zeros(batch, max_count, dtype=torch.bool, device=x.device)
-        for row_index, lengths in enumerate(all_lengths):
-            lengths_tensor[row_index, : len(lengths)] = torch.tensor(
-                lengths, device=x.device
-            )
-            valid[row_index, : len(lengths)] = True
+        lengths_tensor.scatter_add_(1, patch_ids, torch.ones_like(patch_ids))
+        valid = lengths_tensor > 0
         return patch_ids, patch_offsets, lengths_tensor, valid
 
     def forward(self, x: torch.Tensor, brick=None):
@@ -8773,6 +8771,10 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         max_patches=128,
         local_window=16,
         transition_boundary_table: torch.Tensor | None = None,
+        routed_experts: int = 0,
+        expert_expansion: int = 2,
+        routing_mode: str = "learned_top1",
+        transition_context_buckets: int = 0,
     ):
         super().__init__()
         self.patch_size = 2
@@ -8796,6 +8798,17 @@ class CausalAdaptiveBytePatchLM(nn.Module):
             FusedModernCausalBlock(d_model, heads)
             for _ in range(layers)
         )
+        if routed_experts:
+            from layercake.models.routed_experts import CausalRoutedFoundationExperts
+
+            self.routed = CausalRoutedFoundationExperts(
+                d_model,
+                routed_experts,
+                expansion=expert_expansion,
+                mode=routing_mode,
+            )
+        else:
+            self.routed = None
         self.to_abi = nn.Sequential(
             nn.Linear(d_model, d_abi), nn.LayerNorm(d_abi)
         )
@@ -8809,6 +8822,12 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         self.head = nn.Linear(d_model, 256)
         self.transition_head = nn.Embedding(256, 256)
         nn.init.zeros_(self.transition_head.weight)
+        self.transition_context_head = (
+            nn.Embedding(transition_context_buckets, 256)
+            if transition_context_buckets else None
+        )
+        if self.transition_context_head is not None:
+            nn.init.zeros_(self.transition_context_head.weight)
         self.register_buffer("canonical_head", canonical_brick_head(d_abi))
 
     def _layout(
@@ -8896,6 +8915,9 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         global_h = run_modern_stack(
             self.core, patch_h, causal_mask(patch_count, x.device)
         )
+        routing = None
+        if self.routed is not None:
+            global_h, routing = self.routed(global_h, return_aux=True)
         completed_abi = self.to_abi(global_h)
         context_abi = torch.cat(
             [
@@ -8934,6 +8956,12 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         ).reshape(batch, length, -1)
         logits = self.head(self.local_norm(local_hidden))
         logits = logits + self.transition_head(x)
+        if self.transition_context_head is not None:
+            previous = F.pad(x[:, :-1], (1, 0))
+            context_ids = (
+                previous * 257 + x + 1
+            ).remainder(self.transition_context_head.num_embeddings)
+            logits = logits + self.transition_context_head(context_ids)
         if brick is not None:
             delta = brick(context_abi) - context_abi
             patch_bias = delta @ self.canonical_head
@@ -8946,4 +8974,5 @@ class CausalAdaptiveBytePatchLM(nn.Module):
             "patch_offsets": patch_offsets,
             "patch_lengths": patch_lengths,
             "valid_patches": valid,
+            "routing": routing,
         }

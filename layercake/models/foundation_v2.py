@@ -13,8 +13,9 @@ from safetensors.torch import load as load_safetensors
 from safetensors.torch import save as save_safetensors
 
 from .canonical_interface import CanonicalByteInterface, CanonicalInterfaceConfig
+from .baseline_transformer import CausalSwiGLUBlock
 from .incremental_state import fingerprint_state_dict
-from .routed_cakes import Top1RoutedFoundationCakes
+from .routed_experts import CausalRoutedFoundationExperts
 
 
 @dataclass(frozen=True)
@@ -31,6 +32,13 @@ class FoundationV2Config:
     expert_expansion: int = 4
     abi_width: int = 64
     dropout: float = 0.0
+    routing_mode: str = "fixed"
+    routing_temperature: float = 1.0
+    output_bias: bool = False
+    auxiliary_horizons: tuple[int, ...] = ()
+    global_backend: str = "gru"
+    attention_heads: int = 4
+    attention_expansion: int = 2
     ablation: str = "selected"
     architecture_version: str = "layercake-foundation-v2/1"
 
@@ -44,6 +52,17 @@ class FoundationV2Config:
             raise ValueError("invalid foundation-v2 configuration")
         if self.slow_patch_size % self.fast_patch_size:
             raise ValueError("slow patch size must be a multiple of fast patch size")
+        if self.routing_mode not in CausalRoutedFoundationExperts.MODES:
+            raise ValueError(f"unsupported routing mode: {self.routing_mode}")
+        if self.routing_temperature <= 0:
+            raise ValueError("routing temperature must be positive")
+        if self.global_backend not in {"gru", "attention"}:
+            raise ValueError("global backend must be gru or attention")
+        if self.global_backend == "attention" and self.d_global % self.attention_heads:
+            raise ValueError("global width must be divisible by attention heads")
+        horizons = tuple(int(value) for value in self.auxiliary_horizons)
+        if any(value <= 1 for value in horizons) or len(horizons) != len(set(horizons)):
+            raise ValueError("auxiliary horizons must be unique integers greater than one")
         allowed = {
             "selected", "dense", "sparse", "local_only", "global_only",
             "no_routed_experts", "fixed_patches", "multiscale_patches",
@@ -76,6 +95,8 @@ class FoundationV2State:
     slow_buffer: torch.Tensor
     fast_hidden: torch.Tensor
     slow_hidden: torch.Tensor
+    fast_attention_keys: list[torch.Tensor]
+    fast_attention_values: list[torch.Tensor]
     fast_context: torch.Tensor
     slow_context: torch.Tensor
     anchor_state: torch.Tensor
@@ -118,6 +139,10 @@ class FoundationV2State:
             "canonical_state": self.canonical_state,
             "generated_bytes": self.generated_bytes,
         }
+        for index, value in enumerate(self.fast_attention_keys):
+            values[f"fast_attention_key_{index}"] = value
+        for index, value in enumerate(self.fast_attention_values):
+            values[f"fast_attention_value_{index}"] = value
         if self.next_core_logits is not None:
             values["next_core_logits"] = self.next_core_logits
         if self.next_logits is not None:
@@ -147,18 +172,32 @@ class LayerCakeFoundationV2(nn.Module):
         )
         self.fast_summary = LearnedPatchSummary(cfg.d_local, cfg.d_global)
         self.slow_summary = LearnedPatchSummary(cfg.d_local, cfg.d_global)
-        self.fast_recurrent = nn.GRU(
-            cfg.d_global, cfg.d_global, num_layers=cfg.global_layers, batch_first=True
+        self.fast_recurrent = (
+            nn.GRU(cfg.d_global, cfg.d_global, num_layers=cfg.global_layers, batch_first=True)
+            if cfg.global_backend == "gru" else None
+        )
+        self.fast_attention = (
+            nn.ModuleList(
+                CausalSwiGLUBlock(cfg.d_global, cfg.attention_heads, cfg.attention_expansion)
+                for _ in range(cfg.global_layers)
+            )
+            if cfg.global_backend == "attention" else nn.ModuleList()
         )
         self.slow_recurrent = nn.GRU(
             cfg.d_global, cfg.d_global, num_layers=cfg.global_layers, batch_first=True
         )
-        self.experts = Top1RoutedFoundationCakes(
-            cfg.d_global, cfg.routed_experts, expansion=cfg.expert_expansion
+        self.experts = CausalRoutedFoundationExperts(
+            cfg.d_global, cfg.routed_experts, expansion=cfg.expert_expansion,
+            mode=cfg.routing_mode, temperature=cfg.routing_temperature,
         )
         self.local_to_global = nn.Linear(cfg.d_local, cfg.d_global)
         self.output_norm = nn.LayerNorm(cfg.d_global)
         self.output = nn.Linear(cfg.d_global, 256, bias=False)
+        self.output_bias = nn.Parameter(torch.zeros(256)) if cfg.output_bias else None
+        self.auxiliary_output = (
+            nn.Linear(cfg.d_global, 256 * len(cfg.auxiliary_horizons), bias=False)
+            if cfg.auxiliary_horizons else None
+        )
         self.canonical = CanonicalByteInterface(
             CanonicalInterfaceConfig(width=cfg.abi_width, logit_width=cfg.abi_width // 2)
         )
@@ -185,8 +224,23 @@ class LayerCakeFoundationV2(nn.Module):
         shifted = torch.cat([zero, values[:, :-1]], dim=1)
         return shifted.repeat_interleave(patch_size, dim=1)[:, :length]
 
+    @staticmethod
+    def _sinusoidal_positions(
+        length: int, width: int, *, device: torch.device, dtype: torch.dtype, offset: int = 0
+    ) -> torch.Tensor:
+        half = width // 2
+        positions = torch.arange(offset, offset + length, device=device, dtype=torch.float32)[:, None]
+        frequencies = torch.exp(
+            -torch.arange(half, device=device, dtype=torch.float32)
+            * (torch.log(torch.tensor(10000.0, device=device)) / max(1, half - 1))
+        )[None]
+        encoded = torch.cat([torch.sin(positions * frequencies), torch.cos(positions * frequencies)], dim=-1)
+        if encoded.shape[-1] < width:
+            encoded = F.pad(encoded, (0, width - encoded.shape[-1]))
+        return encoded.to(dtype=dtype)
+
     def set_route(self, route: int | None) -> None:
-        self.experts.set_route(route)
+        self.experts.set_route(None if route is not None and int(route) < 0 else route)
 
     def forward(
         self,
@@ -199,7 +253,7 @@ class LayerCakeFoundationV2(nn.Module):
         if byte_ids.ndim != 2 or byte_ids.shape[1] == 0:
             raise ValueError("byte_ids must be non-empty [batch, sequence]")
         if route is not None:
-            self.experts.set_route(route)
+            self.set_route(route)
         embedded = self.byte_embedding(byte_ids.long())
         local_input = self.local_in(embedded)
         normalized = self.local_norm(local_input).transpose(1, 2)
@@ -213,15 +267,26 @@ class LayerCakeFoundationV2(nn.Module):
         slow_patches, _ = self._pad_patches(local, self.config.slow_patch_size)
         fast_summary = self.fast_summary(fast_patches)
         slow_summary = self.slow_summary(slow_patches)
-        fast_global, _ = self.fast_recurrent(fast_summary)
         slow_global, _ = self.slow_recurrent(slow_summary)
         slow_for_fast = self._shift_expand(
             slow_global, self.config.slow_patch_size // self.config.fast_patch_size,
-            fast_global.shape[1],
+            fast_summary.shape[1],
         )
         if self.config.ablation == "fixed_patches":
             slow_for_fast = torch.zeros_like(slow_for_fast)
-        expert_input = fast_global + slow_for_fast
+        fast_input = fast_summary + slow_for_fast
+        if self.config.global_backend == "attention":
+            fast_global = fast_input + self._sinusoidal_positions(
+                fast_input.shape[1], fast_input.shape[2],
+                device=fast_input.device, dtype=fast_input.dtype,
+            )[None]
+            for block in self.fast_attention:
+                fast_global = block(fast_global)
+            expert_input = fast_global
+        else:
+            assert self.fast_recurrent is not None
+            fast_global, _ = self.fast_recurrent(fast_summary)
+            expert_input = fast_global + slow_for_fast
         if self.config.ablation == "no_routed_experts":
             routed = expert_input
             balance_loss = expert_input.new_zeros(())
@@ -229,7 +294,8 @@ class LayerCakeFoundationV2(nn.Module):
             routed = torch.stack([expert(expert_input) for expert in self.experts.experts]).mean(dim=0)
             balance_loss = expert_input.new_zeros(())
         else:
-            routed, balance_loss = self.experts(expert_input, return_aux_loss=True)
+            routed, routing_aux = self.experts(expert_input, return_aux=True)
+            balance_loss = routing_aux["balance_loss"]
         fast_context = self._shift_expand(routed, self.config.fast_patch_size, byte_ids.shape[1])
         slow_context = self._shift_expand(slow_global, self.config.slow_patch_size, byte_ids.shape[1])
         if self.config.ablation in {"fixed_patches", "local_only"}:
@@ -239,9 +305,10 @@ class LayerCakeFoundationV2(nn.Module):
         local_output = self.local_to_global(local)
         if self.config.ablation == "global_only":
             local_output = torch.zeros_like(local_output)
-        core_logits = self.output(
-            self.output_norm(local_output + fast_context + slow_context)
-        )
+        prediction_state = self.output_norm(local_output + fast_context + slow_context)
+        core_logits = self.output(prediction_state)
+        if self.output_bias is not None:
+            core_logits = core_logits + self.output_bias
         canonical = self.canonical(core_logits, byte_ids)
         logits = core_logits
         cake_hidden = None
@@ -252,7 +319,20 @@ class LayerCakeFoundationV2(nn.Module):
                 "core_logits": core_logits,
                 "canonical": canonical,
                 "routing_balance_loss": balance_loss,
+                "routing": None if self.config.ablation in {"no_routed_experts", "dense"} else routing_aux,
                 "cake_hidden": cake_hidden,
+                "future_logits": (
+                    {
+                        str(horizon): values
+                        for horizon, values in zip(
+                            self.config.auxiliary_horizons,
+                            self.auxiliary_output(prediction_state).chunk(
+                                len(self.config.auxiliary_horizons), dim=-1
+                            ),
+                        )
+                    }
+                    if self.auxiliary_output is not None else {}
+                ),
             }
         return logits
 
@@ -284,8 +364,13 @@ class LayerCakeFoundationV2(nn.Module):
             local_hidden=zeros(cfg.local_layers, batch_size, cfg.d_local),
             fast_buffer=zeros(batch_size, 0, cfg.d_local),
             slow_buffer=zeros(batch_size, 0, cfg.d_local),
-            fast_hidden=zeros(cfg.global_layers, batch_size, cfg.d_global),
+            fast_hidden=(
+                zeros(cfg.global_layers, batch_size, cfg.d_global)
+                if cfg.global_backend == "gru" else zeros(0, batch_size, cfg.d_global)
+            ),
             slow_hidden=zeros(cfg.global_layers, batch_size, cfg.d_global),
+            fast_attention_keys=[],
+            fast_attention_values=[],
             fast_context=zeros(batch_size, cfg.d_global),
             slow_context=zeros(batch_size, cfg.d_global),
             anchor_state=zeros(batch_size, anchor_width),
@@ -316,6 +401,8 @@ class LayerCakeFoundationV2(nn.Module):
         local, local_hidden = self.local_recurrent(mixed, state.local_hidden)
         combined = self.local_to_global(local[:, 0]) + state.fast_context + state.slow_context
         core_logits = self.output(self.output_norm(combined))
+        if self.output_bias is not None:
+            core_logits = core_logits + self.output_bias
         canonical, anchor = self.canonical.step(core_logits, byte, state.anchor_state)
         logits = core_logits
         cake_hidden = state.cake_hidden
@@ -336,9 +423,40 @@ class LayerCakeFoundationV2(nn.Module):
         state.slow_buffer = torch.cat([state.slow_buffer, local], dim=1)
         if state.fast_buffer.shape[1] == self.config.fast_patch_size:
             summary = self.fast_summary(state.fast_buffer)[:, None]
-            fast, state.fast_hidden = self.fast_recurrent(summary, state.fast_hidden)
-            self.experts.set_route(state.route)
-            routed = self.experts(fast + state.slow_context[:, None])
+            if self.config.global_backend == "attention":
+                offset = (
+                    int(state.fast_attention_keys[0].shape[2])
+                    if state.fast_attention_keys else 0
+                )
+                fast = summary + state.slow_context[:, None] + self._sinusoidal_positions(
+                    1, self.config.d_global, device=summary.device,
+                    dtype=summary.dtype, offset=offset,
+                )[None]
+                next_keys = []
+                next_values = []
+                for index, block in enumerate(self.fast_attention):
+                    past = (
+                        (state.fast_attention_keys[index], state.fast_attention_values[index])
+                        if index < len(state.fast_attention_keys) else None
+                    )
+                    fast, cache = block.forward_cached(fast, past)
+                    next_keys.append(cache[0].detach())
+                    next_values.append(cache[1].detach())
+                state.fast_attention_keys = next_keys
+                state.fast_attention_values = next_values
+            else:
+                assert self.fast_recurrent is not None
+                fast, state.fast_hidden = self.fast_recurrent(summary, state.fast_hidden)
+                fast = fast + state.slow_context[:, None]
+            self.set_route(state.route)
+            routed = self.experts(fast)
+            if (
+                self.config.routing_mode == "microbatch"
+                and state.route < 0
+                and state.batch_size == 1
+                and self.experts.last_routes is not None
+            ):
+                state.route = int(self.experts.last_routes[0, 0, 0])
             state.fast_context = routed[:, 0].detach()
             state.fast_hidden = state.fast_hidden.detach()
             state.fast_buffer = state.fast_buffer[:, :0].detach()
@@ -425,7 +543,10 @@ class LayerCakeFoundationV2(nn.Module):
             "capture_generated": state.capture_generated,
         }
         encoded = json.dumps(metadata, sort_keys=True).encode("utf-8")
-        tensors = {name: tensor.detach().contiguous().cpu() for name, tensor in state.tensors().items()}
+        tensors = {
+            name: tensor.detach().contiguous().cpu().clone()
+            for name, tensor in state.tensors().items()
+        }
         tensors["__metadata_json"] = torch.tensor(list(encoded), dtype=torch.uint8)
         return save_safetensors(tensors)
 
@@ -445,6 +566,16 @@ class LayerCakeFoundationV2(nn.Module):
             conv_history=moved["conv_history"], local_hidden=moved["local_hidden"],
             fast_buffer=moved["fast_buffer"], slow_buffer=moved["slow_buffer"],
             fast_hidden=moved["fast_hidden"], slow_hidden=moved["slow_hidden"],
+            fast_attention_keys=[
+                moved[f"fast_attention_key_{index}"]
+                for index in range(len(self.fast_attention))
+                if f"fast_attention_key_{index}" in moved
+            ],
+            fast_attention_values=[
+                moved[f"fast_attention_value_{index}"]
+                for index in range(len(self.fast_attention))
+                if f"fast_attention_value_{index}" in moved
+            ],
             fast_context=moved["fast_context"], slow_context=moved["slow_context"],
             anchor_state=moved["anchor_state"], canonical_state=moved["canonical_state"],
             next_core_logits=moved.get("next_core_logits"), next_logits=moved.get("next_logits"),
@@ -456,17 +587,34 @@ class LayerCakeFoundationV2(nn.Module):
             capture_generated=bool(metadata.get("capture_generated", False)),
         )
 
-    def parameter_report(self, route: int = 0) -> dict[str, int | float]:
+    def parameter_report(self, route: int = 0) -> dict[str, int | float | str]:
         total = sum(parameter.numel() for parameter in self.parameters())
         experts = sum(parameter.numel() for parameter in self.experts.experts.parameters())
-        one = sum(parameter.numel() for parameter in self.experts.experts[route].parameters())
-        active = total - experts + one
+        selected_route = max(0, int(route))
+        one = sum(parameter.numel() for parameter in self.experts.experts[selected_route].parameters())
+        active_experts = 2 if self.config.routing_mode in {"learned_top2", "expert_choice"} else 1
+        if self.config.ablation == "dense":
+            active_experts = self.config.routed_experts
+        if self.config.ablation == "no_routed_experts":
+            active_experts = 0
+        active = total - experts + active_experts * one
+        auxiliary = (
+            sum(parameter.numel() for parameter in self.auxiliary_output.parameters())
+            if self.auxiliary_output is not None else 0
+        )
+        inference_active = active - auxiliary
         return {
             "total_parameters": total,
-            "active_parameters": active,
-            "active_fraction": active / total,
+            "active_parameters": inference_active,
+            "active_parameters_per_inference_token": inference_active,
+            "active_parameters_per_training_item": active,
+            "active_fraction": inference_active / total,
+            "training_active_fraction": active / total,
+            "auxiliary_training_only_parameters": auxiliary,
             "optimizer_resident_parameters_for_pinned_route": active,
             "routed_experts": self.config.routed_experts,
+            "maximum_active_experts_per_token": active_experts,
+            "routing_mode": self.config.routing_mode,
         }
 
 

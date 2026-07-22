@@ -110,6 +110,13 @@ def run_orchestration_demo(
             "Implement an asynchronous bounded-concurrency crawler in Python.",
             core_handler=core_handler, cake_handler=cake_handler,
         )
+        direct_started = time.perf_counter_ns()
+        direct_output = cake_handler(
+            "Implement an asynchronous bounded-concurrency crawler in Python.",
+            [cake_module],
+            None,
+        )
+        direct_ms = (time.perf_counter_ns() - direct_started) / 1_000_000
         row = {
             "host": host_dir.name,
             "seed": metadata["seed"],
@@ -126,6 +133,15 @@ def run_orchestration_demo(
             },
             "general_generation": {"output": general.output, "trace": general.metrics()},
             "specialist_generation": {"output": specialist.output, "trace": specialist.metrics()},
+            "single_domain_generation": {
+                "output": direct_output,
+                "trace": {
+                    "execution_path": "direct_bound_cake",
+                    "route_bypassed": True,
+                    "selected_cake": package_probe.manifest.cake_id,
+                    "end_to_end_milliseconds": direct_ms,
+                },
+            },
         }
         if index == 0:
             removed = installer.remove(package_probe.manifest.cake_id)
@@ -153,6 +169,7 @@ def run_orchestration_demo(
             len(host_rows) >= 3
             and all(row["domain_bpb"]["improvement"] > 1.0 for row in host_rows)
             and all(row["specialist_generation"]["trace"]["execution_path"] == "selected_cake" for row in host_rows)
+            and all(row["single_domain_generation"]["trace"]["route_bypassed"] for row in host_rows)
             and source_lifecycle is not None
             and source_lifecycle["route_after_remove"]["core_fallback"]
             and source_lifecycle["archive_hash_preserved"]

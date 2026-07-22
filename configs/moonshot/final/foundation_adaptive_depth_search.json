@@ -1,0 +1,45 @@
+{
+  "format": "layercake-final-variable-patch-campaign/1",
+  "selection_policy": "adaptive_depth_width_allocation_architecture_selection_only",
+  "reference_candidate": "wide_dense_144_6x6",
+  "device": "cuda",
+  "precision": "fp16",
+  "seeds": [9761],
+  "candidates": [
+    {
+      "name": "wide_dense_144_6x6",
+      "kind": "adaptive_two_four",
+      "model": {"d_byte": 48, "d_model": 144, "d_abi": 64, "layers": 6, "local_layers": 6, "heads": 4, "max_patches": 128, "local_window": 16}
+    },
+    {
+      "name": "deep_dense_96_13x13",
+      "kind": "adaptive_two_four",
+      "model": {"d_byte": 48, "d_model": 96, "d_abi": 64, "layers": 13, "local_layers": 13, "heads": 4, "max_patches": 128, "local_window": 16}
+    },
+    {
+      "name": "balanced_dense_112_9x9",
+      "kind": "adaptive_two_four",
+      "model": {"d_byte": 48, "d_model": 112, "d_abi": 64, "layers": 9, "local_layers": 9, "heads": 4, "max_patches": 128, "local_window": 16}
+    },
+    {
+      "name": "deep_routed_96_12x12_top1",
+      "kind": "adaptive_two_four",
+      "model": {"d_byte": 48, "d_model": 96, "d_abi": 64, "layers": 12, "local_layers": 12, "heads": 4, "max_patches": 128, "local_window": 16, "routed_experts": 8, "expert_expansion": 1, "routing_mode": "learned_top1"}
+    },
+    {
+      "name": "balanced_routed_112_8x8_top1",
+      "kind": "adaptive_two_four",
+      "model": {"d_byte": 48, "d_model": 112, "d_abi": 64, "layers": 8, "local_layers": 8, "heads": 4, "max_patches": 128, "local_window": 16, "routed_experts": 8, "expert_expansion": 1, "routing_mode": "learned_top1"}
+    }
+  ],
+  "training": {"steps": 1221, "batch_size": 32, "sequence_bytes": 256, "learning_rate": 0.0008, "weight_decay": 0.01, "gradient_clip": 1.0, "routing_balance_weight": 0.02, "router_collapse_threshold": 0.5, "evaluation_interval": 200},
+  "evaluation": {"batch_size": 8, "sequence_bytes": 256, "batches": 12, "evaluate_test": false},
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_development.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  },
+  "budget": {"maximum_candidates": 5, "maximum_runs": 5, "maximum_steps_per_run": 1221, "maximum_wall_seconds": 1800, "maximum_cuda_memory_bytes": 12884901888},
+  "promotion": {"minimum_bpb_improvement": 0.0, "final_test_must_remain_unaccessed": true, "requires_all_experts_meaningfully_trained": true, "maximum_router_load_fraction": 0.5}
+}

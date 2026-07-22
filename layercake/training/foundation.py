@@ -121,27 +121,124 @@ def train_english_core(config_path: str | Path, output_dir: str | Path) -> dict:
     sequence_bytes = int(config["training"]["sequence_bytes"])
     eval_interval = int(config["training"]["evaluation_interval"])
     evaluation_batches = int(config["evaluation"]["batches"])
-    route = int(config["training"].get("route", seed % model.config.routed_experts))
+    configured_route = config["training"].get("route", seed % model.config.routed_experts)
+    route = -1 if configured_route in {None, "learned", "auto"} else int(configured_route)
     model.set_route(route)
+    resume_metadata_path = output / "resume.json"
+    resume_model_path = output / "resume-model.safetensors"
+    resume_optimizer_path = output / "resume-optimizer.pt"
+    initial_experts_path = output / "initial-experts.safetensors"
+    resume_enabled = bool(config["training"].get("resumable", True))
+    start_step = 0
+    previous_wall_seconds = 0.0
     curves = []
+    resume_metadata: dict = {}
+    if resume_enabled and resume_metadata_path.is_file():
+        resume_metadata = json.loads(resume_metadata_path.read_text(encoding="utf-8"))
+        if resume_metadata.get("config_sha256") != sha256_file(config_path):
+            raise ValueError("resume checkpoint belongs to a different locked configuration")
+        model.load_state_dict(load_file(str(resume_model_path), device=str(device)), strict=True)
+        training_state = torch.load(
+            resume_optimizer_path, map_location=device, weights_only=True
+        )
+        optimizer.load_state_dict(training_state["optimizer"])
+        scaler.load_state_dict(training_state["scaler"])
+        start_step = int(resume_metadata["step"])
+        previous_wall_seconds = float(resume_metadata["wall_seconds"])
+        curves = list(resume_metadata.get("curves", []))
     failed = None
     peak_memory = 0
+    if initial_experts_path.is_file():
+        packed_initial = load_file(str(initial_experts_path))
+        expert_initial = [
+            {
+                name: packed_initial[f"expert.{index}.{name}"].clone()
+                for name in expert.state_dict()
+            }
+            for index, expert in enumerate(model.experts.experts)
+        ]
+    else:
+        expert_initial = [
+            {name: value.detach().cpu().clone() for name, value in expert.state_dict().items()}
+            for expert in model.experts.experts
+        ]
+        save_file({
+            f"expert.{index}.{name}": value.contiguous()
+            for index, expert in enumerate(expert_initial)
+            for name, value in expert.items()
+        }, str(initial_experts_path))
+    routing_assignments = torch.zeros(model.config.routed_experts, device=device, dtype=torch.long)
+    routing_importance = torch.zeros(model.config.routed_experts, device=device, dtype=torch.float64)
+    routing_entropy = torch.zeros((), device=device, dtype=torch.float64)
+    routing_observations = 0
+    expert_gradient_steps = [0 for _ in range(model.config.routed_experts)]
+    active_gradient_parameter_sum = 0
+    active_gradient_observations = 0
+    if start_step:
+        routing_assignments += torch.tensor(
+            resume_metadata.get("routing_assignments", [0] * model.config.routed_experts),
+            device=device, dtype=torch.long,
+        )
+        routing_importance += torch.tensor(
+            resume_metadata.get("routing_importance", [0.0] * model.config.routed_experts),
+            device=device, dtype=torch.float64,
+        )
+        routing_entropy += float(resume_metadata.get("routing_entropy", 0.0))
+        routing_observations = int(resume_metadata.get("routing_observations", 0))
+        expert_gradient_steps = list(resume_metadata.get(
+            "expert_gradient_steps", expert_gradient_steps
+        ))
+        active_gradient_parameter_sum = int(resume_metadata.get(
+            "active_gradient_parameter_sum", 0
+        ))
+        active_gradient_observations = int(resume_metadata.get(
+            "active_gradient_observations", 0
+        ))
+        peak_memory = int(resume_metadata.get("peak_memory", 0))
     started = time.perf_counter()
     for step, batch in enumerate(train_corpus.batches(
         batch_size=batch_size, sequence_bytes=sequence_bytes, seed=seed,
         steps=steps, device=device,
     ), start=1):
+        if step <= start_step:
+            continue
         inputs, targets = batch[:, :-1], batch[:, 1:]
         optimizer.zero_grad(set_to_none=True)
         with autocast():
             logits, aux = model(inputs, route=route, return_aux=True)
             loss = F.cross_entropy(logits.flatten(0, 1), targets.flatten())
             loss = loss + float(config["training"].get("routing_balance_weight", 0.01)) * aux["routing_balance_loss"]
+            future_losses = []
+            for raw_horizon, future_logits in aux.get("future_logits", {}).items():
+                horizon = int(raw_horizon)
+                usable = inputs.shape[1] - horizon + 1
+                if usable > 0:
+                    future_losses.append(F.cross_entropy(
+                        future_logits[:, :usable].flatten(0, 1),
+                        batch[:, horizon:horizon + usable].flatten(),
+                    ))
+            if future_losses:
+                loss = loss + float(config["training"].get("auxiliary_loss_weight", 0.2)) * torch.stack(future_losses).mean()
+            if aux.get("routing") is not None:
+                entropy_penalty = 1.0 - aux["routing"]["normalized_entropy"]
+                loss = loss + float(config["training"].get("routing_entropy_weight", 0.0)) * entropy_penalty
         if not torch.isfinite(loss):
             failed = {"step": step, "reason": "non-finite loss"}
             break
         scaler.scale(loss).backward()
         scaler.unscale_(optimizer)
+        active_gradient_parameter_sum += sum(
+            parameter.numel() for parameter in model.parameters() if parameter.grad is not None
+        )
+        active_gradient_observations += 1
+        for expert_index, expert in enumerate(model.experts.experts):
+            if any(parameter.grad is not None for parameter in expert.parameters()):
+                expert_gradient_steps[expert_index] += 1
+        if aux.get("routing") is not None:
+            routing_assignments += aux["routing"]["assignment_counts"].detach().to(torch.long)
+            routing_importance += aux["routing"]["importance"].detach().to(torch.float64)
+            routing_entropy += aux["routing"]["normalized_entropy"].detach().to(torch.float64)
+            routing_observations += 1
         torch.nn.utils.clip_grad_norm_(model.parameters(), float(config["training"].get("gradient_clip", 1.0)))
         scaler.step(optimizer)
         scaler.update()
@@ -158,9 +255,36 @@ def train_english_core(config_path: str | Path, output_dir: str | Path) -> dict:
                 "raw_bytes_seen": step * batch_size * sequence_bytes,
                 "training_loss": float(loss.detach()),
                 "validation": validation,
-                "wall_seconds": time.perf_counter() - started,
+                "wall_seconds": previous_wall_seconds + time.perf_counter() - started,
             })
-    training_seconds = time.perf_counter() - started
+            if resume_enabled:
+                model_temp = output / "resume-model.tmp.safetensors"
+                optimizer_temp = output / "resume-optimizer.tmp.pt"
+                metadata_temp = output / "resume.tmp.json"
+                save_file({
+                    name: value.detach().cpu().contiguous()
+                    for name, value in model.state_dict().items()
+                }, str(model_temp))
+                torch.save({"optimizer": optimizer.state_dict(), "scaler": scaler.state_dict()}, optimizer_temp)
+                metadata_temp.write_text(json.dumps({
+                    "format": "layercake-core-resume/1",
+                    "config_sha256": sha256_file(config_path),
+                    "step": step,
+                    "wall_seconds": curves[-1]["wall_seconds"],
+                    "curves": curves,
+                    "routing_assignments": routing_assignments.cpu().tolist(),
+                    "routing_importance": routing_importance.cpu().tolist(),
+                    "routing_entropy": float(routing_entropy.cpu()),
+                    "routing_observations": routing_observations,
+                    "expert_gradient_steps": expert_gradient_steps,
+                    "active_gradient_parameter_sum": active_gradient_parameter_sum,
+                    "active_gradient_observations": active_gradient_observations,
+                    "peak_memory": peak_memory,
+                }, indent=2, sort_keys=True), encoding="utf-8")
+                model_temp.replace(resume_model_path)
+                optimizer_temp.replace(resume_optimizer_path)
+                metadata_temp.replace(resume_metadata_path)
+    training_seconds = previous_wall_seconds + time.perf_counter() - started
     architecture_selection = evaluate_core(
         model, architecture_corpus, batch_size=int(config["evaluation"]["batch_size"]),
         sequence_bytes=int(config["evaluation"]["sequence_bytes"]), batches=evaluation_batches,
@@ -181,6 +305,31 @@ def train_english_core(config_path: str | Path, output_dir: str | Path) -> dict:
     tensor_path = output / "model.safetensors"
     save_file({name: value.detach().cpu().contiguous() for name, value in model.state_dict().items()}, str(tensor_path))
     report = model.parameter_report(route)
+    assignment_total = int(routing_assignments.sum().cpu())
+    utilization = (
+        (routing_assignments.double() / max(1, assignment_total)).cpu().tolist()
+        if assignment_total else [0.0 for _ in range(model.config.routed_experts)]
+    )
+    mean_importance = (
+        (routing_importance / max(1, routing_observations)).cpu().tolist()
+        if routing_observations else [0.0 for _ in range(model.config.routed_experts)]
+    )
+    expert_delta_l2 = []
+    for expert, initial in zip(model.experts.experts, expert_initial):
+        squared = 0.0
+        for name, value in expert.state_dict().items():
+            delta = value.detach().cpu().float() - initial[name].float()
+            squared += float(torch.sum(delta * delta))
+        expert_delta_l2.append(squared ** 0.5)
+    minimum_gradient_steps = max(1, int(0.01 * max(1, curves[-1]["step"] if curves else 0)))
+    meaningful = [
+        delta > 1e-5 and updates >= minimum_gradient_steps
+        for delta, updates in zip(expert_delta_l2, expert_gradient_steps)
+    ]
+    collapse_threshold = float(config["training"].get(
+        "router_collapse_threshold", max(0.5, 4.0 / model.config.routed_experts)
+    ))
+    mean_active_gradient_parameters = active_gradient_parameter_sum / max(1, active_gradient_observations)
     process = psutil.Process()
     evidence = {
         "format": "layercake-english-core/2",
@@ -193,6 +342,25 @@ def train_english_core(config_path: str | Path, output_dir: str | Path) -> dict:
         "canonical_abi_hash": model.canonical.config.abi_hash(),
         "parameters": report,
         "optimizer": optimizer_state_report(optimizer),
+        "routing": {
+            "mode": model.config.routing_mode,
+            "causal_patch_routing": True,
+            "route_override": None if route < 0 else route,
+            "assignment_counts": routing_assignments.cpu().tolist(),
+            "utilization": utilization,
+            "mean_router_importance": mean_importance,
+            "mean_normalized_entropy": float((routing_entropy / max(1, routing_observations)).cpu()),
+            "maximum_load_fraction": max(utilization),
+            "experts_used": sum(value > 0 for value in utilization),
+            "expert_gradient_steps": expert_gradient_steps,
+            "expert_delta_l2": expert_delta_l2,
+            "meaningfully_trained": meaningful,
+            "all_experts_meaningfully_trained": all(meaningful),
+            "collapse_threshold": collapse_threshold,
+            "router_collapsed": max(utilization) > collapse_threshold,
+            "mean_parameters_with_grad_per_step": mean_active_gradient_parameters,
+            "mean_fraction_with_grad_per_step": mean_active_gradient_parameters / report["total_parameters"],
+        },
         "data": {
             name: {"path": str(Path(path).resolve()), "bytes": Path(path).stat().st_size, "sha256": sha256_file(path)}
             for name, path in config["data"].items()
@@ -205,9 +373,12 @@ def train_english_core(config_path: str | Path, output_dir: str | Path) -> dict:
             "raw_bytes_seen": (curves[-1]["step"] if curves else 0) * batch_size * sequence_bytes,
             "wall_seconds": training_seconds,
             "raw_bytes_per_second": ((curves[-1]["step"] if curves else 0) * batch_size * sequence_bytes) / max(training_seconds, 1e-9),
-            "parameter_seconds_active": report["active_parameters"] * training_seconds,
+            "parameter_seconds_active": report["active_parameters_per_training_item"] * training_seconds,
             "parameter_seconds_total_installed": report["total_parameters"] * training_seconds,
             "curves": curves,
+            "resumable": resume_enabled,
+            "resumed_from_step": start_step,
+            "resume_metadata": str(resume_metadata_path.resolve()) if resume_enabled else None,
         },
         "quality": {
             "architecture_selection": architecture_selection,

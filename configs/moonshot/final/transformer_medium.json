@@ -1,0 +1,24 @@
+{
+  "format": "layercake-final-transformer-medium-campaign/1",
+  "scale_status": "medium_100m_same_data_same_total_scale",
+  "seeds": [9801, 9802, 9803],
+  "device": "cuda",
+  "precision": "fp16",
+  "tokenizer": {"merges": 128, "training_bytes": 500000},
+  "model": {"width": 96, "layers": 22, "heads": 4, "max_tokens": 512, "expansion": 4, "architecture_version": "modern-bpe-transformer/1"},
+  "training": {"steps": 12208, "batch_size": 32, "sequence_bytes": 256, "learning_rate": 0.0008, "weight_decay": 0.01, "evaluation_interval": 1000, "resumable": true},
+  "evaluation": {"batch_size": 8, "sequence_bytes": 256, "batches": 16, "evaluate_test": false},
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  },
+  "comparison": {
+    "layercake_campaign": "results/moonshot/final/foundation_medium.json",
+    "total_parameter_tolerance": 0.05,
+    "general_noninferiority_margin_bpb": 0.01,
+    "minimum_training_speedup_at_matched_quality": 1.0,
+    "time_to_quality_thresholds_bpb": [2.30, 2.20, 2.10, 2.05, 2.02, 2.00]
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "format": "layercake-final-variable-patch-campaign/1",
+  "selection_policy": "frozen_sparse_adaptive_medium_pilot_validation_only",
+  "reference_candidate": "routed_adaptive_5x5_top1_8e",
+  "device": "cuda",
+  "precision": "fp16",
+  "seeds": [9811],
+  "candidates": [
+    {
+      "name": "routed_adaptive_5x5_top1_8e",
+      "kind": "adaptive_two_four",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 5,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1"
+      }
+    }
+  ],
+  "training": {
+    "steps": 12208,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.0008,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "routing_balance_weight": 0.02,
+    "router_collapse_threshold": 0.5,
+    "evaluation_interval": 1000,
+    "resumable": true
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "sequence_bytes": 256,
+    "batches": 16,
+    "evaluate_test": false
+  },
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  },
+  "budget": {
+    "maximum_candidates": 1,
+    "maximum_runs": 1,
+    "maximum_steps_per_run": 12208,
+    "maximum_wall_seconds": 1800,
+    "maximum_cuda_memory_bytes": 12884901888
+  },
+  "promotion": {
+    "minimum_bpb_improvement": 0.0,
+    "final_test_must_remain_unaccessed": true,
+    "requires_all_experts_meaningfully_trained": true,
+    "maximum_router_load_fraction": 0.5
+  }
+}
