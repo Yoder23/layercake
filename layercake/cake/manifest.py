@@ -10,7 +10,7 @@ from typing import Any, Mapping
 
 
 SCHEMA_VERSION = "1"
-CAKE_TYPES = {"portable_decoder", "host_residual"}
+CAKE_TYPES = {"portable_decoder", "host_residual", "portable_fusion"}
 PRECISIONS = {"fp32", "fp16", "bf16", "int8"}
 BACKENDS = {"pytorch", "torchscript", "onnx", "coreml", "executorch", "cuda"}
 _ID = re.compile(r"^[a-z0-9](?:[a-z0-9._-]{0,126}[a-z0-9])?$")

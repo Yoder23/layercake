@@ -14,7 +14,7 @@ from torch import nn
 
 def export_mobile_runtime(
     module: nn.Module,
-    example_byte_ids: torch.Tensor,
+    example_inputs: torch.Tensor | tuple[torch.Tensor, ...],
     output: str | Path,
     *,
     physical_device_measured: bool = False,
@@ -22,16 +22,21 @@ def export_mobile_runtime(
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     module = module.cpu().eval()
-    example_byte_ids = example_byte_ids.cpu().long()
+    if isinstance(example_inputs, torch.Tensor):
+        trace_inputs: torch.Tensor | tuple[torch.Tensor, ...] = example_inputs.cpu().long()
+        call_inputs = (trace_inputs,)
+    else:
+        call_inputs = tuple(value.detach().cpu() for value in example_inputs)
+        trace_inputs = call_inputs
     with torch.inference_mode():
-        expected = module(example_byte_ids)
+        expected = module(*call_inputs)
         if isinstance(expected, tuple):
             expected = expected[0]
-        traced = torch.jit.trace(module, example_byte_ids, strict=True)
+        traced = torch.jit.trace(module, trace_inputs, strict=True)
         traced = torch.jit.freeze(traced)
         traced.save(str(output))
         loaded = torch.jit.load(str(output)).eval()
-        actual = loaded(example_byte_ids)
+        actual = loaded(*call_inputs)
         if isinstance(actual, tuple):
             actual = actual[0]
         max_difference = float((expected - actual).abs().max().item())

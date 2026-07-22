@@ -1,0 +1,16 @@
+{
+  "format": "layercake-cpu-vs-gpu-suite/2",
+  "frozen_before_execution": true,
+  "prompts": 100,
+  "prompt_length_buckets_bytes": [32, 64, 128],
+  "generated_length_buckets_bytes": [256, 384],
+  "prompt_groups": ["general", "python", "mixed"],
+  "required_distinct_specialist_domains": 3,
+  "repetitions": 3,
+  "batch_size": 1,
+  "sampling_modes": ["greedy", "sampled"],
+  "execution_order_seed": 20260721,
+  "cpu_threads": 1,
+  "quality_thresholds": {"general_bpb": 2.70, "python_bpb": 4.60},
+  "ordinary_task_threshold": {"python_parse_success_minimum": 0.50}
+}

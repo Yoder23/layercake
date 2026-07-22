@@ -1,0 +1,46 @@
+{
+  "format": "layercake-core-training-config/2",
+  "scale_status": "development_10m_different_size_receiver",
+  "seed": 9203,
+  "device": "cuda",
+  "precision": "fp16",
+  "model": {
+    "d_byte": 40,
+    "d_local": 80,
+    "d_global": 112,
+    "local_layers": 1,
+    "local_kernel": 5,
+    "fast_patch_size": 4,
+    "slow_patch_size": 16,
+    "global_layers": 1,
+    "routed_experts": 16,
+    "expert_expansion": 4,
+    "abi_width": 64,
+    "dropout": 0.0,
+    "ablation": "selected",
+    "architecture_version": "layercake-foundation-v2/1"
+  },
+  "training": {
+    "steps": 1221,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.0008,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "routing_balance_weight": 0.01,
+    "evaluation_interval": 200,
+    "route": 3
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "sequence_bytes": 256,
+    "batches": 6,
+    "evaluate_test": true
+  },
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_development.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  }
+}

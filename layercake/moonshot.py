@@ -59,11 +59,11 @@ REQUIRED_GATES = (
 
 def source_tree_hash() -> str:
     digest = hashlib.sha256()
-    paths = [ROOT / "pyproject.toml"]
-    for directory in ("layercake", "scripts", "tests", "configs/moonshot"):
+    paths = [ROOT / "pyproject.toml", ROOT / "README.md"]
+    for directory in ("layercake", "scripts", "tests", "configs/moonshot", "configs/eval", "docs"):
         paths.extend(
             path for path in (ROOT / directory).rglob("*")
-            if path.is_file() and path.suffix in {".py", ".json", ".toml"}
+            if path.is_file() and path.suffix in {".py", ".json", ".toml", ".yaml", ".yml", ".md"}
         )
     for path in sorted(set(paths)):
         relative = path.relative_to(ROOT).as_posix().encode("utf-8")
@@ -761,11 +761,11 @@ def build_parser() -> argparse.ArgumentParser:
     smoke = sub.add_parser("smoke")
     smoke.add_argument("--config", default="configs/moonshot/smoke.json")
     train = sub.add_parser("train")
-    train.add_argument("--config", default="configs/moonshot/full.json")
+    train.add_argument("--config", default="configs/moonshot/integration_five_seed.json")
     benchmark = sub.add_parser("benchmark")
-    benchmark.add_argument("--config", default="configs/moonshot/full.json")
+    benchmark.add_argument("--config", default="configs/moonshot/integration_five_seed.json")
     verify = sub.add_parser("verify")
-    verify.add_argument("--config", default="configs/moonshot/full.json")
+    verify.add_argument("--config", default="configs/moonshot/integration_five_seed.json")
     demo = sub.add_parser("demo")
     demo.add_argument("--config", default="configs/moonshot/smoke.json")
     return parser

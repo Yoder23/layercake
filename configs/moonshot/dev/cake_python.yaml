@@ -1,0 +1,42 @@
+{
+  "format": "layercake-cake-training-config/2",
+  "scale_status": "development_candidate",
+  "seed": 9301,
+  "device": "cuda",
+  "precision": "fp16",
+  "domain": "python",
+  "cake_id": "python-fusion-v2",
+  "name": "Python Portable Fusion V2",
+  "description": "Neural Python specialist residual trained against a frozen English core",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "keywords": ["python", "code", "programming"],
+  "model": {
+    "abi_width": 64,
+    "byte_width": 16,
+    "hidden_width": 64,
+    "rank": 32,
+    "max_logit_residual": 4.0,
+    "architecture_version": "portable-fusion/1",
+    "combination_rule": "bounded-additive-logit-residual"
+  },
+  "training": {
+    "steps": 1221,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.01,
+    "evaluation_interval": 200
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "sequence_bytes": 256,
+    "batches": 8
+  },
+  "data": {
+    "train": "data/moonshot/v2/python/python_train.bin",
+    "validation": "data/moonshot/v2/python/python_validation.bin",
+    "test": "data/moonshot/v2/python/python_test.bin",
+    "general_validation": "data/moonshot/v2/wikitext103/validation.bin"
+  }
+}

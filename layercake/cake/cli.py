@@ -72,10 +72,19 @@ def build_parser() -> argparse.ArgumentParser:
         command = sub.add_parser(name)
         command.add_argument("source")
         command.add_argument("--trusted-local", action="store_true")
+        command.add_argument("--core")
     sub.add_parser("list")
     for name in ("verify", "info", "remove", "rollback"):
         command = sub.add_parser(name)
         command.add_argument("cake_id")
+        if name == "verify":
+            command.add_argument("--core")
+    train = sub.add_parser("train")
+    train.add_argument("--core", required=True)
+    train.add_argument("--domain", required=True)
+    train.add_argument("--dataset")
+    train.add_argument("--config", required=True)
+    train.add_argument("--output", required=True)
     keygen = sub.add_parser("keygen")
     keygen.add_argument("--private", required=True)
     keygen.add_argument("--public", required=True)
@@ -94,6 +103,14 @@ def main(argv: list[str] | None = None) -> int:
             public_path.write_bytes(public)
             _json({"status": "CREATED", "key_id": identifier, "private": str(private_path), "public": str(public_path)})
             return 0
+        if args.command == "train":
+            from layercake.training.cake import train_portable_fusion_cake
+            result = train_portable_fusion_cake(
+                args.core, args.config, args.output, domain=args.domain,
+                dataset_config_path=args.dataset,
+            )
+            _json(result)
+            return 0
         registry = CakeRegistry(args.registry)
         catalog = _catalog(args.catalog)
         if args.command == "search":
@@ -111,9 +128,15 @@ def main(argv: list[str] | None = None) -> int:
                 raise RegistryError(f"cake is not installed: {args.cake_id}")
             _json(record)
             return 0
+        abi_version, abi_digest = args.abi_version, args.abi_hash
+        core_path = getattr(args, "core", None)
+        if core_path:
+            metadata = json.loads((Path(core_path) / "metadata.json").read_text(encoding="utf-8"))
+            abi_version = metadata["canonical_abi"]["version"]
+            abi_digest = metadata["canonical_abi_hash"]
         host = HostCapabilities(
-            abi_version=args.abi_version,
-            abi_hash=args.abi_hash,
+            abi_version=abi_version,
+            abi_hash=abi_digest,
             precisions=("fp32", "fp16", "bf16", "int8"),
             backends=("pytorch", "torchscript", "cuda"),
         )
@@ -123,6 +146,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.command in {"install", "update"}:
             source = _resolve_source(args.source, catalog)
             result = getattr(installer, args.command)(source, trusted_local=args.trusted_local)
+        elif args.command == "verify" and Path(args.cake_id).is_file():
+            package = installer.inspect(Path(args.cake_id))
+            result = {
+                "status": "PASS", "path": str(package.path),
+                "cake_id": package.manifest.cake_id, "signed": package.signed,
+                "archive_hash": package.archive_hash,
+                "package_hash": package.manifest.package_hash,
+                "payload_hash": package.manifest.tensor_payload_hash,
+            }
         elif args.command in {"verify", "remove", "rollback"}:
             result = getattr(installer, args.command)(args.cake_id)
         else:

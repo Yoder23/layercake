@@ -1,0 +1,43 @@
+{
+  "format": "layercake-architecture-search-config/2",
+  "device": "cuda",
+  "seeds": [9101, 9102, 9103],
+  "candidates": [
+    "existing_layercake_foundation",
+    "strong_byte_transformer",
+    "strong_bpe_transformer",
+    "dense_layercake",
+    "sparse_layercake",
+    "local_path_only",
+    "global_path_only",
+    "no_routed_experts",
+    "oracle_route",
+    "learned_route",
+    "fixed_patches",
+    "multiscale_patches",
+    "incremental_vs_full_context",
+    "selected_final_architecture"
+  ],
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_development.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin"
+  },
+  "training": {
+    "steps": 24,
+    "batch_size": 8,
+    "sequence_bytes": 128,
+    "evaluation_batch_size": 4,
+    "evaluation_batches": 3,
+    "learning_rate": 0.001
+  },
+  "budget": {
+    "maximum_candidates": 14,
+    "maximum_steps_per_run": 24,
+    "maximum_wall_seconds": 1800,
+    "maximum_cuda_memory_bytes": 8589934592
+  },
+  "promotion": {
+    "maximum_active_fraction": 0.20,
+    "maximum_bpb_ratio": 1.10
+  }
+}

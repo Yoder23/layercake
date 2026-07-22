@@ -23,28 +23,39 @@ inside tokenizer-specific or `d_model`-specific weights. A brick should be train
 copied exactly, activated sparsely, quantized, and used by independently trained LayerCake
 cores of different sizes.
 
-## Executable moonshot path (July 2026)
+## Moonshot V2 evidence (July 2026)
 
-The repository now includes a causal byte-patch foundation with physically top-1 sparse
-capacity, a parameter-matched learned-BPE transformer baseline, safe `.cake` packages,
-atomic extension management, budget-aware routing/orchestration, CPU/CUDA/mobile-export
-runtimes, and a fail-closed experiment certificate.
+Moonshot V2 adds exact incremental decoding, a multiscale recurrent byte foundation,
+a semantic canonical ABI, core-conditioned `portable_fusion` cakes, three independently
+trained hosts, learned routing, a modern cached transformer control, signed package
+orchestration, and a fail-closed certificate. The largest completed run is explicitly a
+10-million-byte development experiment, not a proof-scale run.
 
 ```powershell
-python -m layercake.moonshot smoke
-python -m layercake.moonshot train
-python -m layercake.moonshot benchmark
-python -m layercake.moonshot verify
-python -m layercake.moonshot demo
+python -m layercake.moonshot_v2 audit
+python -m layercake.moonshot_v2 search
+python -m layercake.moonshot_v2 train-hosts
+python -m layercake.moonshot_v2 train-cakes
+python -m layercake.moonshot_v2 benchmark
+python -m layercake.moonshot_v2 demo
+python -m layercake.moonshot_v2 verify
 ```
 
-The current status is **NOT YET PROVEN**. The engineering smoke passes data integrity,
-parameter matching, sparse activity, package/portability mechanics, routing, and export
-checks. It also trains five small neural cakes, but their BPB probes do not establish the
-required 5x ordinary-task error reduction. The run is far too small to promote general-quality or 5x training claims; physical
-mobile hardware is also unmeasured. See [the architecture](docs/MOONSHOT_ARCHITECTURE.md),
+The current status is **NOT YET PROVEN**. The V2 core reached 2.5635 held-out English
+BPB, while the 4.94%-matched transformer reached 2.1366. The Python fusion cake improved
+held-out code BPB from 7.1331 to 4.4568 and retained the locked BPB improvement across
+three actual hosts, but passed 0/8 ordinary syntax tasks and regressed unrelated English
+BPB. All five open-ended English probes were severely repetitive. The direct 600-run
+benchmark measured 6.88x CPU/GPU useful-byte throughput, but its
+status is `INVALID_EVIDENCE` because ordinary-task quality and three-domain coverage did
+not pass. Those raw timings are not a moonshot claim.
+
+See the [V2 report](docs/MOONSHOT_V2_REPORT.md),
+[architecture](docs/MOONSHOT_ARCHITECTURE.md),
 [threat model](docs/CAKE_THREAT_MODEL.md), and
-[claims and limitations](MOONSHOT_CLAIMS_AND_LIMITATIONS.md).
+[machine-readable certificate](results/moonshot/v2/release_certificate.json). Historical
+branches below retain their original scopes and must not be read as satisfying the V2
+matched-quality CPU-versus-GPU gate.
 
 ## CPU/GPU North Star v23 routed-cake result
 

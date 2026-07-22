@@ -1,0 +1,672 @@
+{
+  "execution": "real trained checkpoints, signed cake, learned router, CPU-only incremental generation",
+  "format": "layercake-orchestration-demo/2",
+  "hosts": [
+    {
+      "architecture": {
+        "abi_width": 64,
+        "ablation": "selected",
+        "architecture_version": "layercake-foundation-v2/1",
+        "d_byte": 48,
+        "d_global": 128,
+        "d_local": 96,
+        "dropout": 0.0,
+        "expert_expansion": 4,
+        "fast_patch_size": 4,
+        "global_layers": 1,
+        "local_kernel": 5,
+        "local_layers": 1,
+        "routed_experts": 16,
+        "slow_patch_size": 16
+      },
+      "checkpoint_sha256": "25e1bd7b0dae46ed0fe49fea50fb1f0bc79669f89691a9c88bb868bf3a61111b",
+      "domain_bpb": {
+        "core": 6.493578701625665,
+        "improvement": 1.5026637863984977,
+        "with_cake": 4.321378315231193
+      },
+      "general_generation": {
+        "output": " the season . The season and the",
+        "trace": {
+          "cache_state": {
+            "active_bytes": 0,
+            "loaded": [],
+            "max_bytes": 536870912,
+            "swap_count": 0
+          },
+          "cold_loaded": [],
+          "end_to_end_milliseconds": 88.147500064224,
+          "execution_milliseconds": 85.53690009284765,
+          "execution_path": "core_only_abstention",
+          "load_milliseconds": 0.0,
+          "loaded_cakes": [],
+          "route": {
+            "abstained": true,
+            "candidates": [
+              {
+                "cake_id": "python-fusion-v2",
+                "domains": [
+                  "python"
+                ],
+                "lexical_coverage": 0.0,
+                "loaded": false,
+                "score": 0.03000500798225403
+              }
+            ],
+            "confidence": 0.5930063128471375,
+            "core_fallback": true,
+            "escalate": false,
+            "multidomain": false,
+            "policy_version": "layercake-learned-router/2",
+            "reason": "missing-cake",
+            "route_milliseconds": 1.9348000641912222,
+            "selected": [],
+            "trace": [
+              {
+                "event": "learned_semantic_decision",
+                "probabilities": {
+                  "actions": 0.00018416927196085453,
+                  "biomedical": 0.5930063128471375,
+                  "game": 5.364217940950766e-05,
+                  "mathematics": 7.3029070335906e-05,
+                  "python": 0.03000500798225403
+                },
+                "reason": "missing-cake",
+                "selected_cakes": [],
+                "selected_domains": []
+              }
+            ]
+          },
+          "verifier_escalated": false
+        }
+      },
+      "host": "english-core-a",
+      "install_milliseconds": 3.8714,
+      "installation": {
+        "abi_hash": "6da74ac6cf1d295248a7efb5292876329f1a55bc5af71bc2b15f9390e2e07dca",
+        "abi_version": "lc-canonical-byte-semantics/2",
+        "archive_hash": "2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2",
+        "blob": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\demo\\registries\\english-core-a\\blobs\\sha256\\2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2.cake",
+        "cake_id": "python-fusion-v2",
+        "cake_type": "portable_fusion",
+        "composition": "bounded-additive-logit-residual",
+        "description": "Neural Python specialist residual trained against a frozen English core",
+        "domains": [
+          "python"
+        ],
+        "installed_at": 1784682516.322096,
+        "keywords": [
+          "python",
+          "code",
+          "programming"
+        ],
+        "name": "Python Portable Fusion V2",
+        "package_hash": "b20750bb47d6c0f24e46d0308aaaaa666a648ea3246bdab9f067c5ec4e744663",
+        "permissions": [
+          "local-inference"
+        ],
+        "publisher": {
+          "id": "layercake-research",
+          "key_id": "3aebc32d8800545f18c2ffe3cfbc4e09",
+          "name": "LayerCake Research"
+        },
+        "signed": true,
+        "status": "UPDATED",
+        "tensor_payload_hash": "51f8ee4f6a9b0f1fc291a636a4247bd132c3bc3933a36fef72e546c468f5dd94",
+        "trusted_local": false,
+        "version": "0.1.0"
+      },
+      "parameters": {
+        "active_fraction": 0.15931017518926455,
+        "active_parameters": 559584,
+        "optimizer_resident_parameters_for_pinned_route": 559584,
+        "routed_experts": 16,
+        "total_parameters": 3512544
+      },
+      "seed": 9201,
+      "specialist_generation": {
+        "output": "  anduent the set. . The self. 1",
+        "trace": {
+          "cache_state": {
+            "active_bytes": 178820,
+            "loaded": [
+              "python-fusion-v2"
+            ],
+            "max_bytes": 536870912,
+            "swap_count": 0
+          },
+          "cold_loaded": [
+            "python-fusion-v2"
+          ],
+          "end_to_end_milliseconds": 116.41759995836765,
+          "execution_milliseconds": 111.09629995189607,
+          "execution_path": "selected_cake",
+          "load_milliseconds": 2.599300001747906,
+          "loaded_cakes": [
+            "python-fusion-v2"
+          ],
+          "route": {
+            "abstained": false,
+            "candidates": [
+              {
+                "cake_id": "python-fusion-v2",
+                "domains": [
+                  "python"
+                ],
+                "lexical_coverage": 0.0,
+                "loaded": false,
+                "score": 0.9999995231628418
+              }
+            ],
+            "confidence": 0.9999995231628418,
+            "core_fallback": false,
+            "escalate": false,
+            "multidomain": false,
+            "policy_version": "layercake-learned-router/2",
+            "reason": "learned-semantic",
+            "route_milliseconds": 2.06840003374964,
+            "selected": [
+              "python-fusion-v2"
+            ],
+            "trace": [
+              {
+                "event": "learned_semantic_decision",
+                "probabilities": {
+                  "actions": 2.369615322095342e-05,
+                  "biomedical": 0.0016112745506688952,
+                  "game": 2.3263648472493514e-05,
+                  "mathematics": 4.229776459396817e-05,
+                  "python": 0.9999995231628418
+                },
+                "reason": "learned-semantic",
+                "selected_cakes": [
+                  "python-fusion-v2"
+                ],
+                "selected_domains": [
+                  "python"
+                ]
+              }
+            ]
+          },
+          "verifier_escalated": false
+        }
+      },
+      "verification": {
+        "archive_hash": "2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2",
+        "cake_id": "python-fusion-v2",
+        "package_hash": "b20750bb47d6c0f24e46d0308aaaaa666a648ea3246bdab9f067c5ec4e744663",
+        "payload_hash": "51f8ee4f6a9b0f1fc291a636a4247bd132c3bc3933a36fef72e546c468f5dd94",
+        "signed": true,
+        "status": "PASS",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "architecture": {
+        "abi_width": 64,
+        "ablation": "selected",
+        "architecture_version": "layercake-foundation-v2/1",
+        "d_byte": 48,
+        "d_global": 128,
+        "d_local": 96,
+        "dropout": 0.0,
+        "expert_expansion": 4,
+        "fast_patch_size": 4,
+        "global_layers": 1,
+        "local_kernel": 5,
+        "local_layers": 1,
+        "routed_experts": 16,
+        "slow_patch_size": 16
+      },
+      "checkpoint_sha256": "4f17eb2ebd1255965d079d6116024fea15e8b260d08d5124d7648cb0030ae237",
+      "domain_bpb": {
+        "core": 6.328106454011268,
+        "improvement": 1.4141522965727424,
+        "with_cake": 4.474840842353189
+      },
+      "general_generation": {
+        "output": " and the sear and the sear the s",
+        "trace": {
+          "cache_state": {
+            "active_bytes": 0,
+            "loaded": [],
+            "max_bytes": 536870912,
+            "swap_count": 0
+          },
+          "cold_loaded": [],
+          "end_to_end_milliseconds": 90.66870005335659,
+          "execution_milliseconds": 88.26770004816353,
+          "execution_path": "core_only_abstention",
+          "load_milliseconds": 0.0,
+          "loaded_cakes": [],
+          "route": {
+            "abstained": true,
+            "candidates": [
+              {
+                "cake_id": "python-fusion-v2",
+                "domains": [
+                  "python"
+                ],
+                "lexical_coverage": 0.0,
+                "loaded": false,
+                "score": 0.03000500798225403
+              }
+            ],
+            "confidence": 0.5930063128471375,
+            "core_fallback": true,
+            "escalate": false,
+            "multidomain": false,
+            "policy_version": "layercake-learned-router/2",
+            "reason": "missing-cake",
+            "route_milliseconds": 1.7271999968215823,
+            "selected": [],
+            "trace": [
+              {
+                "event": "learned_semantic_decision",
+                "probabilities": {
+                  "actions": 0.00018416927196085453,
+                  "biomedical": 0.5930063128471375,
+                  "game": 5.364217940950766e-05,
+                  "mathematics": 7.3029070335906e-05,
+                  "python": 0.03000500798225403
+                },
+                "reason": "missing-cake",
+                "selected_cakes": [],
+                "selected_domains": []
+              }
+            ]
+          },
+          "verifier_escalated": false
+        }
+      },
+      "host": "english-core-b",
+      "install_milliseconds": 3.5108,
+      "installation": {
+        "abi_hash": "6da74ac6cf1d295248a7efb5292876329f1a55bc5af71bc2b15f9390e2e07dca",
+        "abi_version": "lc-canonical-byte-semantics/2",
+        "archive_hash": "2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2",
+        "blob": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\demo\\registries\\english-core-b\\blobs\\sha256\\2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2.cake",
+        "cake_id": "python-fusion-v2",
+        "cake_type": "portable_fusion",
+        "composition": "bounded-additive-logit-residual",
+        "description": "Neural Python specialist residual trained against a frozen English core",
+        "domains": [
+          "python"
+        ],
+        "installed_at": 1784682516.6788242,
+        "keywords": [
+          "python",
+          "code",
+          "programming"
+        ],
+        "name": "Python Portable Fusion V2",
+        "package_hash": "b20750bb47d6c0f24e46d0308aaaaa666a648ea3246bdab9f067c5ec4e744663",
+        "permissions": [
+          "local-inference"
+        ],
+        "publisher": {
+          "id": "layercake-research",
+          "key_id": "3aebc32d8800545f18c2ffe3cfbc4e09",
+          "name": "LayerCake Research"
+        },
+        "signed": true,
+        "status": "UPDATED",
+        "tensor_payload_hash": "51f8ee4f6a9b0f1fc291a636a4247bd132c3bc3933a36fef72e546c468f5dd94",
+        "trusted_local": false,
+        "version": "0.1.0"
+      },
+      "parameters": {
+        "active_fraction": 0.15931017518926455,
+        "active_parameters": 559584,
+        "optimizer_resident_parameters_for_pinned_route": 559584,
+        "routed_experts": 16,
+        "total_parameters": 3512544
+      },
+      "seed": 9202,
+      "specialist_generation": {
+        "output": "lod, , and the selform of the se",
+        "trace": {
+          "cache_state": {
+            "active_bytes": 178820,
+            "loaded": [
+              "python-fusion-v2"
+            ],
+            "max_bytes": 536870912,
+            "swap_count": 0
+          },
+          "cold_loaded": [
+            "python-fusion-v2"
+          ],
+          "end_to_end_milliseconds": 117.55039996933192,
+          "execution_milliseconds": 112.31130000669509,
+          "execution_path": "selected_cake",
+          "load_milliseconds": 2.509700017981231,
+          "loaded_cakes": [
+            "python-fusion-v2"
+          ],
+          "route": {
+            "abstained": false,
+            "candidates": [
+              {
+                "cake_id": "python-fusion-v2",
+                "domains": [
+                  "python"
+                ],
+                "lexical_coverage": 0.0,
+                "loaded": false,
+                "score": 0.9999995231628418
+              }
+            ],
+            "confidence": 0.9999995231628418,
+            "core_fallback": false,
+            "escalate": false,
+            "multidomain": false,
+            "policy_version": "layercake-learned-router/2",
+            "reason": "learned-semantic",
+            "route_milliseconds": 2.069199923425913,
+            "selected": [
+              "python-fusion-v2"
+            ],
+            "trace": [
+              {
+                "event": "learned_semantic_decision",
+                "probabilities": {
+                  "actions": 2.369615322095342e-05,
+                  "biomedical": 0.0016112745506688952,
+                  "game": 2.3263648472493514e-05,
+                  "mathematics": 4.229776459396817e-05,
+                  "python": 0.9999995231628418
+                },
+                "reason": "learned-semantic",
+                "selected_cakes": [
+                  "python-fusion-v2"
+                ],
+                "selected_domains": [
+                  "python"
+                ]
+              }
+            ]
+          },
+          "verifier_escalated": false
+        }
+      },
+      "verification": {
+        "archive_hash": "2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2",
+        "cake_id": "python-fusion-v2",
+        "package_hash": "b20750bb47d6c0f24e46d0308aaaaa666a648ea3246bdab9f067c5ec4e744663",
+        "payload_hash": "51f8ee4f6a9b0f1fc291a636a4247bd132c3bc3933a36fef72e546c468f5dd94",
+        "signed": true,
+        "status": "PASS",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "architecture": {
+        "abi_width": 64,
+        "ablation": "selected",
+        "architecture_version": "layercake-foundation-v2/1",
+        "d_byte": 40,
+        "d_global": 112,
+        "d_local": 80,
+        "dropout": 0.0,
+        "expert_expansion": 4,
+        "fast_patch_size": 4,
+        "global_layers": 1,
+        "local_kernel": 5,
+        "local_layers": 1,
+        "routed_experts": 16,
+        "slow_patch_size": 16
+      },
+      "checkpoint_sha256": "ee194549dac11dd91edd1c4286bf609b7fa4e2f0f954d3e7a7640a9e3782995c",
+      "domain_bpb": {
+        "core": 6.4406880170925715,
+        "improvement": 1.3861165446952513,
+        "with_cake": 4.646570334753928
+      },
+      "general_generation": {
+        "output": " . The served to the contrand of",
+        "trace": {
+          "cache_state": {
+            "active_bytes": 0,
+            "loaded": [],
+            "max_bytes": 536870912,
+            "swap_count": 0
+          },
+          "cold_loaded": [],
+          "end_to_end_milliseconds": 83.18549999967217,
+          "execution_milliseconds": 80.82609996199608,
+          "execution_path": "core_only_abstention",
+          "load_milliseconds": 0.0,
+          "loaded_cakes": [],
+          "route": {
+            "abstained": true,
+            "candidates": [
+              {
+                "cake_id": "python-fusion-v2",
+                "domains": [
+                  "python"
+                ],
+                "lexical_coverage": 0.0,
+                "loaded": false,
+                "score": 0.03000500798225403
+              }
+            ],
+            "confidence": 0.5930063128471375,
+            "core_fallback": true,
+            "escalate": false,
+            "multidomain": false,
+            "policy_version": "layercake-learned-router/2",
+            "reason": "missing-cake",
+            "route_milliseconds": 1.71999994199723,
+            "selected": [],
+            "trace": [
+              {
+                "event": "learned_semantic_decision",
+                "probabilities": {
+                  "actions": 0.00018416927196085453,
+                  "biomedical": 0.5930063128471375,
+                  "game": 5.364217940950766e-05,
+                  "mathematics": 7.3029070335906e-05,
+                  "python": 0.03000500798225403
+                },
+                "reason": "missing-cake",
+                "selected_cakes": [],
+                "selected_domains": []
+              }
+            ]
+          },
+          "verifier_escalated": false
+        }
+      },
+      "host": "english-core-c",
+      "install_milliseconds": 3.7333,
+      "installation": {
+        "abi_hash": "6da74ac6cf1d295248a7efb5292876329f1a55bc5af71bc2b15f9390e2e07dca",
+        "abi_version": "lc-canonical-byte-semantics/2",
+        "archive_hash": "2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2",
+        "blob": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\demo\\registries\\english-core-c\\blobs\\sha256\\2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2.cake",
+        "cake_id": "python-fusion-v2",
+        "cake_type": "portable_fusion",
+        "composition": "bounded-additive-logit-residual",
+        "description": "Neural Python specialist residual trained against a frozen English core",
+        "domains": [
+          "python"
+        ],
+        "installed_at": 1784682517.008706,
+        "keywords": [
+          "python",
+          "code",
+          "programming"
+        ],
+        "name": "Python Portable Fusion V2",
+        "package_hash": "b20750bb47d6c0f24e46d0308aaaaa666a648ea3246bdab9f067c5ec4e744663",
+        "permissions": [
+          "local-inference"
+        ],
+        "publisher": {
+          "id": "layercake-research",
+          "key_id": "3aebc32d8800545f18c2ffe3cfbc4e09",
+          "name": "LayerCake Research"
+        },
+        "signed": true,
+        "status": "UPDATED",
+        "tensor_payload_hash": "51f8ee4f6a9b0f1fc291a636a4247bd132c3bc3933a36fef72e546c468f5dd94",
+        "trusted_local": false,
+        "version": "0.1.0"
+      },
+      "parameters": {
+        "active_fraction": 0.15868990642188727,
+        "active_parameters": 426528,
+        "optimizer_resident_parameters_for_pinned_route": 426528,
+        "routed_experts": 16,
+        "total_parameters": 2687808
+      },
+      "seed": 9203,
+      "specialist_generation": {
+        "output": "rror , and the self.tore and the",
+        "trace": {
+          "cache_state": {
+            "active_bytes": 178820,
+            "loaded": [
+              "python-fusion-v2"
+            ],
+            "max_bytes": 536870912,
+            "swap_count": 0
+          },
+          "cold_loaded": [
+            "python-fusion-v2"
+          ],
+          "end_to_end_milliseconds": 114.25079999025911,
+          "execution_milliseconds": 108.75709995161742,
+          "execution_path": "selected_cake",
+          "load_milliseconds": 2.845000009983778,
+          "loaded_cakes": [
+            "python-fusion-v2"
+          ],
+          "route": {
+            "abstained": false,
+            "candidates": [
+              {
+                "cake_id": "python-fusion-v2",
+                "domains": [
+                  "python"
+                ],
+                "lexical_coverage": 0.0,
+                "loaded": false,
+                "score": 0.9999995231628418
+              }
+            ],
+            "confidence": 0.9999995231628418,
+            "core_fallback": false,
+            "escalate": false,
+            "multidomain": false,
+            "policy_version": "layercake-learned-router/2",
+            "reason": "learned-semantic",
+            "route_milliseconds": 2.0634999964386225,
+            "selected": [
+              "python-fusion-v2"
+            ],
+            "trace": [
+              {
+                "event": "learned_semantic_decision",
+                "probabilities": {
+                  "actions": 2.369615322095342e-05,
+                  "biomedical": 0.0016112745506688952,
+                  "game": 2.3263648472493514e-05,
+                  "mathematics": 4.229776459396817e-05,
+                  "python": 0.9999995231628418
+                },
+                "reason": "learned-semantic",
+                "selected_cakes": [
+                  "python-fusion-v2"
+                ],
+                "selected_domains": [
+                  "python"
+                ]
+              }
+            ]
+          },
+          "verifier_escalated": false
+        }
+      },
+      "verification": {
+        "archive_hash": "2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2",
+        "cake_id": "python-fusion-v2",
+        "package_hash": "b20750bb47d6c0f24e46d0308aaaaa666a648ea3246bdab9f067c5ec4e744663",
+        "payload_hash": "51f8ee4f6a9b0f1fc291a636a4247bd132c3bc3933a36fef72e546c468f5dd94",
+        "signed": true,
+        "status": "PASS",
+        "version": "0.1.0"
+      }
+    }
+  ],
+  "limitations": [
+    "the development cake's ordinary syntax-task gate failed",
+    "the direct CPU-versus-GPU result is reported separately and is not promoted"
+  ],
+  "package": {
+    "archive_sha256": "2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2",
+    "content_hash": "b20750bb47d6c0f24e46d0308aaaaa666a648ea3246bdab9f067c5ec4e744663",
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\cakes\\python.cake",
+    "payload_hash": "51f8ee4f6a9b0f1fc291a636a4247bd132c3bc3933a36fef72e546c468f5dd94",
+    "signed": true
+  },
+  "source_lifecycle": {
+    "archive_hash_preserved": true,
+    "reinstalled": {
+      "abi_hash": "6da74ac6cf1d295248a7efb5292876329f1a55bc5af71bc2b15f9390e2e07dca",
+      "abi_version": "lc-canonical-byte-semantics/2",
+      "archive_hash": "2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2",
+      "blob": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\demo\\registries\\english-core-a\\blobs\\sha256\\2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2.cake",
+      "cake_id": "python-fusion-v2",
+      "cake_type": "portable_fusion",
+      "composition": "bounded-additive-logit-residual",
+      "description": "Neural Python specialist residual trained against a frozen English core",
+      "domains": [
+        "python"
+      ],
+      "installed_at": 1784682516.6244528,
+      "keywords": [
+        "python",
+        "code",
+        "programming"
+      ],
+      "name": "Python Portable Fusion V2",
+      "package_hash": "b20750bb47d6c0f24e46d0308aaaaa666a648ea3246bdab9f067c5ec4e744663",
+      "permissions": [
+        "local-inference"
+      ],
+      "publisher": {
+        "id": "layercake-research",
+        "key_id": "3aebc32d8800545f18c2ffe3cfbc4e09",
+        "name": "LayerCake Research"
+      },
+      "signed": true,
+      "status": "INSTALLED",
+      "tensor_payload_hash": "51f8ee4f6a9b0f1fc291a636a4247bd132c3bc3933a36fef72e546c468f5dd94",
+      "trusted_local": false,
+      "version": "0.1.0"
+    },
+    "removed": {
+      "cake_id": "python-fusion-v2",
+      "status": "REMOVED",
+      "version": "0.1.0"
+    },
+    "reverified": {
+      "archive_hash": "2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2",
+      "cake_id": "python-fusion-v2",
+      "package_hash": "b20750bb47d6c0f24e46d0308aaaaa666a648ea3246bdab9f067c5ec4e744663",
+      "payload_hash": "51f8ee4f6a9b0f1fc291a636a4247bd132c3bc3933a36fef72e546c468f5dd94",
+      "signed": true,
+      "status": "PASS",
+      "version": "0.1.0"
+    },
+    "route_after_remove": {
+      "core_fallback": true,
+      "reason": "missing-cake",
+      "selected": []
+    },
+    "specialist_bpb_after_remove": 6.493578701625665
+  },
+  "status": "PASS"
+}

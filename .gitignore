@@ -62,6 +62,12 @@ htmlcov/
 .torchinductor_cache_serial/
 .triton_cache/
 .triton_cache_serial/
+.datasets_cache/
+
+# Downloaded/generated V2 corpora and trained checkpoints are reproducible
+# artifacts, not source. Their manifests and evidence hashes are committed.
+data/moonshot/v2/**/*.bin
+data/moonshot/v2/**/manifest.json
 
 # Logs
 *.log
@@ -93,6 +99,21 @@ results/moonshot/smoke/*
 !results/moonshot/smoke/ecosystem_evidence.json
 !results/moonshot/smoke/pytest_evidence.json
 !results/moonshot/smoke/release_certificate.json
+!results/moonshot/v2/
+results/moonshot/v2/*
+!results/moonshot/v2/baseline_audit.json
+!results/moonshot/v2/architecture_search.json
+!results/moonshot/v2/development_evidence.json
+!results/moonshot/v2/english_quality_evidence.json
+!results/moonshot/v2/portability_evidence.json
+!results/moonshot/v2/incremental_benchmark.json
+!results/moonshot/v2/routing_evidence.json
+!results/moonshot/v2/cpu_vs_gpu_evidence.json
+!results/moonshot/v2/mobile_export_evidence.json
+!results/moonshot/v2/orchestration_evidence.json
+!results/moonshot/v2/pytest_evidence.json
+!results/moonshot/v2/quantization_evidence.json
+!results/moonshot/v2/release_certificate.json
 results/breakthrough_equal/*
 !results/breakthrough_equal/question_comparison_lmonly1000_cpu_stateful_repeats5.json
 !results/breakthrough_equal/question_comparison_lmonly1000_gpu_draft_repeats5.json

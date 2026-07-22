@@ -1,0 +1,20 @@
+{
+  "format": "layercake-transformer-domain-adaptation/2",
+  "seed": 9601,
+  "device": "cuda",
+  "training": {
+    "steps": 600,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.0002,
+    "weight_decay": 0.01,
+    "evaluation_interval": 100
+  },
+  "evaluation": {"batch_size": 8, "sequence_bytes": 256, "batches": 8},
+  "data": {
+    "general_train": "data/moonshot/v2/wikitext103/train_development.bin",
+    "general_test": "data/moonshot/v2/wikitext103/test.bin",
+    "domain_train": "data/moonshot/v2/python/python_train.bin",
+    "domain_test": "data/moonshot/v2/python/python_test.bin"
+  }
+}

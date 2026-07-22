@@ -1,0 +1,13 @@
+{
+  "format": "layercake-core-training-config/2",
+  "scale_status": "proof_recipe_not_run_requires_1b_corpus",
+  "seed": 9502,
+  "inherits": "configs/moonshot/dev/core_english_receiver_b.yaml",
+  "required_overrides": {
+    "data.train": "data/moonshot/v2/wikitext103/train_proof_1b.bin",
+    "training.steps": 122071,
+    "training.evaluation_interval": 5000,
+    "evaluation.evaluate_test": false
+  },
+  "execution_status": "NOT_RUN_INSUFFICIENT_COMPUTE"
+}

@@ -3,7 +3,7 @@ import _common
 from layercake.moonshot import verify_release
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--config", default="configs/moonshot/full.json")
+parser.add_argument("--config", default="configs/moonshot/integration_five_seed.json")
 args = parser.parse_args()
 certificate = verify_release(args.config)
 print(json.dumps(certificate, indent=2, sort_keys=True))

@@ -1,0 +1,94 @@
+{
+  "format": "layercake-baseline-audit/2",
+  "status": "PASS",
+  "scope": "immutable audit of the pre-V2 implementation at the recorded commit",
+  "source": {
+    "commit": "872de5ab227a3eaa0071475f21f830de6b68a3fb",
+    "git_tree": "c420b6131bbdc37f6cc254b4a675d37809d5bcc3",
+    "repository": "https://github.com/Yoder23/layercake"
+  },
+  "commands": [
+    "C:\\Python310\\python.exe -m pytest -q",
+    "C:\\Python310\\python.exe -m layercake.moonshot smoke",
+    "C:\\Python310\\python.exe scripts/verify_moonshot_release.py --config configs/moonshot/smoke.json --results results/moonshot/smoke"
+  ],
+  "environment": {
+    "python": "3.10.0",
+    "torch": "2.7.1+cu118",
+    "cuda_runtime": "11.8",
+    "platform": "Windows-10-10.0.26200-SP0"
+  },
+  "hardware": {
+    "cpu": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "cpu_physical_cores": 14,
+    "cpu_logical_cores": 20,
+    "ram_bytes": 68473409536,
+    "gpu": "NVIDIA GeForce RTX 3080 Laptop GPU"
+  },
+  "tests": {
+    "status": "PASS",
+    "passed": 392,
+    "warnings": 44,
+    "wall_seconds": 13.34
+  },
+  "datasets": {
+    "architecture_selection": {"bytes": 438, "sha256": "c8c8a2e864ab5d2b57f073f0d6d9662afc9c9b0bec3372abb1c07e02ada0d9cc"},
+    "train": {"bytes": 775, "sha256": "146b20575515442b1e090495e2caa7c9f2b570799cc5211f5bcb6ac40258f87e"},
+    "validation": {"bytes": 646, "sha256": "e985496f41965db99156ad5d26aa33280eb7b651e41eacfa5d8380b7ae6c8bf3"},
+    "test": {"bytes": 706, "sha256": "b866996cdf5bd5ff67966c90d374d76039f3f7d192dddc88b4fc56e1bf4387e9"}
+  },
+  "models": {
+    "layercake": {
+      "checkpoint_sha256": "775c3247d07ad715a718579e05a29344de88c8bd1b9fe7cd934e259be08bf8ab",
+      "total_parameters": 853952,
+      "active_parameters": 114752,
+      "active_fraction": 0.13437757625721353,
+      "parameter_bytes_fp32": 3415808,
+      "mean_test_bpb": 7.82803227628295
+    },
+    "transformer": {
+      "checkpoint_sha256": "c2a2c9f95b72fba36f35cdd9d2015637cb06f605ac89daa091159aed497662a5",
+      "total_parameters": 836496,
+      "parameter_bytes_fp32": 3345984,
+      "mean_test_bpb": 5.880799557327396
+    }
+  },
+  "throughput": {
+    "normalization": "generated UTF-8 bytes",
+    "generation_bytes_per_measurement": 4,
+    "cpu_one_thread_layercake_bytes_per_second": 901.774240818811,
+    "cpu_one_thread_transformer_bytes_per_second": 208.0029120407686,
+    "cpu_ratio": 4.335392384516536,
+    "cuda_layercake_bytes_per_second": 364.07325153820943,
+    "cuda_transformer_bytes_per_second": 162.55801289085042,
+    "cuda_ratio": 2.2396512178250263,
+    "quality_comparable": false,
+    "claim_validity": "INVALID_FOR_MOONSHOT_DUE_TO_FOUR_BYTE_GENERATION_AND_UNMATCHED_QUALITY"
+  },
+  "evidence": {
+    "training": {"sha256": "285243d59227d62aa0245d2f33e4ba53a651374ae92dc9494c44c292864d2ade"},
+    "inference": {"sha256": "4e04c9dde3ca482505d43908a85e9ff2b2579b8a6ccd26a6b47eb78296ba998a"},
+    "ecosystem": {"sha256": "922b2ede9d81c10129ac1ca4598fb93608c5af852c17f498fe75997041773107"},
+    "release_certificate": {"sha256": "997a56148ad66e879f1f8beb4fa06a4c162436732dc48b47285304ee3ad3dd83", "overall_status": "OPEN"}
+  },
+  "audit_findings": {
+    "generation": "FAIL: the production generate path reran the complete retained context for every byte",
+    "cake_core_fusion": "FAIL: portable decoder cakes were standalone miniature byte language models and did not use the English core",
+    "cross_host_portability": "FAIL: receivers were descriptor dictionaries, not instantiated independently trained checkpoints",
+    "active_parameter_accounting": "PARTIAL: the homogeneous pinned-route formula counted one selected expert and was arithmetically correct, but no profiler proved physical memory traffic or cache residency",
+    "optimizer_state_accounting": "PARTIAL: reported state followed trainable tensors but did not establish sparse optimizer residency across changing routes",
+    "misleading_configuration": "configs/moonshot/full.json was integration scale and was renamed configs/moonshot/integration_five_seed.json",
+    "quality_gap": "FAIL: LayerCake was 1.9472 BPB worse than the same-scale transformer",
+    "package_security": "PASS: safe archive validation, safetensors loading, integrity hashes, and adversarial package tests passed"
+  },
+  "known_blockers": [
+    "tiny smoke data and two training steps were not convergence evidence",
+    "general-language quality was not comparable to the transformer",
+    "no real incremental decoding",
+    "no core-conditioned portable cake",
+    "no actual receiving host checkpoints",
+    "no ordinary-task specialist success",
+    "no matched-quality CPU-versus-GPU comparison",
+    "no physical mobile measurement"
+  ]
+}

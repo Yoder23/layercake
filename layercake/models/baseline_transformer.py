@@ -127,6 +127,35 @@ class CausalSwiGLUBlock(nn.Module):
         gate, value = self.gate_up(self.ffn_norm(hidden)).chunk(2, dim=-1)
         return hidden + self.down(F.silu(gate) * value)
 
+    def forward_cached(
+        self,
+        hidden: torch.Tensor,
+        past: tuple[torch.Tensor, torch.Tensor] | None = None,
+    ) -> tuple[torch.Tensor, tuple[torch.Tensor, torch.Tensor]]:
+        batch, length, width = hidden.shape
+        qkv = self.qkv(self.attn_norm(hidden)).reshape(
+            batch, length, 3, self.heads, self.head_width
+        )
+        query, key, value = [item.transpose(1, 2) for item in qkv.unbind(dim=2)]
+        if past is not None:
+            key = torch.cat([past[0], key], dim=2)
+            value = torch.cat([past[1], value], dim=2)
+        attended = F.scaled_dot_product_attention(
+            query, key, value, is_causal=past is None and length > 1
+        )
+        hidden = hidden + self.attn_out(attended.transpose(1, 2).reshape(batch, length, width))
+        gate, ffn_value = self.gate_up(self.ffn_norm(hidden)).chunk(2, dim=-1)
+        hidden = hidden + self.down(F.silu(gate) * ffn_value)
+        return hidden, (key.detach(), value.detach())
+
+
+@dataclass
+class TransformerGenerationState:
+    keys_values: list[tuple[torch.Tensor, torch.Tensor]]
+    next_logits: torch.Tensor
+    token_ids: torch.Tensor
+    generated_ids: torch.Tensor
+
 
 class ModernBPETransformer(nn.Module):
     def __init__(self, config: TransformerConfig):
@@ -160,6 +189,58 @@ class ModernBPETransformer(nn.Module):
 
     def parameter_count(self) -> int:
         return sum(parameter.numel() for parameter in self.parameters())
+
+    @torch.inference_mode()
+    def prefill(self, token_ids: torch.Tensor) -> TransformerGenerationState:
+        if token_ids.ndim != 2 or token_ids.shape[1] == 0:
+            raise ValueError("prefill requires non-empty [batch, sequence] token ids")
+        if token_ids.shape[1] > self.config.max_tokens:
+            raise ValueError("token ids exceed the configured transformer context")
+        positions = torch.arange(token_ids.shape[1], device=token_ids.device)
+        hidden = self.embedding(token_ids) + self.position(positions)[None]
+        keys_values = []
+        for block in self.blocks:
+            hidden, cache = block.forward_cached(hidden)
+            keys_values.append(cache)
+        logits = F.linear(self.norm(hidden[:, -1]), self.embedding.weight)
+        return TransformerGenerationState(
+            keys_values=keys_values,
+            next_logits=logits,
+            token_ids=token_ids,
+            generated_ids=token_ids[:, :0],
+        )
+
+    @torch.inference_mode()
+    def decode_step(
+        self,
+        state: TransformerGenerationState,
+        next_token: torch.Tensor | None = None,
+    ) -> tuple[torch.Tensor, TransformerGenerationState]:
+        logits = state.next_logits
+        selected = logits.argmax(-1) if next_token is None else next_token.to(logits.device).long().flatten()
+        position = state.token_ids.shape[1] + state.generated_ids.shape[1]
+        if position >= self.config.max_tokens:
+            raise ValueError("transformer KV cache reached max_tokens")
+        hidden = self.embedding(selected[:, None]) + self.position.weight[position][None, None]
+        new_cache = []
+        for block, past in zip(self.blocks, state.keys_values):
+            hidden, cache = block.forward_cached(hidden, past)
+            new_cache.append(cache)
+        state.keys_values = new_cache
+        state.next_logits = F.linear(self.norm(hidden[:, 0]), self.embedding.weight)
+        state.generated_ids = torch.cat([state.generated_ids, selected[:, None]], dim=1)
+        return logits, state
+
+    @torch.inference_mode()
+    def decode_many(
+        self, state: TransformerGenerationState, count: int
+    ) -> tuple[torch.Tensor, TransformerGenerationState]:
+        rows = []
+        for _ in range(count):
+            logits, state = self.decode_step(state)
+            rows.append(logits[:, None])
+        empty = state.next_logits.new_zeros(state.next_logits.shape[0], 0, self.config.vocab_size)
+        return (torch.cat(rows, dim=1) if rows else empty), state
 
 
 def matched_transformer_config(

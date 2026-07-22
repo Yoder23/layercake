@@ -9,6 +9,7 @@ from torch import nn
 from layercake.cake.package import CakePackage
 from layercake.portable_domain import PortableDomainDecoder
 
+from .portable_fusion import PortableFusionCake, PortableFusionConfig
 from .routed_cakes import HostResidualCake
 
 
@@ -50,6 +51,18 @@ def load_cake_module(package: CakePackage) -> nn.Module:
         if set(architecture) != {"name", "d_abi", "rank"} or architecture.get("name") != "host_residual":
             raise ValueError("host residual architecture metadata is incomplete or ambiguous")
         model = HostResidualCake(d_abi=int(architecture["d_abi"]), rank=int(architecture["rank"]))
+    elif manifest.cake_type == "portable_fusion":
+        allowed = {
+            "name", "abi_width", "byte_width", "hidden_width", "rank",
+            "max_logit_residual", "architecture_version", "combination_rule",
+        }
+        if set(architecture) != allowed or architecture.get("name") != "portable_fusion":
+            raise ValueError("portable fusion architecture metadata is incomplete or ambiguous")
+        model = PortableFusionCake(
+            PortableFusionConfig(
+                **{key: value for key, value in architecture.items() if key != "name"}
+            )
+        )
     else:
         raise ValueError(f"unsupported cake type: {manifest.cake_type}")
     model.load_state_dict(package.tensors, strict=True)

@@ -90,7 +90,9 @@ class CakeInstaller:
             "domains": list(manifest.domains),
             "keywords": list(manifest.keywords),
             "permissions": list(manifest.permissions),
-            "composition": manifest.output_contract.get("composition", "none"),
+            "composition": manifest.output_contract.get(
+                "composition", manifest.output_contract.get("combination", "none")
+            ),
             "installed_at": time.time(),
             "blob": str(blob),
         }

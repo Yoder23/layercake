@@ -15,7 +15,7 @@ from layercake.models.portable_decoder import load_cake_module
 
 from .cache import CakeLRUCache
 from .policies import RoutingPolicy
-from .router import CakeRouter, RouteResult
+from .router import CakeRouter, RouteCandidate, RouteResult
 
 
 @dataclass(frozen=True)
@@ -52,6 +52,7 @@ class LocalLayerCakeOrchestrator:
         policy: RoutingPolicy | None = None,
         trust_store: dict | None = None,
         device: str | torch.device = "cpu",
+        semantic_router: torch.nn.Module | None = None,
         loader: Callable[[dict], tuple[Any, int]] | None = None,
     ):
         self.registry = registry
@@ -59,6 +60,7 @@ class LocalLayerCakeOrchestrator:
         self.router = CakeRouter(self.policy)
         self.trust_store = trust_store or {}
         self.device = torch.device(device)
+        self.semantic_router = semantic_router
         self._loader = loader or self._load_record
         self.cache = CakeLRUCache(
             self.policy.budget.max_loaded_bytes,
@@ -89,12 +91,64 @@ class LocalLayerCakeOrchestrator:
         top_k: int | None = None,
         forced: tuple[str, ...] | None = None,
     ) -> RouteResult:
-        return self.router.route(
+        records = self.registry.list()
+        if self.semantic_router is None or forced is not None:
+            return self.router.route(
+                prompt, records, loaded=set(self.cache.entries), top_k=top_k, forced=forced
+            )
+        started = time.perf_counter()
+        permitted = []
+        rejected = []
+        for record in records:
+            allowed, reason = self.policy.permissions.permits(record)
+            if allowed:
+                permitted.append(record)
+            else:
+                rejected.append({"event": "rejected", "cake_id": record["cake_id"], "reason": reason})
+        by_domain: dict[str, list[dict]] = {}
+        for record in permitted:
+            for domain in record.get("domains", []):
+                by_domain.setdefault(str(domain), []).append(record)
+        semantic = self.semantic_router.route(
             prompt,
-            self.registry.list(),
-            loaded=set(self.cache.entries),
-            top_k=top_k,
-            forced=forced,
+            installed=set(by_domain),
+            top_k=min(top_k or self.policy.budget.max_cakes, self.policy.budget.max_cakes),
+        )
+        selected_records = [sorted(by_domain[domain], key=lambda row: row["cake_id"])[0] for domain in semantic.selected]
+        if len(selected_records) > 1 and not self.policy.allow_composition:
+            selected_records = selected_records[:1]
+        candidates = tuple(
+            RouteCandidate(
+                cake_id=record["cake_id"],
+                score=max(float(semantic.probabilities.get(domain, 0.0)) for domain in record.get("domains", [""])),
+                lexical_coverage=0.0,
+                loaded=record["cake_id"] in self.cache.entries,
+                domains=tuple(record.get("domains", [])),
+            )
+            for record in permitted
+            for domain in [next(iter(record.get("domains", [""])), "")]
+        )
+        selected = tuple(record["cake_id"] for record in selected_records)
+        elapsed = (time.perf_counter() - started) * 1000
+        trace = tuple(rejected + [{
+            "event": "learned_semantic_decision",
+            "selected_domains": list(semantic.selected),
+            "selected_cakes": list(selected),
+            "probabilities": semantic.probabilities,
+            "reason": semantic.reason,
+        }])
+        return RouteResult(
+            selected=selected,
+            candidates=tuple(sorted(candidates, key=lambda item: (-item.score, item.cake_id))),
+            confidence=semantic.confidence,
+            abstained=not selected,
+            core_fallback=not selected,
+            escalate=bool(selected and semantic.confidence < self.policy.escalation_confidence),
+            multidomain=len(selected) > 1,
+            reason=semantic.reason,
+            policy_version="layercake-learned-router/2",
+            route_milliseconds=elapsed,
+            trace=trace,
         )
 
     def prefetch(self, prompt: str, *, top_k: int | None = None) -> list[str]:
