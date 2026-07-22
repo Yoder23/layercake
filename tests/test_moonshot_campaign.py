@@ -3,6 +3,8 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import shutil
+import subprocess
 
 import pytest
 
@@ -20,12 +22,13 @@ from layercake.moonshot_campaign import (
     validate_seed_evidence,
     validate_semantic_portability,
     verify_derived_claim,
+    verify_sealed,
 )
 
 
 def _claim_contract() -> dict:
     return {
-        "allowed_phase_statuses": ["LOCKED", "OPEN", "PASS"],
+        "allowed_phase_statuses": ["LOCKED", "OPEN", "CANDIDATE", "PASS", "SEALED"],
         "phase_requirements": {
             "1": {
                 "required_baselines": [
@@ -43,7 +46,8 @@ def _claim_contract() -> dict:
 
 def _lineage() -> dict:
     return {
-        "source_commit": "a" * 40,
+        "model_source_commit": "a" * 40,
+        "governance_commit": "b" * 40,
         "architecture_id": None,
         "architecture_hash": None,
         "abi_hash": None,
@@ -58,7 +62,7 @@ def _lineage() -> dict:
 
 def _campaign(current: int = 0) -> dict:
     phases = {
-        key: "PASS" if index < current else "OPEN" if index == current else "LOCKED"
+        key: "SEALED" if index < current else "OPEN" if index == current else "LOCKED"
         for index, key in enumerate(PHASE_KEYS)
     }
     return {
@@ -70,7 +74,7 @@ def _campaign(current: int = 0) -> dict:
     }
 
 
-def test_campaign_state_accepts_only_one_ordered_open_phase() -> None:
+def test_campaign_state_accepts_only_one_ordered_active_phase() -> None:
     validate_campaign_state(_campaign(0), _claim_contract())
     validate_campaign_state(_campaign(5), _claim_contract())
 
@@ -82,9 +86,19 @@ def test_campaign_state_accepts_only_one_ordered_open_phase() -> None:
 
 def test_campaign_state_rejects_manual_pass_without_advancing_current_phase() -> None:
     invalid = _campaign(0)
-    invalid["phases"]["phase0_governance"] = "PASS"
-    with pytest.raises(CampaignVerificationError, match="current_phase"):
+    invalid["phases"]["phase0_governance"] = "SEALED"
+    with pytest.raises(CampaignVerificationError, match="current_phase|LOCKED"):
         validate_campaign_state(invalid, _claim_contract())
+
+
+@pytest.mark.parametrize("status", ["OPEN", "CANDIDATE", "PASS"])
+def test_active_phase_lifecycle_states_do_not_unlock_the_future(status: str) -> None:
+    campaign = _campaign(1)
+    campaign["phases"]["phase1_benchmark_truth"] = status
+    validate_campaign_state(campaign, _claim_contract())
+    campaign["phases"]["phase2_cpu_quality_speed"] = "OPEN"
+    with pytest.raises(CampaignVerificationError, match="future phase"):
+        validate_campaign_state(campaign, _claim_contract())
 
 
 def test_raw_derivations_recompute_mean_quantile_and_ratio() -> None:
@@ -284,3 +298,94 @@ def test_required_gate_threshold_is_loaded_from_contract_and_recomputed(tmp_path
     claim["raw_sha256"] = sha256_file(raw_path)
     with pytest.raises(CampaignVerificationError, match="gate cpu_throughput_ratio failed"):
         validate_required_gates(tmp_path, 2, {"claims": [claim]}, contract)
+
+
+def _git(root: Path, *arguments: str) -> str:
+    result = subprocess.run(
+        ["git", *arguments], cwd=root, text=True, capture_output=True, check=True
+    )
+    return result.stdout.strip()
+
+
+def _git_bytes(root: Path, *arguments: str) -> bytes:
+    result = subprocess.run(
+        ["git", *arguments], cwd=root, capture_output=True, check=True
+    )
+    return result.stdout
+
+
+def _sealed_fixture(tmp_path: Path) -> tuple[Path, str]:
+    repository = tmp_path / "sealed-repository"
+    repository.mkdir()
+    source_root = Path(__file__).resolve().parents[1]
+    (repository / "moonshot").mkdir()
+    for name in (
+        "claim_contract.yaml", "invalidation_matrix.yaml", "benchmark_contract.yaml",
+        "data_contract.yaml", "security_contract.yaml",
+    ):
+        shutil.copyfile(source_root / "moonshot" / name, repository / "moonshot" / name)
+    phase_dir = repository / "results/moonshot/phase0"
+    phase_dir.mkdir(parents=True)
+    evidence = phase_dir / "evidence.json"
+    evidence.write_text('{"measured": 1}\n', encoding="utf-8")
+    campaign = _campaign(1)
+    campaign["phase_records"] = {"phase0": {}}
+    (repository / "moonshot/campaign.yaml").write_text(
+        json.dumps(campaign, indent=2), encoding="utf-8"
+    )
+    _git(repository, "init")
+    _git(repository, "config", "user.email", "campaign-test@example.invalid")
+    _git(repository, "config", "user.name", "Campaign Test")
+    _git(repository, "add", ".")
+    _git(repository, "commit", "-m", "release evidence")
+    release = _git(repository, "rev-parse", "HEAD")
+    digest = hashlib.sha256(
+        _git_bytes(repository, "show", f"{release}:results/moonshot/phase0/evidence.json")
+    ).hexdigest()
+    tag = "layercake-moonshot-phase0"
+    seal = {
+        "format": "layercake-moonshot-seal/1",
+        "campaign_version": 1,
+        "phase": 0,
+        "status": "SEALED",
+        "release_commit": release,
+        "completion_tag": tag,
+        "sealed_artifact_hashes": {"results/moonshot/phase0/evidence.json": digest},
+        "required_tag_kind": "annotated",
+        "required_worktree_state": "clean",
+    }
+    (phase_dir / "seal.json").write_text(json.dumps(seal, indent=2), encoding="utf-8")
+    campaign["phase_records"]["phase0"] = {
+        "phase_release_commit": release,
+        "phase_tag": tag,
+        "seal": "results/moonshot/phase0/seal.json",
+    }
+    (repository / "moonshot/campaign.yaml").write_text(
+        json.dumps(campaign, indent=2), encoding="utf-8"
+    )
+    _git(repository, "add", ".")
+    _git(repository, "commit", "-m", "seal metadata")
+    return repository, tag
+
+
+def test_sealed_verifier_rejects_lightweight_tag_and_accepts_annotated_tag(tmp_path: Path) -> None:
+    repository, tag = _sealed_fixture(tmp_path)
+    _git(repository, "tag", tag)
+    with pytest.raises(CampaignVerificationError, match="not annotated"):
+        verify_sealed(repository, 0)
+    _git(repository, "tag", "-d", tag)
+    _git(repository, "tag", "-a", tag, "-m", "verified seal")
+    assert verify_sealed(repository, 0)["passed"] is True
+
+
+def test_sealed_verifier_rejects_dirty_or_post_tag_state(tmp_path: Path) -> None:
+    repository, tag = _sealed_fixture(tmp_path)
+    _git(repository, "tag", "-a", tag, "-m", "verified seal")
+    evidence = repository / "results/moonshot/phase0/evidence.json"
+    evidence.write_text('{"measured": 2}\n', encoding="utf-8")
+    with pytest.raises(CampaignVerificationError, match="clean worktree"):
+        verify_sealed(repository, 0)
+    _git(repository, "add", ".")
+    _git(repository, "commit", "-m", "post seal mutation")
+    with pytest.raises(CampaignVerificationError, match="current HEAD"):
+        verify_sealed(repository, 0)

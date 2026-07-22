@@ -180,20 +180,27 @@ def validate_campaign_state(campaign: Mapping[str, Any], claim_contract: Mapping
     current = campaign.get("current_phase")
     if not isinstance(current, int) or not 0 <= current <= 8:
         raise CampaignVerificationError("current_phase must be an integer in 0..8")
-    first_not_pass = next((index for index, status in enumerate(statuses) if status != "PASS"), 9)
-    if first_not_pass == 9:
+    if statuses == ["SEALED"] * len(PHASE_KEYS):
         if current != 8:
             raise CampaignVerificationError("a completed campaign must remain at phase 8")
-        return
-    if current != first_not_pass:
-        raise CampaignVerificationError("current_phase is inconsistent with the first non-PASS phase")
-    if statuses[current] != "OPEN":
-        raise CampaignVerificationError("the current phase must be OPEN")
-    if any(status != "LOCKED" for status in statuses[current + 1 :]):
-        raise CampaignVerificationError("a future phase is unlocked out of order")
+    else:
+        first_not_sealed = next(
+            (index for index, status in enumerate(statuses) if status != "SEALED"), 9
+        )
+        if current != first_not_sealed:
+            raise CampaignVerificationError(
+                "current_phase is inconsistent with the first non-SEALED phase"
+            )
+        if statuses[current] not in {"OPEN", "CANDIDATE", "PASS"}:
+            raise CampaignVerificationError(
+                "the current phase must be OPEN, CANDIDATE, or verifier-promoted PASS"
+            )
+        if any(status != "LOCKED" for status in statuses[current + 1 :]):
+            raise CampaignVerificationError("a future phase is unlocked out of order")
     lineage = campaign.get("lineage")
     required_lineage = {
-        "source_commit",
+        "model_source_commit",
+        "governance_commit",
         "architecture_id",
         "architecture_hash",
         "abi_hash",
@@ -249,7 +256,7 @@ def changed_components(
 def prepare_phase0_audit(root: Path) -> dict[str, Any]:
     contracts = load_contracts(root)
     campaign = contracts["campaign.yaml"]
-    source_commit = campaign["lineage"]["source_commit"]
+    source_commit = campaign["lineage"]["model_source_commit"]
     if not isinstance(source_commit, str) or len(source_commit) != 40:
         raise CampaignVerificationError("Phase 0 requires a full 40-character source commit")
     _git(root, "cat-file", "-e", f"{source_commit}^{{commit}}")
@@ -532,10 +539,10 @@ def validate_lineage_consistency(
     certificate_lineage = certificate.get("lineage")
     if not isinstance(certificate_lineage, dict):
         raise CampaignVerificationError(f"Phase {phase} certificate has no lineage")
-    if certificate_lineage.get("source_commit") != lineage.get("source_commit"):
+    if certificate_lineage.get("model_source_commit") != lineage.get("model_source_commit"):
         raise CampaignVerificationError("certificate source commit is outside the campaign lineage")
     for key, expected in lineage.items():
-        if key == "source_commit" or expected in (None, {}, []):
+        if key in {"model_source_commit", "governance_commit"} or expected in (None, {}, []):
             continue
         if certificate_lineage.get(key) != expected:
             raise CampaignVerificationError(f"certificate lineage differs for {key}")
@@ -686,39 +693,16 @@ def validate_semantic_portability(certificate: Mapping[str, Any]) -> None:
 
 def _governance_hashes(root: Path) -> dict[str, str]:
     paths = [Path("AGENTS.md"), Path("layercake/moonshot_campaign.py")]
-    paths.extend(CAMPAIGN_DIR / name for name in CONTRACT_FILES)
+    paths.extend(CAMPAIGN_DIR / name for name in STATIC_CONTRACT_FILES)
     return {path.as_posix(): sha256_file(_path(root, path)) for path in paths}
 
 
-def _phase0_inputs(root: Path, contracts: Mapping[str, Mapping[str, Any]]) -> tuple[dict, dict]:
-    audit_path = _path(root, RESULTS_DIR / "phase0/repository_audit.json")
-    tests_path = _path(root, RESULTS_DIR / "phase0/test_results.json")
-    audit = read_document(audit_path)
-    tests = read_document(tests_path)
-    if audit.get("format") != AUDIT_FORMAT:
-        raise CampaignVerificationError("Phase 0 repository audit format is invalid")
-    if tests.get("format") != TEST_FORMAT:
-        raise CampaignVerificationError("Phase 0 test evidence format is invalid")
-    source_hash = governed_source_hash(root)
-    if audit.get("governed_source_sha256") != source_hash:
-        raise CampaignVerificationError("repository audit is stale for the governed source")
-    if tests.get("governed_source_sha256") != source_hash:
-        raise CampaignVerificationError("test evidence is stale for the governed source")
-    if tests.get("status") != "PASS" or tests.get("failures") != 0 or tests.get("errors") != 0:
-        raise CampaignVerificationError("the complete regression suite is not green")
-    if tests.get("tests", 0) <= 0 or tests.get("passed", -1) < 0:
-        raise CampaignVerificationError("test evidence contains no executed tests")
-    junit = _path(root, tests.get("junit_path", ""))
-    if not junit.is_file() or sha256_file(junit) != tests.get("junit_sha256"):
-        raise CampaignVerificationError("JUnit evidence is missing or stale")
-    campaign = contracts["campaign.yaml"]
-    if audit.get("source_commit") != campaign["lineage"]["source_commit"]:
-        raise CampaignVerificationError("repository audit and campaign source commits differ")
-    actual_components = component_hashes(root, contracts["invalidation_matrix.yaml"])
-    changed = changed_components(audit.get("component_hashes", {}), actual_components)
-    if changed:
-        raise CampaignVerificationError(f"governed components changed after audit: {changed}")
-    return audit, tests
+def _phase_dir(root: Path, phase: int) -> Path:
+    return _path(root, RESULTS_DIR / f"phase{phase}")
+
+
+def _lifecycle_path(root: Path, phase: int, name: str) -> Path:
+    return _phase_dir(root, phase) / name
 
 
 def _completion_tag(root: Path, claim_contract: Mapping[str, Any], phase: int) -> tuple[str, str | None]:
@@ -727,147 +711,376 @@ def _completion_tag(root: Path, claim_contract: Mapping[str, Any], phase: int) -
     return tag, commit
 
 
-def _promote_phase0(
-    root: Path,
-    contracts: dict[str, dict[str, Any]],
-    audit: Mapping[str, Any],
-    tests: Mapping[str, Any],
-) -> tuple[dict[str, Any], dict[str, Any]]:
+def repair_phase0(root: Path) -> dict[str, Any]:
+    """Perform the one bounded migration from the defective legacy Phase 0 state."""
+
+    campaign_path = _path(root, CAMPAIGN_DIR / "campaign.yaml")
+    campaign = read_document(campaign_path)
+    claim = read_document(_path(root, CAMPAIGN_DIR / "claim_contract.yaml"))
+    if set(claim.get("allowed_phase_statuses", [])) != {
+        "LOCKED", "OPEN", "CANDIDATE", "PASS", "SEALED"
+    }:
+        raise CampaignVerificationError("the repaired lifecycle contract is not installed")
+    legacy_source = campaign.get("lineage", {}).get("source_commit")
+    if not isinstance(legacy_source, str) or len(legacy_source) != 40:
+        raise CampaignVerificationError("legacy Phase 0 model-source lineage is unavailable")
+    if campaign.get("repair_history"):
+        raise CampaignVerificationError("Phase 0 repair is one-shot and has already run")
+    old_tag = _git(root, "rev-list", "-n", "1", "layercake-moonshot-phase0", check=False) or None
+    campaign["lineage"] = {
+        **{key: value for key, value in campaign["lineage"].items() if key != "source_commit"},
+        "model_source_commit": legacy_source,
+        "governance_commit": _git(root, "rev-parse", "HEAD"),
+    }
+    campaign["current_phase"] = 0
+    campaign["phases"] = {
+        key: "OPEN" if index == 0 else "LOCKED"
+        for index, key in enumerate(PHASE_KEYS)
+    }
+    campaign["phase_records"] = {}
+    campaign["repair_history"] = [
+        {
+            "kind": "bounded_phase0_lifecycle_repair",
+            "legacy_tag_commit": old_tag,
+            "legacy_certificate": "results/moonshot/phase0/release_certificate.json",
+            "reason": "legacy PASS conflated scientific promotion with git sealing",
+            "governance_commit": campaign["lineage"]["governance_commit"],
+        }
+    ]
+    _atomic_write(campaign_path, campaign)
+    validate_campaign_state(campaign, claim)
+    return {
+        "phase": 0,
+        "status": "OPEN",
+        "model_source_commit": legacy_source,
+        "governance_commit": campaign["lineage"]["governance_commit"],
+        "legacy_tag_commit": old_tag,
+    }
+
+
+def _phase0_inputs(root: Path, contracts: Mapping[str, Mapping[str, Any]]) -> tuple[dict, dict]:
+    audit = read_document(_lifecycle_path(root, 0, "repository_audit.json"))
+    tests = read_document(_lifecycle_path(root, 0, "test_results.json"))
+    if audit.get("format") != AUDIT_FORMAT or tests.get("format") != TEST_FORMAT:
+        raise CampaignVerificationError("Phase 0 audit or test evidence format is invalid")
+    source_hash = governed_source_hash(root)
+    if audit.get("governed_source_sha256") != source_hash:
+        raise CampaignVerificationError("repository audit is stale for the governed source")
+    if tests.get("governed_source_sha256") != source_hash:
+        raise CampaignVerificationError("test evidence is stale for the governed source")
+    if tests.get("status") != "PASS" or tests.get("failures") != 0 or tests.get("errors") != 0:
+        raise CampaignVerificationError("the complete regression suite is not green")
+    if tests.get("tests", 0) <= 0:
+        raise CampaignVerificationError("test evidence contains no executed tests")
+    junit = _path(root, tests.get("junit_path", ""))
+    if not junit.is_file() or sha256_file(junit) != tests.get("junit_sha256"):
+        raise CampaignVerificationError("JUnit evidence is missing or stale")
+    if audit.get("source_commit") != contracts["campaign.yaml"]["lineage"]["model_source_commit"]:
+        raise CampaignVerificationError("repository audit and model-source commits differ")
+    actual = component_hashes(root, contracts["invalidation_matrix.yaml"])
+    changed = changed_components(audit.get("component_hashes", {}), actual)
+    if changed:
+        raise CampaignVerificationError(f"governed components changed after audit: {changed}")
+    return audit, tests
+
+
+def _phase_evidence_files(root: Path, phase: int) -> list[Path]:
+    excluded = {
+        "candidate.json", "candidate_verification.json", "release_certificate.json",
+        "handoff.json", "seal.json",
+    }
+    return sorted(
+        path for path in _phase_dir(root, phase).rglob("*")
+        if path.is_file() and path.name not in excluded
+    )
+
+
+def _artifact_hashes(root: Path, paths: Iterable[Path]) -> dict[str, str]:
+    return {
+        path.relative_to(root).as_posix(): sha256_file(path)
+        for path in sorted(paths)
+    }
+
+
+def _verify_phase_evidence(root: Path, phase: int, contracts: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
+    if phase == 0:
+        audit, tests = _phase0_inputs(root, contracts)
+        return {
+            "scope": "governance_only_no_model_or_training_claim",
+            "audit": {"changed_paths": len(audit.get("phase0_changed_paths", []))},
+            "tests": {key: tests[key] for key in (
+                "command", "tests", "passed", "failures", "errors", "skipped", "duration_seconds"
+            )},
+        }
+    if phase == 1:
+        try:
+            from .evaluation.phase1_evidence import Phase1EvidenceError, validate_phase1_bundle
+            return validate_phase1_bundle(root, _phase_dir(root, 1))
+        except Phase1EvidenceError as error:
+            raise CampaignVerificationError(f"Phase 1 typed evidence failed: {error}") from error
+    raise CampaignVerificationError(
+        f"Phase {phase} requires its phase-specific typed verifier before candidate construction"
+    )
+
+
+def build_candidate(root: Path, phase: int) -> dict[str, Any]:
+    contracts = load_contracts(root)
     campaign = contracts["campaign.yaml"]
-    if campaign["phases"][PHASE_KEYS[0]] != "OPEN":
-        raise CampaignVerificationError("Phase 0 is not open for promotion")
-    campaign["phases"][PHASE_KEYS[0]] = "PASS"
-    campaign["phases"][PHASE_KEYS[1]] = "OPEN"
-    campaign["current_phase"] = 1
-    campaign.setdefault("phase_records", {})["phase0"] = {
-        "certificate": "results/moonshot/phase0/release_certificate.json",
-        "handoff": "results/moonshot/phase0/handoff.json",
-        "completion_tag": "layercake-moonshot-phase0",
+    if campaign["current_phase"] != phase or campaign["phases"][PHASE_KEYS[phase]] != "OPEN":
+        raise CampaignVerificationError(f"Phase {phase} is not OPEN")
+    if any(campaign["phases"][PHASE_KEYS[index]] != "SEALED" for index in range(phase)):
+        raise CampaignVerificationError("all prior phases must be SEALED")
+    summary = _verify_phase_evidence(root, phase, contracts)
+    candidate = {
+        "format": "layercake-moonshot-candidate/1",
+        "campaign_version": 1,
+        "phase": phase,
+        "model_source_commit": campaign["lineage"]["model_source_commit"],
+        "governance_commit": campaign["lineage"]["governance_commit"],
+        "phase_implementation_commit": _git(root, "rev-parse", "HEAD"),
+        "governed_source_sha256": governed_source_hash(root),
+        "component_hashes": component_hashes(root, contracts["invalidation_matrix.yaml"]),
+        "evidence_artifact_hashes": _artifact_hashes(root, _phase_evidence_files(root, phase)),
+        "verification_summary": summary,
     }
+    candidate_path = _lifecycle_path(root, phase, "candidate.json")
+    _atomic_write(candidate_path, candidate)
+    campaign["phases"][PHASE_KEYS[phase]] = "CANDIDATE"
+    record = campaign.setdefault("phase_records", {}).setdefault(f"phase{phase}", {})
+    record.update({
+        "candidate": candidate_path.relative_to(root).as_posix(),
+        "phase_implementation_commit": candidate["phase_implementation_commit"],
+        "inherited_model_source_commit": candidate["model_source_commit"],
+        "governance_commit": candidate["governance_commit"],
+    })
     _atomic_write(_path(root, CAMPAIGN_DIR / "campaign.yaml"), campaign)
-    contracts["campaign.yaml"] = campaign
-    validate_campaign_state(campaign, contracts["claim_contract.yaml"])
-    contract_hashes = {
-        f"moonshot/{name}": sha256_file(_path(root, CAMPAIGN_DIR / name))
-        for name in CONTRACT_FILES
+    return {"phase": phase, "status": "CANDIDATE", "candidate_sha256": sha256_file(candidate_path)}
+
+
+def verify_candidate(root: Path, phase: int, *, write: bool = True) -> dict[str, Any]:
+    contracts = load_contracts(root)
+    campaign = contracts["campaign.yaml"]
+    if campaign["phases"][PHASE_KEYS[phase]] not in {"CANDIDATE", "PASS"}:
+        raise CampaignVerificationError(f"Phase {phase} is not a candidate")
+    candidate_path = _lifecycle_path(root, phase, "candidate.json")
+    candidate = read_document(candidate_path)
+    if candidate.get("format") != "layercake-moonshot-candidate/1" or candidate.get("phase") != phase:
+        raise CampaignVerificationError("candidate identity is invalid")
+    if candidate.get("model_source_commit") != campaign["lineage"]["model_source_commit"]:
+        raise CampaignVerificationError("candidate model-source lineage is stale")
+    if candidate.get("governance_commit") != campaign["lineage"]["governance_commit"]:
+        raise CampaignVerificationError("candidate governance lineage is stale")
+    validate_artifact_manifest(root, candidate.get("evidence_artifact_hashes", {}))
+    if candidate.get("governed_source_sha256") != governed_source_hash(root):
+        raise CampaignVerificationError("candidate governed source changed after construction")
+    actual_components = component_hashes(root, contracts["invalidation_matrix.yaml"])
+    changed = changed_components(candidate.get("component_hashes", {}), actual_components)
+    if changed:
+        raise CampaignVerificationError(f"candidate components changed: {changed}")
+    summary = _verify_phase_evidence(root, phase, contracts)
+    result = {
+        "format": "layercake-moonshot-candidate-verification/1",
+        "campaign_version": 1,
+        "phase": phase,
+        "status": "PASS",
+        "candidate_path": candidate_path.relative_to(root).as_posix(),
+        "candidate_sha256": sha256_file(candidate_path),
+        "verification_summary": summary,
     }
-    artifact_hashes = {
-        "results/moonshot/phase0/repository_audit.json": sha256_file(
-            _path(root, RESULTS_DIR / "phase0/repository_audit.json")
-        ),
-        "results/moonshot/phase0/test_results.json": sha256_file(
-            _path(root, RESULTS_DIR / "phase0/test_results.json")
-        ),
-        tests["junit_path"]: tests["junit_sha256"],
-    }
+    if write:
+        output = _lifecycle_path(root, phase, "candidate_verification.json")
+        _atomic_write(output, result)
+        campaign["phase_records"][f"phase{phase}"]["candidate_verification"] = output.relative_to(root).as_posix()
+        _atomic_write(_path(root, CAMPAIGN_DIR / "campaign.yaml"), campaign)
+    return result
+
+
+def _phase1_baselines(root: Path) -> list[dict[str, Any]]:
+    inventory_path = _lifecycle_path(root, 1, "baseline_inventory.json")
+    inventory = read_document(inventory_path)
+    baselines = inventory.get("baselines")
+    if not isinstance(baselines, list):
+        raise CampaignVerificationError("Phase 1 baseline inventory is missing")
+    return baselines
+
+
+def promote_phase(root: Path, phase: int) -> dict[str, Any]:
+    verification = verify_candidate(root, phase, write=False)
+    verification_path = _lifecycle_path(root, phase, "candidate_verification.json")
+    persisted = read_document(verification_path)
+    if persisted.get("status") != "PASS" or persisted.get("candidate_sha256") != verification["candidate_sha256"]:
+        raise CampaignVerificationError("persisted candidate verification is missing or stale")
+    contracts = load_contracts(root)
+    campaign = contracts["campaign.yaml"]
+    candidate = read_document(_lifecycle_path(root, phase, "candidate.json"))
+    tag, _ = _completion_tag(root, contracts["claim_contract.yaml"], phase)
+    evidence_hashes = dict(candidate["evidence_artifact_hashes"])
+    evidence_hashes[_lifecycle_path(root, phase, "candidate.json").relative_to(root).as_posix()] = sha256_file(_lifecycle_path(root, phase, "candidate.json"))
+    evidence_hashes[verification_path.relative_to(root).as_posix()] = sha256_file(verification_path)
     certificate = {
         "format": PHASE0_FORMAT,
         "campaign_version": 1,
-        "phase": 0,
+        "phase": phase,
         "status": "PASS",
-        "scope": "governance_only_no_model_or_training_claim",
-        "source_commit": campaign["lineage"]["source_commit"],
-        "governed_source_sha256": governed_source_hash(root),
-        "campaign_file_hashes": contract_hashes,
-        "governance_hashes": _governance_hashes(root),
-        "artifact_hashes": artifact_hashes,
-        "component_hashes": audit["component_hashes"],
-        "tests": {
-            key: tests[key]
-            for key in ("command", "tests", "passed", "failures", "errors", "skipped", "duration_seconds")
-        },
+        "scope": "governance_only_no_model_or_training_claim" if phase == 0 else "benchmark_truth_no_architecture_selection",
+        "model_source_commit": campaign["lineage"]["model_source_commit"],
+        "governance_commit": campaign["lineage"]["governance_commit"],
+        "phase_implementation_commit": candidate["phase_implementation_commit"],
+        "governed_source_sha256": candidate["governed_source_sha256"],
+        "component_hashes": candidate["component_hashes"],
+        "artifact_hashes": evidence_hashes,
+        "verification_summary": verification["verification_summary"],
         "headline_claims": [],
+        "claims": [],
         "legacy_evidence_inherited": False,
-        "unlocked_phase": 1,
-        "completion_tag": "layercake-moonshot-phase0",
+        "completion_tag": tag,
+        "remote_tag_publication": {
+            "scientific_gate": False,
+            "status": "PENDING_POST_SEAL",
+            "reason": "tag does not exist until seal metadata is committed",
+        },
     }
-    certificate_path = _path(root, RESULTS_DIR / "phase0/release_certificate.json")
+    if phase == 0:
+        certificate["tests"] = verification["verification_summary"]["tests"]
+    if phase == 1:
+        certificate["baselines"] = _phase1_baselines(root)
+        validate_baselines(certificate, contracts["claim_contract.yaml"])
+    certificate_path = _lifecycle_path(root, phase, "release_certificate.json")
     _atomic_write(certificate_path, certificate)
     handoff = {
         "format": HANDOFF_FORMAT,
         "campaign_version": 1,
-        "phase": 0,
-        "source_commit": campaign["lineage"]["source_commit"],
-        "campaign_file_hashes": contract_hashes,
-        "verifier_sha256": sha256_file(_path(root, "layercake/moonshot_campaign.py")),
-        "certificate_path": "results/moonshot/phase0/release_certificate.json",
+        "phase": phase,
+        "model_source_commit": certificate["model_source_commit"],
+        "governance_commit": certificate["governance_commit"],
+        "certificate_path": certificate_path.relative_to(root).as_posix(),
         "certificate_sha256": sha256_file(certificate_path),
-        "test_results": certificate["tests"],
-        "exact_continuation_requirements": [
-            "Validate the layercake-moonshot-phase0 tag and Phase 0 certificate before edits.",
-            "Read AGENTS.md and every file under moonshot/.",
-            "Execute Phase 1 only: establish benchmark truth without redesigning LayerCake.",
-            "Use the six required baselines and freeze the general-English quality thresholds.",
-            "Preserve all raw runs and let only the verifier unlock Phase 2.",
-        ],
-        "next_command": "python -m layercake.moonshot_campaign verify-phase 0",
-        "next_phase": 1,
+        "next_phase": phase + 1 if phase < 8 else None,
+        "next_phase_locked_until_seal": True,
+        "next_command": f"python -m layercake.moonshot_campaign prepare-seal {phase}",
     }
-    _atomic_write(_path(root, RESULTS_DIR / "phase0/handoff.json"), handoff)
-    return certificate, handoff
+    handoff_path = _lifecycle_path(root, phase, "handoff.json")
+    _atomic_write(handoff_path, handoff)
+    campaign["phases"][PHASE_KEYS[phase]] = "PASS"
+    record = campaign["phase_records"][f"phase{phase}"]
+    record.update({
+        "certificate": certificate_path.relative_to(root).as_posix(),
+        "handoff": handoff_path.relative_to(root).as_posix(),
+        "completion_tag": tag,
+    })
+    _atomic_write(_path(root, CAMPAIGN_DIR / "campaign.yaml"), campaign)
+    return {"phase": phase, "status": "PASS", "passed": True, "next_phase_locked": True}
 
 
-def _validate_phase0_outputs(
-    root: Path,
-    contracts: Mapping[str, Mapping[str, Any]],
-    certificate: Mapping[str, Any],
-    handoff: Mapping[str, Any],
-) -> None:
-    if certificate.get("format") != PHASE0_FORMAT or certificate.get("phase") != 0:
-        raise CampaignVerificationError("Phase 0 certificate identity is invalid")
-    if certificate.get("status") != "PASS" or certificate.get("headline_claims") != []:
-        raise CampaignVerificationError("Phase 0 certificate contains an invalid claim or status")
-    if certificate.get("scope") != "governance_only_no_model_or_training_claim":
-        raise CampaignVerificationError("Phase 0 certificate exceeds its allowed scope")
-    if handoff.get("format") != HANDOFF_FORMAT or handoff.get("phase") != 0:
-        raise CampaignVerificationError("Phase 0 handoff identity is invalid")
-    if certificate.get("source_commit") != contracts["campaign.yaml"]["lineage"]["source_commit"]:
-        raise CampaignVerificationError("Phase 0 certificate source lineage is stale")
-    validate_artifact_manifest(root, certificate.get("campaign_file_hashes", {}))
-    validate_artifact_manifest(root, certificate.get("governance_hashes", {}))
-    validate_artifact_manifest(root, certificate.get("artifact_hashes", {}))
-    if handoff.get("certificate_sha256") != sha256_file(
-        _path(root, handoff.get("certificate_path", ""))
-    ):
-        raise CampaignVerificationError("handoff certificate hash is stale")
-    if handoff.get("verifier_sha256") != sha256_file(_path(root, "layercake/moonshot_campaign.py")):
-        raise CampaignVerificationError("handoff verifier hash is stale")
-    if handoff.get("campaign_file_hashes") != certificate.get("campaign_file_hashes"):
-        raise CampaignVerificationError("handoff and certificate campaign hashes differ")
-
-
-def verify_phase0(root: Path, *, promote: bool = True) -> dict[str, Any]:
+def prepare_seal(root: Path, phase: int) -> dict[str, Any]:
     contracts = load_contracts(root)
-    audit, tests = _phase0_inputs(root, contracts)
-    state = contracts["campaign.yaml"]["phases"][PHASE_KEYS[0]]
-    if state == "OPEN":
-        if not promote:
-            return {"phase": 0, "status": "OPEN", "passed": False, "ready_for_promotion": True}
-        certificate, handoff = _promote_phase0(root, contracts, audit, tests)
-        contracts = load_contracts(root)
-    elif state == "PASS":
-        certificate = read_document(_path(root, RESULTS_DIR / "phase0/release_certificate.json"))
-        handoff = read_document(_path(root, RESULTS_DIR / "phase0/handoff.json"))
-    else:
-        raise CampaignVerificationError(f"Phase 0 has invalid state {state}")
-    _validate_phase0_outputs(root, contracts, certificate, handoff)
-    tag, tag_commit = _completion_tag(root, contracts["claim_contract.yaml"], 0)
-    head = _git(root, "rev-parse", "HEAD")
-    clean = _git(root, "status", "--porcelain=v1") == ""
-    sealed = tag_commit == head and clean
+    campaign = contracts["campaign.yaml"]
+    if campaign["phases"][PHASE_KEYS[phase]] != "PASS":
+        raise CampaignVerificationError(f"Phase {phase} is not verifier-promoted PASS")
+    if _git(root, "status", "--porcelain=v1"):
+        raise CampaignVerificationError("release evidence must be committed in a clean worktree before sealing")
+    release_commit = _git(root, "rev-parse", "HEAD")
+    tag, _ = _completion_tag(root, contracts["claim_contract.yaml"], phase)
+    phase_files = [path for path in _phase_dir(root, phase).rglob("*") if path.is_file() and path.name != "seal.json"]
+    committed_hashes = {
+        path.relative_to(root).as_posix(): hashlib.sha256(
+            _git_blob(root, release_commit, path.relative_to(root).as_posix())
+        ).hexdigest()
+        for path in sorted(phase_files)
+    }
+    seal = {
+        "format": "layercake-moonshot-seal/1",
+        "campaign_version": 1,
+        "phase": phase,
+        "status": "SEALED",
+        "release_commit": release_commit,
+        "completion_tag": tag,
+        "sealed_artifact_hashes": committed_hashes,
+        "required_tag_kind": "annotated",
+        "required_worktree_state": "clean",
+    }
+    _atomic_write(_lifecycle_path(root, phase, "seal.json"), seal)
+    campaign["phases"][PHASE_KEYS[phase]] = "SEALED"
+    record = campaign["phase_records"][f"phase{phase}"]
+    record.update({
+        "phase_release_commit": release_commit,
+        "seal": _lifecycle_path(root, phase, "seal.json").relative_to(root).as_posix(),
+        "phase_tag": tag,
+    })
+    if phase < 8:
+        campaign["current_phase"] = phase + 1
+        campaign["phases"][PHASE_KEYS[phase + 1]] = "OPEN"
+    _atomic_write(_path(root, CAMPAIGN_DIR / "campaign.yaml"), campaign)
     return {
-        "phase": 0,
-        "status": "PASS" if sealed else "READY_FOR_COMMIT_AND_TAG",
-        "passed": sealed,
-        "phase1_unlocked": contracts["campaign.yaml"]["phases"][PHASE_KEYS[1]] == "OPEN",
+        "phase": phase,
+        "status": "SEALED_PENDING_COMMIT_AND_ANNOTATED_TAG",
+        "release_commit": release_commit,
+        "completion_tag": tag,
+    }
+
+
+def _git_blob(root: Path, revision: str, relative: str) -> bytes:
+    process = subprocess.run(
+        ["git", "show", f"{revision}:{relative}"], cwd=root,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+    )
+    if process.returncode != 0:
+        raise CampaignVerificationError(f"sealed tag lacks {relative}")
+    return process.stdout
+
+
+def verify_sealed(root: Path, phase: int) -> dict[str, Any]:
+    contracts = load_contracts(root)
+    campaign = contracts["campaign.yaml"]
+    if campaign["phases"][PHASE_KEYS[phase]] != "SEALED":
+        raise CampaignVerificationError(f"Phase {phase} is not SEALED")
+    seal_path = _lifecycle_path(root, phase, "seal.json")
+    seal = read_document(seal_path)
+    if seal.get("format") != "layercake-moonshot-seal/1" or seal.get("phase") != phase:
+        raise CampaignVerificationError("seal identity is invalid")
+    tag = seal.get("completion_tag")
+    if _git(root, "cat-file", "-t", str(tag), check=False) != "tag":
+        raise CampaignVerificationError("completion tag is missing or is not annotated")
+    tag_commit = _git(root, "rev-list", "-n", "1", str(tag))
+    head = _git(root, "rev-parse", "HEAD")
+    if tag_commit != head:
+        raise CampaignVerificationError("completion tag does not point at current HEAD")
+    if _git(root, "status", "--porcelain=v1"):
+        raise CampaignVerificationError("sealed verification requires a clean worktree")
+    parent = _git(root, "rev-parse", f"{tag_commit}^")
+    if parent != seal.get("release_commit"):
+        raise CampaignVerificationError("seal commit is not directly based on the recorded release commit")
+    for relative, expected in seal.get("sealed_artifact_hashes", {}).items():
+        actual = hashlib.sha256(_git_blob(root, str(tag), relative)).hexdigest()
+        if actual != expected:
+            raise CampaignVerificationError(f"tagged artifact hash mismatch: {relative}")
+        if not _path(root, relative).is_file():
+            raise CampaignVerificationError(f"sealed phase artifact is absent from the checkout: {relative}")
+    record = campaign.get("phase_records", {}).get(f"phase{phase}", {})
+    if record.get("phase_release_commit") != seal.get("release_commit") or record.get("phase_tag") != tag:
+        raise CampaignVerificationError("campaign phase lineage does not match the seal")
+    remote = _git(root, "ls-remote", "--tags", "origin", f"refs/tags/{tag}", check=False)
+    remote_status = "PUBLISHED" if remote else "NOT_VERIFIED_OR_NOT_PUBLISHED"
+    return {
+        "phase": phase,
+        "status": "SEALED",
+        "passed": True,
         "completion_tag": tag,
         "tag_commit": tag_commit,
-        "head_commit": head,
-        "working_tree_clean": clean,
-        "certificate_sha256": sha256_file(
-            _path(root, RESULTS_DIR / "phase0/release_certificate.json")
-        ),
+        "release_commit": seal["release_commit"],
+        "working_tree_clean": True,
+        "remote_tag_publication": remote_status,
     }
+
+
+def verify_phase0(root: Path, *, promote: bool = False) -> dict[str, Any]:
+    del promote
+    state = load_contracts(root)["campaign.yaml"]["phases"][PHASE_KEYS[0]]
+    if state == "SEALED":
+        return verify_sealed(root, 0)
+    if state == "CANDIDATE":
+        return verify_candidate(root, 0)
+    raise CampaignVerificationError(f"Phase 0 verification requires CANDIDATE or SEALED, got {state}")
 
 
 def _load_raw_documents(root: Path, phase: int, certificate: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -887,28 +1100,15 @@ def _load_raw_documents(root: Path, phase: int, certificate: Mapping[str, Any]) 
 def verify_later_phase(root: Path, phase: int) -> dict[str, Any]:
     contracts = load_contracts(root)
     campaign = contracts["campaign.yaml"]
-    if campaign["phases"][PHASE_KEYS[phase]] != "PASS":
-        raise CampaignVerificationError(f"Phase {phase} is not PASS")
-    if any(campaign["phases"][PHASE_KEYS[index]] != "PASS" for index in range(phase)):
-        raise CampaignVerificationError("a prior phase is not PASS")
-    certificate_path = _path(root, RESULTS_DIR / f"phase{phase}/release_certificate.json")
-    certificate = read_document(certificate_path)
-    if certificate.get("phase") != phase:
-        raise CampaignVerificationError(f"Phase {phase} certificate identity is invalid")
-    raw_documents = _load_raw_documents(root, phase, certificate)
-    validate_required_gates(root, phase, certificate, contracts["claim_contract.yaml"])
-    minimum = contracts["claim_contract.yaml"]["phase_requirements"][str(phase)][
-        "minimum_unique_seeds"
-    ]
-    validate_seed_evidence(raw_documents, minimum)
-    if phase == 1:
-        validate_baselines(certificate, contracts["claim_contract.yaml"])
-    validate_matched_quality(certificate, contracts["benchmark_contract.yaml"])
-    validate_semantic_portability(certificate)
-    validate_lineage_consistency(campaign, certificate, phase)
-    validate_component_snapshot(root, phase, certificate, contracts["invalidation_matrix.yaml"])
-    validate_artifact_manifest(root, certificate.get("artifact_hashes", {}))
-    return {"phase": phase, "status": "PASS", "passed": True}
+    state = campaign["phases"][PHASE_KEYS[phase]]
+    if state == "SEALED":
+        return verify_sealed(root, phase)
+    if state == "CANDIDATE":
+        return verify_candidate(root, phase)
+    if state == "PASS":
+        verification = verify_candidate(root, phase, write=False)
+        return {"phase": phase, "status": "PASS", "passed": True, "candidate": verification}
+    raise CampaignVerificationError(f"Phase {phase} is not CANDIDATE, PASS, or SEALED")
 
 
 def campaign_status(root: Path) -> dict[str, Any]:
@@ -923,6 +1123,7 @@ def campaign_status(root: Path) -> dict[str, Any]:
         "lineage": campaign["lineage"],
         "phase0_tag": phase0_tag,
         "phase0_tag_commit": tag_commit,
+        "phase_records": campaign.get("phase_records", {}),
         "governed_source_sha256": governed_source_hash(root),
     }
 
@@ -932,14 +1133,14 @@ def verify_all(root: Path) -> dict[str, Any]:
     results: list[dict[str, Any]] = []
     for phase, key in enumerate(PHASE_KEYS):
         status = campaign["phases"][key]
-        if status != "PASS":
+        if status != "SEALED":
             results.append({"phase": phase, "status": status, "passed": None})
             continue
-        results.append(verify_phase0(root, promote=False) if phase == 0 else verify_later_phase(root, phase))
+        results.append(verify_sealed(root, phase))
     completed_valid = all(
         results[phase].get("passed") is True
         for phase, key in enumerate(PHASE_KEYS)
-        if campaign["phases"][key] == "PASS"
+        if campaign["phases"][key] == "SEALED"
     )
     return {"campaign": "layercake-moonshot", "completed_phases_valid": completed_valid, "phases": results}
 
@@ -949,9 +1150,20 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--root", type=Path, default=ROOT, help=argparse.SUPPRESS)
     subcommands = parser.add_subparsers(dest="command", required=True)
     subcommands.add_parser("status", help="show the validated campaign state")
-    verify = subcommands.add_parser("verify-phase", help="verify and, when eligible, promote a phase")
+    verify = subcommands.add_parser("verify-phase", help="verify a candidate, PASS, or sealed phase")
     verify.add_argument("phase", type=int, choices=range(9))
     subcommands.add_parser("verify-all", help="verify all completed phases")
+    subcommands.add_parser("repair-phase0", help=argparse.SUPPRESS)
+    candidate = subcommands.add_parser("build-candidate", help="build a phase candidate from typed evidence")
+    candidate.add_argument("phase", type=int, choices=range(9))
+    verify_candidate_parser = subcommands.add_parser("verify-candidate", help="fail-closed candidate verification")
+    verify_candidate_parser.add_argument("phase", type=int, choices=range(9))
+    promote = subcommands.add_parser("promote", help="promote a verified candidate to PASS")
+    promote.add_argument("phase", type=int, choices=range(9))
+    seal = subcommands.add_parser("prepare-seal", help="record release commit and prepare immutable seal")
+    seal.add_argument("phase", type=int, choices=range(9))
+    sealed = subcommands.add_parser("verify-sealed", help="verify clean annotated-tag seal")
+    sealed.add_argument("phase", type=int, choices=range(9))
     subcommands.add_parser("prepare-phase0", help=argparse.SUPPRESS)
     record = subcommands.add_parser("record-tests", help=argparse.SUPPRESS)
     record.add_argument("--junit", type=Path, required=True)
@@ -965,6 +1177,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         if args.command == "status":
             result = campaign_status(root)
+        elif args.command == "repair-phase0":
+            result = repair_phase0(root)
         elif args.command == "prepare-phase0":
             result = prepare_phase0_audit(root)
         elif args.command == "record-tests":
@@ -972,6 +1186,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             result = record_test_results(root, junit, args.command_line)
         elif args.command == "verify-phase":
             result = verify_phase0(root) if args.phase == 0 else verify_later_phase(root, args.phase)
+        elif args.command == "build-candidate":
+            result = build_candidate(root, args.phase)
+        elif args.command == "verify-candidate":
+            result = verify_candidate(root, args.phase)
+        elif args.command == "promote":
+            result = promote_phase(root, args.phase)
+        elif args.command == "prepare-seal":
+            result = prepare_seal(root, args.phase)
+        elif args.command == "verify-sealed":
+            result = verify_sealed(root, args.phase)
         elif args.command == "verify-all":
             result = verify_all(root)
         else:  # pragma: no cover - argparse guarantees this branch is unreachable
@@ -980,7 +1204,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(json.dumps({"status": "FAIL", "error": str(error)}, indent=2, sort_keys=True))
         return 1
     print(json.dumps(result, indent=2, sort_keys=True))
-    if args.command == "verify-phase" and result.get("passed") is not True:
+    if args.command in {"verify-phase", "verify-candidate", "promote", "verify-sealed"} and result.get("passed") is not True and result.get("status") != "PASS":
         return 2
     if args.command == "verify-all" and result.get("completed_phases_valid") is not True:
         return 1
