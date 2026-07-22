@@ -1,7 +1,7 @@
 {
   "campaign": "layercake-moonshot",
   "campaign_version": 1,
-  "current_phase": 1,
+  "current_phase": 0,
   "lineage": {
     "abi_hash": null,
     "architecture_hash": null,
@@ -9,21 +9,27 @@
     "cake_package_hashes": {},
     "core_checkpoint_hashes": {},
     "data_hashes": {},
+    "governance_commit": "25aae41044b8cae8decd41fff38fd4184c667458",
+    "model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
     "router_hash": null,
     "runtime_hashes": {},
-    "source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
     "transformer_checkpoint_hashes": {}
   },
   "phase_records": {
     "phase0": {
+      "candidate": "results/moonshot/phase0/candidate.json",
+      "candidate_verification": "results/moonshot/phase0/candidate_verification.json",
       "certificate": "results/moonshot/phase0/release_certificate.json",
       "completion_tag": "layercake-moonshot-phase0",
-      "handoff": "results/moonshot/phase0/handoff.json"
+      "governance_commit": "25aae41044b8cae8decd41fff38fd4184c667458",
+      "handoff": "results/moonshot/phase0/handoff.json",
+      "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
+      "phase_implementation_commit": "25aae41044b8cae8decd41fff38fd4184c667458"
     }
   },
   "phases": {
     "phase0_governance": "PASS",
-    "phase1_benchmark_truth": "OPEN",
+    "phase1_benchmark_truth": "LOCKED",
     "phase2_cpu_quality_speed": "LOCKED",
     "phase3_training_speed": "LOCKED",
     "phase4_portable_domain": "LOCKED",
@@ -31,5 +37,14 @@
     "phase6_orchestration": "LOCKED",
     "phase7_integrated_performance": "LOCKED",
     "phase8_independent_verification": "LOCKED"
-  }
+  },
+  "repair_history": [
+    {
+      "governance_commit": "25aae41044b8cae8decd41fff38fd4184c667458",
+      "kind": "bounded_phase0_lifecycle_repair",
+      "legacy_certificate": "results/moonshot/phase0/release_certificate.json",
+      "legacy_tag_commit": "2a7439c3e4dcea71d3f6d36bbd33bd5159bee3b9",
+      "reason": "legacy PASS conflated scientific promotion with git sealing"
+    }
+  ]
 }

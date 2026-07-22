@@ -1,35 +1,12 @@
 {
-  "campaign_file_hashes": {
-    "moonshot/benchmark_contract.yaml": "1efe9f11979784d3b76006b5905c1179feebf03de5b6549d17f5f30a9e0c0ae2",
-    "moonshot/campaign.yaml": "4fc95d5ec1c39abcf11d249d10a0cfe5476ec3098ece680bd52ccbfde8d8d767",
-    "moonshot/claim_contract.yaml": "9348e3e6507aed4e6a6a8f456771f39de73b48a7df08c435b21ec493302925c4",
-    "moonshot/data_contract.yaml": "5a86126d2e1326537496142bf5bd97c80eeb6844d08c2c0ea5f370a0705cc217",
-    "moonshot/invalidation_matrix.yaml": "d443ef18a3ef619784034020ca22c9fd79320d6a6bcde85bdd2e9e18d24ccdac",
-    "moonshot/security_contract.yaml": "4eda155712988f708c1e18f622305698d0bca59641d7fe6d44f4e1e5404c0f84"
-  },
   "campaign_version": 1,
   "certificate_path": "results/moonshot/phase0/release_certificate.json",
-  "certificate_sha256": "1e7f97f0f8c69588c594e4f7acef8b6b4a40f5a99b331365f8889c513e8e8b1c",
-  "exact_continuation_requirements": [
-    "Validate the layercake-moonshot-phase0 tag and Phase 0 certificate before edits.",
-    "Read AGENTS.md and every file under moonshot/.",
-    "Execute Phase 1 only: establish benchmark truth without redesigning LayerCake.",
-    "Use the six required baselines and freeze the general-English quality thresholds.",
-    "Preserve all raw runs and let only the verifier unlock Phase 2."
-  ],
+  "certificate_sha256": "4d1091f5bb7eafcfde23fce3c39db7c297590215dee00b41def3581b5816b289",
   "format": "layercake-moonshot-handoff/1",
-  "next_command": "python -m layercake.moonshot_campaign verify-phase 0",
+  "governance_commit": "25aae41044b8cae8decd41fff38fd4184c667458",
+  "model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
+  "next_command": "python -m layercake.moonshot_campaign prepare-seal 0",
   "next_phase": 1,
-  "phase": 0,
-  "source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
-  "test_results": {
-    "command": "C:\\Python310\\python.exe -m pytest -q --junitxml=results/moonshot/phase0/pytest.xml",
-    "duration_seconds": 13.677,
-    "errors": 0,
-    "failures": 0,
-    "passed": 427,
-    "skipped": 0,
-    "tests": 427
-  },
-  "verifier_sha256": "610126a95ebeeba7062d7108efcb13f75b29c4c87745520d209de9feaee14d40"
+  "next_phase_locked_until_seal": true,
+  "phase": 0
 }
