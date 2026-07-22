@@ -1,0 +1,37 @@
+{
+  "checks": [
+    {
+      "error": "benchmark matrix is incomplete for layercake_fastest_integrated: [('cpu_all_core', 'warm', 'sampled', 'long', 64)]",
+      "id": "missing_matrix_cell",
+      "status": "DETECTED"
+    },
+    {
+      "error": "latency is not derived from raw timestamps",
+      "id": "tampered_direct_timestamp",
+      "status": "DETECTED"
+    },
+    {
+      "error": "bare cold/warm booleans are forbidden",
+      "id": "self_asserted_cold_boolean",
+      "status": "DETECTED"
+    },
+    {
+      "error": "evidence artifact is missing or stale: results/moonshot/phase1/adversarial_checks.json",
+      "id": "stale_artifact_hash",
+      "status": "DETECTED"
+    },
+    {
+      "error": "KV-cache trace references do not exist in raw evidence",
+      "id": "invented_kv_cache_trace",
+      "status": "DETECTED"
+    },
+    {
+      "error": "bare self-asserted optimized booleans are forbidden",
+      "id": "self_asserted_optimized_boolean",
+      "status": "DETECTED"
+    }
+  ],
+  "detected": 6,
+  "format": "layercake-phase1-adversarial-checks/1",
+  "status": "PASS"
+}

@@ -175,8 +175,9 @@ def _baseline(identifier: str, *, eager: bool = False) -> dict:
             "name": "llama.cpp" if "transformer" in identifier else "pytorch-control",
             "version": "test-version",
             "execution": "eager_python" if eager else "native",
-            "deployment_grade": True,
-            "kv_cache": True,
+            "runtime_manifest": {"path": "runtime.json", "sha256": "a" * 64},
+            "deployment_evidence": {"path": "trace.json", "sha256": "b" * 64},
+            "kv_cache_evidence": {"path": "trace.json", "sha256": "b" * 64},
         },
     }
 
@@ -387,5 +388,5 @@ def test_sealed_verifier_rejects_dirty_or_post_tag_state(tmp_path: Path) -> None
         verify_sealed(repository, 0)
     _git(repository, "add", ".")
     _git(repository, "commit", "-m", "post seal mutation")
-    with pytest.raises(CampaignVerificationError, match="current HEAD"):
+    with pytest.raises(CampaignVerificationError, match="modified after sealing"):
         verify_sealed(repository, 0)

@@ -1,0 +1,37 @@
+{
+  "architecture": "causal adaptive 2/4-byte patch transformer",
+  "checkpoint": {
+    "kind": "local_file",
+    "path": "artifacts/final/adaptive-medium-pilot/routed_adaptive_5x5_top1_8e/seed-9811/model.safetensors",
+    "sha256": "e0dccb3ded1b7b9072f455c3d021dd32acb0d5ba2f54105450ce74a7520bb531"
+  },
+  "configuration": {
+    "sha256": "b8c3e5bda945a7e7dd81116bafc8593750320db6df6450b8ad17c1b3c5c20920"
+  },
+  "format": "layercake-phase1-model-manifest/1",
+  "id": "layercake-adaptive-quality",
+  "incremental_state": {
+    "reason": "current adaptive model exposes full forward but no persistent decode state",
+    "status": "NOT_AVAILABLE_IN_CURRENT_IMPLEMENTATION"
+  },
+  "known_limitations": [
+    "No persistent incremental decode API",
+    "therefore excluded from speed headlines"
+  ],
+  "parameters": {
+    "active": 2763216,
+    "total": 3200688
+  },
+  "role": "highest_quality_current_layercake",
+  "runtime_id": "pytorch-reference-controls",
+  "tokenizer": {
+    "kind": "causal adaptive raw-byte patches",
+    "sha256": "cfac7296f2ae3a87e36dbebf9676ed745b8019aadf323e01e71891d5d4687eea"
+  },
+  "training_data": {
+    "corpus": "WikiText-103 byte corpus",
+    "train_bytes": 100000000,
+    "train_path": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "train_sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6"
+  }
+}

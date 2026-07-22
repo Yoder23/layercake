@@ -1,0 +1,48 @@
+{
+  "batch_size": 1,
+  "format": "layercake-phase1-benchmark-config/1",
+  "generation_modes": {
+    "deterministic": {
+      "temperature": 0.0,
+      "top_p": 1.0
+    },
+    "sampled": {
+      "temperature": 0.8,
+      "top_p": 0.95
+    }
+  },
+  "layercake_checkpoint": "artifacts/final/medium-cores/seed-9801",
+  "minimum_trials_per_cell": 2,
+  "ollama_gpu_endpoint": "http://127.0.0.1:11434",
+  "ollama_model": "qwen2.5:0.5b",
+  "output_target_bytes": [
+    64,
+    256,
+    1024
+  ],
+  "prompts": [
+    {
+      "bucket": "short",
+      "bytes": 118,
+      "id": "short-continuation",
+      "sha256": "b661e6bd016ec3d52550e011e63229352959e07320d39e6e8d265831e3e24b44",
+      "text": "Continue with uninterrupted natural-language prose for at least 1600 bytes: The future of efficient language models is"
+    },
+    {
+      "bucket": "medium",
+      "bytes": 370,
+      "id": "medium-continuation",
+      "sha256": "3ba1ffad2080032d2ea8e26824fcf92778f9d804385d039cb8182ae45d7e25a0",
+      "text": "Continue with uninterrupted natural-language prose for at least 1600 bytes. Do not conclude early. Efficient language systems should balance accuracy, latency, memory, transparency, and accessibility. A useful comparison must hold prompts and stopping rules constant while measuring each implementation directly. In that setting, the most important engineering lesson is"
+    },
+    {
+      "bucket": "long",
+      "bytes": 1123,
+      "id": "long-continuation",
+      "sha256": "e77e2d07de32096a1aeb10fa975fca63811e4235479489ffd40466ec2eae0164",
+      "text": "Continue with uninterrupted natural-language prose for at least 1600 bytes. Do not conclude early. A research team is evaluating language-model systems under a locked protocol. The protocol records executable identity, model and tokenizer hashes, precision, thread count, device, cache state, prompt identity, output bytes, timestamps, memory, and failures. Cold requests include model loading; warm requests use an already resident model. Deterministic and sampled decoding are kept separate. Prompt and output buckets are randomized with a published seed. Every aggregate is derived from per-request rows. Quality is not inferred from speed, and speed is not promoted without a frozen quality suite. A held-out test split cannot influence architecture selection. Hardware absence is recorded instead of converted into a passing performance claim. The campaign uses candidates, verifier promotion, release commits, annotated tags, and clean sealed verification. Historical measurements remain visible but cannot be mixed with current checkpoints. Given these constraints, a trustworthy benchmark should help future work by"
+    }
+  ],
+  "randomization_seed": 20260722,
+  "stopping_rule": "first streaming prefix containing at least target UTF-8 bytes; hash exact target-byte prefix"
+}

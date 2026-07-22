@@ -1,0 +1,38 @@
+{
+  "architecture": "Qwen2.5 0.5B Instruct, 24-layer GQA transformer",
+  "checkpoint": {
+    "kind": "external_content_addressed",
+    "manifest_sha256": "066129d1c25a9ed98dfaec55cec198035e51d77c2a4ce4156ce3ed8f6e4a5ade",
+    "provider": "Ollama qwen2.5:0.5b",
+    "sha256": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67"
+  },
+  "configuration": {
+    "sha256": "f83986df17ed7b4ae3f74c168a2317ae7c47d08307c19c4e94077bbda3a491c9"
+  },
+  "format": "layercake-phase1-model-manifest/1",
+  "id": "qwen25-05b-gpu",
+  "incremental_state": {
+    "mechanism": "native llama.cpp KV cache",
+    "raw_trace_run_ids": [
+      "transformer_optimized_gpu-0000",
+      "transformer_optimized_gpu-0001"
+    ],
+    "status": "MEASURED"
+  },
+  "known_limitations": [
+    "Instruct-tuned external reference is larger than the in-repository 3.35M BPE quality control"
+  ],
+  "parameters": {
+    "active": 494032768,
+    "total": 494032768
+  },
+  "role": "optimized_gpu_transformer",
+  "runtime_id": "ollama-gpu",
+  "tokenizer": {
+    "kind": "Qwen2 GPT2-style BPE in GGUF",
+    "sha256": "4ac1b88aaef99203071c93d530390982d9ebc4e29280c0853ff64c48232a6508"
+  },
+  "training_data": {
+    "provider": "Qwen upstream; not trained in this repository"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "format": "layercake-phase1-baseline-quality/1",
+  "records": [
+    {
+      "metadata_sha256": "5a0a1e25adb845d7e3d3bbf5986db1d33bb578d6c016985e79b52acb144c5135",
+      "model_id": "bpe-reference",
+      "validation": {
+        "bits_per_byte": 1.6873530535092476,
+        "covered_raw_bytes": 30363,
+        "evaluated_tokens": 16824,
+        "token_accuracy": 0.4609486447931526
+      }
+    },
+    {
+      "metadata_sha256": "3ff378954346646d3aeb9da2542862597c449b9d62cd59a10a8a877b511e9a29",
+      "model_id": "layercake-foundation-v2",
+      "validation": {
+        "bits_per_byte": 2.011486318288002,
+        "byte_accuracy": 0.594757080078125,
+        "evaluated_bytes": 32768,
+        "mean_absolute_calibration_error": 0.29063341207802296,
+        "mean_confidence": 0.586582500487566
+      }
+    },
+    {
+      "metadata_sha256": "094f73f86e39e51a1a46bb227d1afafc14839f0fd98fcd05d17457bc053457d2",
+      "model_id": "layercake-adaptive-quality",
+      "validation": {
+        "bits_per_byte": 1.8312242828767538,
+        "byte_accuracy": 0.622222900390625,
+        "evaluated_bytes": 32768,
+        "mean_bytes_per_patch": 3.3649620045183815,
+        "patches": 9738
+      }
+    },
+    {
+      "metadata_sha256": "066129d1c25a9ed98dfaec55cec198035e51d77c2a4ce4156ce3ed8f6e4a5ade",
+      "model_id": "qwen25-05b",
+      "validation": "NOT_COMPARABLE_NO_TOKENIZER_NEUTRAL_LOGPROB_API_IN_OLLAMA"
+    }
+  ],
+  "scope": "historical validation metrics bound to exact checkpoint metadata; no Phase 1 test-set selection",
+  "test_accessed_for_selection": false
+}

@@ -154,6 +154,13 @@ def _git(root: Path, *args: str, check: bool = True) -> str:
     return process.stdout.strip()
 
 
+def _git_succeeds(root: Path, *args: str) -> bool:
+    return subprocess.run(
+        ["git", *args], cwd=root, stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL, check=False,
+    ).returncode == 0
+
+
 def load_contracts(root: Path) -> dict[str, dict[str, Any]]:
     documents: dict[str, dict[str, Any]] = {}
     for name in CONTRACT_FILES:
@@ -613,10 +620,18 @@ def validate_baselines(certificate: Mapping[str, Any], claim_contract: Mapping[s
             raise CampaignVerificationError(f"{identifier} has no runtime provenance")
         if runtime.get("execution") == "eager_python":
             raise CampaignVerificationError(f"{identifier} is an invalid eager Python baseline")
-        if runtime.get("deployment_grade") is not True or runtime.get("kv_cache") is not True:
-            raise CampaignVerificationError(f"{identifier} is not a credible optimized baseline")
         if not runtime.get("name") or not runtime.get("version"):
             raise CampaignVerificationError(f"{identifier} runtime identity is incomplete")
+        for field in ("runtime_manifest", "deployment_evidence", "kv_cache_evidence"):
+            evidence = runtime.get(field)
+            if not isinstance(evidence, dict) or not evidence.get("path") or not evidence.get("sha256"):
+                raise CampaignVerificationError(
+                    f"{identifier} lacks typed {field.replace('_', ' ')}"
+                )
+        if any(field in runtime for field in ("deployment_grade", "kv_cache", "optimized")):
+            raise CampaignVerificationError(
+                f"{identifier} uses forbidden self-asserted optimization booleans"
+            )
 
 
 def validate_matched_quality(
@@ -831,6 +846,15 @@ def build_candidate(root: Path, phase: int) -> dict[str, Any]:
     if any(campaign["phases"][PHASE_KEYS[index]] != "SEALED" for index in range(phase)):
         raise CampaignVerificationError("all prior phases must be SEALED")
     summary = _verify_phase_evidence(root, phase, contracts)
+    evidence_hashes = _artifact_hashes(root, _phase_evidence_files(root, phase))
+    if phase == 1:
+        raw_evidence_manifest_sha256 = read_document(
+            _lifecycle_path(root, 1, "evidence_manifest.json")
+        )["raw_evidence_manifest_sha256"]
+    else:
+        raw_evidence_manifest_sha256 = hashlib.sha256(
+            json.dumps(sorted(evidence_hashes.items()), separators=(",", ":")).encode()
+        ).hexdigest()
     candidate = {
         "format": "layercake-moonshot-candidate/1",
         "campaign_version": 1,
@@ -840,7 +864,8 @@ def build_candidate(root: Path, phase: int) -> dict[str, Any]:
         "phase_implementation_commit": _git(root, "rev-parse", "HEAD"),
         "governed_source_sha256": governed_source_hash(root),
         "component_hashes": component_hashes(root, contracts["invalidation_matrix.yaml"]),
-        "evidence_artifact_hashes": _artifact_hashes(root, _phase_evidence_files(root, phase)),
+        "evidence_artifact_hashes": evidence_hashes,
+        "raw_evidence_manifest_sha256": raw_evidence_manifest_sha256,
         "verification_summary": summary,
     }
     candidate_path = _lifecycle_path(root, phase, "candidate.json")
@@ -852,6 +877,7 @@ def build_candidate(root: Path, phase: int) -> dict[str, Any]:
         "phase_implementation_commit": candidate["phase_implementation_commit"],
         "inherited_model_source_commit": candidate["model_source_commit"],
         "governance_commit": candidate["governance_commit"],
+        "raw_evidence_manifest_sha256": candidate["raw_evidence_manifest_sha256"],
     })
     _atomic_write(_path(root, CAMPAIGN_DIR / "campaign.yaml"), campaign)
     return {"phase": phase, "status": "CANDIDATE", "candidate_sha256": sha256_file(candidate_path)}
@@ -939,6 +965,11 @@ def promote_phase(root: Path, phase: int) -> dict[str, Any]:
             "status": "PENDING_POST_SEAL",
             "reason": "tag does not exist until seal metadata is committed",
         },
+        "local_sealing": {
+            "scientific_gate": True,
+            "status": "PENDING_RELEASE_COMMIT_AND_ANNOTATED_TAG",
+        },
+        "raw_evidence_manifest_sha256": candidate["raw_evidence_manifest_sha256"],
     }
     if phase == 0:
         certificate["tests"] = verification["verification_summary"]["tests"]
@@ -965,7 +996,9 @@ def promote_phase(root: Path, phase: int) -> dict[str, Any]:
     record = campaign["phase_records"][f"phase{phase}"]
     record.update({
         "certificate": certificate_path.relative_to(root).as_posix(),
+        "certificate_sha256": sha256_file(certificate_path),
         "handoff": handoff_path.relative_to(root).as_posix(),
+        "handoff_sha256": sha256_file(handoff_path),
         "completion_tag": tag,
     })
     _atomic_write(_path(root, CAMPAIGN_DIR / "campaign.yaml"), campaign)
@@ -996,6 +1029,12 @@ def prepare_seal(root: Path, phase: int) -> dict[str, Any]:
         "release_commit": release_commit,
         "completion_tag": tag,
         "sealed_artifact_hashes": committed_hashes,
+        "certificate_sha256": sha256_file(_lifecycle_path(root, phase, "release_certificate.json")),
+        "handoff_sha256": sha256_file(_lifecycle_path(root, phase, "handoff.json")),
+        "raw_evidence_manifest_sha256": campaign["phase_records"][f"phase{phase}"]["raw_evidence_manifest_sha256"],
+        "working_tree_clean_at_release": {
+            "status": "CLEAN", "command": "git status --porcelain=v1", "porcelain": "",
+        },
         "required_tag_kind": "annotated",
         "required_worktree_state": "clean",
     }
@@ -1006,6 +1045,7 @@ def prepare_seal(root: Path, phase: int) -> dict[str, Any]:
         "phase_release_commit": release_commit,
         "seal": _lifecycle_path(root, phase, "seal.json").relative_to(root).as_posix(),
         "phase_tag": tag,
+        "working_tree_clean_at_release": seal["working_tree_clean_at_release"],
     })
     if phase < 8:
         campaign["current_phase"] = phase + 1
@@ -1043,8 +1083,10 @@ def verify_sealed(root: Path, phase: int) -> dict[str, Any]:
         raise CampaignVerificationError("completion tag is missing or is not annotated")
     tag_commit = _git(root, "rev-list", "-n", "1", str(tag))
     head = _git(root, "rev-parse", "HEAD")
-    if tag_commit != head:
-        raise CampaignVerificationError("completion tag does not point at current HEAD")
+    if tag_commit != head and not _git_succeeds(
+        root, "merge-base", "--is-ancestor", tag_commit, head
+    ):
+        raise CampaignVerificationError("completion tag is not an ancestor of current HEAD")
     if _git(root, "status", "--porcelain=v1"):
         raise CampaignVerificationError("sealed verification requires a clean worktree")
     parent = _git(root, "rev-parse", f"{tag_commit}^")
@@ -1056,9 +1098,24 @@ def verify_sealed(root: Path, phase: int) -> dict[str, Any]:
             raise CampaignVerificationError(f"tagged artifact hash mismatch: {relative}")
         if not _path(root, relative).is_file():
             raise CampaignVerificationError(f"sealed phase artifact is absent from the checkout: {relative}")
+        current_blob = hashlib.sha256(_git_blob(root, head, relative)).hexdigest()
+        if current_blob != expected:
+            raise CampaignVerificationError(
+                f"sealed phase artifact was modified after sealing: {relative}"
+            )
     record = campaign.get("phase_records", {}).get(f"phase{phase}", {})
     if record.get("phase_release_commit") != seal.get("release_commit") or record.get("phase_tag") != tag:
         raise CampaignVerificationError("campaign phase lineage does not match the seal")
+    if phase == 1:
+        try:
+            from .evaluation.phase1_evidence import Phase1EvidenceError, validate_phase1_bundle
+            validate_phase1_bundle(
+                root, _phase_dir(root, 1), verify_external_files=False
+            )
+        except Phase1EvidenceError as error:
+            raise CampaignVerificationError(
+                f"sealed Phase 1 typed evidence failed structural verification: {error}"
+            ) from error
     remote = _git(root, "ls-remote", "--tags", "origin", f"refs/tags/{tag}", check=False)
     remote_status = "PUBLISHED" if remote else "NOT_VERIFIED_OR_NOT_PUBLISHED"
     return {
