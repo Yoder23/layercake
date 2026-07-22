@@ -1,7 +1,7 @@
 {
   "campaign": "layercake-moonshot",
   "campaign_version": 1,
-  "current_phase": 1,
+  "current_phase": 2,
   "lineage": {
     "abi_hash": null,
     "architecture_hash": null,
@@ -40,13 +40,21 @@
       "handoff_sha256": "b383b8e4d511c29141717e5e61c15dbf1bff132f3bb9ca03ebc3f427c3add77e",
       "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
       "phase_implementation_commit": "79878f811de6ae04a43ade27ba41756ce183f73f",
-      "raw_evidence_manifest_sha256": "aaa67c2616d2cfb1b6b85652abf88be39eec6d11bac93e3427888483d0758a49"
+      "phase_release_commit": "fa9fde4d4f9b24839755ab3543a4f680e9452d4f",
+      "phase_tag": "layercake-moonshot-phase1",
+      "raw_evidence_manifest_sha256": "aaa67c2616d2cfb1b6b85652abf88be39eec6d11bac93e3427888483d0758a49",
+      "seal": "results/moonshot/phase1/seal.json",
+      "working_tree_clean_at_release": {
+        "command": "git status --porcelain=v1",
+        "porcelain": "",
+        "status": "CLEAN"
+      }
     }
   },
   "phases": {
     "phase0_governance": "SEALED",
-    "phase1_benchmark_truth": "PASS",
-    "phase2_cpu_quality_speed": "LOCKED",
+    "phase1_benchmark_truth": "SEALED",
+    "phase2_cpu_quality_speed": "OPEN",
     "phase3_training_speed": "LOCKED",
     "phase4_portable_domain": "LOCKED",
     "phase5_multi_domain": "LOCKED",
