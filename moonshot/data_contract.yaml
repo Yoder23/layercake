@@ -1,0 +1,23 @@
+{
+  "format": "layercake-moonshot-data-contract/1",
+  "campaign_version": 1,
+  "splits": ["search", "validation", "test"],
+  "immutable": true,
+  "content_addressed": true,
+  "required_manifest_fields": ["id", "source", "license_or_terms", "retrieved_at", "path", "bytes", "sha256", "split", "selection_access_allowed"],
+  "selection_policy": {
+    "search_may_select_architecture": true,
+    "validation_may_promote_candidate": true,
+    "test_may_select_architecture": false,
+    "test_may_select_thresholds": false,
+    "test_may_select_baseline": false,
+    "test_may_early_stop": false,
+    "test_access_must_be_logged": true
+  },
+  "contamination": {
+    "cross_split_exact_overlap_forbidden": true,
+    "near_duplicate_check_required": true,
+    "benchmark_prompt_overlap_check_required": true
+  },
+  "mutation_invalidates_dependent_certificates": true
+}

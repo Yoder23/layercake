@@ -1,0 +1,37 @@
+{
+  "format": "layercake-moonshot-benchmark-contract/1",
+  "campaign_version": 1,
+  "raw_run_format": "layercake-moonshot-raw-run/1",
+  "timing": {
+    "clock": "monotonic_high_resolution",
+    "direct_time_to_first_output": true,
+    "randomized_order": true,
+    "required_quantiles": [0.5, 0.95, 0.99],
+    "quantile_method": "nearest_rank",
+    "cold_and_warm": true,
+    "complete_end_to_end_latency": true
+  },
+  "workload_axes": {
+    "devices": ["cpu_one_thread", "cpu_all_core", "gpu"],
+    "output_bytes": [64, 256, 1024],
+    "generation_modes": ["deterministic", "sampled"],
+    "prompt_lengths": ["short", "medium", "long"]
+  },
+  "required_metrics": ["bytes_per_second", "characters_per_second", "tokens_per_second", "correct_task_completions_per_second", "end_to_end_latency_seconds", "time_to_first_output_seconds", "active_memory_bytes", "resident_memory_bytes"],
+  "energy": {"required_when_measurable": true, "unavailable_requires_reason": true},
+  "optimized_baseline": {
+    "eager_python_final_baseline_allowed": false,
+    "kv_cache_required": true,
+    "deployment_grade_runtime_required": true,
+    "tokenizer_timing_included": true,
+    "batch_one_path_required": true,
+    "runtime_and_kernel_provenance_required": true
+  },
+  "quality_suite": {
+    "required": ["heldout_bpb", "repetition", "unique_ngrams", "calibration", "continuation_quality", "instruction_following", "long_context", "invalid_output_rate", "contamination"],
+    "thresholds_frozen_before_phase": 2
+  },
+  "matched_quality_dimensions": ["heldout_bpb", "functional_task_quality", "instruction_following", "invalid_output_rate", "repetition", "coherence", "domain_success"],
+  "direct_bytes_to_tokens_ratio_is_sufficient_conclusion": false,
+  "raw_sample_required_fields": ["run_id", "system_id", "checkpoint_sha256", "seed", "device", "threads", "prompt_id", "prompt_bytes", "output_target_bytes", "generation_mode", "temperature", "cold", "order_index", "started_ns", "first_output_ns", "completed_ns", "generated_bytes", "generated_characters", "generated_tokens", "correct", "active_memory_bytes", "resident_memory_bytes"]
+}

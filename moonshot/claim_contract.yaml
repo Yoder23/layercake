@@ -1,0 +1,150 @@
+{
+  "format": "layercake-moonshot-claim-contract/1",
+  "campaign_version": 1,
+  "allowed_phase_statuses": ["LOCKED", "OPEN", "PASS"],
+  "allowed_task_statuses": ["PASS", "CONTINUATION_REQUIRED", "BLOCKED_BY_VERIFIED_HARD_LIMIT"],
+  "certificate_policy": {
+    "headline_values_must_be_derived": true,
+    "certificate_is_not_raw_evidence": true,
+    "manual_status_is_not_evidence": true,
+    "readme_is_not_evidence": true,
+    "legacy_certificate_inheritance": false
+  },
+  "phase_requirements": {
+    "0": {
+      "name": "governance",
+      "minimum_unique_seeds": 0,
+      "required_artifacts": [
+        "results/moonshot/phase0/repository_audit.json",
+        "results/moonshot/phase0/test_results.json",
+        "results/moonshot/phase0/release_certificate.json",
+        "results/moonshot/phase0/handoff.json"
+      ],
+      "completion_tag": "layercake-moonshot-phase0"
+    },
+    "1": {
+      "name": "benchmark_truth",
+      "minimum_unique_seeds": 1,
+      "required_baselines": ["bpe_reference", "optimized_cpu_transformer", "optimized_gpu_transformer", "byte_transformer", "fastest_existing_layercake", "highest_quality_existing_layercake"],
+      "required_gates": [],
+      "completion_tag": "layercake-moonshot-phase1"
+    },
+    "2": {
+      "name": "cpu_quality_speed",
+      "minimum_unique_seeds": 3,
+      "required_gates": [
+        {"id": "heldout_bpb_delta", "operator": "le", "threshold": 0.03},
+        {"id": "cpu_throughput_ratio", "operator": "ge", "threshold": 2.0},
+        {"id": "cpu_median_latency_ratio", "operator": "le", "threshold": 0.60},
+        {"id": "time_to_first_output_ratio", "operator": "le", "threshold": 1.0},
+        {"id": "active_memory_ratio", "operator": "lt", "threshold": 1.0},
+        {"id": "sustained_1024_byte_throughput_ratio", "operator": "ge", "threshold": 2.0},
+        {"id": "physical_sparse_execution", "operator": "eq", "threshold": 1.0}
+      ],
+      "completion_tag": "layercake-moonshot-phase2"
+    },
+    "3": {
+      "name": "training_speed",
+      "minimum_unique_seeds": 3,
+      "required_gates": [
+        {"id": "time_to_matched_quality_ratio", "operator": "le", "threshold": 0.50},
+        {"id": "phase2_cpu_speed_retention", "operator": "ge", "threshold": 0.95},
+        {"id": "equal_raw_data_exposure", "operator": "eq", "threshold": 1.0},
+        {"id": "threshold_frozen_before_training", "operator": "eq", "threshold": 1.0},
+        {"id": "lower_parameter_seconds_or_training_memory", "operator": "eq", "threshold": 1.0}
+      ],
+      "completion_tag": "layercake-moonshot-phase3"
+    },
+    "4": {
+      "name": "portable_domain",
+      "minimum_unique_seeds": 3,
+      "required_gates": [
+        {"id": "functional_error_ratio", "operator": "le", "threshold": 0.20},
+        {"id": "core_plus_cake_phase3_throughput_retention", "operator": "ge", "threshold": 0.90},
+        {"id": "core_plus_cake_cpu_transformer_ratio", "operator": "ge", "threshold": 2.0},
+        {"id": "cake_adaptation_time_ratio", "operator": "le", "threshold": 0.20},
+        {"id": "source_success_retention_ratio", "operator": "eq", "threshold": 1.0},
+        {"id": "receiver_training_examples", "operator": "eq", "threshold": 0.0},
+        {"id": "receiver_calibration_runs", "operator": "eq", "threshold": 0.0}
+      ],
+      "completion_tag": "layercake-moonshot-phase4"
+    },
+    "5": {
+      "name": "multi_domain",
+      "minimum_unique_seeds": 3,
+      "required_gates": [
+        {"id": "real_neural_domain_count", "operator": "ge", "threshold": 3.0},
+        {"id": "minimum_domain_functional_error_reduction", "operator": "ge", "threshold": 5.0},
+        {"id": "minimum_domain_training_speedup", "operator": "ge", "threshold": 5.0},
+        {"id": "generic_authoring_requires_source_edits", "operator": "eq", "threshold": 0.0},
+        {"id": "inactive_cake_effect", "operator": "eq", "threshold": 0.0}
+      ],
+      "completion_tag": "layercake-moonshot-phase5"
+    },
+    "6": {
+      "name": "orchestration",
+      "minimum_unique_seeds": 3,
+      "required_gates": [
+        {"id": "top1_accuracy", "operator": "ge", "threshold": 0.95},
+        {"id": "topk_recall", "operator": "ge", "threshold": 0.98},
+        {"id": "false_specialist_activation", "operator": "le", "threshold": 0.02},
+        {"id": "routing_warm_latency_fraction", "operator": "le", "threshold": 0.05},
+        {"id": "largest_catalog_size", "operator": "ge", "threshold": 100.0},
+        {"id": "mixed_workload_cpu_transformer_ratio", "operator": "ge", "threshold": 2.0}
+      ],
+      "completion_tag": "layercake-moonshot-phase6"
+    },
+    "7": {
+      "name": "integrated_performance",
+      "minimum_unique_seeds": 3,
+      "required_gates": [
+        {"id": "cpu_cpu_throughput_ratio", "operator": "ge", "threshold": 5.0},
+        {"id": "cpu_cpu_median_latency_ratio", "operator": "le", "threshold": 0.25},
+        {"id": "gpu_gpu_throughput_ratio", "operator": "gt", "threshold": 1.0},
+        {"id": "cpu_gpu_throughput_ratio", "operator": "ge", "threshold": 1.0},
+        {"id": "cpu_gpu_median_latency_ratio", "operator": "le", "threshold": 1.0},
+        {"id": "general_quality_noninferior", "operator": "eq", "threshold": 1.0},
+        {"id": "mixed_domain_quality_superior", "operator": "eq", "threshold": 1.0},
+        {"id": "promoted_domain_success_retention", "operator": "eq", "threshold": 1.0}
+      ],
+      "completion_tag": "layercake-moonshot-phase7"
+    },
+    "8": {
+      "name": "independent_verification",
+      "minimum_unique_seeds": 3,
+      "required_gates": [
+        {"id": "prior_required_gate_retention", "operator": "eq", "threshold": 1.0},
+        {"id": "clean_room_reproduction", "operator": "eq", "threshold": 1.0},
+        {"id": "adversarial_falsification_findings_resolved", "operator": "eq", "threshold": 1.0}
+      ],
+      "completion_tag": "layercake-moonshot-final"
+    }
+  },
+  "moonshot_claims": [
+    "train_useful_general_english_core",
+    "general_quality_non_inferior_to_transformer",
+    "mixed_domain_quality_superior",
+    "foundation_time_to_quality_faster",
+    "domain_time_to_functional_quality_faster",
+    "same_cpu_substantially_faster",
+    "same_gpu_faster",
+    "cpu_matches_or_beats_transformer_gpu",
+    "matched_useful_quality_for_speed",
+    "persistent_incremental_state",
+    "inactive_domains_no_proportional_neural_compute",
+    "core_only_deployment",
+    "explicit_one_domain_without_router",
+    "independent_unbounded_domain_installation",
+    "configuration_driven_domain_authoring",
+    "safe_signed_non_executable_packages",
+    "unchanged_cross_host_package_bytes",
+    "no_receiver_training_or_calibration",
+    "semantic_cross_host_portability",
+    "dynamic_domain_discovery_and_routing",
+    "core_top1_topk_multidomain_manual_abstention",
+    "selected_cakes_only_active_compute",
+    "optimized_cpu_and_gpu_runtimes",
+    "physical_mobile_claims_require_hardware",
+    "raw_evidence_reproducibility"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "format": "layercake-moonshot-invalidation-matrix/1",
+  "campaign_version": 1,
+  "components": {
+    "core_architecture": {"paths": ["layercake/models/**", "layercake/causal_byte_models.py", "layercake/model_v2.py", "layercake/byte_patch.py"], "invalidates_from_phase": 2},
+    "canonical_abi": {"paths": ["layercake/abi.py", "layercake/abi_alignment.py", "layercake/canonical_anchors.py"], "invalidates_from_phase": 2},
+    "patching_contract": {"paths": ["layercake/byte_patch.py", "layercake/models/**"], "invalidates_from_phase": 2},
+    "output_contract": {"paths": ["layercake/models/**", "layercake/portable_domain.py"], "invalidates_from_phase": 2},
+    "routing_computation": {"paths": ["layercake/routing/**", "layercake/orchestration.py"], "invalidates_from_phase": 5},
+    "fusion_contract": {"paths": ["layercake/runtime/**", "layercake/domain_runtime.py", "layercake/portable_domain.py"], "invalidates_from_phase": 4},
+    "training_data": {"paths": ["data/moonshot/**", "configs/moonshot/**"], "invalidates_from_phase": 1},
+    "evaluation_data": {"paths": ["data/eval/**", "configs/eval/**"], "invalidates_from_phase": 1},
+    "precision_contract": {"paths": ["layercake/runtime/**", "layercake/cake/**"], "invalidates_from_phase": 2},
+    "runtime_numerics": {"paths": ["layercake/runtime/**"], "invalidates_from_phase": 2}
+  },
+  "performance_only_kernel_change": {
+    "required_recertification": ["numerical_equivalence", "performance", "memory"],
+    "name_continuity_grants_pass": false
+  }
+}
