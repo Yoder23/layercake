@@ -1018,12 +1018,22 @@ def promote_phase(root: Path, phase: int) -> dict[str, Any]:
         validate_baselines(certificate, contracts["claim_contract.yaml"])
     if phase == 2:
         payload = read_document(_lifecycle_path(root, 2, "certificate_payload.json"))
+        core_manifest_path = _path(root, "artifacts/moonshot/phase2/final_core/manifest.json")
+        core_manifest = read_document(core_manifest_path)
+        architecture_id = core_manifest.get("architecture_id")
+        if not isinstance(architecture_id, str) or not architecture_id:
+            raise CampaignVerificationError("Phase 2 final-core architecture identity is missing")
+        if core_manifest.get("same_checkpoint_quality_and_speed") != payload["lineage"]["primary_checkpoint_sha256"]:
+            raise CampaignVerificationError(
+                "Phase 2 final-core checkpoint does not match the quality/speed checkpoint"
+            )
+        payload_lineage = {**payload["lineage"], "architecture_id": architecture_id}
         quality_rows = read_document(
             _lifecycle_path(root, 2, "raw_runs/quality_seeds.json")
         )["records"]
         campaign["lineage"].update({
-            "architecture_id": payload["lineage"]["architecture_id"],
-            "architecture_hash": payload["lineage"]["architecture_hash"],
+            "architecture_id": payload_lineage["architecture_id"],
+            "architecture_hash": payload_lineage["architecture_hash"],
             "core_checkpoint_hashes": {
                 f"seed-{row['seed']}": row["checkpoint_sha256"] for row in quality_rows
             },
@@ -1036,7 +1046,7 @@ def promote_phase(root: Path, phase: int) -> dict[str, Any]:
         certificate["quality_match"] = payload["quality_match"]
         certificate["lineage"] = {
             **campaign["lineage"],
-            **payload["lineage"],
+            **payload_lineage,
         }
         certificate["primary_checkpoint_sha256"] = payload["lineage"]["primary_checkpoint_sha256"]
         certificate["transformer_checkpoint_sha256"] = payload["lineage"]["transformer_checkpoint_sha256"]

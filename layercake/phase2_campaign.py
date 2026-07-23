@@ -1194,7 +1194,7 @@ def finalize(root: Path) -> dict[str, Any]:
         "format": "layercake-phase2-certificate-payload/1",
         "status": document["status"],
         "lineage": {
-            "architecture_id": "layercake-sparse-bpe-core/1-288x3-top1-8cakes",
+            "architecture_id": "layercake-sparse-bpe-core/3-neural-guided-english-288x3-top1-8cakes",
             "architecture_hash": quality["architecture_hash"],
             "primary_checkpoint_sha256": candidate[0]["checkpoint_sha256"],
             "transformer_checkpoint_sha256": qwen[0]["checkpoint_sha256"],
