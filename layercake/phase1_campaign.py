@@ -17,6 +17,7 @@ import os
 from pathlib import Path
 import platform
 import random
+import shutil
 import subprocess
 import sys
 import time
@@ -29,15 +30,18 @@ import psutil
 import torch
 
 from .evaluation.phase1_evidence import (
+    CORRECTION_PROTOCOL,
     Phase1EvidenceError,
     derive_performance,
     validate_baseline_optimization,
     validate_benchmark_matrix,
+    validate_comparison_certificate,
     validate_evidence_manifest,
     validate_phase1_bundle,
     validate_raw_timing_samples,
     validate_runtime_manifest,
 )
+from .training.baseline import load_transformer_checkpoint
 from .training.foundation import load_core_checkpoint
 
 
@@ -46,6 +50,8 @@ PHASE = Path("results/moonshot/phase1")
 FORMAT_RAW = "layercake-phase1-raw-timings/1"
 RANDOMIZATION_SEED = 20260722
 TRIALS = 2
+HEADLINE_OUTPUT_BYTES = 128
+HEADLINE_REPEAT_PROMPTS = 20
 OUTPUT_TARGETS = (64, 256, 1024)
 PROMPTS = {
     "short": (
@@ -82,6 +88,39 @@ PROMPTS = {
         ),
     ),
 }
+
+
+def _headline_prompts() -> list[dict[str, Any]]:
+    topics = (
+        "efficient computing", "public libraries", "urban gardens", "coastal weather",
+        "scientific replication", "music practice", "safe navigation", "local history",
+        "water conservation", "collaborative design",
+    )
+    tasks = (
+        ("continuation", "Continue in clear natural prose about {topic}. Avoid repeating a sentence."),
+        ("explanation", "Explain {topic} to a curious reader using two concrete details."),
+        ("planning", "Give a concise three-step plan for improving {topic}."),
+        ("comparison", "Compare two reasonable approaches to {topic} and state one tradeoff."),
+        ("instruction_following", "Write exactly two complete sentences about {topic}."),
+        ("reasoning", "State a likely cause and a likely consequence involving {topic}."),
+        ("summarization", "Summarize why {topic} matters without using a list."),
+        ("question_answering", "Answer directly: what is one practical benefit of {topic}?"),
+        ("coherence", "Write a short coherent paragraph that connects people, tools, and {topic}."),
+        ("repetition_control", "Describe {topic} with varied vocabulary and no repeated clause."),
+    )
+    prompts = []
+    for topic_index, topic in enumerate(topics):
+        for task_index, (category, template) in enumerate(tasks):
+            text = template.format(topic=topic) + " Your response must contain at least 80 words."
+            identifier = f"functional-{topic_index:02d}-{task_index:02d}"
+            prompts.append({
+                "id": identifier,
+                "category": category,
+                "text": text,
+                "bytes": len(text.encode("utf-8")),
+                "sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+            })
+    return prompts
 
 
 def _path(root: Path, relative: str | Path) -> Path:
@@ -207,15 +246,30 @@ def _model_manifest(
     }
 
 
-def prepare(root: Path, endpoint: str, model: str) -> dict[str, Any]:
+def prepare(
+    root: Path, endpoint: str, model: str, *, preserve_history: bool = False
+) -> dict[str, Any]:
     phase = _path(root, PHASE)
-    if phase.exists() and any(phase.iterdir()):
+    existing = list(phase.iterdir()) if phase.exists() else []
+    if existing and not preserve_history:
         raise RuntimeError(f"refusing to overwrite non-empty Phase 1 directory: {phase}")
+    if preserve_history:
+        history = phase / "history"
+        if not history.is_dir() or not any(history.rglob("archive_manifest.json")):
+            raise RuntimeError("corrected preparation requires the verifier-created historical archive")
+        for path in existing:
+            if path.name == "history":
+                continue
+            if path.is_dir():
+                shutil.rmtree(path)
+            else:
+                path.unlink()
     for directory in ("raw_runs", "runtime_manifests", "model_manifests"):
         (phase / directory).mkdir(parents=True, exist_ok=True)
 
     config = {
         "format": "layercake-phase1-benchmark-config/1",
+        "correction_protocol": CORRECTION_PROTOCOL,
         "randomization_seed": RANDOMIZATION_SEED,
         "minimum_trials_per_cell": TRIALS,
         "output_target_bytes": list(OUTPUT_TARGETS),
@@ -230,7 +284,16 @@ def prepare(root: Path, endpoint: str, model: str) -> dict[str, Any]:
             }
             for bucket, (identifier, text) in PROMPTS.items()
         ],
-        "stopping_rule": "first streaming prefix containing at least target UTF-8 bytes; hash exact target-byte prefix",
+        "stopping_rule": (
+            "capture first streaming prefix containing at least target UTF-8 bytes, continue the "
+            "same request to its terminal runtime record, and hash both benchmark prefix and completed response"
+        ),
+        "cross_model_primary_throughput_metrics": ["bytes_per_second", "characters_per_second"],
+        "headline": {
+            "distinct_prompts": 100,
+            "repeated_prompt_observations": HEADLINE_REPEAT_PROMPTS,
+            "output_target_bytes": HEADLINE_OUTPUT_BYTES,
+        },
         "batch_size": 1,
         "ollama_model": model,
         "ollama_gpu_endpoint": endpoint,
@@ -376,9 +439,9 @@ def prepare(root: Path, endpoint: str, model: str) -> dict[str, Any]:
         checkpoint={"kind": "local_file", "path": _relative(root, bpe_root / "model.safetensors"), "sha256": _sha(bpe_root / "model.safetensors")},
         tokenizer_kind="trained 384-token byte-pair tokenizer", tokenizer_sha=str(bpe_meta["tokenizer"]["sha256"]),
         configuration_sha=str(bpe_meta["config"]["sha256"]), runtime_id="pytorch-reference-controls",
-        incremental_state={"status": "IMPLEMENTED_NOT_BENCHMARKED", "mechanism": "per-layer PyTorch KV cache", "reason": "512-token position limit cannot satisfy the locked 1024-byte matrix"},
+        incremental_state={"status": "MEASURED", "mechanism": "per-layer PyTorch KV cache", "raw_trace_run_ids": ["PENDING"]},
         role="strongest_existing_bpe_quality_reference", training_data=train_data,
-        limitations=["512-token maximum context/output envelope", "not a deployment-grade CPU runtime"],
+        limitations=["512-token maximum context/output envelope", "same-scale architecture comparator, not the optimized product runtime"],
     ))
     adaptive_root = root / "artifacts/final/adaptive-medium-pilot/routed_adaptive_5x5_top1_8e/seed-9811"
     adaptive_meta = _read(adaptive_root / "metadata.json")
@@ -451,11 +514,7 @@ def prepare(root: Path, endpoint: str, model: str) -> dict[str, Any]:
         },
     })
 
-    quality_prompts = config["prompts"] + [
-        {"id": "instruction-json", "category": "instruction_following", "text": "Return a JSON object with keys answer and confidence for: 17 + 25.", "bytes": 65},
-        {"id": "long-context-recall", "category": "long_context", "text": "Remember the codeword cobalt. After a long neutral passage, report only the codeword.", "bytes": 80},
-        {"id": "repetition-control", "category": "entropy_collapse", "text": "Write a varied paragraph about rivers without repeating a sentence.", "bytes": 64},
-    ]
+    quality_prompts = _headline_prompts()
     for prompt in quality_prompts:
         prompt.setdefault("category", prompt.get("bucket", "continuation_quality"))
         prompt["sha256"] = hashlib.sha256(prompt["text"].encode()).hexdigest()
@@ -503,6 +562,7 @@ def prepare(root: Path, endpoint: str, model: str) -> dict[str, Any]:
     ]
     quality = {
         "format": "layercake-phase1-quality-suite/1",
+        "correction_protocol": CORRECTION_PROTOCOL,
         "metrics": [{"id": i, "implementation": impl, "direction": direction} for i, impl, direction in metrics],
         "prompts": quality_prompts,
         "datasets": datasets,
@@ -528,6 +588,7 @@ def prepare(root: Path, endpoint: str, model: str) -> dict[str, Any]:
     })
     _write(phase / "benchmark_matrix.json", {
         "format": "layercake-phase1-benchmark-matrix/1", "minimum_trials_per_cell": TRIALS,
+        "correction_protocol": CORRECTION_PROTOCOL,
         "axes": {
             "cache_states": ["cold", "warm"], "generation_modes": ["deterministic", "sampled"],
             "prompt_buckets": list(PROMPTS), "output_target_bytes": list(OUTPUT_TARGETS),
@@ -539,6 +600,39 @@ def prepare(root: Path, endpoint: str, model: str) -> dict[str, Any]:
         ],
         "optimized_runtime_ids": ["ollama-cpu"] + (["ollama-gpu"] if gpus else []),
         "randomization_seed": RANDOMIZATION_SEED,
+        "promoted_benchmark_protocol": {
+            "minimum_distinct_prompts": 100,
+            "minimum_repeated_prompt_observations": HEADLINE_REPEAT_PROMPTS,
+            "tail_quantile_minimum_observations": 20,
+            "pairing_key": "prompt.id",
+            "bootstrap_confidence": 0.95,
+            "bootstrap_resamples": 10_000,
+            "bootstrap_seed": RANDOMIZATION_SEED,
+            "headline_configurations": [
+                {
+                    "id": "same-scale-architecture-cpu",
+                    "comparison_kind": "same_scale_architecture",
+                    "layercake_system_id": "layercake_same_scale_headline",
+                    "transformer_system_id": "transformer_same_scale_headline",
+                    "layercake_device": "cpu_one_thread",
+                    "transformer_device": "cpu_one_thread",
+                    "cache_state": "warm",
+                    "generation_mode": "deterministic",
+                    "output_target_bytes": HEADLINE_OUTPUT_BYTES,
+                },
+                {
+                    "id": "product-cpu",
+                    "comparison_kind": "product",
+                    "layercake_system_id": "layercake_product_headline",
+                    "transformer_system_id": "transformer_product_headline",
+                    "layercake_device": "cpu_one_thread",
+                    "transformer_device": "cpu_all_core",
+                    "cache_state": "warm",
+                    "generation_mode": "deterministic",
+                    "output_target_bytes": HEADLINE_OUTPUT_BYTES,
+                },
+            ],
+        },
         "equivalence_contract": {
             "identical_prompts": _sha(config_path), "batch_size": 1,
             "output_semantics": "first exact target-byte streaming prefix",
@@ -582,10 +676,23 @@ def _base_row(
     trial: int, output: bytes, generated_tokens: int, started: int, first: int,
     completed: int, resident: int, peak: int, command_id: str, precision: str,
     phase_timings: Mapping[str, Any], accelerator: Mapping[str, Any], status: str = "PASS",
-    exit_code: int = 0,
+    exit_code: int = 0, completed_output: bytes | None = None,
+    token_accounting_method: str = "raw_byte_vocabulary",
+    prompt_record: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    prompt_id, prompt_text = PROMPTS[bucket]
+    if prompt_record is None:
+        prompt_id, prompt_text = PROMPTS[bucket]
+        prompt_record = {
+            "id": prompt_id, "text": prompt_text, "bucket": bucket,
+            "sha256": hashlib.sha256(prompt_text.encode()).hexdigest(),
+            "bytes": len(prompt_text.encode()),
+        }
+    completed_output = output if completed_output is None else completed_output
+    phases = dict(phase_timings)
+    if cache == "cold":
+        phases["model_load_source"] = "same_streaming_request"
     return {
+        "evidence_protocol": CORRECTION_PROTOCOL,
         "run_id": f"{system}-{index:04d}", "system_id": system, "runtime_id": runtime,
         "model_id": model["id"], "model_sha256": model["checkpoint"]["sha256"],
         "tokenizer_sha256": model["tokenizer"]["sha256"],
@@ -593,22 +700,37 @@ def _base_row(
         "seed": RANDOMIZATION_SEED + trial, "trial": trial,
         "device": {"kind": device, "hardware_id": "cpu-0" if device.startswith("cpu") else "GPU-e2863cae-6a92-5833-1d9e-cc308702a966"},
         "threads": {"requested": threads, "observed_limit": threads},
-        "prompt": {"id": prompt_id, "sha256": hashlib.sha256(prompt_text.encode()).hexdigest(), "bytes": len(prompt_text.encode()), "bucket": bucket},
+        "prompt": {
+            "id": prompt_record["id"], "sha256": prompt_record["sha256"],
+            "bytes": prompt_record["bytes"], "bucket": prompt_record.get("bucket", bucket),
+        },
         "output": {
             "target_bytes": target, "generated_bytes": len(output),
             "generated_tokens": generated_tokens, "generated_characters": len(output.decode("utf-8", errors="replace")),
             "sha256": hashlib.sha256(output).hexdigest(), "hex": output.hex(),
+            "token_accounting": {
+                "method": token_accounting_method,
+                "scope": "completed_response",
+                "count": generated_tokens,
+                "completed_response_bytes": len(completed_output),
+                "completed_response_sha256": hashlib.sha256(completed_output).hexdigest(),
+            },
         },
         "generation": {"mode": mode, "temperature": 0.0 if mode == "deterministic" else 0.8, "top_p": 1.0 if mode == "deterministic" else 0.95, "seed": RANDOMIZATION_SEED + trial},
         "cache_state": {
             "kind": cache,
             "procedure": "model/checkpoint reloaded inside measured interval" if cache == "cold" else "resident model received one unmeasured prefill/decode warm-up before measured request",
+            **({"single_request_evidence": {
+                "measured_streaming_requests": 1,
+                "load_probe_requests": 0,
+                "model_load_source": "same_streaming_request",
+            }} if cache == "cold" else {}),
         },
         "order": {"randomization_seed": RANDOMIZATION_SEED, "index": index + 1, "permutation_sha256": "PENDING"},
         "timing": {
             "clock": "perf_counter_ns", "request_started_ns": started, "first_output_ns": first,
             "target_completed_ns": completed, "time_to_first_output_seconds": (first - started) / 1e9,
-            "total_latency_seconds": (completed - started) / 1e9, "phase_timings": dict(phase_timings),
+            "total_latency_seconds": (completed - started) / 1e9, "phase_timings": phases,
         },
         "memory": {
             "method": "Windows process RSS and peak_wset; accelerator allocation recorded separately",
@@ -738,11 +860,12 @@ def _ollama_warm(endpoint: str, model: str, threads: int) -> None:
 def _ollama_stream(
     endpoint: str, model: str, prompt: str, *, target: int, threads: int,
     mode: str, seed: int,
-) -> tuple[bytes, int, int, int]:
+) -> tuple[bytes, int, int, int, int, dict[str, Any]]:
     payload = {
         "model": model, "prompt": prompt, "raw": True, "stream": True, "keep_alive": -1,
         "options": {
-            "num_predict": max(1024, target), "num_thread": threads, "num_ctx": 4096,
+            "num_predict": max(64, (3 * target) // 4 + 16),
+            "num_thread": threads, "num_ctx": 4096,
             "temperature": 0.0 if mode == "deterministic" else 0.8,
             "top_p": 1.0 if mode == "deterministic" else 0.95, "seed": seed,
         },
@@ -752,26 +875,31 @@ def _ollama_stream(
         headers={"Content-Type": "application/json"},
     )
     generated = bytearray()
-    tokens = 0
     first = 0
-    completed = 0
+    target_completed = 0
+    request_completed = 0
+    final: dict[str, Any] = {}
     with urllib.request.urlopen(request, timeout=600) as response:
         for line in response:
             row = json.loads(line)
             piece = str(row.get("response", "")).encode("utf-8")
             if piece:
                 generated.extend(piece)
-                tokens += 1
                 if not first:
                     first = time.perf_counter_ns()
-                if len(generated) >= target:
-                    completed = time.perf_counter_ns()
-                    break
-            if row.get("done") and len(generated) < target:
-                raise RuntimeError(f"Ollama stopped at {len(generated)} bytes before target {target}")
-    if not completed:
-        completed = time.perf_counter_ns()
-    return bytes(generated[:target]), tokens, first, completed
+                if len(generated) >= target and not target_completed:
+                    target_completed = time.perf_counter_ns()
+            if row.get("done"):
+                final = row
+                request_completed = time.perf_counter_ns()
+    if len(generated) < target:
+        raise RuntimeError(f"Ollama stopped at {len(generated)} bytes before target {target}")
+    if not final or not request_completed:
+        raise RuntimeError("Ollama streaming response did not include a terminal runtime record")
+    eval_count = int(final.get("eval_count", 0))
+    if eval_count <= 0:
+        raise RuntimeError("Ollama terminal response lacks authoritative eval_count")
+    return bytes(generated), eval_count, first, target_completed, request_completed, final
 
 
 def benchmark_ollama(
@@ -795,19 +923,11 @@ def benchmark_ollama(
         threads = 1 if device_kind in {"cpu_one_thread", "gpu"} else physical
         _ollama_unload(endpoint, model) if cache == "cold" else _ollama_warm(endpoint, model, threads)
         started = time.perf_counter_ns()
-        load_seconds = 0.0
-        if cache == "cold":
-            probe_started = time.perf_counter_ns()
-            probe = _post_json(f"{endpoint}/api/generate", {
-                "model": model, "prompt": "load probe", "raw": True, "stream": False, "keep_alive": -1,
-                "options": {"num_predict": 1, "num_thread": threads, "num_ctx": 4096, "temperature": 0},
-            }, timeout=600)
-            load_seconds = float(probe.get("load_duration", time.perf_counter_ns() - probe_started)) / 1e9
-        actual_started = time.perf_counter_ns()
-        output, tokens, first, completed = _ollama_stream(
+        output, tokens, first, target_completed, completed, final = _ollama_stream(
             endpoint, model, PROMPTS[bucket][1], target=target, threads=threads,
             mode=mode, seed=RANDOMIZATION_SEED + trial,
         )
+        load_seconds = float(final.get("load_duration", 0)) / 1e9
         resident, peak = _process_memory(_ollama_processes())
         row = _base_row(
             index=index, system=system, runtime=runtime_id, model=model_manifest,
@@ -818,15 +938,18 @@ def benchmark_ollama(
             phase_timings={
                 "model_load_seconds": load_seconds,
                 "prompt_preprocessing_seconds": 0.0,
-                "prefill_and_first_decode_seconds": (first - actual_started) / 1e9,
-                "decode_after_first_seconds": (completed - first) / 1e9,
-                "measurement": "direct streaming client wall clock; external server integrates tokenizer/prefill",
+                "prefill_and_first_decode_seconds": float(final.get("prompt_eval_duration", 0)) / 1e9,
+                "decode_after_first_seconds": float(final.get("eval_duration", 0)) / 1e9,
+                "target_prefix_latency_seconds": (target_completed - started) / 1e9,
+                "runtime_total_duration_seconds": float(final.get("total_duration", 0)) / 1e9,
+                "measurement": "one streaming request; client clocks TTFO/total and terminal runtime record supplies load/eval durations",
             },
             accelerator=(
                 {"status": "NOT_EXPOSED_BY_EXTERNAL_RUNTIME", "method": "Ollama API", "peak_bytes": 0}
                 if target_device == "gpu" else
                 {"status": "NOT_APPLICABLE_CPU", "method": "none", "peak_bytes": 0}
-            ),
+            ), completed_output=output,
+            token_accounting_method="runtime_final_eval_count",
         )
         row["order"]["permutation_sha256"] = permutation
         rows.append(row)
@@ -835,6 +958,190 @@ def benchmark_ollama(
             print(f"transformer-{target_device} {index + 1}/{len(cells)}", flush=True)
     _write(phase / f"raw_runs/transformer_{target_device}.json", {"format": FORMAT_RAW, "records": rows})
     return {"system": system, "records": len(rows), "status": "PASS"}
+
+
+def _headline_observations() -> list[tuple[dict[str, Any], int]]:
+    prompts = _headline_prompts()
+    values = [(prompt, 1) for prompt in prompts]
+    values.extend((prompt, 2) for prompt in prompts[:HEADLINE_REPEAT_PROMPTS])
+    random.Random(RANDOMIZATION_SEED).shuffle(values)
+    return values
+
+
+def _headline_layercake_rows(
+    root: Path, *, system: str, start_index: int = 0
+) -> list[dict[str, Any]]:
+    phase = _path(root, PHASE)
+    manifest = _read(phase / "model_manifests/layercake-foundation-v2.json")
+    checkpoint = root / "artifacts/final/medium-cores/seed-9801"
+    torch.set_num_threads(1)
+    model, _ = load_core_checkpoint(checkpoint, device="cpu")
+    model.eval()
+    with torch.inference_mode():
+        warm = model.prefill(torch.tensor([[65]], dtype=torch.long))
+        _, warm = model.decode_step(warm)
+    process = psutil.Process()
+    rows = []
+    observations = _headline_observations()
+    permutation = _canonical_sha([(item[0]["id"], item[1]) for item in observations])
+    for offset, (prompt, trial) in enumerate(observations):
+        started = time.perf_counter_ns()
+        prompt_started = started
+        with torch.inference_mode():
+            state = model.prefill(torch.tensor([list(prompt["text"].encode())], dtype=torch.long))
+        prefill_done = time.perf_counter_ns()
+        generated = bytearray()
+        first = 0
+        with torch.inference_mode():
+            while len(generated) < HEADLINE_OUTPUT_BYTES:
+                selected = state.next_logits.argmax(-1)
+                generated.append(int(selected.item()))
+                if not first:
+                    first = time.perf_counter_ns()
+                _, state = model.decode_step(state, next_byte=selected)
+        completed = time.perf_counter_ns()
+        resident, peak = _process_memory([process])
+        row = _base_row(
+            index=start_index + offset, system=system, runtime="pytorch-foundation-v2",
+            model=manifest, device="cpu_one_thread", threads=1, cache="warm",
+            mode="deterministic", bucket="headline", target=HEADLINE_OUTPUT_BYTES,
+            trial=trial, output=bytes(generated), generated_tokens=len(generated),
+            started=started, first=first, completed=completed, resident=resident, peak=peak,
+            command_id="phase1-headline-layercake", precision="fp32",
+            phase_timings={
+                "model_load_seconds": 0.0,
+                "prompt_preprocessing_seconds": (prefill_done - prompt_started) / 1e9,
+                "prefill_seconds": (prefill_done - prompt_started) / 1e9,
+                "decode_seconds": (completed - prefill_done) / 1e9,
+                "measurement": "direct persistent-state prefill/decode client clock",
+            },
+            accelerator={"status": "NOT_APPLICABLE_CPU", "method": "none", "peak_bytes": 0},
+            prompt_record={**prompt, "bucket": "headline"},
+        )
+        row["order"]["permutation_sha256"] = permutation
+        rows.append(row)
+    return rows
+
+
+def _headline_bpe_rows(root: Path, *, start_index: int = 0) -> list[dict[str, Any]]:
+    phase = _path(root, PHASE)
+    manifest = _read(phase / "model_manifests/bpe-reference.json")
+    checkpoint = root / "artifacts/final/medium-transformers/seed-9801"
+    torch.set_num_threads(1)
+    model, tokenizer, _ = load_transformer_checkpoint(checkpoint, device="cpu")
+    model.eval()
+    with torch.inference_mode():
+        warm = model.prefill(torch.tensor([[65]], dtype=torch.long))
+        _, warm = model.decode_step(warm)
+    process = psutil.Process()
+    rows = []
+    observations = _headline_observations()
+    permutation = _canonical_sha([(item[0]["id"], item[1]) for item in observations])
+    for offset, (prompt, trial) in enumerate(observations):
+        prompt_ids = tokenizer.encode(prompt["text"])
+        if len(prompt_ids) + HEADLINE_OUTPUT_BYTES >= model.config.max_tokens:
+            raise RuntimeError(f"headline prompt exceeds BPE context: {prompt['id']}")
+        started = time.perf_counter_ns()
+        with torch.inference_mode():
+            state = model.prefill(torch.tensor([prompt_ids], dtype=torch.long))
+        prefill_done = time.perf_counter_ns()
+        generated = bytearray()
+        generated_ids = []
+        first = 0
+        with torch.inference_mode():
+            while len(generated) < HEADLINE_OUTPUT_BYTES:
+                selected = state.next_logits.argmax(-1)
+                token_id = int(selected.item())
+                generated_ids.append(token_id)
+                generated.extend(tokenizer.decode([token_id]))
+                if not first:
+                    first = time.perf_counter_ns()
+                _, state = model.decode_step(state, next_token=selected)
+        completed = time.perf_counter_ns()
+        resident, peak = _process_memory([process])
+        row = _base_row(
+            index=start_index + offset, system="transformer_same_scale_headline",
+            runtime="pytorch-reference-controls", model=manifest,
+            device="cpu_one_thread", threads=1, cache="warm", mode="deterministic",
+            bucket="headline", target=HEADLINE_OUTPUT_BYTES, trial=trial,
+            output=bytes(generated), generated_tokens=len(generated_ids),
+            started=started, first=first, completed=completed, resident=resident, peak=peak,
+            command_id="phase1-headline-bpe", precision="fp32",
+            phase_timings={
+                "model_load_seconds": 0.0,
+                "prompt_preprocessing_seconds": 0.0,
+                "prefill_seconds": (prefill_done - started) / 1e9,
+                "decode_seconds": (completed - prefill_done) / 1e9,
+                "measurement": "direct per-layer KV-cache prefill/decode client clock",
+            },
+            accelerator={"status": "NOT_APPLICABLE_CPU", "method": "none", "peak_bytes": 0},
+            token_accounting_method="posthoc_tokenizer",
+            prompt_record={**prompt, "bucket": "headline"},
+        )
+        row["order"]["permutation_sha256"] = permutation
+        rows.append(row)
+    return rows
+
+
+def _headline_qwen_rows(
+    root: Path, endpoint: str, model: str, *, start_index: int = 0
+) -> list[dict[str, Any]]:
+    phase = _path(root, PHASE)
+    manifest = _read(phase / "model_manifests/qwen25-05b-cpu.json")
+    physical = int(psutil.cpu_count(logical=False) or 1)
+    _ollama_warm(endpoint, model, physical)
+    rows = []
+    observations = _headline_observations()
+    permutation = _canonical_sha([(item[0]["id"], item[1]) for item in observations])
+    for offset, (prompt, trial) in enumerate(observations):
+        started = time.perf_counter_ns()
+        output, token_count, first, target_completed, completed, final = _ollama_stream(
+            endpoint, model, prompt["text"], target=HEADLINE_OUTPUT_BYTES,
+            threads=physical, mode="deterministic", seed=RANDOMIZATION_SEED + trial,
+        )
+        resident, peak = _process_memory(_ollama_processes())
+        row = _base_row(
+            index=start_index + offset, system="transformer_product_headline",
+            runtime="ollama-cpu", model=manifest, device="cpu_all_core", threads=physical,
+            cache="warm", mode="deterministic", bucket="headline",
+            target=HEADLINE_OUTPUT_BYTES, trial=trial, output=output,
+            generated_tokens=token_count, started=started, first=first, completed=completed,
+            resident=resident, peak=peak, command_id="phase1-headline-qwen", precision="Q4_K_M",
+            phase_timings={
+                "model_load_seconds": float(final.get("load_duration", 0)) / 1e9,
+                "prompt_preprocessing_seconds": 0.0,
+                "prefill_and_first_decode_seconds": float(final.get("prompt_eval_duration", 0)) / 1e9,
+                "decode_after_first_seconds": float(final.get("eval_duration", 0)) / 1e9,
+                "target_prefix_latency_seconds": (target_completed - started) / 1e9,
+                "measurement": "one streaming request with terminal runtime token/duration record",
+            },
+            accelerator={"status": "NOT_APPLICABLE_CPU", "method": "none", "peak_bytes": 0},
+            completed_output=output, token_accounting_method="runtime_final_eval_count",
+            prompt_record={**prompt, "bucket": "headline"},
+        )
+        row["order"]["permutation_sha256"] = permutation
+        rows.append(row)
+        if (offset + 1) % 10 == 0:
+            print(f"headline-qwen {offset + 1}/{len(observations)}", flush=True)
+    return rows
+
+
+def benchmark_headlines(root: Path, endpoint: str, model: str) -> dict[str, Any]:
+    phase = _path(root, PHASE)
+    same_layercake = _headline_layercake_rows(root, system="layercake_same_scale_headline")
+    _write(phase / "raw_runs/headline_layercake_same_scale.json", {"format": FORMAT_RAW, "records": same_layercake})
+    bpe = _headline_bpe_rows(root)
+    _write(phase / "raw_runs/headline_bpe_same_scale.json", {"format": FORMAT_RAW, "records": bpe})
+    product_layercake = _headline_layercake_rows(root, system="layercake_product_headline")
+    _write(phase / "raw_runs/headline_layercake_product.json", {"format": FORMAT_RAW, "records": product_layercake})
+    qwen = _headline_qwen_rows(root, endpoint, model)
+    _write(phase / "raw_runs/headline_qwen_product.json", {"format": FORMAT_RAW, "records": qwen})
+    return {
+        "status": "PASS",
+        "distinct_prompts": len(_headline_prompts()),
+        "repeated_prompts_per_system": HEADLINE_REPEAT_PROMPTS,
+        "records": len(same_layercake) + len(bpe) + len(product_layercake) + len(qwen),
+    }
 
 
 def capture_runtime(root: Path, endpoint: str, target_device: str) -> dict[str, Any]:
@@ -924,12 +1231,171 @@ def adversarial_checks(root: Path) -> dict[str, Any]:
     boolean_runtime["optimized"] = True
     detected("self_asserted_optimized_boolean", lambda: validate_runtime_manifest(boolean_runtime, optimized=True))
 
+    corrected_doc = copy.deepcopy(raw_documents[0])
+    corrected_doc["records"][0]["output"]["token_accounting"]["count"] += 1
+    detected("forged_authoritative_token_count", lambda: validate_raw_timing_samples(corrected_doc))
+
+    cold_document = copy.deepcopy(next(
+        document for document in raw_documents
+        if any(row["cache_state"]["kind"] == "cold" for row in document["records"])
+    ))
+    cold_row = next(row for row in cold_document["records"] if row["cache_state"]["kind"] == "cold")
+    cold_row["cache_state"]["single_request_evidence"]["load_probe_requests"] = 1
+    detected("extra_cold_load_probe", lambda: validate_raw_timing_samples(cold_document))
+
+    shallow_rows = [
+        row for row in rows
+        if not (row["prompt"]["bucket"] == "headline" and row["prompt"]["id"] >= "functional-09-00")
+    ]
+    detected("shallow_promoted_headline", lambda: validate_benchmark_matrix(matrix, shallow_rows, hardware))
+
+    comparison = copy.deepcopy(_read(phase / "comparison_certificate.json"))
+    comparison["comparisons"][1]["transformer_model_id"] = "bpe-reference"
+    models = {
+        document["id"]: document
+        for document in (_read(path) for path in (phase / "model_manifests").glob("*.json"))
+    }
+    detected(
+        "mixed_product_quality_speed_lineage",
+        lambda: validate_comparison_certificate(
+            comparison, rows, models, _read(phase / "baseline_quality.json"),
+            _read(phase / "functional_quality.json"),
+        ),
+    )
+
     result = {
         "format": "layercake-phase1-adversarial-checks/1",
         "status": "PASS", "checks": checks, "detected": len(checks),
     }
     _write(phase / "adversarial_checks.json", result)
     return result
+
+
+def _output_quality(payload: bytes) -> dict[str, Any]:
+    try:
+        text = payload.decode("utf-8")
+        valid_utf8 = 1.0
+    except UnicodeDecodeError:
+        text = payload.decode("utf-8", errors="replace")
+        valid_utf8 = 0.0
+    characters = max(len(text), 1)
+    printable = sum(character.isprintable() or character in "\n\r\t" for character in text) / characters
+    raw_ngrams = [payload[index:index + 4] for index in range(max(0, len(payload) - 3))]
+    unique_rate = len(set(raw_ngrams)) / max(len(raw_ngrams), 1)
+    words = [word for word in text.lower().split() if word]
+    word_diversity = len(set(words)) / max(len(words), 1)
+    return {
+        "valid_utf8": valid_utf8,
+        "invalid_output": 1.0 - valid_utf8,
+        "printable_character_rate": printable,
+        "unique_4gram_rate": unique_rate,
+        "repetition_rate": 1.0 - unique_rate,
+        "word_diversity": word_diversity,
+        "generated_characters": len(text),
+    }
+
+
+def _write_functional_quality(phase: Path, rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    selected = [
+        row for row in rows
+        if row["system_id"] in {"layercake_product_headline", "transformer_product_headline"}
+        and row["trial"] == 1 and row["status"] == "PASS"
+    ]
+    system_models = {
+        "layercake_product_headline": "layercake-foundation-v2",
+        "transformer_product_headline": "qwen25-05b-cpu",
+    }
+    systems = {}
+    for system_id, model_id in system_models.items():
+        system_rows = [row for row in selected if row["system_id"] == system_id]
+        records = []
+        for row in sorted(system_rows, key=lambda item: item["prompt"]["id"]):
+            payload = bytes.fromhex(row["output"]["hex"])
+            records.append({
+                "prompt_id": row["prompt"]["id"],
+                "prompt_sha256": row["prompt"]["sha256"],
+                "run_id": row["run_id"],
+                "output_sha256": row["output"]["sha256"],
+                "metrics": _output_quality(payload),
+            })
+        if len(records) != 100:
+            raise RuntimeError(f"functional quality for {system_id} has {len(records)} prompts")
+        metric_names = tuple(records[0]["metrics"])
+        aggregates = {
+            name: sum(float(record["metrics"][name]) for record in records) / len(records)
+            for name in metric_names
+        }
+        systems[model_id] = {
+            "speed_system_id": system_id,
+            "prompt_ids": [record["prompt_id"] for record in records],
+            "records": records,
+            "aggregates": aggregates,
+        }
+    document = {
+        "format": "layercake-phase1-functional-quality/1",
+        "correction_protocol": CORRECTION_PROTOCOL,
+        "suite": "same 100 prompts and completed outputs used by the product speed headline",
+        "systems": systems,
+        "selection_use": False,
+    }
+    _write(phase / "functional_quality.json", document)
+    return document
+
+
+def _write_comparison_certificate(
+    root: Path, phase: Path, rows: Sequence[Mapping[str, Any]]
+) -> dict[str, Any]:
+    quality_path = phase / "baseline_quality.json"
+    functional_path = phase / "functional_quality.json"
+    raw_by_system = {}
+    for system_id in (
+        "layercake_same_scale_headline", "transformer_same_scale_headline",
+        "layercake_product_headline", "transformer_product_headline",
+    ):
+        run_ids = sorted(row["run_id"] for row in rows if row["system_id"] == system_id)
+        raw_by_system[system_id] = {
+            "run_ids": run_ids,
+            "run_id_set_sha256": _canonical_sha(run_ids),
+        }
+    document = {
+        "format": "layercake-phase1-comparison-certificate/1",
+        "correction_protocol": CORRECTION_PROTOCOL,
+        "cross_model_primary_throughput_metrics": ["bytes_per_second", "characters_per_second"],
+        "comparisons": [
+            {
+                "kind": "same_scale_architecture",
+                "layercake_model_id": "layercake-foundation-v2",
+                "transformer_model_id": "bpe-reference",
+                "layercake_speed_system_id": "layercake_same_scale_headline",
+                "transformer_speed_system_id": "transformer_same_scale_headline",
+                "quality_protocol": "heldout_bpb_same_checkpoint",
+                "quality_artifact": {"path": _relative(root, quality_path), "sha256": _sha(quality_path)},
+                "speed_evidence": {
+                    "layercake": raw_by_system["layercake_same_scale_headline"],
+                    "transformer": raw_by_system["transformer_same_scale_headline"],
+                },
+            },
+            {
+                "kind": "product",
+                "layercake_model_id": "layercake-foundation-v2",
+                "transformer_model_id": "qwen25-05b-cpu",
+                "layercake_speed_system_id": "layercake_product_headline",
+                "transformer_speed_system_id": "transformer_product_headline",
+                "quality_protocol": "functional_output_suite",
+                "quality_artifact": {"path": _relative(root, functional_path), "sha256": _sha(functional_path)},
+                "speed_evidence": {
+                    "layercake": raw_by_system["layercake_product_headline"],
+                    "transformer": raw_by_system["transformer_product_headline"],
+                },
+            },
+        ],
+        "prohibited_combination": (
+            "same-scale BPE quality is never attached to Qwen speed; each comparison binds quality "
+            "and speed to the transformer_model_id named in that comparison"
+        ),
+    }
+    _write(phase / "comparison_certificate.json", document)
+    return document
 
 
 def finalize(root: Path) -> dict[str, Any]:
@@ -992,6 +1458,21 @@ def finalize(root: Path) -> dict[str, Any]:
                 "arguments": ["-m", "layercake.phase1_campaign", "benchmark-ollama", "--device", "gpu", "--endpoint", "http://127.0.0.1:11434"],
                 "configuration_sha256": _sha(phase / "benchmark_config.json"),
             },
+            {
+                "id": "phase1-headline-layercake", "executable": sys.executable,
+                "arguments": ["-m", "layercake.phase1_campaign", "benchmark-headlines"],
+                "configuration_sha256": _sha(phase / "benchmark_config.json"),
+            },
+            {
+                "id": "phase1-headline-bpe", "executable": sys.executable,
+                "arguments": ["-m", "layercake.phase1_campaign", "benchmark-headlines"],
+                "configuration_sha256": _sha(phase / "benchmark_config.json"),
+            },
+            {
+                "id": "phase1-headline-qwen", "executable": sys.executable,
+                "arguments": ["-m", "layercake.phase1_campaign", "benchmark-headlines", "--endpoint", "http://127.0.0.1:11435"],
+                "configuration_sha256": _sha(phase / "benchmark_config.json"),
+            },
         ],
     }
     _write(phase / "execution_commands.json", commands)
@@ -1018,6 +1499,8 @@ def finalize(root: Path) -> dict[str, Any]:
         ],
         "test_accessed_for_selection": False,
     })
+    _write_functional_quality(phase, rows)
+    _write_comparison_certificate(root, phase, rows)
     junit_path = phase / "pytest.xml"
     if not junit_path.is_file():
         raise RuntimeError("Phase 1 complete-suite JUnit evidence is missing")
@@ -1037,10 +1520,12 @@ def finalize(root: Path) -> dict[str, Any]:
     })
     excluded = {"evidence_manifest.json", "candidate.json", "candidate_verification.json", "release_certificate.json", "handoff.json", "seal.json"}
     artifacts = sorted(
-        path for path in phase.rglob("*") if path.is_file() and path.name not in excluded
+        path for path in phase.rglob("*")
+        if path.is_file() and not (path.parent == phase and path.name in excluded)
     )
     raw_rows = sorted(
-        (_relative(root, path), _sha(path)) for path in artifacts if "raw_runs" in path.parts
+        (_relative(root, path), _sha(path)) for path in artifacts
+        if "raw_runs" in path.parts and "history" not in path.parts
     )
     evidence = {
         "format": "layercake-phase1-evidence-manifest/1",
@@ -1060,11 +1545,17 @@ def build_parser() -> argparse.ArgumentParser:
     prepare_parser = sub.add_parser("prepare")
     prepare_parser.add_argument("--endpoint", default="http://127.0.0.1:11434")
     prepare_parser.add_argument("--model", default="qwen2.5:0.5b")
+    correction_parser = sub.add_parser("prepare-correction")
+    correction_parser.add_argument("--endpoint", default="http://127.0.0.1:11434")
+    correction_parser.add_argument("--model", default="qwen2.5:0.5b")
     sub.add_parser("benchmark-layercake")
     ollama_parser = sub.add_parser("benchmark-ollama")
     ollama_parser.add_argument("--endpoint", required=True)
     ollama_parser.add_argument("--model", default="qwen2.5:0.5b")
     ollama_parser.add_argument("--device", choices=("cpu", "gpu"), required=True)
+    headline_parser = sub.add_parser("benchmark-headlines")
+    headline_parser.add_argument("--endpoint", required=True)
+    headline_parser.add_argument("--model", default="qwen2.5:0.5b")
     capture_parser = sub.add_parser("capture-runtime")
     capture_parser.add_argument("--endpoint", required=True)
     capture_parser.add_argument("--device", choices=("cpu", "gpu"), required=True)
@@ -1078,10 +1569,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     root = args.root.resolve()
     if args.command == "prepare":
         result = prepare(root, args.endpoint, args.model)
+    elif args.command == "prepare-correction":
+        result = prepare(root, args.endpoint, args.model, preserve_history=True)
     elif args.command == "benchmark-layercake":
         result = benchmark_layercake(root)
     elif args.command == "benchmark-ollama":
         result = benchmark_ollama(root, args.endpoint, args.model, args.device)
+    elif args.command == "benchmark-headlines":
+        result = benchmark_headlines(root, args.endpoint, args.model)
     elif args.command == "capture-runtime":
         result = capture_runtime(root, args.endpoint, args.device)
     elif args.command == "finalize":

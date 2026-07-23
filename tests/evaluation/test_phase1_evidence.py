@@ -7,7 +7,9 @@ import itertools
 import pytest
 
 from layercake.evaluation.phase1_evidence import (
+    CORRECTION_PROTOCOL,
     Phase1EvidenceError,
+    derive_performance,
     validate_baseline_optimization,
     validate_benchmark_matrix,
     validate_raw_timing_samples,
@@ -133,6 +135,49 @@ def test_raw_timing_rejects_bare_cold_boolean() -> None:
     row["cold"] = True
     with pytest.raises(Phase1EvidenceError, match="bare cold"):
         validate_raw_timing_samples({"format": "layercake-phase1-raw-timings/1", "records": [row]})
+
+
+def _corrected_row() -> dict:
+    row = _row(0)
+    payload = bytes([1]) * row["output"]["generated_bytes"]
+    row["evidence_protocol"] = CORRECTION_PROTOCOL
+    row["output"]["hex"] = payload.hex()
+    row["output"]["token_accounting"] = {
+        "method": "runtime_final_eval_count",
+        "scope": "completed_response",
+        "count": row["output"]["generated_tokens"],
+        "completed_response_bytes": len(payload),
+        "completed_response_sha256": hashlib.sha256(payload).hexdigest(),
+    }
+    row["cache_state"]["single_request_evidence"] = {
+        "measured_streaming_requests": 1,
+        "load_probe_requests": 0,
+        "model_load_source": "same_streaming_request",
+    }
+    row["timing"]["phase_timings"]["model_load_source"] = "same_streaming_request"
+    return row
+
+
+def test_corrected_raw_timing_rejects_probe_and_forged_token_accounting() -> None:
+    row = _corrected_row()
+    validate_raw_timing_samples({"format": "layercake-phase1-raw-timings/1", "records": [row]})
+    probed = copy.deepcopy(row)
+    probed["cache_state"]["single_request_evidence"]["load_probe_requests"] = 1
+    with pytest.raises(Phase1EvidenceError, match="load probe"):
+        validate_raw_timing_samples({"format": "layercake-phase1-raw-timings/1", "records": [probed]})
+    forged = copy.deepcopy(row)
+    forged["output"]["token_accounting"]["count"] += 1
+    with pytest.raises(Phase1EvidenceError, match="differs"):
+        validate_raw_timing_samples({"format": "layercake-phase1-raw-timings/1", "records": [forged]})
+
+
+def test_tail_quantiles_are_not_promoted_from_two_observations() -> None:
+    first = _row(0, trial=1)
+    second = _row(1, trial=2)
+    summary = derive_performance([first, second])["summaries"][0]
+    assert summary["tail_quantiles"]["status"] == "INSUFFICIENT_OBSERVATIONS"
+    assert "p95" not in summary["latency_seconds"]
+    assert "p99" not in summary["time_to_first_output_seconds"]
 
 
 def test_complete_matrix_requires_every_repeated_randomized_cell() -> None:

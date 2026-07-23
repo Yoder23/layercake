@@ -19,6 +19,7 @@ from layercake.moonshot_campaign import (
     validate_campaign_state,
     validate_matched_quality,
     validate_required_gates,
+    _validate_phase1_correction_reopen_state,
     validate_seed_evidence,
     validate_semantic_portability,
     verify_derived_claim,
@@ -99,6 +100,18 @@ def test_active_phase_lifecycle_states_do_not_unlock_the_future(status: str) -> 
     campaign["phases"]["phase2_cpu_quality_speed"] = "OPEN"
     with pytest.raises(CampaignVerificationError, match="future phase"):
         validate_campaign_state(campaign, _claim_contract())
+
+
+def test_phase1_correction_reopen_is_strictly_bounded_to_unstarted_phase2() -> None:
+    campaign = _campaign(2)
+    _validate_phase1_correction_reopen_state(campaign)
+    campaign["phases"]["phase3_training_speed"] = "OPEN"
+    with pytest.raises(CampaignVerificationError, match="future phase"):
+        _validate_phase1_correction_reopen_state(campaign)
+    campaign = _campaign(2)
+    campaign["phases"]["phase1_benchmark_truth"] = "PASS"
+    with pytest.raises(CampaignVerificationError, match="SEALED"):
+        _validate_phase1_correction_reopen_state(campaign)
 
 
 def test_raw_derivations_recompute_mean_quantile_and_ratio() -> None:

@@ -14,6 +14,7 @@ import math
 import os
 from pathlib import Path
 import platform
+import shutil
 import statistics
 import subprocess
 import sys
@@ -59,6 +60,9 @@ TEST_FORMAT = "layercake-moonshot-test-results/1"
 
 class CampaignVerificationError(RuntimeError):
     """A fail-closed campaign verification error."""
+
+
+PHASE1_CORRECTION_ID = "phase1-final-corrections/1"
 
 
 def _path(root: Path, relative: str | Path) -> Path:
@@ -1202,6 +1206,130 @@ def verify_all(root: Path) -> dict[str, Any]:
     return {"campaign": "layercake-moonshot", "completed_phases_valid": completed_valid, "phases": results}
 
 
+def _validate_phase1_correction_reopen_state(campaign: Mapping[str, Any]) -> None:
+    """Require the exact post-Phase-1/pre-Phase-2 state for a bounded correction."""
+
+    if campaign.get("current_phase") != 2:
+        raise CampaignVerificationError("Phase 1 correction requires current_phase 2")
+    phases = campaign.get("phases")
+    if not isinstance(phases, dict):
+        raise CampaignVerificationError("campaign phase state is missing")
+    expected = {
+        PHASE_KEYS[0]: "SEALED",
+        PHASE_KEYS[1]: "SEALED",
+        PHASE_KEYS[2]: "OPEN",
+    }
+    for key, value in expected.items():
+        if phases.get(key) != value:
+            raise CampaignVerificationError(
+                f"Phase 1 correction requires {key}={value}, got {phases.get(key)}"
+            )
+    for key in PHASE_KEYS[3:]:
+        if phases.get(key) != "LOCKED":
+            raise CampaignVerificationError(
+                f"Phase 1 correction refuses non-LOCKED future phase {key}"
+            )
+
+
+def reopen_phase1_correction(root: Path) -> dict[str, Any]:
+    """Archive the published Phase 1 seal and atomically relock Phase 2.
+
+    This is intentionally a one-purpose recovery transition.  It first proves that
+    the old seal is still valid, then copies every active Phase 1 artifact into a
+    content-addressed historical directory before changing campaign state.
+    """
+
+    contracts = load_contracts(root)
+    campaign = contracts["campaign.yaml"]
+    _validate_phase1_correction_reopen_state(campaign)
+    if _git(root, "status", "--porcelain=v1"):
+        raise CampaignVerificationError("Phase 1 correction reopen requires a clean worktree")
+    verified = verify_sealed(root, 1)
+    phase2_dir = _phase_dir(root, 2)
+    if phase2_dir.exists() and any(phase2_dir.rglob("*")):
+        raise CampaignVerificationError(
+            "Phase 1 correction refuses to invalidate existing Phase 2 artifacts"
+        )
+    old_record = json.loads(json.dumps(campaign.get("phase_records", {}).get("phase1", {})))
+    old_tag = str(verified["completion_tag"])
+    old_tag_commit = str(verified["tag_commit"])
+    archive_relative = Path("results/moonshot/phase1/history") / (
+        f"original-seal-{old_tag_commit[:12]}"
+    )
+    archive = _path(root, archive_relative)
+    if archive.exists():
+        raise CampaignVerificationError(f"Phase 1 historical archive already exists: {archive_relative}")
+    phase = _phase_dir(root, 1)
+    sources = sorted(
+        path for path in phase.rglob("*")
+        if path.is_file() and "history" not in path.relative_to(phase).parts
+    )
+    if not sources:
+        raise CampaignVerificationError("sealed Phase 1 has no artifacts to archive")
+    archive.mkdir(parents=True)
+    artifact_rows = []
+    for source in sources:
+        relative = source.relative_to(phase)
+        destination = archive / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+        digest = sha256_file(source)
+        if sha256_file(destination) != digest:
+            raise CampaignVerificationError(f"Phase 1 archive copy hash mismatch: {relative}")
+        artifact_rows.append({"path": relative.as_posix(), "sha256": digest})
+    archive_manifest = {
+        "format": "layercake-phase1-historical-seal/1",
+        "correction_id": PHASE1_CORRECTION_ID,
+        "historical_status": "SUPERSEDED_PRESERVED",
+        "original_completion_tag": old_tag,
+        "original_tag_commit": old_tag_commit,
+        "original_release_commit": verified["release_commit"],
+        "original_phase_record": old_record,
+        "artifacts": artifact_rows,
+        "artifact_count": len(artifact_rows),
+    }
+    _atomic_write(archive / "archive_manifest.json", archive_manifest)
+
+    history = campaign.setdefault("correction_history", [])
+    history.append({
+        "phase": 1,
+        "correction_id": PHASE1_CORRECTION_ID,
+        "archive": archive_relative.as_posix(),
+        "archive_manifest_sha256": sha256_file(archive / "archive_manifest.json"),
+        "original_completion_tag": old_tag,
+        "original_tag_commit": old_tag_commit,
+        "original_release_commit": verified["release_commit"],
+        "reason": (
+            "separate same-scale/product comparisons; single-request cold timing; "
+            "authoritative token accounting; promoted 100-prompt depth"
+        ),
+    })
+    campaign["current_phase"] = 1
+    campaign["phases"][PHASE_KEYS[1]] = "OPEN"
+    campaign["phases"][PHASE_KEYS[2]] = "LOCKED"
+    campaign.setdefault("phase_records", {})["phase1"] = {
+        "correction_id": PHASE1_CORRECTION_ID,
+        "correction_reopen_commit": _git(root, "rev-parse", "HEAD"),
+        "historical_archive": archive_relative.as_posix(),
+        "historical_archive_manifest_sha256": sha256_file(archive / "archive_manifest.json"),
+        "superseded_tag": old_tag,
+        "superseded_tag_commit": old_tag_commit,
+        "superseded_release_commit": verified["release_commit"],
+        "inherited_model_source_commit": campaign["lineage"]["model_source_commit"],
+        "governance_commit": campaign["lineage"]["governance_commit"],
+    }
+    _atomic_write(_path(root, CAMPAIGN_DIR / "campaign.yaml"), campaign)
+    return {
+        "phase": 1,
+        "status": "OPEN",
+        "phase2_status": "LOCKED",
+        "correction_id": PHASE1_CORRECTION_ID,
+        "historical_archive": archive_relative.as_posix(),
+        "historical_artifact_count": len(artifact_rows),
+        "original_seal_verified": True,
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="python -m layercake.moonshot_campaign")
     parser.add_argument("--root", type=Path, default=ROOT, help=argparse.SUPPRESS)
@@ -1210,6 +1338,10 @@ def build_parser() -> argparse.ArgumentParser:
     verify = subcommands.add_parser("verify-phase", help="verify a candidate, PASS, or sealed phase")
     verify.add_argument("phase", type=int, choices=range(9))
     subcommands.add_parser("verify-all", help="verify all completed phases")
+    subcommands.add_parser(
+        "reopen-phase1-correction",
+        help="archive the sealed Phase 1 release and relock Phase 2 for bounded corrections",
+    )
     subcommands.add_parser("repair-phase0", help=argparse.SUPPRESS)
     candidate = subcommands.add_parser("build-candidate", help="build a phase candidate from typed evidence")
     candidate.add_argument("phase", type=int, choices=range(9))
@@ -1255,6 +1387,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             result = verify_sealed(root, args.phase)
         elif args.command == "verify-all":
             result = verify_all(root)
+        elif args.command == "reopen-phase1-correction":
+            result = reopen_phase1_correction(root)
         else:  # pragma: no cover - argparse guarantees this branch is unreachable
             raise CampaignVerificationError(f"unsupported command: {args.command}")
     except CampaignVerificationError as error:
