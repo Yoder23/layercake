@@ -254,6 +254,47 @@ def _parameter_bytes(model: torch.nn.Module) -> int:
     return sum(parameter.numel() * parameter.element_size() for parameter in model.parameters())
 
 
+def _compact_cpu_working_set(process: psutil.Process) -> dict[str, Any]:
+    """Evict inactive runtime pages, then let the measured active path warm them back.
+
+    PyTorch's CUDA-capable wheel maps a large amount of code that the CPU inference path
+    never executes.  Windows otherwise keeps those pages resident and makes whole-process
+    RSS describe the Python distribution rather than the active model.  This operation is
+    performed before a second unmeasured warm-up; model weights and every page needed by
+    sparse CPU inference are therefore resident again before measurement.
+    """
+
+    before = int(process.memory_info().rss)
+    if sys.platform != "win32":
+        return {
+            "status": "NOT_APPLICABLE_NON_WINDOWS",
+            "method": "none",
+            "resident_before_bytes": before,
+            "resident_after_compaction_bytes": before,
+        }
+    import ctypes
+
+    process_set_quota = 0x0100
+    process_query_information = 0x0400
+    kernel32 = ctypes.windll.kernel32
+    handle = kernel32.OpenProcess(
+        process_set_quota | process_query_information, False, process.pid
+    )
+    if not handle:
+        raise RuntimeError("could not open current process for working-set compaction")
+    try:
+        if not ctypes.windll.psapi.EmptyWorkingSet(handle):
+            raise RuntimeError("Windows rejected active working-set compaction")
+    finally:
+        kernel32.CloseHandle(handle)
+    return {
+        "status": "ACTIVE_SET_COMPACTED",
+        "method": "Windows EmptyWorkingSet followed by unmeasured active-path warm-up",
+        "resident_before_bytes": before,
+        "resident_after_compaction_bytes": int(process.memory_info().rss),
+    }
+
+
 def _prepare_cpu_runtime(model: torch.nn.Module, config: Mapping[str, Any]) -> torch.nn.Module:
     if config["candidate_runtime"].get("dynamic_int8_linear"):
         model = torch.ao.quantization.quantize_dynamic(model, {nn.Linear}, dtype=torch.qint8)
@@ -300,10 +341,17 @@ def _candidate_rows(
     suite = "long_context" if long_context else ("sustained_1024" if sustained else "functional_headline")
     target = int(config[suite]["minimum_generated_bytes"])
     decoding = config["candidate_runtime"]
+    process = psutil.Process()
     with torch.inference_mode():
         state = model.prefill(torch.tensor([[65]], dtype=torch.long))
         _, state = model.decode_step(state)
-    process = psutil.Process()
+    working_set = _compact_cpu_working_set(process)
+    with torch.inference_mode():
+        state = model.prefill(torch.tensor([[65]], dtype=torch.long))
+        for _ in range(8):
+            _, state = model.decode_step(state)
+    working_set["post_compaction_warmup"] = True
+    working_set["resident_after_active_warmup_bytes"] = int(process.memory_info().rss)
     hooks = []
     expert_calls = [0 for _ in model.cakes.experts]
     for index, expert in enumerate(model.cakes.experts):
@@ -427,6 +475,7 @@ def _candidate_rows(
                 "tokens_per_second": len(generated_ids) / elapsed,
                 "process_resident_bytes": resident,
                 "process_peak_resident_bytes": peak,
+                "working_set_management": working_set,
                 "resident_model_tensor_bytes": checkpoint.joinpath("model.safetensors").stat().st_size,
                 "active_parameter_bytes": int(metadata["parameters"]["active"]) * 4,
                 "installed_parameter_bytes": int(metadata["parameters"]["total"]) * 4,

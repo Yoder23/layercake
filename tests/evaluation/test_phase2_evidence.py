@@ -35,6 +35,10 @@ def _candidate_row() -> dict:
             "forced_plan_tokens": generated_tokens,
             "frozen_evaluation_content": False,
         },
+        "working_set_management": {
+            "status": "ACTIVE_SET_COMPACTED",
+            "post_compaction_warmup": True,
+        },
         "generated_bytes": len(output),
         "generated_tokens": generated_tokens,
         "output_hex": output.hex(),

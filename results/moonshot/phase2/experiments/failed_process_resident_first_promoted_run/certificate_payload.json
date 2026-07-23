@@ -1,0 +1,220 @@
+{
+  "claims": [
+    {
+      "derivation": {
+        "denominator": {
+          "field": "heldout_bpb",
+          "where": {
+            "suite": "heldout_quality",
+            "system_id": "bpe_reference"
+          }
+        },
+        "numerator": {
+          "field": "heldout_bpb",
+          "where": {
+            "suite": "heldout_quality",
+            "system_id": "layercake_sparse_bpe_primary"
+          }
+        },
+        "operation": "difference",
+        "reduction": "mean"
+      },
+      "gate_id": "heldout_bpb_delta",
+      "raw_artifact": "results/moonshot/phase2/raw_runs/gate_observations.json",
+      "raw_sha256": "178a599c9a38acb34e11832e40e96537b92bbad39fe130a9fd6a64e49f2c0ef3",
+      "value": -0.03324327388735093
+    },
+    {
+      "derivation": {
+        "denominator": {
+          "field": "bytes_per_second",
+          "where": {
+            "suite": "functional_headline",
+            "system_id": "qwen25_05b_optimized_cpu"
+          }
+        },
+        "numerator": {
+          "field": "bytes_per_second",
+          "where": {
+            "suite": "functional_headline",
+            "system_id": "layercake_sparse_bpe_primary"
+          }
+        },
+        "operation": "ratio",
+        "reduction": "mean"
+      },
+      "gate_id": "cpu_throughput_ratio",
+      "kind": "speed_ratio",
+      "promoted": true,
+      "raw_artifact": "results/moonshot/phase2/raw_runs/gate_observations.json",
+      "raw_sha256": "178a599c9a38acb34e11832e40e96537b92bbad39fe130a9fd6a64e49f2c0ef3",
+      "value": 6.850699110065753
+    },
+    {
+      "derivation": {
+        "denominator": {
+          "field": "total_latency_seconds",
+          "where": {
+            "suite": "functional_headline",
+            "system_id": "qwen25_05b_optimized_cpu"
+          }
+        },
+        "numerator": {
+          "field": "total_latency_seconds",
+          "where": {
+            "suite": "functional_headline",
+            "system_id": "layercake_sparse_bpe_primary"
+          }
+        },
+        "operation": "ratio",
+        "reduction": "median"
+      },
+      "gate_id": "cpu_median_latency_ratio",
+      "kind": "speed_ratio",
+      "promoted": true,
+      "raw_artifact": "results/moonshot/phase2/raw_runs/gate_observations.json",
+      "raw_sha256": "178a599c9a38acb34e11832e40e96537b92bbad39fe130a9fd6a64e49f2c0ef3",
+      "value": 0.292824493339933
+    },
+    {
+      "derivation": {
+        "denominator": {
+          "field": "time_to_first_output_seconds",
+          "where": {
+            "suite": "functional_headline",
+            "system_id": "qwen25_05b_optimized_cpu"
+          }
+        },
+        "numerator": {
+          "field": "time_to_first_output_seconds",
+          "where": {
+            "suite": "functional_headline",
+            "system_id": "layercake_sparse_bpe_primary"
+          }
+        },
+        "operation": "ratio",
+        "reduction": "median"
+      },
+      "gate_id": "time_to_first_output_ratio",
+      "kind": "speed_ratio",
+      "promoted": true,
+      "raw_artifact": "results/moonshot/phase2/raw_runs/gate_observations.json",
+      "raw_sha256": "178a599c9a38acb34e11832e40e96537b92bbad39fe130a9fd6a64e49f2c0ef3",
+      "value": 0.043051070035197016
+    },
+    {
+      "derivation": {
+        "denominator": {
+          "field": "active_parameter_bytes",
+          "where": {
+            "suite": "functional_headline",
+            "system_id": "qwen25_05b_optimized_cpu"
+          }
+        },
+        "numerator": {
+          "field": "active_parameter_bytes",
+          "where": {
+            "suite": "functional_headline",
+            "system_id": "layercake_sparse_bpe_primary"
+          }
+        },
+        "operation": "ratio",
+        "reduction": "max"
+      },
+      "gate_id": "active_memory_ratio",
+      "raw_artifact": "results/moonshot/phase2/raw_runs/gate_observations.json",
+      "raw_sha256": "178a599c9a38acb34e11832e40e96537b92bbad39fe130a9fd6a64e49f2c0ef3",
+      "value": 0.04485745811224746
+    },
+    {
+      "derivation": {
+        "denominator": {
+          "field": "bytes_per_second",
+          "where": {
+            "suite": "sustained_1024",
+            "system_id": "qwen25_05b_optimized_cpu"
+          }
+        },
+        "numerator": {
+          "field": "bytes_per_second",
+          "where": {
+            "suite": "sustained_1024",
+            "system_id": "layercake_sparse_bpe_primary"
+          }
+        },
+        "operation": "ratio",
+        "reduction": "mean"
+      },
+      "gate_id": "sustained_1024_byte_throughput_ratio",
+      "kind": "speed_ratio",
+      "promoted": true,
+      "raw_artifact": "results/moonshot/phase2/raw_runs/gate_observations.json",
+      "raw_sha256": "178a599c9a38acb34e11832e40e96537b92bbad39fe130a9fd6a64e49f2c0ef3",
+      "value": 10.405564925287734
+    },
+    {
+      "derivation": {
+        "field": "physical_sparse_execution",
+        "operation": "min",
+        "where": {
+          "suite": "functional_headline",
+          "system_id": "layercake_sparse_bpe_primary"
+        }
+      },
+      "gate_id": "physical_sparse_execution",
+      "raw_artifact": "results/moonshot/phase2/raw_runs/gate_observations.json",
+      "raw_sha256": "178a599c9a38acb34e11832e40e96537b92bbad39fe130a9fd6a64e49f2c0ef3",
+      "value": 1.0
+    },
+    {
+      "derivation": {
+        "denominator": {
+          "field": "long_context_success",
+          "where": {
+            "suite": "long_context",
+            "system_id": "qwen25_05b_optimized_cpu"
+          }
+        },
+        "numerator": {
+          "field": "long_context_success",
+          "where": {
+            "suite": "long_context",
+            "system_id": "layercake_sparse_bpe_primary"
+          }
+        },
+        "operation": "difference",
+        "reduction": "mean"
+      },
+      "gate_id": "long_context_accuracy_delta",
+      "raw_artifact": "results/moonshot/phase2/raw_runs/gate_observations.json",
+      "raw_sha256": "178a599c9a38acb34e11832e40e96537b92bbad39fe130a9fd6a64e49f2c0ef3",
+      "value": 0.95
+    }
+  ],
+  "derived_evidence": {
+    "path": "results/moonshot/phase2/derived_evidence.json",
+    "sha256": "a5de183407d1e5d8fe95fda3e3cde494dd80e4aaa8fa03ff711d26c021f1b0ea"
+  },
+  "format": "layercake-phase2-certificate-payload/1",
+  "lineage": {
+    "architecture_hash": "1b8d0d00783d3f4c97958a67d1031d25340396e3bd8764a74552fc6508d781fa",
+    "architecture_id": "layercake-sparse-bpe-core/1-288x3-top1-8cakes",
+    "primary_checkpoint_sha256": "fc8d32c77bfa9d39152a6d32436c4dbbf767f9d1c88f3de17fec84a24bd3f781",
+    "transformer_checkpoint_sha256": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67"
+  },
+  "quality_match": {
+    "coherence": true,
+    "domain_success": "NOT_APPLICABLE_PHASE2_CORE_ONLY",
+    "functional_task_quality": true,
+    "heldout_bpb": true,
+    "instruction_following": true,
+    "invalid_output_rate": true,
+    "layercake_checkpoint_sha256": "fc8d32c77bfa9d39152a6d32436c4dbbf767f9d1c88f3de17fec84a24bd3f781",
+    "long_context_recall": true,
+    "repetition": true,
+    "task_constraints": true,
+    "topic_relevance": true,
+    "transformer_checkpoint_sha256": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67"
+  },
+  "status": "FAIL"
+}

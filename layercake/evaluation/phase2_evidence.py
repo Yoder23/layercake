@@ -101,6 +101,15 @@ def validate_inference_records(
                 raise Phase2EvidenceError("checkpoint-bound neural-guided English planner evidence is absent")
             if planner_sha256 is not None and planner["checkpoint_buffer_sha256"] != planner_sha256:
                 raise Phase2EvidenceError("English planner evidence is not bound to the checkpoint buffer")
+            working_set = row.get("working_set_management")
+            if (
+                not isinstance(working_set, dict)
+                or working_set.get("post_compaction_warmup") is not True
+                or working_set.get("status") not in {
+                    "ACTIVE_SET_COMPACTED", "NOT_APPLICABLE_NON_WINDOWS"
+                }
+            ):
+                raise Phase2EvidenceError("active CPU working-set procedure is absent")
         generated_bytes = int(_finite(row.get("generated_bytes"), "generated_bytes", positive=True))
         generated_tokens = int(_finite(row.get("generated_tokens"), "generated_tokens", positive=True))
         if generated_bytes < minimum_bytes:
