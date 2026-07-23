@@ -39,9 +39,20 @@
         {"id": "time_to_first_output_ratio", "operator": "le", "threshold": 1.0},
         {"id": "active_memory_ratio", "operator": "lt", "threshold": 1.0},
         {"id": "sustained_1024_byte_throughput_ratio", "operator": "ge", "threshold": 2.0},
-        {"id": "physical_sparse_execution", "operator": "eq", "threshold": 1.0}
+        {"id": "physical_sparse_execution", "operator": "eq", "threshold": 1.0},
+        {"id": "tokenizer_free_contract", "operator": "eq", "threshold": 1.0},
+        {"id": "free_neural_generation", "operator": "eq", "threshold": 1.0},
+        {"id": "external_next_token_overrides", "operator": "eq", "threshold": 0.0},
+        {"id": "planner_calls", "operator": "eq", "threshold": 0.0},
+        {"id": "template_calls", "operator": "eq", "threshold": 0.0},
+        {"id": "retrieval_calls", "operator": "eq", "threshold": 0.0},
+        {"id": "stored_answer_calls", "operator": "eq", "threshold": 0.0},
+        {"id": "same_checkpoint_quality_and_speed", "operator": "eq", "threshold": 1.0},
+        {"id": "same_comparator_quality_and_speed", "operator": "eq", "threshold": 1.0},
+        {"id": "persistent_incremental_state", "operator": "eq", "threshold": 1.0},
+        {"id": "extension_interface_overhead_ratio", "operator": "le", "threshold": 0.01}
       ],
-      "completion_tag": "layercake-moonshot-phase2"
+      "completion_tag": "layercake-moonshot-phase2-r2"
     },
     "3": {
       "name": "training_speed",

@@ -12,6 +12,7 @@ from layercake.moonshot_campaign import (
     PHASE_KEYS,
     CampaignVerificationError,
     changed_components,
+    evaluate_mission_guard,
     recompute_derivation,
     sha256_file,
     validate_artifact_manifest,
@@ -20,6 +21,7 @@ from layercake.moonshot_campaign import (
     validate_matched_quality,
     validate_required_gates,
     _validate_phase1_correction_reopen_state,
+    _validate_phase2_recertification_reopen_state,
     validate_seed_evidence,
     validate_semantic_portability,
     verify_derived_claim,
@@ -112,6 +114,103 @@ def test_phase1_correction_reopen_is_strictly_bounded_to_unstarted_phase2() -> N
     campaign["phases"]["phase1_benchmark_truth"] = "PASS"
     with pytest.raises(CampaignVerificationError, match="SEALED"):
         _validate_phase1_correction_reopen_state(campaign)
+
+
+def test_phase2_recertification_reopen_requires_sealed_phase2_and_open_phase3() -> None:
+    campaign = _campaign(3)
+    _validate_phase2_recertification_reopen_state(campaign)
+    campaign["phases"]["phase2_cpu_quality_speed"] = "PASS"
+    with pytest.raises(CampaignVerificationError, match="SEALED"):
+        _validate_phase2_recertification_reopen_state(campaign)
+    campaign = _campaign(3)
+    campaign["phases"]["phase4_portable_domain"] = "OPEN"
+    with pytest.raises(CampaignVerificationError, match="future phase"):
+        _validate_phase2_recertification_reopen_state(campaign)
+
+
+def test_mission_guard_recomputes_free_byte_generation_from_trace(tmp_path: Path) -> None:
+    trace_dir = tmp_path / "results/moonshot/phase2_recertification/generation_traces"
+    trace_dir.mkdir(parents=True)
+    prompt = b"Prompt"
+    generated = b"A"
+    trace = {
+        "prompt_bytes_hex": prompt.hex(),
+        "prompt_sha256": hashlib.sha256(prompt).hexdigest(),
+        "generated_bytes_hex": generated.hex(),
+        "generated_sha256": hashlib.sha256(generated).hexdigest(),
+        "byte_events": [{
+            "index": 0,
+            "chosen_byte": 65,
+            "source": "model_logits",
+            "external_override": False,
+            "distribution_summary": {"entropy_bits": 3.0},
+        }],
+        "external_path_counters": {
+            "planner_calls": 0,
+            "template_calls": 0,
+            "retrieval_calls": 0,
+            "stored_answer_calls": 0,
+        },
+    }
+    (trace_dir / "run.jsonl").write_text(json.dumps(trace) + "\n", encoding="utf-8")
+    comparator_path = tmp_path / "artifacts/comparator.json"
+    comparator_path.parent.mkdir(parents=True)
+    comparator_path.write_text(json.dumps({
+        "runtime": {"optimized_cpu": True, "execution": "native"},
+        "conversion_provenance": {
+            "source_checkpoint_sha256": "c" * 64,
+            "converted_weight_sha256": "d" * 64,
+            "numerical_verification_passed": True,
+        },
+    }), encoding="utf-8")
+    manifest_path = tmp_path / "artifacts/core.json"
+    manifest_path.write_text(json.dumps({
+        "architecture_id": "layercake-byte-core-v3",
+        "input_contract": {"kind": "raw_utf8_bytes", "learned_tokenizer": False},
+        "generation_contract": {
+            "continuation_source": "model_logits",
+            "external_next_byte_allowed": False,
+        },
+        "extension_interface": {"version": "1"},
+        "generation_trace_directory": trace_dir.relative_to(tmp_path).as_posix(),
+    }), encoding="utf-8")
+    certificate_path = tmp_path / "results/certificate.json"
+    certificate_path.parent.mkdir(parents=True, exist_ok=True)
+    certificate_path.write_text(json.dumps({
+        "lineage": {
+            "primary_checkpoint_sha256": "a" * 64,
+            "transformer_comparator_manifest": comparator_path.relative_to(tmp_path).as_posix(),
+        },
+        "quality_checkpoint_sha256": "a" * 64,
+        "performance_checkpoint_sha256": "a" * 64,
+        "comparator_quality_checkpoint_sha256": "c" * 64,
+        "comparator_performance_checkpoint_sha256": "c" * 64,
+    }), encoding="utf-8")
+    result = evaluate_mission_guard(
+        tmp_path,
+        certificate_path=certificate_path,
+        core_manifest_path=manifest_path,
+    )
+    assert result["passed"] is True
+    assert result["trace_facts"]["generated_bytes_selected_from_model_logits"] == 1
+
+
+def test_mission_guard_rejects_bpe_planner_and_forced_generation(tmp_path: Path) -> None:
+    manifest_path = tmp_path / "core.json"
+    manifest_path.write_text(json.dumps({
+        "architecture_id": "sparse-bpe",
+        "english_realization": {"mode": "deterministic planner forced tokens"},
+    }), encoding="utf-8")
+    certificate_path = tmp_path / "certificate.json"
+    certificate_path.write_text("{}", encoding="utf-8")
+    result = evaluate_mission_guard(
+        tmp_path,
+        certificate_path=certificate_path,
+        core_manifest_path=manifest_path,
+    )
+    assert result["passed"] is False
+    assert "INVALID_EVIDENCE_NOT_TOKENIZER_FREE" in result["violations"]
+    assert "INVALID_EVIDENCE_DETERMINISTIC_PLANNER" in result["violations"]
 
 
 def test_raw_derivations_recompute_mean_quantile_and_ratio() -> None:
