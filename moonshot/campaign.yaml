@@ -13,7 +13,7 @@
       "reason": "separate same-scale/product comparisons; single-request cold timing; authoritative token accounting; promoted 100-prompt depth"
     }
   ],
-  "current_phase": 2,
+  "current_phase": 3,
   "lineage": {
     "abi_hash": null,
     "architecture_hash": "1b8d0d00783d3f4c97958a67d1031d25340396e3bd8764a74552fc6508d781fa",
@@ -86,14 +86,22 @@
       "handoff_sha256": "536016680d912f5d76954828bf37368892c9fc583f4d8594aff6372abe7b5bbb",
       "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
       "phase_implementation_commit": "36f054b3a867e8a2fc1d10d863d7fd2fb3aa3db7",
-      "raw_evidence_manifest_sha256": "92a312e1006dcaf2cc3f6a1b3ca29d45f260225bc110866ae7a3f6be67451492"
+      "phase_release_commit": "ba6e826c32a9209304c52915ca093784c8d41971",
+      "phase_tag": "layercake-moonshot-phase2",
+      "raw_evidence_manifest_sha256": "92a312e1006dcaf2cc3f6a1b3ca29d45f260225bc110866ae7a3f6be67451492",
+      "seal": "results/moonshot/phase2/seal.json",
+      "working_tree_clean_at_release": {
+        "command": "git status --porcelain=v1",
+        "porcelain": "",
+        "status": "CLEAN"
+      }
     }
   },
   "phases": {
     "phase0_governance": "SEALED",
     "phase1_benchmark_truth": "SEALED",
-    "phase2_cpu_quality_speed": "PASS",
-    "phase3_training_speed": "LOCKED",
+    "phase2_cpu_quality_speed": "SEALED",
+    "phase3_training_speed": "OPEN",
     "phase4_portable_domain": "LOCKED",
     "phase5_multi_domain": "LOCKED",
     "phase6_orchestration": "LOCKED",
