@@ -125,3 +125,87 @@ def test_adaptive_hashed_transition_context_is_causal_and_trainable():
     assert torch.equal(logits[:, :12], changed_logits[:, :12])
     logits.sum().backward()
     assert model.transition_context_head.weight.grad is not None
+
+
+def test_adaptive_incremental_state_matches_full_forward_and_persists() -> None:
+    torch.manual_seed(17)
+    model = CausalAdaptiveBytePatchLM(
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=2,
+        local_layers=2,
+        heads=4,
+        max_patches=16,
+        local_window=4,
+        transition_context_buckets=64,
+        routed_experts=4,
+        expert_expansion=1,
+        routing_mode="learned_top1",
+    ).eval()
+    x = torch.tensor([list(b"ab cd123efghijkl")], dtype=torch.long)
+    full_logits, _, metadata = model(x)
+    state = model.prefill_incremental(x)
+    assert torch.allclose(state["next_logits"], full_logits[:, -1], atol=2e-6, rtol=0.0)
+    assert state["byte_count"] == x.shape[1]
+    assert state["patch_count"] == int(metadata["valid_patches"].sum())
+    previous_cache_length = state["global_caches"][0][0].shape[2]
+    model.incremental_step(state, state["next_logits"].argmax(dim=-1))
+    assert state["byte_count"] == x.shape[1] + 1
+    assert state["global_caches"][0][0].shape[2] >= previous_cache_length
+
+
+def test_adaptive_incremental_router_physically_executes_only_selected_experts() -> None:
+    model = CausalAdaptiveBytePatchLM(
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=1,
+        local_layers=1,
+        heads=4,
+        max_patches=8,
+        local_window=4,
+        routed_experts=4,
+        expert_expansion=1,
+        routing_mode="learned_top1",
+    ).eval()
+    model.routed.set_route(2)
+    calls = [0, 0, 0, 0]
+    handles = [
+        expert.register_forward_hook(
+            lambda _module, _inputs, _output, index=index: calls.__setitem__(index, calls[index] + 1)
+        )
+        for index, expert in enumerate(model.routed.experts)
+    ]
+    try:
+        state = model.prefill_incremental(
+            torch.tensor([list(b"abcdefghijklmnop")], dtype=torch.long)
+        )
+    finally:
+        for handle in handles:
+            handle.remove()
+    assert sum(calls) == state["patch_count"]
+    assert sum(value > 0 for value in calls) < len(calls)
+    assert len(state["routed_expert_trace"]) == state["patch_count"]
+
+
+def test_adaptive_gru_local_mixer_incremental_parity() -> None:
+    torch.manual_seed(23)
+    model = CausalAdaptiveBytePatchLM(
+        d_byte=8,
+        d_model=32,
+        d_abi=16,
+        layers=1,
+        local_layers=2,
+        heads=4,
+        max_patches=16,
+        local_window=4,
+        routed_experts=4,
+        expert_expansion=1,
+        routing_mode="learned_top1",
+        local_mixer="gru",
+    ).eval()
+    x = torch.tensor([list(b"ab cd123efghijkl")], dtype=torch.long)
+    full_logits, _, _ = model(x)
+    state = model.prefill_incremental(x)
+    assert torch.allclose(state["next_logits"], full_logits[:, -1], atol=2e-6, rtol=0.0)

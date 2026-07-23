@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from collections import Counter
 import hashlib
+import heapq
 import json
 
 import torch
@@ -60,19 +61,54 @@ class BytePairTokenizer:
     def encode(self, value: bytes | str) -> list[int]:
         if isinstance(value, str):
             value = value.encode("utf-8")
-        sequence = list(value)
-        for pair, new_id in self.merge_ids.items():
-            replaced: list[int] = []
-            index = 0
-            while index < len(sequence):
-                if index + 1 < len(sequence) and (sequence[index], sequence[index + 1]) == pair:
-                    replaced.append(new_id)
-                    index += 2
-                else:
-                    replaced.append(sequence[index])
-                    index += 1
-            sequence = replaced
-        return sequence
+        if not value:
+            return []
+        tokens = list(value)
+        previous = [index - 1 for index in range(len(tokens))]
+        following = [index + 1 for index in range(len(tokens))]
+        following[-1] = -1
+        alive = [True] * len(tokens)
+        ranks = {
+            pair: (new_id - 256, new_id)
+            for pair, new_id in self.merge_ids.items()
+        }
+        queue: list[tuple[int, int, int, int]] = []
+
+        def schedule(left: int) -> None:
+            if left < 0 or not alive[left]:
+                return
+            right = following[left]
+            if right < 0 or not alive[right]:
+                return
+            ranked = ranks.get((tokens[left], tokens[right]))
+            if ranked is not None:
+                rank, new_id = ranked
+                heapq.heappush(queue, (rank, left, right, new_id))
+
+        for index in range(len(tokens) - 1):
+            schedule(index)
+        while queue:
+            rank, left, right, new_id = heapq.heappop(queue)
+            if (
+                not alive[left] or not alive[right] or following[left] != right
+                or ranks.get((tokens[left], tokens[right])) != (rank, new_id)
+            ):
+                continue
+            tokens[left] = new_id
+            alive[right] = False
+            successor = following[right]
+            following[left] = successor
+            if successor >= 0:
+                previous[successor] = left
+            schedule(previous[left])
+            schedule(left)
+        encoded = []
+        index = 0
+        while index >= 0:
+            if alive[index]:
+                encoded.append(tokens[index])
+            index = following[index]
+        return encoded
 
     def decode(self, ids: list[int]) -> bytes:
         try:

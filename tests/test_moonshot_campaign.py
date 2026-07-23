@@ -314,6 +314,26 @@ def test_required_gate_threshold_is_loaded_from_contract_and_recomputed(tmp_path
         validate_required_gates(tmp_path, 2, {"claims": [claim]}, contract)
 
 
+def test_ratio_derivation_supports_median_and_difference_reductions() -> None:
+    raw = {
+        "records": [
+            {"system": "left", "value": 2.0},
+            {"system": "left", "value": 10.0},
+            {"system": "right", "value": 4.0},
+            {"system": "right", "value": 8.0},
+        ]
+    }
+    selector = lambda system: {"field": "value", "where": {"system": system}}
+    assert recompute_derivation(raw, {
+        "operation": "ratio", "reduction": "median",
+        "numerator": selector("left"), "denominator": selector("right"),
+    }) == 1.0
+    assert recompute_derivation(raw, {
+        "operation": "difference", "reduction": "mean",
+        "numerator": selector("left"), "denominator": selector("right"),
+    }) == 0.0
+
+
 def _git(root: Path, *arguments: str) -> str:
     result = subprocess.run(
         ["git", *arguments], cwd=root, text=True, capture_output=True, check=True

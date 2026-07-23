@@ -1,0 +1,23 @@
+{
+  "format": "layercake-phase2-architecture-speed-screen/1",
+  "status": "HISTORICAL_SELECTION_EVIDENCE_NOT_PROMOTED",
+  "device": "cpu",
+  "threads": 1,
+  "precision": "fp32",
+  "output_target_bytes": 1024,
+  "token_to_raw_byte_ratio_source": "frozen validation corpus: 30363 raw bytes / 16824 BPE tokens",
+  "records": [
+    {"candidate": "adaptive-attention-d160-g10-l2", "estimated_bytes_per_second": 1076.0, "decision": "REJECT_10M_QUALITY"},
+    {"candidate": "adaptive-attention-d176-g9-l2", "estimated_bytes_per_second": 1056.0, "decision": "REJECT_10M_QUALITY"},
+    {"candidate": "adaptive-attention-d192-g8-l2", "estimated_bytes_per_second": 1029.0, "decision": "REJECT_10M_QUALITY"},
+    {"candidate": "adaptive-attention-d192-g6-l4", "estimated_bytes_per_second": 873.0, "decision": "REJECT_SPEED"},
+    {"candidate": "sparse-bpe-d160-l8", "active_parameters": 3590000, "estimated_bytes_per_second": 880.0, "decision": "REJECT_SPEED"},
+    {"candidate": "sparse-bpe-d176-l7", "estimated_bytes_per_second": 932.0, "decision": "REJECT_SPEED"},
+    {"candidate": "sparse-bpe-d192-l6", "estimated_bytes_per_second": 982.0, "decision": "REJECT_SPEED_MARGIN"},
+    {"candidate": "sparse-bpe-d208-l5", "active_parameters": 3895000, "estimated_bytes_per_second": 1049.0, "decision": "REJECT_SPEED_MARGIN"},
+    {"candidate": "sparse-bpe-d224-l5", "estimated_bytes_per_second": 963.0, "decision": "REJECT_SPEED"},
+    {"candidate": "sparse-bpe-d256-l4", "estimated_bytes_per_second": 1029.0, "decision": "REJECT_SPEED_MARGIN"},
+    {"candidate": "sparse-bpe-d288-l3-top1-8cakes", "total_parameters": 6392448, "active_parameters": 4646592, "estimated_bytes_per_second": 1174.0, "decision": "PROMOTE_TO_10M_QUALITY"}
+  ],
+  "promotion_note": "Estimated screening values select experiments only; no Phase 2 gate is derived from this file. Final gates use timed completed output bytes."
+}

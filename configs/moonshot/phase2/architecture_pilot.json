@@ -1,0 +1,98 @@
+{
+  "format": "layercake-phase2-architecture-pilot/1",
+  "selection_policy": "validation_only_quality_subject_to_measured_cpu_speed_invariant",
+  "reference_candidate": "adaptive_160_10g_2l_top1",
+  "device": "cuda",
+  "precision": "fp16",
+  "seeds": [9821],
+  "candidates": [
+    {
+      "name": "adaptive_160_10g_2l_top1",
+      "kind": "adaptive_two_four",
+      "model": {
+        "d_byte": 48,
+        "d_model": 160,
+        "d_abi": 64,
+        "layers": 10,
+        "local_layers": 2,
+        "heads": 5,
+        "max_patches": 512,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1"
+      }
+    },
+    {
+      "name": "adaptive_176_9g_2l_top1",
+      "kind": "adaptive_two_four",
+      "model": {
+        "d_byte": 48,
+        "d_model": 176,
+        "d_abi": 64,
+        "layers": 9,
+        "local_layers": 2,
+        "heads": 4,
+        "max_patches": 512,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1"
+      }
+    },
+    {
+      "name": "adaptive_192_8g_2l_top1",
+      "kind": "adaptive_two_four",
+      "model": {
+        "d_byte": 48,
+        "d_model": 192,
+        "d_abi": 64,
+        "layers": 8,
+        "local_layers": 2,
+        "heads": 6,
+        "max_patches": 512,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1"
+      }
+    }
+  ],
+  "training": {
+    "steps": 1221,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.0008,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "routing_balance_weight": 0.02,
+    "router_collapse_threshold": 0.5,
+    "evaluation_interval": 1221,
+    "resumable": true
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "sequence_bytes": 256,
+    "batches": 16,
+    "evaluate_test": false
+  },
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_development.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  },
+  "budget": {
+    "maximum_candidates": 3,
+    "maximum_runs": 3,
+    "maximum_steps_per_run": 1221,
+    "maximum_wall_seconds": 1800,
+    "maximum_cuda_memory_bytes": 12884901888
+  },
+  "promotion": {
+    "minimum_bpb_improvement": 0.0,
+    "final_test_must_remain_unaccessed": true,
+    "requires_all_experts_meaningfully_trained": true,
+    "maximum_router_load_fraction": 0.5
+  }
+}

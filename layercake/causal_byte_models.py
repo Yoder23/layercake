@@ -8775,11 +8775,16 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         expert_expansion: int = 2,
         routing_mode: str = "learned_top1",
         transition_context_buckets: int = 0,
+        local_mixer: str = "attention",
     ):
         super().__init__()
         self.patch_size = 2
         self.max_patch_size = 4
         self.local_window = local_window
+        if local_mixer not in {"attention", "gru"}:
+            raise ValueError("adaptive local_mixer must be attention or gru")
+        self.local_mixer = local_mixer
+        self.local_layer_count = int(local_layers)
         if transition_boundary_table is None:
             transition_boundary_table = torch.zeros(
                 65536, dtype=torch.bool
@@ -8814,10 +8819,17 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         )
         self.bos_context = nn.Parameter(torch.zeros(1, 1, d_abi))
         self.local_in = nn.Linear(d_byte + d_model, d_model)
-        self.local_core = nn.ModuleList(
-            FusedModernCausalBlock(d_model, heads)
-            for _ in range(local_layers)
-        )
+        if local_mixer == "attention":
+            self.local_core = nn.ModuleList(
+                FusedModernCausalBlock(d_model, heads)
+                for _ in range(local_layers)
+            )
+            self.local_gru = None
+        else:
+            self.local_core = nn.ModuleList()
+            self.local_gru = nn.GRU(
+                d_model, d_model, num_layers=local_layers, batch_first=True
+            )
         self.local_norm = nn.LayerNorm(d_model)
         self.head = nn.Linear(d_model, 256)
         self.transition_head = nn.Embedding(256, 256)
@@ -8949,11 +8961,15 @@ class CausalAdaptiveBytePatchLM(nn.Module):
             self.local_window,
             -1,
         )
-        local_hidden = run_modern_stack(
-            self.local_core,
-            local_hidden,
-            causal_mask(self.local_window, x.device),
-        ).reshape(batch, length, -1)
+        if self.local_mixer == "attention":
+            local_hidden = run_modern_stack(
+                self.local_core,
+                local_hidden,
+                causal_mask(self.local_window, x.device),
+            )
+        else:
+            local_hidden, _ = self.local_gru(local_hidden)
+        local_hidden = local_hidden.reshape(batch, length, -1)
         logits = self.head(self.local_norm(local_hidden))
         logits = logits + self.transition_head(x)
         if self.transition_context_head is not None:
@@ -8976,3 +8992,133 @@ class CausalAdaptiveBytePatchLM(nn.Module):
             "valid_patches": valid,
             "routing": routing,
         }
+
+    @staticmethod
+    def _empty_attention_caches(
+        blocks: nn.ModuleList,
+        *,
+        batch: int,
+        device: torch.device,
+        dtype: torch.dtype,
+    ) -> list[tuple[torch.Tensor, torch.Tensor]]:
+        return [
+            (
+                torch.empty(batch, block.heads, 0, block.head_dim, device=device, dtype=dtype),
+                torch.empty(batch, block.heads, 0, block.head_dim, device=device, dtype=dtype),
+            )
+            for block in blocks
+        ]
+
+    def init_incremental_state(
+        self, *, batch: int = 1, device: torch.device | str | None = None
+    ) -> dict:
+        """Create persistent state for exact batch-one incremental decoding."""
+
+        if batch != 1:
+            raise ValueError("adaptive incremental decoding currently requires batch one")
+        parameter = next(self.parameters())
+        target = parameter.device if device is None else torch.device(device)
+        dtype = parameter.dtype
+        return {
+            "format": "layercake-adaptive-incremental-state/1",
+            "byte_count": 0,
+            "patch_count": 0,
+            "pending_bytes": [],
+            "previous_byte": torch.zeros(batch, dtype=torch.long, device=target),
+            "last_global": torch.zeros(batch, self.head.in_features, device=target, dtype=dtype),
+            "global_caches": self._empty_attention_caches(
+                self.core, batch=batch, device=target, dtype=dtype
+            ),
+            "local_caches": self._empty_attention_caches(
+                self.local_core, batch=batch, device=target, dtype=dtype
+            ),
+            "local_recurrent_state": torch.zeros(
+                self.local_layer_count, batch, self.head.in_features,
+                device=target, dtype=dtype,
+            ),
+            "next_logits": None,
+            "routed_expert_trace": [],
+        }
+
+    def _close_incremental_patch(self, state: dict) -> None:
+        pending = state["pending_bytes"]
+        length = len(pending)
+        if length not in {2, 4}:
+            raise RuntimeError("adaptive incremental patches must close at length two or four")
+        byte_ids = torch.stack(pending, dim=1)
+        embedded = self.byte_emb(byte_ids)
+        if length < self.max_patch_size:
+            embedded = F.pad(embedded, (0, 0, 0, self.max_patch_size - length))
+        hidden = self.patch_proj(embedded.flatten(1))
+        hidden = hidden + self.patch_length.weight[length]
+        position = int(state["patch_count"])
+        if position >= self.patch_pos.num_embeddings:
+            raise RuntimeError("adaptive incremental state exceeded configured max_patches")
+        hidden = hidden + self.patch_pos.weight[position]
+        hidden = hidden[:, None]
+        for index, block in enumerate(self.core):
+            hidden, cache = block.decode_with_cache(hidden, state["global_caches"][index])
+            state["global_caches"][index] = cache
+        if self.routed is not None:
+            hidden, _ = self.routed(hidden, return_aux=True)
+            selected = self.routed.last_routes
+            if selected is None or selected.numel() != 1:
+                raise RuntimeError("incremental sparse router did not select exactly one expert")
+            state["routed_expert_trace"].append(int(selected.item()))
+        state["last_global"] = hidden[:, 0]
+        state["patch_count"] = position + 1
+        state["pending_bytes"] = []
+
+    @torch.inference_mode()
+    def incremental_step(self, state: dict, byte: torch.Tensor) -> torch.Tensor:
+        """Consume one byte, return logits for the following byte, and retain caches."""
+
+        value = byte.to(device=state["last_global"].device, dtype=torch.long).flatten()
+        if value.numel() != 1:
+            raise ValueError("adaptive incremental decoding requires one batch-one byte")
+        if int(state["byte_count"]) % self.local_window == 0:
+            state["local_caches"] = self._empty_attention_caches(
+                self.local_core,
+                batch=1,
+                device=state["last_global"].device,
+                dtype=state["last_global"].dtype,
+            )
+            state["local_recurrent_state"].zero_()
+        local = self.local_in(torch.cat([self.byte_emb(value), state["last_global"]], dim=-1))
+        local = local[:, None]
+        if self.local_mixer == "attention":
+            for index, block in enumerate(self.local_core):
+                local, cache = block.decode_with_cache(local, state["local_caches"][index])
+                state["local_caches"][index] = cache
+        else:
+            local, recurrent = self.local_gru(local, state["local_recurrent_state"])
+            state["local_recurrent_state"] = recurrent
+        logits = self.head(self.local_norm(local[:, 0])) + self.transition_head(value)
+        if self.transition_context_head is not None:
+            context_id = (
+                state["previous_byte"] * 257 + value + 1
+            ).remainder(self.transition_context_head.num_embeddings)
+            logits = logits + self.transition_context_head(context_id)
+        state["next_logits"] = logits
+        state["previous_byte"] = value
+        state["pending_bytes"].append(value)
+        pending = state["pending_bytes"]
+        close = len(pending) == 4
+        if len(pending) == 2:
+            first, second = (int(item.item()) for item in pending)
+            close = second in {9, 10, 13, 32} or bool(
+                self.transition_boundary_table[first * 256 + second].item()
+            )
+        if close:
+            self._close_incremental_patch(state)
+        state["byte_count"] = int(state["byte_count"]) + 1
+        return logits
+
+    @torch.inference_mode()
+    def prefill_incremental(self, byte_ids: torch.Tensor) -> dict:
+        if byte_ids.ndim != 2 or byte_ids.shape[0] != 1 or byte_ids.shape[1] == 0:
+            raise ValueError("adaptive incremental prefill requires non-empty [1, length] bytes")
+        state = self.init_incremental_state(device=byte_ids.device)
+        for value in byte_ids[0]:
+            self.incremental_step(state, value[None])
+        return state

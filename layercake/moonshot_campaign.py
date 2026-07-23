@@ -433,11 +433,22 @@ def recompute_derivation(raw_document: Mapping[str, Any], derivation: Mapping[st
     if not isinstance(records, list) or not all(isinstance(row, dict) for row in records):
         raise CampaignVerificationError("raw evidence must contain an object-valued records list")
     operation = derivation.get("operation")
-    if operation == "ratio":
+    if operation in {"ratio", "difference"}:
         numerator = _filtered_values(records, derivation.get("numerator", {}))
         denominator = _filtered_values(records, derivation.get("denominator", {}))
-        numerator_value = statistics.fmean(numerator)
-        denominator_value = statistics.fmean(denominator)
+        reduction = derivation.get("reduction", "mean")
+        reducers = {
+            "mean": statistics.fmean,
+            "median": statistics.median,
+            "min": min,
+            "max": max,
+        }
+        if reduction not in reducers:
+            raise CampaignVerificationError(f"unsupported paired reduction: {reduction}")
+        numerator_value = float(reducers[reduction](numerator))
+        denominator_value = float(reducers[reduction](denominator))
+        if operation == "difference":
+            return numerator_value - denominator_value
         if denominator_value == 0:
             raise CampaignVerificationError("ratio denominator is zero")
         return numerator_value / denominator_value
@@ -668,7 +679,15 @@ def validate_matched_quality(
             "coherence",
             "domain_success",
         ]
-    failed = [name for name in dimensions if match.get(name) is not True]
+    failed = [
+        name for name in dimensions
+        if match.get(name) is not True
+        and not (
+            name == "domain_success"
+            and certificate.get("phase") == 2
+            and match.get(name) == "NOT_APPLICABLE_PHASE2_CORE_ONLY"
+        )
+    ]
     if failed:
         raise CampaignVerificationError(f"quality-unmatched speed claim: failed {failed}")
     if not match.get("layercake_checkpoint_sha256") or not match.get(
@@ -837,6 +856,18 @@ def _verify_phase_evidence(root: Path, phase: int, contracts: Mapping[str, Mappi
             return validate_phase1_bundle(root, _phase_dir(root, 1))
         except Phase1EvidenceError as error:
             raise CampaignVerificationError(f"Phase 1 typed evidence failed: {error}") from error
+    if phase == 2:
+        try:
+            from .evaluation.phase2_evidence import Phase2EvidenceError, validate_phase2_bundle
+            summary = validate_phase2_bundle(root, _phase_dir(root, 2))
+            payload = read_document(_lifecycle_path(root, 2, "certificate_payload.json"))
+            validate_required_gates(root, 2, payload, contracts["claim_contract.yaml"])
+            validate_matched_quality(
+                {"phase": 2, **payload}, contracts["benchmark_contract.yaml"]
+            )
+            return summary
+        except Phase2EvidenceError as error:
+            raise CampaignVerificationError(f"Phase 2 typed evidence failed: {error}") from error
     raise CampaignVerificationError(
         f"Phase {phase} requires its phase-specific typed verifier before candidate construction"
     )
@@ -952,7 +983,12 @@ def promote_phase(root: Path, phase: int) -> dict[str, Any]:
         "campaign_version": 1,
         "phase": phase,
         "status": "PASS",
-        "scope": "governance_only_no_model_or_training_claim" if phase == 0 else "benchmark_truth_no_architecture_selection",
+        "scope": (
+            "governance_only_no_model_or_training_claim" if phase == 0
+            else "benchmark_truth_no_architecture_selection" if phase == 1
+            else "matched_quality_cpu_speed_integrated_core" if phase == 2
+            else "phase_specific_verified_claims"
+        ),
         "model_source_commit": campaign["lineage"]["model_source_commit"],
         "governance_commit": campaign["lineage"]["governance_commit"],
         "phase_implementation_commit": candidate["phase_implementation_commit"],
@@ -980,6 +1016,33 @@ def promote_phase(root: Path, phase: int) -> dict[str, Any]:
     if phase == 1:
         certificate["baselines"] = _phase1_baselines(root)
         validate_baselines(certificate, contracts["claim_contract.yaml"])
+    if phase == 2:
+        payload = read_document(_lifecycle_path(root, 2, "certificate_payload.json"))
+        quality_rows = read_document(
+            _lifecycle_path(root, 2, "raw_runs/quality_seeds.json")
+        )["records"]
+        campaign["lineage"].update({
+            "architecture_id": payload["lineage"]["architecture_id"],
+            "architecture_hash": payload["lineage"]["architecture_hash"],
+            "core_checkpoint_hashes": {
+                f"seed-{row['seed']}": row["checkpoint_sha256"] for row in quality_rows
+            },
+            "transformer_checkpoint_hashes": {
+                "optimized_cpu": payload["lineage"]["transformer_checkpoint_sha256"]
+            },
+        })
+        certificate["claims"] = payload["claims"]
+        certificate["headline_claims"] = payload["claims"]
+        certificate["quality_match"] = payload["quality_match"]
+        certificate["lineage"] = {
+            **campaign["lineage"],
+            **payload["lineage"],
+        }
+        certificate["primary_checkpoint_sha256"] = payload["lineage"]["primary_checkpoint_sha256"]
+        certificate["transformer_checkpoint_sha256"] = payload["lineage"]["transformer_checkpoint_sha256"]
+        validate_required_gates(root, 2, certificate, contracts["claim_contract.yaml"])
+        validate_matched_quality(certificate, contracts["benchmark_contract.yaml"])
+        validate_lineage_consistency(campaign, certificate, 2)
     certificate_path = _lifecycle_path(root, phase, "release_certificate.json")
     _atomic_write(certificate_path, certificate)
     handoff = {
@@ -1119,6 +1182,14 @@ def verify_sealed(root: Path, phase: int) -> dict[str, Any]:
         except Phase1EvidenceError as error:
             raise CampaignVerificationError(
                 f"sealed Phase 1 typed evidence failed structural verification: {error}"
+            ) from error
+    if phase == 2:
+        try:
+            from .evaluation.phase2_evidence import Phase2EvidenceError, validate_phase2_bundle
+            validate_phase2_bundle(root, _phase_dir(root, 2))
+        except Phase2EvidenceError as error:
+            raise CampaignVerificationError(
+                f"sealed Phase 2 typed evidence failed structural verification: {error}"
             ) from error
     remote = _git(root, "ls-remote", "--tags", "origin", f"refs/tags/{tag}", check=False)
     remote_status = "PUBLISHED" if remote else "NOT_VERIFIED_OR_NOT_PUBLISHED"

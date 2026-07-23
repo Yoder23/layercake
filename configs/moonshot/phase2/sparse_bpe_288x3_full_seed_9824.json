@@ -1,0 +1,43 @@
+{
+  "format": "layercake-sparse-bpe-training-config/1",
+  "scale_status": "phase2_full_quality_candidate_seed_1_of_3",
+  "seed": 9824,
+  "device": "cuda",
+  "precision": "fp16",
+  "model": {
+    "architecture_version": "layercake-sparse-bpe-core/1",
+    "width": 288,
+    "layers": 3,
+    "heads": 8,
+    "max_tokens": 1024,
+    "expansion": 4,
+    "routed_experts": 8,
+    "expert_expansion": 1,
+    "routing_mode": "learned_top1",
+    "route_after_layers": 1
+  },
+  "tokenizer": {"path": "artifacts/final/medium-transformers/seed-9801/tokenizer.json"},
+  "training": {
+    "steps": 12208,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.0008,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "routing_balance_weight": 0.02,
+    "evaluation_interval": 1000,
+    "resumable": true
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "sequence_bytes": 256,
+    "batches": 16,
+    "evaluate_test": false
+  },
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  }
+}

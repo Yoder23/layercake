@@ -1,0 +1,37 @@
+{
+  "format": "layercake-transformer-training-config/2",
+  "scale_status": "phase2_validation_only_architecture_probe",
+  "seed": 9823,
+  "device": "cuda",
+  "precision": "fp16",
+  "model": {
+    "architecture_version": "modern-bpe-transformer/1",
+    "width": 160,
+    "layers": 8,
+    "heads": 5,
+    "max_tokens": 512,
+    "expansion": 4
+  },
+  "tokenizer": {"merges": 128, "training_bytes": 500000},
+  "training": {
+    "steps": 1221,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.0008,
+    "weight_decay": 0.01,
+    "evaluation_interval": 1221,
+    "resumable": true
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "sequence_bytes": 256,
+    "batches": 16,
+    "evaluate_test": false
+  },
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_development.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  }
+}

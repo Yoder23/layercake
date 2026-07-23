@@ -1,0 +1,9 @@
+{
+  "format": "layercake-sparse-bpe-training-config/1", "scale_status": "phase2_replication", "seed": 9825,
+  "device": "cuda", "precision": "fp16", "initial_checkpoint": "artifacts/moonshot/phase2/sparse-bpe-word2304-replication/seed-9825",
+  "model": {"architecture_version": "layercake-sparse-bpe-core/3-neural-guided-english", "width": 288, "layers": 3, "heads": 8, "max_tokens": 1024, "expansion": 4, "routed_experts": 8, "expert_expansion": 1, "routing_mode": "learned_top1", "route_after_layers": 1, "prompt_conditioning": true, "constrained_english_planner": true},
+  "tokenizer": {"path": "data/moonshot/phase2/word_preserving_bpe_2304.json"},
+  "training": {"steps": 1, "batch_size": 32, "sequence_bytes": 256, "learning_rate": 0.0001, "weight_decay": 0.01, "gradient_clip": 1.0, "routing_balance_weight": 0.02, "evaluation_interval": 1, "resumable": true},
+  "evaluation": {"batch_size": 8, "sequence_bytes": 256, "batches": 16, "evaluate_test": false},
+  "data": {"train": "data/moonshot/v2/wikitext103/train_medium.bin", "validation": "data/moonshot/v2/wikitext103/validation.bin", "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin", "test": "data/moonshot/v2/wikitext103/test.bin"}
+}

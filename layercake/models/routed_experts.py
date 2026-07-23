@@ -159,6 +159,45 @@ class CausalRoutedFoundationExperts(nn.Module):
         logits = self.router(hidden) / self.temperature
         probabilities = torch.softmax(logits, dim=-1)
         indices, weights = self._selection(hidden, probabilities)
+        if (
+            not self.training
+            and hidden.shape[0] == 1
+            and hidden.shape[1] == 1
+            and indices.shape[-1] == 1
+        ):
+            # The deployment-critical batch-one path dispatches directly to the
+            # selected module.  It does not scan, materialize inputs for, or call
+            # any inactive expert.
+            expert_index = int(indices.item())
+            output = self.experts[expert_index](hidden) * weights[..., :1].to(hidden.dtype)
+            assignment_counts = torch.zeros(
+                self.expert_count, device=hidden.device, dtype=torch.long
+            )
+            assignment_counts[expert_index] = 1
+            load = assignment_counts.to(probabilities.dtype)
+            importance = probabilities.mean(dim=(0, 1))
+            balance_loss = self.expert_count * torch.sum(importance * load)
+            entropy = -(
+                probabilities.clamp_min(1e-9).log() * probabilities
+            ).sum(dim=-1).mean()
+            normalized_entropy = entropy / torch.log(
+                probabilities.new_tensor(float(self.expert_count))
+            )
+            self.last_routes = indices.detach()
+            self.last_probabilities = probabilities.detach()
+            self.last_assignment_counts = assignment_counts.detach()
+            self.last_load = load.detach()
+            self.last_entropy = entropy.detach()
+            if return_aux:
+                return output, {
+                    "balance_loss": balance_loss,
+                    "entropy": entropy,
+                    "normalized_entropy": normalized_entropy,
+                    "load": load,
+                    "importance": importance,
+                    "assignment_counts": assignment_counts,
+                }
+            return output
         flat_hidden = hidden.reshape(-1, hidden.shape[-1])
         flat_indices = indices.reshape(flat_hidden.shape[0], indices.shape[-1])
         flat_weights = weights.reshape(flat_hidden.shape[0], weights.shape[-1])
