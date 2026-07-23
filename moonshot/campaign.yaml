@@ -13,7 +13,7 @@
       "reason": "separate same-scale/product comparisons; single-request cold timing; authoritative token accounting; promoted 100-prompt depth"
     }
   ],
-  "current_phase": 1,
+  "current_phase": 2,
   "lineage": {
     "abi_hash": null,
     "architecture_hash": null,
@@ -56,16 +56,24 @@
       "historical_archive_manifest_sha256": "babf74a6da14f43a7c1a34328cb81cd3ed87caed39569d025b3392d68a428b1c",
       "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
       "phase_implementation_commit": "bf0556f961003f9737338163c24da0a556295ac9",
+      "phase_release_commit": "63acb89bff6d9b1312a80ddb7645f0c1213407d3",
+      "phase_tag": "layercake-moonshot-phase1",
       "raw_evidence_manifest_sha256": "7ffdbaf63972a1faf9f813884778236d975ca7f314c82f36f807593a60898492",
+      "seal": "results/moonshot/phase1/seal.json",
       "superseded_release_commit": "fa9fde4d4f9b24839755ab3543a4f680e9452d4f",
       "superseded_tag": "layercake-moonshot-phase1",
-      "superseded_tag_commit": "ce588992b10f76460fef98b36f87b492b97a73fb"
+      "superseded_tag_commit": "ce588992b10f76460fef98b36f87b492b97a73fb",
+      "working_tree_clean_at_release": {
+        "command": "git status --porcelain=v1",
+        "porcelain": "",
+        "status": "CLEAN"
+      }
     }
   },
   "phases": {
     "phase0_governance": "SEALED",
-    "phase1_benchmark_truth": "PASS",
-    "phase2_cpu_quality_speed": "LOCKED",
+    "phase1_benchmark_truth": "SEALED",
+    "phase2_cpu_quality_speed": "OPEN",
     "phase3_training_speed": "LOCKED",
     "phase4_portable_domain": "LOCKED",
     "phase5_multi_domain": "LOCKED",
