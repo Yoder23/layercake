@@ -16,16 +16,22 @@
   "current_phase": 2,
   "lineage": {
     "abi_hash": null,
-    "architecture_hash": null,
-    "architecture_id": null,
+    "architecture_hash": "1b8d0d00783d3f4c97958a67d1031d25340396e3bd8764a74552fc6508d781fa",
+    "architecture_id": "layercake-sparse-bpe-core/3-neural-guided-english-288x3-top1-8cakes",
     "cake_package_hashes": {},
-    "core_checkpoint_hashes": {},
+    "core_checkpoint_hashes": {
+      "seed-9824": "fc8d32c77bfa9d39152a6d32436c4dbbf767f9d1c88f3de17fec84a24bd3f781",
+      "seed-9825": "fa8f2e2d14afee8fa163ed178c7883d7480ba637d908d3a7879006a8d2c626af",
+      "seed-9826": "fada9ab6ae56d387b07da19797a4df0ba3793cf1de14dcbce17f09e790187c74"
+    },
     "data_hashes": {},
     "governance_commit": "25aae41044b8cae8decd41fff38fd4184c667458",
     "model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
     "router_hash": null,
     "runtime_hashes": {},
-    "transformer_checkpoint_hashes": {}
+    "transformer_checkpoint_hashes": {
+      "optimized_cpu": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67"
+    }
   },
   "phase_records": {
     "phase0": {
@@ -72,16 +78,21 @@
     "phase2": {
       "candidate": "results/moonshot/phase2/candidate.json",
       "candidate_verification": "results/moonshot/phase2/candidate_verification.json",
+      "certificate": "results/moonshot/phase2/release_certificate.json",
+      "certificate_sha256": "3ed5fb56c3e33af3ba993806cad39181343254b25a6f9afb1a7314d32c8589ba",
+      "completion_tag": "layercake-moonshot-phase2",
       "governance_commit": "25aae41044b8cae8decd41fff38fd4184c667458",
+      "handoff": "results/moonshot/phase2/handoff.json",
+      "handoff_sha256": "536016680d912f5d76954828bf37368892c9fc583f4d8594aff6372abe7b5bbb",
       "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
-      "phase_implementation_commit": "ed85bd6567e8eed5c1f5148ae7a188800442a00a",
+      "phase_implementation_commit": "36f054b3a867e8a2fc1d10d863d7fd2fb3aa3db7",
       "raw_evidence_manifest_sha256": "92a312e1006dcaf2cc3f6a1b3ca29d45f260225bc110866ae7a3f6be67451492"
     }
   },
   "phases": {
     "phase0_governance": "SEALED",
     "phase1_benchmark_truth": "SEALED",
-    "phase2_cpu_quality_speed": "CANDIDATE",
+    "phase2_cpu_quality_speed": "PASS",
     "phase3_training_speed": "LOCKED",
     "phase4_portable_domain": "LOCKED",
     "phase5_multi_domain": "LOCKED",
