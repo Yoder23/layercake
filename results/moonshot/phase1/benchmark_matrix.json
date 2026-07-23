@@ -19,9 +19,10 @@
       "long"
     ]
   },
+  "correction_protocol": "phase1-final-corrections/1",
   "equivalence_contract": {
     "batch_size": 1,
-    "identical_prompts": "0316dff8a806dbc5302c7b6dfc25cf7faca00f00634751120d40dcb8b704aa5c",
+    "identical_prompts": "9d08f3a9673d7128a25cab91876fede44435b0d925c1acb2cbf6d9159f9f4b90",
     "output_semantics": "first exact target-byte streaming prefix",
     "retrieval": "none",
     "sampling_difference": "same temperature/top-p/seed request; runtime RNG algorithms may differ and are not treated as bit-identical",
@@ -33,6 +34,39 @@
     "ollama-cpu",
     "ollama-gpu"
   ],
+  "promoted_benchmark_protocol": {
+    "bootstrap_confidence": 0.95,
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20260722,
+    "headline_configurations": [
+      {
+        "cache_state": "warm",
+        "comparison_kind": "same_scale_architecture",
+        "generation_mode": "deterministic",
+        "id": "same-scale-architecture-cpu",
+        "layercake_device": "cpu_one_thread",
+        "layercake_system_id": "layercake_same_scale_headline",
+        "output_target_bytes": 128,
+        "transformer_device": "cpu_one_thread",
+        "transformer_system_id": "transformer_same_scale_headline"
+      },
+      {
+        "cache_state": "warm",
+        "comparison_kind": "product",
+        "generation_mode": "deterministic",
+        "id": "product-cpu",
+        "layercake_device": "cpu_one_thread",
+        "layercake_system_id": "layercake_product_headline",
+        "output_target_bytes": 128,
+        "transformer_device": "cpu_all_core",
+        "transformer_system_id": "transformer_product_headline"
+      }
+    ],
+    "minimum_distinct_prompts": 100,
+    "minimum_repeated_prompt_observations": 20,
+    "pairing_key": "prompt.id",
+    "tail_quantile_minimum_observations": 20
+  },
   "randomization_seed": 20260722,
   "systems": [
     {

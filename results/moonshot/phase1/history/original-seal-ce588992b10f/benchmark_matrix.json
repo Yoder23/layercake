@@ -1,0 +1,64 @@
+{
+  "axes": {
+    "cache_states": [
+      "cold",
+      "warm"
+    ],
+    "generation_modes": [
+      "deterministic",
+      "sampled"
+    ],
+    "output_target_bytes": [
+      64,
+      256,
+      1024
+    ],
+    "prompt_buckets": [
+      "short",
+      "medium",
+      "long"
+    ]
+  },
+  "equivalence_contract": {
+    "batch_size": 1,
+    "identical_prompts": "0316dff8a806dbc5302c7b6dfc25cf7faca00f00634751120d40dcb8b704aa5c",
+    "output_semantics": "first exact target-byte streaming prefix",
+    "retrieval": "none",
+    "sampling_difference": "same temperature/top-p/seed request; runtime RNG algorithms may differ and are not treated as bit-identical",
+    "stored_answers": "none"
+  },
+  "format": "layercake-phase1-benchmark-matrix/1",
+  "minimum_trials_per_cell": 2,
+  "optimized_runtime_ids": [
+    "ollama-cpu",
+    "ollama-gpu"
+  ],
+  "randomization_seed": 20260722,
+  "systems": [
+    {
+      "id": "transformer_optimized_cpu",
+      "required_devices": [
+        "cpu_one_thread",
+        "cpu_all_core"
+      ],
+      "role": "optimized_transformer_baseline"
+    },
+    {
+      "id": "transformer_optimized_gpu",
+      "required_devices": [
+        "gpu"
+      ],
+      "role": "optimized_transformer_gpu_baseline"
+    },
+    {
+      "gpu_status": "REQUIRED_AVAILABLE_HARDWARE",
+      "id": "layercake_fastest_integrated",
+      "required_devices": [
+        "cpu_one_thread",
+        "cpu_all_core",
+        "gpu"
+      ],
+      "role": "fastest_layercake_baseline"
+    }
+  ]
+}

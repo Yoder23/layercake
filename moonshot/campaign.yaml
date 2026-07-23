@@ -1,7 +1,19 @@
 {
   "campaign": "layercake-moonshot",
   "campaign_version": 1,
-  "current_phase": 2,
+  "correction_history": [
+    {
+      "archive": "results/moonshot/phase1/history/original-seal-ce588992b10f",
+      "archive_manifest_sha256": "babf74a6da14f43a7c1a34328cb81cd3ed87caed39569d025b3392d68a428b1c",
+      "correction_id": "phase1-final-corrections/1",
+      "original_completion_tag": "layercake-moonshot-phase1",
+      "original_release_commit": "fa9fde4d4f9b24839755ab3543a4f680e9452d4f",
+      "original_tag_commit": "ce588992b10f76460fef98b36f87b492b97a73fb",
+      "phase": 1,
+      "reason": "separate same-scale/product comparisons; single-request cold timing; authoritative token accounting; promoted 100-prompt depth"
+    }
+  ],
+  "current_phase": 1,
   "lineage": {
     "abi_hash": null,
     "architecture_hash": null,
@@ -33,28 +45,27 @@
       "candidate": "results/moonshot/phase1/candidate.json",
       "candidate_verification": "results/moonshot/phase1/candidate_verification.json",
       "certificate": "results/moonshot/phase1/release_certificate.json",
-      "certificate_sha256": "c47adced567bc6cf8c9149a2fc70bcb7284ceded9dcc13e9e03f6556dd0f9c46",
+      "certificate_sha256": "bcbb2b2f68fdafd392609d6d9401744494cc3ecc23bde543b14ecdc69f2120fe",
       "completion_tag": "layercake-moonshot-phase1",
+      "correction_id": "phase1-final-corrections/1",
+      "correction_reopen_commit": "bf0556f961003f9737338163c24da0a556295ac9",
       "governance_commit": "25aae41044b8cae8decd41fff38fd4184c667458",
       "handoff": "results/moonshot/phase1/handoff.json",
-      "handoff_sha256": "b383b8e4d511c29141717e5e61c15dbf1bff132f3bb9ca03ebc3f427c3add77e",
+      "handoff_sha256": "f8b9a664e3a00ac78d629471690398ee56e4776d49252a0c916617fda8c6f44c",
+      "historical_archive": "results/moonshot/phase1/history/original-seal-ce588992b10f",
+      "historical_archive_manifest_sha256": "babf74a6da14f43a7c1a34328cb81cd3ed87caed39569d025b3392d68a428b1c",
       "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
-      "phase_implementation_commit": "79878f811de6ae04a43ade27ba41756ce183f73f",
-      "phase_release_commit": "fa9fde4d4f9b24839755ab3543a4f680e9452d4f",
-      "phase_tag": "layercake-moonshot-phase1",
-      "raw_evidence_manifest_sha256": "aaa67c2616d2cfb1b6b85652abf88be39eec6d11bac93e3427888483d0758a49",
-      "seal": "results/moonshot/phase1/seal.json",
-      "working_tree_clean_at_release": {
-        "command": "git status --porcelain=v1",
-        "porcelain": "",
-        "status": "CLEAN"
-      }
+      "phase_implementation_commit": "bf0556f961003f9737338163c24da0a556295ac9",
+      "raw_evidence_manifest_sha256": "7ffdbaf63972a1faf9f813884778236d975ca7f314c82f36f807593a60898492",
+      "superseded_release_commit": "fa9fde4d4f9b24839755ab3543a4f680e9452d4f",
+      "superseded_tag": "layercake-moonshot-phase1",
+      "superseded_tag_commit": "ce588992b10f76460fef98b36f87b492b97a73fb"
     }
   },
   "phases": {
     "phase0_governance": "SEALED",
-    "phase1_benchmark_truth": "SEALED",
-    "phase2_cpu_quality_speed": "OPEN",
+    "phase1_benchmark_truth": "PASS",
+    "phase2_cpu_quality_speed": "LOCKED",
     "phase3_training_speed": "LOCKED",
     "phase4_portable_domain": "LOCKED",
     "phase5_multi_domain": "LOCKED",

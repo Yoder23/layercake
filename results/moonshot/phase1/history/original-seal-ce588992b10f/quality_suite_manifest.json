@@ -1,0 +1,138 @@
+{
+  "contamination_report": {
+    "path": "results/moonshot/phase1/contamination_report.json",
+    "sha256": "ce916b78fffd21f61dbae985ac88c3c5d380dc2630832d27b9ead91739d814cd"
+  },
+  "datasets": [
+    {
+      "path": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+      "selection_access_allowed": true,
+      "sha256": "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93",
+      "split": "architecture_selection"
+    },
+    {
+      "path": "data/moonshot/v2/wikitext103/validation.bin",
+      "selection_access_allowed": true,
+      "sha256": "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10",
+      "split": "validation"
+    },
+    {
+      "path": "data/moonshot/v2/wikitext103/test.bin",
+      "selection_access_allowed": false,
+      "sha256": "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388",
+      "split": "test"
+    }
+  ],
+  "format": "layercake-phase1-quality-suite/1",
+  "metrics": [
+    {
+      "direction": "lower",
+      "id": "heldout_bpb",
+      "implementation": "layercake.training baseline token/byte NLL converted to bits per raw byte"
+    },
+    {
+      "direction": "lower",
+      "id": "repetition_rate",
+      "implementation": "layercake.evaluation quality repeated 4-gram fraction"
+    },
+    {
+      "direction": "higher",
+      "id": "unique_ngram_rate",
+      "implementation": "layercake.evaluation quality unique 4-grams / total 4-grams"
+    },
+    {
+      "direction": "lower",
+      "id": "entropy_collapse",
+      "implementation": "byte/token entropy and longest repeated-run diagnostic"
+    },
+    {
+      "direction": "higher",
+      "id": "continuation_quality",
+      "implementation": "frozen blinded five-point continuation rubric"
+    },
+    {
+      "direction": "higher",
+      "id": "instruction_following",
+      "implementation": "exact frozen task constraints and JSON validity"
+    },
+    {
+      "direction": "higher",
+      "id": "long_context",
+      "implementation": "exact codeword-recall task accuracy"
+    },
+    {
+      "direction": "lower",
+      "id": "invalid_output_rate",
+      "implementation": "invalid UTF-8 or task-schema failures / prompts"
+    },
+    {
+      "direction": "higher",
+      "id": "sample_inspection",
+      "implementation": "hash-bound frozen prompt/output inspection ledger"
+    },
+    {
+      "direction": "lower",
+      "id": "contamination",
+      "implementation": "exact prompt search and sampled cross-split overlap report"
+    }
+  ],
+  "prompts": [
+    {
+      "bucket": "short",
+      "bytes": 118,
+      "category": "short",
+      "id": "short-continuation",
+      "sha256": "b661e6bd016ec3d52550e011e63229352959e07320d39e6e8d265831e3e24b44",
+      "text": "Continue with uninterrupted natural-language prose for at least 1600 bytes: The future of efficient language models is"
+    },
+    {
+      "bucket": "medium",
+      "bytes": 370,
+      "category": "medium",
+      "id": "medium-continuation",
+      "sha256": "3ba1ffad2080032d2ea8e26824fcf92778f9d804385d039cb8182ae45d7e25a0",
+      "text": "Continue with uninterrupted natural-language prose for at least 1600 bytes. Do not conclude early. Efficient language systems should balance accuracy, latency, memory, transparency, and accessibility. A useful comparison must hold prompts and stopping rules constant while measuring each implementation directly. In that setting, the most important engineering lesson is"
+    },
+    {
+      "bucket": "long",
+      "bytes": 1123,
+      "category": "long",
+      "id": "long-continuation",
+      "sha256": "e77e2d07de32096a1aeb10fa975fca63811e4235479489ffd40466ec2eae0164",
+      "text": "Continue with uninterrupted natural-language prose for at least 1600 bytes. Do not conclude early. A research team is evaluating language-model systems under a locked protocol. The protocol records executable identity, model and tokenizer hashes, precision, thread count, device, cache state, prompt identity, output bytes, timestamps, memory, and failures. Cold requests include model loading; warm requests use an already resident model. Deterministic and sampled decoding are kept separate. Prompt and output buckets are randomized with a published seed. Every aggregate is derived from per-request rows. Quality is not inferred from speed, and speed is not promoted without a frozen quality suite. A held-out test split cannot influence architecture selection. Hardware absence is recorded instead of converted into a passing performance claim. The campaign uses candidates, verifier promotion, release commits, annotated tags, and clean sealed verification. Historical measurements remain visible but cannot be mixed with current checkpoints. Given these constraints, a trustworthy benchmark should help future work by"
+    },
+    {
+      "bytes": 66,
+      "category": "instruction_following",
+      "id": "instruction-json",
+      "sha256": "465489d27df49d60003e30424f63ce5753b634bc6154c9bd1e1b730e9fe48bd7",
+      "text": "Return a JSON object with keys answer and confidence for: 17 + 25."
+    },
+    {
+      "bytes": 85,
+      "category": "long_context",
+      "id": "long-context-recall",
+      "sha256": "89afdcfae32647ae252dc612df0cc9298df44e9593c2052da861c74ae6f88755",
+      "text": "Remember the codeword cobalt. After a long neutral passage, report only the codeword."
+    },
+    {
+      "bytes": 67,
+      "category": "entropy_collapse",
+      "id": "repetition-control",
+      "sha256": "c44a1b8b9cdeb9ca8180729a2cc174fba18a5e2376515f1cb951f47925ae173f",
+      "text": "Write a varied paragraph about rivers without repeating a sentence."
+    }
+  ],
+  "sampling": {
+    "deterministic": {
+      "temperature": 0.0,
+      "top_p": 1.0
+    },
+    "sampled": {
+      "temperature": 0.8,
+      "top_p": 0.95
+    }
+  },
+  "stopping_rule": "first streaming prefix containing at least target UTF-8 bytes; hash exact target-byte prefix",
+  "test_policy": "test split is frozen and selection_access_allowed=false; Phase 2 selection uses architecture_selection and validation only"
+}

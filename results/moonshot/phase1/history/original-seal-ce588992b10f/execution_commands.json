@@ -1,0 +1,43 @@
+{
+  "commands": [
+    {
+      "arguments": [
+        "-m",
+        "layercake.phase1_campaign",
+        "benchmark-layercake"
+      ],
+      "configuration_sha256": "0316dff8a806dbc5302c7b6dfc25cf7faca00f00634751120d40dcb8b704aa5c",
+      "executable": "C:\\Python310\\python.exe",
+      "id": "phase1-layercake-direct"
+    },
+    {
+      "arguments": [
+        "-m",
+        "layercake.phase1_campaign",
+        "benchmark-ollama",
+        "--device",
+        "cpu",
+        "--endpoint",
+        "http://127.0.0.1:11435"
+      ],
+      "configuration_sha256": "0316dff8a806dbc5302c7b6dfc25cf7faca00f00634751120d40dcb8b704aa5c",
+      "executable": "C:\\Python310\\python.exe",
+      "id": "phase1-ollama-cpu"
+    },
+    {
+      "arguments": [
+        "-m",
+        "layercake.phase1_campaign",
+        "benchmark-ollama",
+        "--device",
+        "gpu",
+        "--endpoint",
+        "http://127.0.0.1:11434"
+      ],
+      "configuration_sha256": "0316dff8a806dbc5302c7b6dfc25cf7faca00f00634751120d40dcb8b704aa5c",
+      "executable": "C:\\Python310\\python.exe",
+      "id": "phase1-ollama-gpu"
+    }
+  ],
+  "format": "layercake-phase1-execution-commands/1"
+}

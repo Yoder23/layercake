@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "error": "benchmark matrix is incomplete for layercake_fastest_integrated: [('cpu_all_core', 'warm', 'sampled', 'long', 64)]",
+      "error": "headline same-scale-architecture-cpu/transformer_same_scale_headline has only 0 distinct prompts",
       "id": "missing_matrix_cell",
       "status": "DETECTED"
     },
@@ -16,7 +16,7 @@
       "status": "DETECTED"
     },
     {
-      "error": "evidence artifact is missing or stale: results/moonshot/phase1/adversarial_checks.json",
+      "error": "evidence artifact is missing or stale: results/moonshot/phase1/baseline_inventory.json",
       "id": "stale_artifact_hash",
       "status": "DETECTED"
     },
@@ -29,9 +29,29 @@
       "error": "bare self-asserted optimized booleans are forbidden",
       "id": "self_asserted_optimized_boolean",
       "status": "DETECTED"
+    },
+    {
+      "error": "generated token count differs from token-accounting evidence",
+      "id": "forged_authoritative_token_count",
+      "status": "DETECTED"
+    },
+    {
+      "error": "cold evidence used an extra load probe or multiple requests",
+      "id": "extra_cold_load_probe",
+      "status": "DETECTED"
+    },
+    {
+      "error": "headline same-scale-architecture-cpu/layercake_same_scale_headline has only 90 distinct prompts",
+      "id": "shallow_promoted_headline",
+      "status": "DETECTED"
+    },
+    {
+      "error": "comparison product mixes speed from a different model lineage: transformer_product_headline",
+      "id": "mixed_product_quality_speed_lineage",
+      "status": "DETECTED"
     }
   ],
-  "detected": 6,
+  "detected": 10,
   "format": "layercake-phase1-adversarial-checks/1",
   "status": "PASS"
 }

@@ -12,12 +12,15 @@
   "id": "bpe-reference",
   "incremental_state": {
     "mechanism": "per-layer PyTorch KV cache",
-    "reason": "512-token position limit cannot satisfy the locked 1024-byte matrix",
-    "status": "IMPLEMENTED_NOT_BENCHMARKED"
+    "raw_trace_run_ids": [
+      "transformer_same_scale_headline-0000",
+      "transformer_same_scale_headline-0001"
+    ],
+    "status": "MEASURED"
   },
   "known_limitations": [
     "512-token maximum context/output envelope",
-    "not a deployment-grade CPU runtime"
+    "same-scale architecture comparator, not the optimized product runtime"
   ],
   "parameters": {
     "active": 3347136,

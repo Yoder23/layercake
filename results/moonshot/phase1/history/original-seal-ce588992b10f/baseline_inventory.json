@@ -1,0 +1,169 @@
+{
+  "baselines": [
+    {
+      "id": "bpe_reference",
+      "model_id": "bpe-reference",
+      "model_manifest": {
+        "path": "results/moonshot/phase1/model_manifests/bpe-reference.json",
+        "sha256": "23674ca097388e3a6da0558ededb8ede4db41c747c0d7572565a6cd14ba07f8e"
+      },
+      "runtime": {
+        "execution": "pytorch_reference",
+        "name": "PyTorch reference-quality controls; not the optimized headline runtime",
+        "runtime_manifest": {
+          "path": "results/moonshot/phase1/runtime_manifests/pytorch-reference-controls.json",
+          "sha256": "627d93bc39d1c9536f9fd6709325890ff6f26d62761e83f154103ffa8de4c1ac"
+        },
+        "version": "Python 3.10.0; torch 2.7.1+cu118"
+      }
+    },
+    {
+      "id": "optimized_cpu_transformer",
+      "model_id": "qwen25-05b-cpu",
+      "model_manifest": {
+        "path": "results/moonshot/phase1/model_manifests/qwen25-05b-cpu.json",
+        "sha256": "e0b14c7dcf37057a09418bc06f98e759cee0cabeec43e5bd61db598517f7dcc5"
+      },
+      "runtime": {
+        "deployment_evidence": {
+          "path": "results/moonshot/phase1/ollama_model_show.json",
+          "sha256": "066129d1c25a9ed98dfaec55cec198035e51d77c2a4ce4156ce3ed8f6e4a5ade"
+        },
+        "execution": "native",
+        "kv_cache_evidence": {
+          "path": "results/moonshot/phase1/runtime_manifests/ollama-cpu.json",
+          "sha256": "89baa049f511972b60decc5c36b8c0f9e15e9c3c79b7cad0e6baf56fbb00c790"
+        },
+        "name": "Ollama native runner using llama.cpp/ggml",
+        "runtime_manifest": {
+          "path": "results/moonshot/phase1/runtime_manifests/ollama-cpu.json",
+          "sha256": "89baa049f511972b60decc5c36b8c0f9e15e9c3c79b7cad0e6baf56fbb00c790"
+        },
+        "version": "ollama version is 0.32.1"
+      }
+    },
+    {
+      "id": "optimized_gpu_transformer",
+      "model_id": "qwen25-05b-gpu",
+      "model_manifest": {
+        "path": "results/moonshot/phase1/model_manifests/qwen25-05b-gpu.json",
+        "sha256": "e1fa3c359587147f24cc40fc8835c59cf1122a95dbdf9544abc41c3408b18cfe"
+      },
+      "runtime": {
+        "deployment_evidence": {
+          "path": "results/moonshot/phase1/ollama_model_show.json",
+          "sha256": "066129d1c25a9ed98dfaec55cec198035e51d77c2a4ce4156ce3ed8f6e4a5ade"
+        },
+        "execution": "native",
+        "kv_cache_evidence": {
+          "path": "results/moonshot/phase1/runtime_manifests/ollama-gpu.json",
+          "sha256": "e8e6db49878939dfcc0435bc2519e6afdb49d2d5940abb007bdab713adadc12e"
+        },
+        "name": "Ollama native runner using llama.cpp/ggml",
+        "runtime_manifest": {
+          "path": "results/moonshot/phase1/runtime_manifests/ollama-gpu.json",
+          "sha256": "e8e6db49878939dfcc0435bc2519e6afdb49d2d5940abb007bdab713adadc12e"
+        },
+        "version": "ollama version is 0.32.1"
+      }
+    },
+    {
+      "id": "byte_transformer",
+      "model_id": "byte-transformer-control",
+      "model_manifest": {
+        "path": "results/moonshot/phase1/model_manifests/byte-transformer-control.json",
+        "sha256": "a60d95963aa23ad1d039eb5a7637ad1831c8016939c7150e2dae54b7ecd233d7"
+      },
+      "runtime": {
+        "execution": "pytorch_reference",
+        "name": "PyTorch reference-quality controls; not the optimized headline runtime",
+        "runtime_manifest": {
+          "path": "results/moonshot/phase1/runtime_manifests/pytorch-reference-controls.json",
+          "sha256": "627d93bc39d1c9536f9fd6709325890ff6f26d62761e83f154103ffa8de4c1ac"
+        },
+        "version": "Python 3.10.0; torch 2.7.1+cu118"
+      }
+    },
+    {
+      "id": "fastest_existing_layercake",
+      "model_id": "layercake-foundation-v2",
+      "model_manifest": {
+        "path": "results/moonshot/phase1/model_manifests/layercake-foundation-v2.json",
+        "sha256": "57ae90084e2b67d789f2adf6abbcdeb3954a6a9a7b9418bc5f7e5da1e49cb452"
+      },
+      "runtime": {
+        "execution": "pytorch_reference",
+        "name": "PyTorch eager recurrent/patch kernels with exact persistent state",
+        "runtime_manifest": {
+          "path": "results/moonshot/phase1/runtime_manifests/pytorch-foundation-v2.json",
+          "sha256": "b9a98541dfdcc8ec048fc6119258b51f2c6980f5d65ed25e28c6ef5536f8ffc6"
+        },
+        "version": "Python 3.10.0; torch 2.7.1+cu118"
+      }
+    },
+    {
+      "id": "highest_quality_existing_layercake",
+      "model_id": "layercake-adaptive-quality",
+      "model_manifest": {
+        "path": "results/moonshot/phase1/model_manifests/layercake-adaptive-quality.json",
+        "sha256": "a7f22c81cfb795d41d268995502d68eefe1acde5ce18d310c5f033401f419791"
+      },
+      "runtime": {
+        "execution": "pytorch_reference",
+        "name": "PyTorch reference-quality controls; not the optimized headline runtime",
+        "runtime_manifest": {
+          "path": "results/moonshot/phase1/runtime_manifests/pytorch-reference-controls.json",
+          "sha256": "627d93bc39d1c9536f9fd6709325890ff6f26d62761e83f154103ffa8de4c1ac"
+        },
+        "version": "Python 3.10.0; torch 2.7.1+cu118"
+      }
+    },
+    {
+      "id": "integrated_layercake",
+      "model_id": "layercake-foundation-v2",
+      "model_manifest": {
+        "path": "results/moonshot/phase1/model_manifests/layercake-foundation-v2.json",
+        "sha256": "57ae90084e2b67d789f2adf6abbcdeb3954a6a9a7b9418bc5f7e5da1e49cb452"
+      },
+      "runtime": {
+        "execution": "pytorch_reference",
+        "name": "PyTorch eager recurrent/patch kernels with exact persistent state",
+        "runtime_manifest": {
+          "path": "results/moonshot/phase1/runtime_manifests/pytorch-foundation-v2.json",
+          "sha256": "b9a98541dfdcc8ec048fc6119258b51f2c6980f5d65ed25e28c6ef5536f8ffc6"
+        },
+        "version": "Python 3.10.0; torch 2.7.1+cu118"
+      }
+    }
+  ],
+  "format": "layercake-phase1-baseline-inventory/1",
+  "historical_invalid_or_unfair": [
+    {
+      "pattern": "results/moonshot/v2/cpu_vs_gpu_evidence.json",
+      "reason": "historical runtime/checkpoints and locked matrix differ; never inherited"
+    },
+    {
+      "pattern": "results/breakthrough_equal/*",
+      "reason": "task-specific stored-answer/schema workloads do not establish general generation speed"
+    },
+    {
+      "pattern": "scripts/benchmark_generation.py BPE path",
+      "reason": "BPE comparator lacks KV caching and is not the optimized headline baseline"
+    },
+    {
+      "pattern": "legacy certificates",
+      "reason": "certificate summaries are not raw evidence"
+    }
+  ],
+  "performance_matrix_scope": {
+    "excluded_with_reason": {
+      "bpe-reference": "512-token limit cannot satisfy locked 1024-byte output",
+      "byte-transformer-control": "no incremental cache and fixed context",
+      "layercake-adaptive-quality": "no persistent incremental decode implementation"
+    },
+    "included": [
+      "qwen25-05b cpu/gpu through Ollama",
+      "layercake-foundation-v2 cpu/gpu"
+    ]
+  }
+}

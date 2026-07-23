@@ -1,0 +1,38 @@
+{
+  "architecture": "modern-bpe-transformer/1",
+  "checkpoint": {
+    "kind": "local_file",
+    "path": "artifacts/final/medium-transformers/seed-9801/model.safetensors",
+    "sha256": "32a60dd4ec6597823f4ea99743239433f73b450353006fbf92a7952983ee453c"
+  },
+  "configuration": {
+    "sha256": "dfc42d47a98bc40e86f5a69d39555d3a8fd1809692e3c4e6115ec27d440a575e"
+  },
+  "format": "layercake-phase1-model-manifest/1",
+  "id": "bpe-reference",
+  "incremental_state": {
+    "mechanism": "per-layer PyTorch KV cache",
+    "reason": "512-token position limit cannot satisfy the locked 1024-byte matrix",
+    "status": "IMPLEMENTED_NOT_BENCHMARKED"
+  },
+  "known_limitations": [
+    "512-token maximum context/output envelope",
+    "not a deployment-grade CPU runtime"
+  ],
+  "parameters": {
+    "active": 3347136,
+    "total": 3347136
+  },
+  "role": "strongest_existing_bpe_quality_reference",
+  "runtime_id": "pytorch-reference-controls",
+  "tokenizer": {
+    "kind": "trained 384-token byte-pair tokenizer",
+    "sha256": "398261a6b71f19c9633c53948c712445182c99d41eaab18768610e1b6cac7712"
+  },
+  "training_data": {
+    "corpus": "WikiText-103 byte corpus",
+    "train_bytes": 100000000,
+    "train_path": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "train_sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6"
+  }
+}

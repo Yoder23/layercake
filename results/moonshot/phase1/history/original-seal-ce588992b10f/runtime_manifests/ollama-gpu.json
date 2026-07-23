@@ -1,0 +1,115 @@
+{
+  "backend": "Ollama native runner using llama.cpp/ggml",
+  "executable": {
+    "path": "C:\\Users\\samyo\\AppData\\Local\\Programs\\Ollama\\ollama.exe",
+    "sha256": "7a777be95617a38798a9942a7fce7ec65f972ccc10ec061007b5a4dd5329741b"
+  },
+  "format": "layercake-phase1-runtime-manifest/1",
+  "id": "ollama-gpu",
+  "optimization_evidence": {
+    "batch_one": {
+      "batch_size": 1
+    },
+    "device_probe": {
+      "observed_target": "gpu",
+      "path": "results/moonshot/phase1/runtime_probe_gpu.json",
+      "sha256": "a3140a575b88f0046ae415e9132c503f28bc0a0e7772b74c521636d3a0ad2df8"
+    },
+    "kernels": {
+      "implementation": "ggml quantized Q4_K_M matrix kernels",
+      "instruction_sets": [
+        "CUDA"
+      ]
+    },
+    "kv_cache": {
+      "mechanism": "native llama.cpp per-layer KV cache",
+      "raw_trace_run_ids": [
+        "transformer_optimized_gpu-0000",
+        "transformer_optimized_gpu-0001"
+      ]
+    },
+    "threading": {
+      "raw_trace_run_ids": [
+        "transformer_optimized_gpu-0000",
+        "transformer_optimized_gpu-0001",
+        "transformer_optimized_gpu-0002",
+        "transformer_optimized_gpu-0003",
+        "transformer_optimized_gpu-0004",
+        "transformer_optimized_gpu-0005",
+        "transformer_optimized_gpu-0006",
+        "transformer_optimized_gpu-0007",
+        "transformer_optimized_gpu-0008",
+        "transformer_optimized_gpu-0009",
+        "transformer_optimized_gpu-0010",
+        "transformer_optimized_gpu-0011",
+        "transformer_optimized_gpu-0012",
+        "transformer_optimized_gpu-0013",
+        "transformer_optimized_gpu-0014",
+        "transformer_optimized_gpu-0015",
+        "transformer_optimized_gpu-0016",
+        "transformer_optimized_gpu-0017",
+        "transformer_optimized_gpu-0018",
+        "transformer_optimized_gpu-0019",
+        "transformer_optimized_gpu-0020",
+        "transformer_optimized_gpu-0021",
+        "transformer_optimized_gpu-0022",
+        "transformer_optimized_gpu-0023",
+        "transformer_optimized_gpu-0024",
+        "transformer_optimized_gpu-0025",
+        "transformer_optimized_gpu-0026",
+        "transformer_optimized_gpu-0027",
+        "transformer_optimized_gpu-0028",
+        "transformer_optimized_gpu-0029",
+        "transformer_optimized_gpu-0030",
+        "transformer_optimized_gpu-0031",
+        "transformer_optimized_gpu-0032",
+        "transformer_optimized_gpu-0033",
+        "transformer_optimized_gpu-0034",
+        "transformer_optimized_gpu-0035",
+        "transformer_optimized_gpu-0036",
+        "transformer_optimized_gpu-0037",
+        "transformer_optimized_gpu-0038",
+        "transformer_optimized_gpu-0039",
+        "transformer_optimized_gpu-0040",
+        "transformer_optimized_gpu-0041",
+        "transformer_optimized_gpu-0042",
+        "transformer_optimized_gpu-0043",
+        "transformer_optimized_gpu-0044",
+        "transformer_optimized_gpu-0045",
+        "transformer_optimized_gpu-0046",
+        "transformer_optimized_gpu-0047",
+        "transformer_optimized_gpu-0048",
+        "transformer_optimized_gpu-0049",
+        "transformer_optimized_gpu-0050",
+        "transformer_optimized_gpu-0051",
+        "transformer_optimized_gpu-0052",
+        "transformer_optimized_gpu-0053",
+        "transformer_optimized_gpu-0054",
+        "transformer_optimized_gpu-0055",
+        "transformer_optimized_gpu-0056",
+        "transformer_optimized_gpu-0057",
+        "transformer_optimized_gpu-0058",
+        "transformer_optimized_gpu-0059",
+        "transformer_optimized_gpu-0060",
+        "transformer_optimized_gpu-0061",
+        "transformer_optimized_gpu-0062",
+        "transformer_optimized_gpu-0063",
+        "transformer_optimized_gpu-0064",
+        "transformer_optimized_gpu-0065",
+        "transformer_optimized_gpu-0066",
+        "transformer_optimized_gpu-0067",
+        "transformer_optimized_gpu-0068",
+        "transformer_optimized_gpu-0069",
+        "transformer_optimized_gpu-0070",
+        "transformer_optimized_gpu-0071"
+      ]
+    }
+  },
+  "precision_contract": "Q4_K_M",
+  "target_device": "gpu",
+  "version": {
+    "command": "\"C:\\Users\\samyo\\AppData\\Local\\Programs\\Ollama\\ollama.exe\" --version",
+    "stdout": "ollama version is 0.32.1",
+    "stdout_sha256": "f754d405ada5abc023b577c00fe8a153afc284f66899f18a7c0bc513e349ffc4"
+  }
+}

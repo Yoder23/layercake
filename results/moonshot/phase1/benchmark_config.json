@@ -1,5 +1,10 @@
 {
   "batch_size": 1,
+  "correction_protocol": "phase1-final-corrections/1",
+  "cross_model_primary_throughput_metrics": [
+    "bytes_per_second",
+    "characters_per_second"
+  ],
   "format": "layercake-phase1-benchmark-config/1",
   "generation_modes": {
     "deterministic": {
@@ -10,6 +15,11 @@
       "temperature": 0.8,
       "top_p": 0.95
     }
+  },
+  "headline": {
+    "distinct_prompts": 100,
+    "output_target_bytes": 128,
+    "repeated_prompt_observations": 20
   },
   "layercake_checkpoint": "artifacts/final/medium-cores/seed-9801",
   "minimum_trials_per_cell": 2,
@@ -44,5 +54,5 @@
     }
   ],
   "randomization_seed": 20260722,
-  "stopping_rule": "first streaming prefix containing at least target UTF-8 bytes; hash exact target-byte prefix"
+  "stopping_rule": "capture first streaming prefix containing at least target UTF-8 bytes, continue the same request to its terminal runtime record, and hash both benchmark prefix and completed response"
 }

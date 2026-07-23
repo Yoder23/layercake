@@ -1,0 +1,36 @@
+{
+  "architecture": "CausalByteLM absolute-position transformer",
+  "checkpoint": {
+    "kind": "local_file",
+    "path": "runs_experiment/scale5m_seed4242_continued.pt",
+    "sha256": "e3174d0817d8f92947699e81982893c90f469be72334079a38aa4053fce29e3b"
+  },
+  "configuration": {
+    "sha256": "681340bf92f54f621a3bbb9f922eb53c2ea5e1b166b24304630d63c3126d1e03"
+  },
+  "format": "layercake-phase1-model-manifest/1",
+  "id": "byte-transformer-control",
+  "incremental_state": {
+    "reason": "historical control uses full-sequence forward and fixed absolute positions",
+    "status": "NOT_AVAILABLE_IN_CURRENT_IMPLEMENTATION"
+  },
+  "known_limitations": [
+    "unsafe legacy pickle container",
+    "no KV cache",
+    "fixed context",
+    "not valid as optimized speed baseline"
+  ],
+  "parameters": {
+    "active": 14566048,
+    "total": 14566048
+  },
+  "role": "byte_transformer_control",
+  "runtime_id": "pytorch-reference-controls",
+  "tokenizer": {
+    "kind": "raw-byte vocabulary 0..255",
+    "sha256": "cfac7296f2ae3a87e36dbebf9676ed745b8019aadf323e01e71891d5d4687eea"
+  },
+  "training_data": {
+    "historical_run": "results/scale5m_seed4242_continued.json"
+  }
+}

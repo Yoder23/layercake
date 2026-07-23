@@ -1,0 +1,41 @@
+{
+  "architecture": "layercake-foundation-final-objective-search/1",
+  "checkpoint": {
+    "kind": "local_file",
+    "path": "artifacts/final/medium-cores/seed-9801/model.safetensors",
+    "sha256": "582dc3881e4d02d777478fa541839339b839f4958ca3bb40355b97da87cd57cd"
+  },
+  "configuration": {
+    "sha256": "344d516662010ad825bfd9c3ff51013093fc6bd6321cbe4f60935d6148131249"
+  },
+  "format": "layercake-phase1-model-manifest/1",
+  "id": "layercake-foundation-v2",
+  "incremental_state": {
+    "mechanism": "FoundationV2State recurrent and patch state",
+    "raw_trace_run_ids": [
+      "layercake_fastest_integrated-0000",
+      "layercake_fastest_integrated-0001"
+    ],
+    "status": "MEASURED"
+  },
+  "known_limitations": [
+    "Current validation BPB is weaker than the BPE reference",
+    "PyTorch runtime is not yet a native packaged CPU runtime"
+  ],
+  "parameters": {
+    "active": 1336160,
+    "total": 3181920
+  },
+  "role": "fastest_credible_and_integrated_layercake",
+  "runtime_id": "pytorch-foundation-v2",
+  "tokenizer": {
+    "kind": "raw-byte vocabulary 0..255",
+    "sha256": "cfac7296f2ae3a87e36dbebf9676ed745b8019aadf323e01e71891d5d4687eea"
+  },
+  "training_data": {
+    "corpus": "WikiText-103 byte corpus",
+    "train_bytes": 100000000,
+    "train_path": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "train_sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6"
+  }
+}
