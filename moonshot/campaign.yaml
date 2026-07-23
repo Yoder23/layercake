@@ -13,25 +13,34 @@
       "reason": "separate same-scale/product comparisons; single-request cold timing; authoritative token accounting; promoted 100-prompt depth"
     }
   ],
-  "current_phase": 3,
+  "current_phase": 2,
+  "invalidation_history": [
+    {
+      "invalidated_certificate_sha256": "0cdcf0ab0f73a5e8ec091040daa0dcd923d99006e5d18fc9ef4541ff03a4bea2",
+      "invalidated_tag": "layercake-moonshot-phase2",
+      "invalidated_tag_commit": "4402b7a338ef09b7cb971c15886cc5d42001415d",
+      "phase": 2,
+      "reasons": [
+        "INVALID_EVIDENCE_DETERMINISTIC_PLANNER",
+        "INVALID_EVIDENCE_NOT_TOKENIZER_FREE"
+      ],
+      "recertification_id": "phase2-tokenizer-free-free-generation/2",
+      "record": "results/moonshot/phase2_recertification/invalidation.json",
+      "record_sha256": "7fe0f757a88d1b46ef95c6fe3be9b3c9a0fee90c5c27be803f70ed4228dc1241"
+    }
+  ],
   "lineage": {
     "abi_hash": null,
-    "architecture_hash": "1b8d0d00783d3f4c97958a67d1031d25340396e3bd8764a74552fc6508d781fa",
-    "architecture_id": "layercake-sparse-bpe-core/3-neural-guided-english-288x3-top1-8cakes",
+    "architecture_hash": null,
+    "architecture_id": null,
     "cake_package_hashes": {},
-    "core_checkpoint_hashes": {
-      "seed-9824": "fc8d32c77bfa9d39152a6d32436c4dbbf767f9d1c88f3de17fec84a24bd3f781",
-      "seed-9825": "fa8f2e2d14afee8fa163ed178c7883d7480ba637d908d3a7879006a8d2c626af",
-      "seed-9826": "fada9ab6ae56d387b07da19797a4df0ba3793cf1de14dcbce17f09e790187c74"
-    },
+    "core_checkpoint_hashes": {},
     "data_hashes": {},
     "governance_commit": "25aae41044b8cae8decd41fff38fd4184c667458",
     "model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
     "router_hash": null,
     "runtime_hashes": {},
-    "transformer_checkpoint_hashes": {
-      "optimized_cpu": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67"
-    }
+    "transformer_checkpoint_hashes": {}
   },
   "phase_records": {
     "phase0": {
@@ -76,32 +85,45 @@
       }
     },
     "phase2": {
-      "candidate": "results/moonshot/phase2/candidate.json",
-      "candidate_verification": "results/moonshot/phase2/candidate_verification.json",
-      "certificate": "results/moonshot/phase2/release_certificate.json",
-      "certificate_sha256": "3ed5fb56c3e33af3ba993806cad39181343254b25a6f9afb1a7314d32c8589ba",
-      "completion_tag": "layercake-moonshot-phase2",
+      "active_artifact_dir": "artifacts/moonshot/phase2_recertification",
+      "active_evidence_dir": "results/moonshot/phase2_recertification",
+      "completion_tag": "layercake-moonshot-phase2-r2",
       "governance_commit": "25aae41044b8cae8decd41fff38fd4184c667458",
-      "handoff": "results/moonshot/phase2/handoff.json",
-      "handoff_sha256": "536016680d912f5d76954828bf37368892c9fc583f4d8594aff6372abe7b5bbb",
+      "historical_record": {
+        "candidate": "results/moonshot/phase2/candidate.json",
+        "candidate_verification": "results/moonshot/phase2/candidate_verification.json",
+        "certificate": "results/moonshot/phase2/release_certificate.json",
+        "certificate_sha256": "3ed5fb56c3e33af3ba993806cad39181343254b25a6f9afb1a7314d32c8589ba",
+        "completion_tag": "layercake-moonshot-phase2",
+        "governance_commit": "25aae41044b8cae8decd41fff38fd4184c667458",
+        "handoff": "results/moonshot/phase2/handoff.json",
+        "handoff_sha256": "536016680d912f5d76954828bf37368892c9fc583f4d8594aff6372abe7b5bbb",
+        "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
+        "phase_implementation_commit": "36f054b3a867e8a2fc1d10d863d7fd2fb3aa3db7",
+        "phase_release_commit": "ba6e826c32a9209304c52915ca093784c8d41971",
+        "phase_tag": "layercake-moonshot-phase2",
+        "raw_evidence_manifest_sha256": "92a312e1006dcaf2cc3f6a1b3ca29d45f260225bc110866ae7a3f6be67451492",
+        "seal": "results/moonshot/phase2/seal.json",
+        "working_tree_clean_at_release": {
+          "command": "git status --porcelain=v1",
+          "porcelain": "",
+          "status": "CLEAN"
+        }
+      },
       "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
-      "phase_implementation_commit": "36f054b3a867e8a2fc1d10d863d7fd2fb3aa3db7",
-      "phase_release_commit": "ba6e826c32a9209304c52915ca093784c8d41971",
-      "phase_tag": "layercake-moonshot-phase2",
-      "raw_evidence_manifest_sha256": "92a312e1006dcaf2cc3f6a1b3ca29d45f260225bc110866ae7a3f6be67451492",
-      "seal": "results/moonshot/phase2/seal.json",
-      "working_tree_clean_at_release": {
-        "command": "git status --porcelain=v1",
-        "porcelain": "",
-        "status": "CLEAN"
-      }
+      "invalidation": "results/moonshot/phase2_recertification/invalidation.json",
+      "invalidation_sha256": "7fe0f757a88d1b46ef95c6fe3be9b3c9a0fee90c5c27be803f70ed4228dc1241",
+      "recertification_id": "phase2-tokenizer-free-free-generation/2",
+      "superseded_release_commit": "ba6e826c32a9209304c52915ca093784c8d41971",
+      "superseded_tag": "layercake-moonshot-phase2",
+      "superseded_tag_commit": "4402b7a338ef09b7cb971c15886cc5d42001415d"
     }
   },
   "phases": {
     "phase0_governance": "SEALED",
     "phase1_benchmark_truth": "SEALED",
-    "phase2_cpu_quality_speed": "SEALED",
-    "phase3_training_speed": "OPEN",
+    "phase2_cpu_quality_speed": "OPEN",
+    "phase3_training_speed": "LOCKED",
     "phase4_portable_domain": "LOCKED",
     "phase5_multi_domain": "LOCKED",
     "phase6_orchestration": "LOCKED",

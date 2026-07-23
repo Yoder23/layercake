@@ -1,0 +1,235 @@
+{
+  "format": "layercake-phase2-invalidation/1",
+  "historical_evidence_preserved_at": "results/moonshot/phase2",
+  "invalidated_certificate_path": "results/moonshot/phase2/release_certificate.json",
+  "invalidated_certificate_sha256_recorded": "3ed5fb56c3e33af3ba993806cad39181343254b25a6f9afb1a7314d32c8589ba",
+  "invalidated_certificate_sha256_tagged_blob": "0cdcf0ab0f73a5e8ec091040daa0dcd923d99006e5d18fc9ef4541ff03a4bea2",
+  "invalidated_release_commit": "ba6e826c32a9209304c52915ca093784c8d41971",
+  "invalidated_tag": "layercake-moonshot-phase2",
+  "invalidated_tag_commit": "4402b7a338ef09b7cb971c15886cc5d42001415d",
+  "invalidation_reasons": [
+    "INVALID_EVIDENCE_DETERMINISTIC_PLANNER",
+    "INVALID_EVIDENCE_NOT_TOKENIZER_FREE"
+  ],
+  "mission_guard": {
+    "certificate": "results/moonshot/phase2/release_certificate.json",
+    "core_manifest": "artifacts/moonshot/phase2/final_core/manifest.json",
+    "format": "layercake-mission-guard/1",
+    "passed": false,
+    "status": "FAIL",
+    "trace_facts": {},
+    "violations": [
+      "COMPARATOR_CHECKPOINT_MISMATCH",
+      "FREE_NEURAL_GENERATION_CONTRACT_NOT_PROVEN",
+      "GENERATION_TRACES_MISSING",
+      "INVALID_EVIDENCE_DETERMINISTIC_PLANNER",
+      "INVALID_EVIDENCE_NOT_TOKENIZER_FREE",
+      "OPTIMIZED_TRANSFORMER_COMPARATOR_NOT_PROVEN",
+      "QUALITY_SPEED_CHECKPOINT_MISMATCH",
+      "TOKENIZER_FREE_CONTRACT_NOT_PROVEN",
+      "VERSIONED_EXTENSION_INTERFACE_MISSING"
+    ]
+  },
+  "potentially_valid_non_headline_measurements": [
+    "checkpoint held-out loss under the learned BPE contract",
+    "physical top-1 expert dispatch",
+    "persistent per-layer KV state",
+    "model parameter and checkpoint byte counts"
+  ],
+  "prohibited_future_headline_claims": [
+    "tokenizer-free quality",
+    "autonomous free-generation quality",
+    "generation throughput",
+    "generation latency",
+    "time to first useful output",
+    "matched-quality CPU advantage",
+    "functional quality from planner-generated responses"
+  ],
+  "recertification_id": "phase2-tokenizer-free-free-generation/2",
+  "source_evidence": [
+    {
+      "matches": [
+        {
+          "line": 375,
+          "text": "planned_ids = None"
+        },
+        {
+          "line": 377,
+          "text": "planned_text = model.plan_english_response("
+        },
+        {
+          "line": 381,
+          "text": "planned_ids = tokenizer.encode(planned_text)"
+        },
+        {
+          "line": 389,
+          "text": "if planned_ids is not None and not sustained and not long_context"
+        },
+        {
+          "line": 392,
+          "text": "if planned_ids is not None:"
+        },
+        {
+          "line": 393,
+          "text": "planned_bytes = planned_text.encode(\"utf-8\")"
+        },
+        {
+          "line": 398,
+          "text": "planned_ids is not None"
+        },
+        {
+          "line": 406,
+          "text": "and len(generated_ids) < len(planned_ids)"
+        },
+        {
+          "line": 411,
+          "text": "if planned_ids is not None:"
+        },
+        {
+          "line": 412,
+          "text": "if len(generated_ids) >= len(planned_ids):"
+        },
+        {
+          "line": 415,
+          "text": "[planned_ids[len(generated_ids)]], dtype=torch.long,"
+        },
+        {
+          "line": 431,
+          "text": "_, state = model.decode_step(state, next_token=selected)"
+        },
+        {
+          "line": 457,
+          "text": "\"generation_mode\": \"deterministic_constrained_english\" if planned_ids is not None else \"deterministic\","
+        },
+        {
+          "line": 459,
+          "text": "\"enabled\": planned_ids is not None,"
+        },
+        {
+          "line": 461,
+          "text": "\"neural_prefill_selects_lexical_rotation\": planned_ids is not None,"
+        },
+        {
+          "line": 462,
+          "text": "\"forced_plan_tokens\": len(generated_ids) if planned_ids is not None else 0,"
+        },
+        {
+          "line": 568,
+          "text": "planned_ids = None"
+        },
+        {
+          "line": 570,
+          "text": "planned_text = model.plan_english_response("
+        },
+        {
+          "line": 574,
+          "text": "planned_ids = tokenizer.encode(planned_text)"
+        },
+        {
+          "line": 579,
+          "text": "planned_ids is not None"
+        },
+        {
+          "line": 584,
+          "text": "if planned_ids is not None and suite == \"functional\""
+        },
+        {
+          "line": 587,
+          "text": "if planned_ids is not None:"
+        },
+        {
+          "line": 588,
+          "text": "boundary = planned_text.encode(\"utf-8\").find(b\" \", screen_target)"
+        },
+        {
+          "line": 593,
+          "text": "or (complete_two_sentence_plan and len(generated_ids) < len(planned_ids))"
+        },
+        {
+          "line": 595,
+          "text": "if planned_ids is not None:"
+        },
+        {
+          "line": 596,
+          "text": "if len(generated_ids) >= len(planned_ids):"
+        },
+        {
+          "line": 598,
+          "text": "selected = torch.tensor([planned_ids[len(generated_ids)]], dtype=torch.long)"
+        },
+        {
+          "line": 608,
+          "text": "_, state = model.decode_step(state, next_token=selected)"
+        },
+        {
+          "line": 621,
+          "text": "\"generation_mode\": \"deterministic_constrained_english\" if planned_ids is not None else \"deterministic\","
+        },
+        {
+          "line": 1301,
+          "text": "planner_count_mutation[0][\"english_planner\"][\"forced_plan_tokens\"] -= 1"
+        }
+      ],
+      "path": "layercake/phase2_campaign.py",
+      "sha256": "5fb802ee121337aa8e1d27f4ec0040198ee639d1cf21c561916708485dd1a2c8"
+    },
+    {
+      "matches": [
+        {
+          "line": 13,
+          "text": "from .phase2_english_planner import canonical_planner_bytes, planner_sha256, realize_english"
+        },
+        {
+          "line": 29,
+          "text": "constrained_english_planner: bool = False"
+        },
+        {
+          "line": 68,
+          "text": "if cfg.constrained_english_planner:"
+        },
+        {
+          "line": 96,
+          "text": "if not self.config.constrained_english_planner:"
+        },
+        {
+          "line": 200,
+          "text": "next_token: torch.Tensor | None = None,"
+        },
+        {
+          "line": 203,
+          "text": "selected = logits.argmax(-1) if next_token is None else next_token.to(logits.device).long().flatten()"
+        }
+      ],
+      "path": "layercake/models/sparse_bpe_layercake.py",
+      "sha256": "8796687f1ba37d8ef6275f13111fe6f6261b90b97c05dd2b4b8ebca5390f9c91"
+    },
+    {
+      "matches": [
+        {
+          "line": 18,
+          "text": "\"format\": \"layercake-neural-guided-english-planner/1\","
+        },
+        {
+          "line": 37,
+          "text": "def canonical_planner_bytes() -> bytes:"
+        },
+        {
+          "line": 43,
+          "text": "def planner_sha256() -> str:"
+        },
+        {
+          "line": 44,
+          "text": "return hashlib.sha256(canonical_planner_bytes()).hexdigest()"
+        },
+        {
+          "line": 130,
+          "text": "def realize_english(prompt: str, *, variant: int = 0, sustained: bool = False) -> str:"
+        }
+      ],
+      "path": "layercake/models/phase2_english_planner.py",
+      "sha256": "867de5512df3420d962530a9b16e02c026af0bcb55bdb56c5a351230f79f7af4"
+    }
+  ],
+  "status": "INVALIDATED_SUPERSEDED_EVIDENCE_PRESERVED",
+  "superseding_tag": "layercake-moonshot-phase2-r2"
+}
