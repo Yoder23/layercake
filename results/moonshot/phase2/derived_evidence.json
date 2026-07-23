@@ -1,0 +1,191 @@
+{
+  "aggregates": {
+    "active_memory_ratio": 0.04485745811224746,
+    "calibration_error_delta": 0.002429972051726256,
+    "cpu_median_latency_ratio": 0.2496660251808063,
+    "cpu_throughput_ratio": 8.040262788784071,
+    "headline_distributions": {
+      "layercake": {
+        "bytes_per_second": {
+          "p50": 2091.5462754613445,
+          "p95": 10550.315801399156,
+          "p99": 11549.401095039826
+        },
+        "latency_seconds": {
+          "p50": 0.2570504,
+          "p95": 0.3353563,
+          "p99": 0.3449816
+        },
+        "observations": 120
+      },
+      "qwen": {
+        "bytes_per_second": {
+          "p50": 465.6717008687978,
+          "p95": 503.29337358701696,
+          "p99": 532.7181031151357
+        },
+        "latency_seconds": {
+          "p50": 1.030539,
+          "p95": 1.1401136,
+          "p99": 1.2292465
+        },
+        "observations": 120
+      }
+    },
+    "heldout_bpb_delta": -0.03324327388735093,
+    "installed_model_memory_ratio": 0.05927940778078259,
+    "locked_transformer_validation_bpb": 1.6873530535092476,
+    "long_context_accuracy": 1.0,
+    "long_context_accuracy_delta": 0.95,
+    "physical_sparse_execution": 1.0,
+    "process_resident_memory_ratio": 0.6408904024253499,
+    "qwen_long_context_accuracy": 0.05,
+    "reference_validation_calibration_error": 0.007791228632660685,
+    "sustained_1024_byte_throughput_ratio": 10.732543117850671,
+    "sustained_distributions": {
+      "layercake": {
+        "bytes_per_second": {
+          "p50": 4680.79295162759,
+          "p95": 14252.112366654343,
+          "p99": 14617.512989528694
+        },
+        "observations": 40
+      },
+      "qwen": {
+        "bytes_per_second": {
+          "p50": 544.1206094342118,
+          "p95": 594.3527089801296,
+          "p99": 631.8918013643186
+        },
+        "observations": 40
+      }
+    },
+    "time_to_first_output_ratio": 0.03928552341250754,
+    "validation_bpb_mean": 1.6541097796218966,
+    "validation_bpb_seed_ci": {
+      "confidence": 0.95,
+      "estimate": 1.6541097796218966,
+      "lower": 1.6500439132561244,
+      "method": "percentile_bootstrap",
+      "resamples": 10000,
+      "seed": 20260722,
+      "upper": 1.6585408226200933
+    },
+    "validation_calibration_error_mean": 0.010221200684386941
+  },
+  "benchmark_config": {
+    "path": "configs/moonshot/phase2/final_benchmark.json",
+    "sha256": "0e438d53c265a9232f34ce97691c2c6ba6d16ba974429f56c9d2f71df9402ad4"
+  },
+  "failed_gates": [],
+  "format": "layercake-phase2-derived-evidence/1",
+  "functional_quality": {
+    "layercake": {
+      "coherence_pass_rate": 1.0,
+      "functional_pass_rate": 1.0,
+      "generated_characters": 583.35,
+      "instruction_following_rate": 1.0,
+      "invalid_output_rate": 0.0,
+      "longest_identical_byte_run": 2.0,
+      "printable_character_rate": 1.0,
+      "repetition_rate": 0.15735916715662135,
+      "task_constraint_success_rate": 1.0,
+      "topic_relevance_rate": 1.0,
+      "unique_4gram_rate": 0.842640832843379,
+      "valid_utf8": 1.0,
+      "word_count": 101.75,
+      "word_diversity": 0.7886804362991344
+    },
+    "qwen": {
+      "coherence_pass_rate": 0.3,
+      "functional_pass_rate": 0.15,
+      "generated_characters": 479.88,
+      "instruction_following_rate": 0.1,
+      "invalid_output_rate": 0.0,
+      "longest_identical_byte_run": 2.0,
+      "printable_character_rate": 1.0,
+      "repetition_rate": 0.17750524109014673,
+      "task_constraint_success_rate": 0.09,
+      "topic_relevance_rate": 0.09,
+      "unique_4gram_rate": 0.8224947589098534,
+      "valid_utf8": 1.0,
+      "word_count": 73.2,
+      "word_diversity": 0.8013427060120282
+    }
+  },
+  "gates": {
+    "active_memory_ratio": true,
+    "calibration_noninferior": true,
+    "coherence_noninferior": true,
+    "cpu_median_latency_ratio": true,
+    "cpu_throughput_ratio": true,
+    "functional_task_noninferior": true,
+    "heldout_bpb_delta": true,
+    "installed_model_memory_ratio": true,
+    "instruction_following_noninferior": true,
+    "invalid_output_noninferior": true,
+    "long_context_noninferior": true,
+    "minimum_response_length": true,
+    "no_entropy_collapse": true,
+    "physical_sparse_execution": true,
+    "process_resident_memory_ratio": true,
+    "repetition_noninferior": true,
+    "same_primary_checkpoint_for_quality_and_speed": true,
+    "sustained_1024_byte_throughput_ratio": true,
+    "task_constraint_noninferior": true,
+    "three_seed_replication": true,
+    "time_to_first_output_ratio": true,
+    "topic_relevance_noninferior": true,
+    "unique_ngram_noninferior": true
+  },
+  "paired_prompt_bootstrap_differences": {
+    "bytes_per_second": {
+      "confidence": 0.95,
+      "estimate": 3321.959213730451,
+      "lower": 2719.434751195176,
+      "method": "paired_percentile_bootstrap",
+      "resamples": 10000,
+      "seed": 20260722,
+      "upper": 3977.5853200819865
+    },
+    "characters_per_second": {
+      "confidence": 0.95,
+      "estimate": 3322.0650923091475,
+      "lower": 2719.537007938146,
+      "method": "paired_percentile_bootstrap",
+      "resamples": 10000,
+      "seed": 20260722,
+      "upper": 3977.7330108495266
+    },
+    "time_to_first_output_seconds": {
+      "confidence": 0.95,
+      "estimate": -0.2543975055,
+      "lower": -0.257717262,
+      "method": "paired_percentile_bootstrap",
+      "resamples": 10000,
+      "seed": 20260722,
+      "upper": -0.2512135015
+    },
+    "total_latency_seconds": {
+      "confidence": 0.95,
+      "estimate": -0.8133771145,
+      "lower": -0.8368553679999999,
+      "method": "paired_percentile_bootstrap",
+      "resamples": 10000,
+      "seed": 20260722,
+      "upper": -0.7911625205
+    }
+  },
+  "primary_checkpoint_sha256": "fc8d32c77bfa9d39152a6d32436c4dbbf767f9d1c88f3de17fec84a24bd3f781",
+  "raw_artifacts": {
+    "layercake_functional.json": "0f93d18f5eef15e7285ca103721579d718554e1b389117fbfcb39db1231bb1ef",
+    "layercake_long_context.json": "c649ff6f754b60d0c8120d184d29c84964d20b614b5289f8f07962aa4b11cfeb",
+    "layercake_sustained.json": "6d19f85d8c8633ce16240d2d949158f00150495a064d0d3ae8e73704ad97dea9",
+    "quality_seeds.json": "dacce4ea1bcd08b30c2d9cc7c3411e75121f84eec8b51f0c371147fc029c5282",
+    "qwen_functional.json": "14af3363a8927f18689bab4e8ad880de83bd813d3ba74fa0c48d583854d69337",
+    "qwen_long_context.json": "8c3432e59da7f954cd6ef5a3e5c21ac7d1d52a08271827fc610074a1915842c3",
+    "qwen_sustained.json": "4799c8cd89c10796d52c5be9f452ddc4f7e23947b0d4a3a1a0e3c5988a5aa535"
+  },
+  "status": "PASS",
+  "transformer_checkpoint_sha256": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67"
+}

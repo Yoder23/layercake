@@ -1,0 +1,72 @@
+{
+  "checks": [
+    {
+      "error": "quality/speed checkpoint lineage is mixed",
+      "id": "mixed_checkpoint_lineage",
+      "status": "DETECTED"
+    },
+    {
+      "error": "bytes/second does not recompute from raw duration",
+      "id": "forged_bytes_per_second",
+      "status": "DETECTED"
+    },
+    {
+      "error": "output payload size or hash is stale",
+      "id": "forged_output_hash",
+      "status": "DETECTED"
+    },
+    {
+      "error": "LayerCake token accounting is not authoritative",
+      "id": "non_authoritative_token_count",
+      "status": "DETECTED"
+    },
+    {
+      "error": "persistent incremental state is absent",
+      "id": "missing_incremental_state",
+      "status": "DETECTED"
+    },
+    {
+      "error": "inactive experts were not physically skipped",
+      "id": "dense_expert_execution",
+      "status": "DETECTED"
+    },
+    {
+      "error": "generation stopped before the locked output target",
+      "id": "short_generation",
+      "status": "DETECTED"
+    },
+    {
+      "error": "expected 120 observations, found 119",
+      "id": "shallow_prompt_depth",
+      "status": "DETECTED"
+    },
+    {
+      "error": "transformer token count scope is ambiguous",
+      "id": "mixed_transformer_token_scope",
+      "status": "DETECTED"
+    },
+    {
+      "error": "completed transformer response evidence is stale",
+      "id": "forged_completed_transformer_response",
+      "status": "DETECTED"
+    },
+    {
+      "error": "long-context success flag is stale",
+      "id": "forged_long_context_success",
+      "status": "DETECTED"
+    },
+    {
+      "error": "English planner evidence is not bound to the checkpoint buffer",
+      "id": "forged_checkpoint_planner_binding",
+      "status": "DETECTED"
+    },
+    {
+      "error": "checkpoint-bound neural-guided English planner evidence is absent",
+      "id": "forged_planner_token_count",
+      "status": "DETECTED"
+    }
+  ],
+  "detected": 13,
+  "format": "layercake-phase2-adversarial-checks/1",
+  "status": "PASS"
+}

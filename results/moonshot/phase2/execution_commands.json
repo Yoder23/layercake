@@ -1,0 +1,23 @@
+{
+  "commands": [
+    "python -m layercake.phase2_campaign prepare",
+    "python -m layercake.training.phase2_sparse_bpe configs/moonshot/phase2/sparse_bpe_288x3_full_seed_9824.json artifacts/moonshot/phase2/sparse-bpe-288x3-full/seed-9824",
+    "python -m layercake.training.phase2_sparse_bpe configs/moonshot/phase2/sparse_bpe_288x3_full_seed_9825.json artifacts/moonshot/phase2/sparse-bpe-288x3-full/seed-9825",
+    "python -m layercake.training.phase2_sparse_bpe configs/moonshot/phase2/sparse_bpe_288x3_full_seed_9826.json artifacts/moonshot/phase2/sparse-bpe-288x3-full/seed-9826",
+    "python -m layercake.training.phase2_distillation generate --endpoint http://127.0.0.1:11435",
+    "python -m layercake.training.phase2_distillation build-clean-curriculum",
+    "python -m layercake.training.phase2_tokenizer --base artifacts/final/medium-transformers/seed-9801/tokenizer.json --output data/moonshot/phase2/word_preserving_bpe_2304.json --merges 2048 --training-bytes 10000000",
+    "python -m layercake.training.phase2_tokenizer --base data/moonshot/phase2/word_preserving_bpe_2304.json --output data/moonshot/phase2/planner_preserving_bpe_2816.json --planner-extension-merges 512",
+    "per-seed exact-prefix word transfer, prompt-conditioned clean distillation, exact-prefix planner-tokenizer transfer, and final 1200-step clean distillation using the recorded configs and search ledger",
+    "python -m layercake.phase2_campaign evaluate-quality --access-test",
+    "python -m layercake.phase2_campaign benchmark-layercake --suite functional",
+    "python -m layercake.phase2_campaign benchmark-qwen --suite functional --endpoint http://127.0.0.1:11435",
+    "python -m layercake.phase2_campaign benchmark-layercake --suite sustained",
+    "python -m layercake.phase2_campaign benchmark-qwen --suite sustained --endpoint http://127.0.0.1:11435",
+    "python -m layercake.phase2_campaign benchmark-layercake --suite long-context",
+    "python -m layercake.phase2_campaign benchmark-qwen --suite long-context --endpoint http://127.0.0.1:11435",
+    "python -m layercake.phase2_campaign finalize",
+    "python -m layercake.phase2_campaign adversarial"
+  ],
+  "format": "layercake-phase2-execution-commands/1"
+}

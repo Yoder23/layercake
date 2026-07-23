@@ -1,0 +1,274 @@
+{
+  "architecture": {
+    "architecture_version": "layercake-sparse-bpe-core/3-neural-guided-english",
+    "constrained_english_planner": true,
+    "expansion": 4,
+    "expert_expansion": 1,
+    "heads": 8,
+    "layers": 3,
+    "max_tokens": 1024,
+    "prompt_conditioning": true,
+    "route_after_layers": 1,
+    "routed_experts": 8,
+    "routing_mode": "learned_top1",
+    "vocab_size": 2816,
+    "width": 288
+  },
+  "checkpoint": {
+    "path": "artifacts/moonshot/phase2/final_core/seed-9824/model.safetensors",
+    "sha256": "fc8d32c77bfa9d39152a6d32436c4dbbf767f9d1c88f3de17fec84a24bd3f781"
+  },
+  "config": {
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\configs\\moonshot\\phase2\\sparse_bpe_planner2816_transfer_pilot_seed_9824.json",
+    "sha256": "0b6917882502a41036fa2660a6f84b4e2d2eb886af0b9c6639e6469f2ca5137d"
+  },
+  "data": {
+    "architecture_selection": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\architecture_selection.bin",
+      "sha256": "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93"
+    },
+    "test": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\test.bin",
+      "sha256": "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388"
+    },
+    "train": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\train_medium.bin",
+      "sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6"
+    },
+    "validation": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\validation.bin",
+      "sha256": "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10"
+    }
+  },
+  "english_planner": {
+    "checkpoint_buffer_sha256": "f9204be9e4a6db242213c306fb40ab965516099f1d8ea62fcd08f427a614fd2b",
+    "enabled": true,
+    "frozen_evaluation_content": false,
+    "selection": "neural prefill logits choose lexical rotation; grammar constrains token path"
+  },
+  "format": "layercake-sparse-bpe-instruction-core/1",
+  "incremental_state": {
+    "implemented": true,
+    "mechanism": "per-layer KV cache"
+  },
+  "initialization": {
+    "method": "exact architecture transfer with prefix-preserved embedding expansion",
+    "new_embedding_rows": 512,
+    "parent_checkpoint_path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2\\sparse-bpe-constrained-english-pilot\\seed-9824\\model.safetensors",
+    "parent_checkpoint_sha256": "dc0241ef5fae04b24ffdea30a1228e9914961b031163e8cffaa7c4dee3d22d30",
+    "parent_tokenizer_sha256": "0ad26479c9d6ecb98d554b3e4d3d594183d93cb5806e46b835f65a14a93fa0c3",
+    "transferred_embedding_rows": 2304
+  },
+  "instruction_distillation": {
+    "batch_size": 8,
+    "corpus_path": "data/moonshot/phase2/instruction_curriculum_clean.jsonl",
+    "corpus_sha256": "3b642b018ffffca460cbf3cf2546f1fa5d2a7b25b634936428c2f1f73ad38f5e",
+    "curves": [
+      {
+        "heldout_instruction_loss": 4.702377732594808,
+        "instruction_loss": 4.715643405914307,
+        "step": 1,
+        "total_loss": 6.4210028648376465,
+        "wall_seconds": 0.7032600999809802,
+        "wiki_loss": 3.316572666168213
+      },
+      {
+        "heldout_instruction_loss": 0.359363979101181,
+        "instruction_loss": 0.13072477281093597,
+        "step": 300,
+        "total_loss": 1.6794202327728271,
+        "wall_seconds": 23.299711699946783,
+        "wiki_loss": 3.014300584793091
+      },
+      {
+        "heldout_instruction_loss": 0.31214757561683654,
+        "instruction_loss": 0.02751036547124386,
+        "step": 600,
+        "total_loss": 1.514268398284912,
+        "wall_seconds": 46.15500529995188,
+        "wiki_loss": 2.892392635345459
+      },
+      {
+        "heldout_instruction_loss": 0.30327819486459096,
+        "instruction_loss": 0.022067580372095108,
+        "step": 900,
+        "total_loss": 1.556807279586792,
+        "wall_seconds": 68.69463739998173,
+        "wiki_loss": 2.989074945449829
+      },
+      {
+        "heldout_instruction_loss": 0.31006743212540944,
+        "instruction_loss": 0.010585195384919643,
+        "step": 1200,
+        "total_loss": 1.4974381923675537,
+        "wall_seconds": 91.15178710001055,
+        "wiki_loss": 2.892524003982544
+      }
+    ],
+    "learning_rate": 0.0001,
+    "response_tokens_seen": 2637483,
+    "router_frozen": false,
+    "routing_balance_weight_per_objective": 0.02,
+    "steps": 1200,
+    "wall_seconds": 91.60550619999412,
+    "wiki_regularization_weight": 0.5
+  },
+  "memory": {
+    "cuda_peak_allocated_bytes": 550988288
+  },
+  "parameters": {
+    "active": 5430241,
+    "active_fraction": 0.7567123186879999,
+    "total": 7176097
+  },
+  "parent_checkpoint": {
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2\\sparse-bpe-planner2816-transfer-pilot\\seed-9824\\model.safetensors",
+    "sha256": "86c7a34dee2a2206087052be4ba682af6a96c8064774dd4e366654758be35a44"
+  },
+  "quality": {
+    "architecture_selection": {
+      "bits_per_byte": 1.6419856704870068,
+      "covered_raw_bytes": 30185,
+      "evaluated_tokens": 14952,
+      "token_accuracy": 0.45786516853932585
+    },
+    "test": null,
+    "test_accessed": false,
+    "validation": {
+      "bits_per_byte": 1.6500439132561247,
+      "covered_raw_bytes": 30108,
+      "evaluated_tokens": 14960,
+      "token_accuracy": 0.46163101604278073
+    }
+  },
+  "routing": {
+    "assignment_counts": [
+      506934,
+      528668,
+      567657,
+      510013,
+      525719,
+      596144,
+      520790,
+      519819
+    ],
+    "experts_used": 8,
+    "maximum_active_experts_per_token": 1,
+    "maximum_load_fraction": 0.1394246241122013,
+    "mode": "learned_top1",
+    "physically_dispatched": true,
+    "utilization": [
+      0.11856041895866544,
+      0.12364351093049537,
+      0.13276215788410156,
+      0.11928052755263177,
+      0.12295380640188,
+      0.1394246241122013,
+      0.12180102457022685,
+      0.12157392958979771
+    ]
+  },
+  "seed": 9824,
+  "source_metadata_sha256": "7f22565a7c335d8b300f91a87f210ffd165303883f9f9efc958e9beaefde8239",
+  "status": "PASS",
+  "tokenizer": {
+    "path": "artifacts/moonshot/phase2/final_core/seed-9824/tokenizer.json",
+    "sha256": "d1c03801fd9559b8586490733a3788439ff230bf5f09666a0abb7ddb615e9f10"
+  },
+  "training": {
+    "batch_size": 32,
+    "cumulative_raw_bytes_seen": 120020992,
+    "curves": [
+      {
+        "covered_bytes_in_batch": 7288,
+        "language_loss": 3.449594497680664,
+        "raw_bytes_seen": 8192,
+        "step": 1,
+        "training_loss": 3.469799280166626,
+        "validation": {
+          "bits_per_byte": 2.2809580327907337,
+          "covered_raw_bytes": 30108,
+          "evaluated_tokens": 14960,
+          "token_accuracy": 0.36831550802139035
+        },
+        "wall_seconds": 0.4584965000394732
+      },
+      {
+        "covered_bytes_in_batch": 7085,
+        "language_loss": 2.5093729496002197,
+        "raw_bytes_seen": 2457600,
+        "step": 300,
+        "training_loss": 2.5293171405792236,
+        "validation": {
+          "bits_per_byte": 1.7890264685464665,
+          "covered_raw_bytes": 30108,
+          "evaluated_tokens": 14960,
+          "token_accuracy": 0.43663101604278076
+        },
+        "wall_seconds": 12.84530360007193
+      },
+      {
+        "covered_bytes_in_batch": 6903,
+        "language_loss": 2.412677764892578,
+        "raw_bytes_seen": 4915200,
+        "step": 600,
+        "training_loss": 2.432915687561035,
+        "validation": {
+          "bits_per_byte": 1.7221921490694228,
+          "covered_raw_bytes": 30108,
+          "evaluated_tokens": 14960,
+          "token_accuracy": 0.4461898395721925
+        },
+        "wall_seconds": 25.114376200013794
+      },
+      {
+        "covered_bytes_in_batch": 7278,
+        "language_loss": 2.4028384685516357,
+        "raw_bytes_seen": 7372800,
+        "step": 900,
+        "training_loss": 2.4228034019470215,
+        "validation": {
+          "bits_per_byte": 1.6926741891307684,
+          "covered_raw_bytes": 30108,
+          "evaluated_tokens": 14960,
+          "token_accuracy": 0.45267379679144387
+        },
+        "wall_seconds": 37.39759890001733
+      },
+      {
+        "covered_bytes_in_batch": 6884,
+        "language_loss": 2.4332594871520996,
+        "raw_bytes_seen": 9830400,
+        "step": 1200,
+        "training_loss": 2.4532532691955566,
+        "validation": {
+          "bits_per_byte": 1.6746380631381983,
+          "covered_raw_bytes": 30108,
+          "evaluated_tokens": 14960,
+          "token_accuracy": 0.45254010695187163
+        },
+        "wall_seconds": 49.646171800093725
+      },
+      {
+        "covered_bytes_in_batch": 7069,
+        "language_loss": 2.3563859462738037,
+        "raw_bytes_seen": 10002432,
+        "step": 1221,
+        "training_loss": 2.3765640258789062,
+        "validation": {
+          "bits_per_byte": 1.6707778809854388,
+          "covered_raw_bytes": 30108,
+          "evaluated_tokens": 14960,
+          "token_accuracy": 0.45447860962566844
+        },
+        "wall_seconds": 50.73158730007708
+      }
+    ],
+    "raw_bytes_seen": 10002432,
+    "resumed_from_step": 0,
+    "sequence_bytes": 256,
+    "stage_raw_bytes_seen": 10002432,
+    "steps": 1221,
+    "wall_seconds": 50.810803000000305
+  }
+}
