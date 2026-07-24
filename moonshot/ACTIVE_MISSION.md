@@ -127,11 +127,21 @@ slots collapsed onto one record and its dense vocabulary pointer produced
 lexical blends while autonomous adherence remained below the locked
 development gates. Direct contextual token memory is also closed negative:
 after its full allowance it missed topic, adherence, and CPU gates despite
-improved BPB. The active Phase 2 hypothesis uses the faster shared English BPE
-and supervises three fixed neural control records—global, task, and topic—then
-trains autonomous recovery at multiple response horizons. It has no inference
-template or hard structural constraint. Its immutable contract is
-`moonshot/phase2_factorized_control_preregistration.json`.
+improved BPB. Supervised global, task, and topic control is closed negative as
+well: auxiliary losses improved, but autonomous output remained
+morphologically malformed, topic recall fell to 0.10, adherence remained zero,
+and decode speed fell to 1.34x.
+
+The active Phase 2 hypothesis attacks that measured English-substrate failure
+instead of adding another prompt-memory variant. It continues the compact
+shared-BPE core on a hash-bound 200 MB knowledge-light English mixture, freezes
+the resulting substrate during instruction learning, and places
+domain-independent instruction functions in one of ten physically selected
+low-rank neural cakes. Broad factual and specialist knowledge remains outside
+the English core and must enter through later independently attachable domain
+cakes. No template, planner, forced output, retrieval answer, or stored
+response is permitted. The immutable contract is
+`moonshot/phase2_selective_english_cakes_preregistration.json`.
 
 ## Phase 4 and later CPU cake-training lock
 

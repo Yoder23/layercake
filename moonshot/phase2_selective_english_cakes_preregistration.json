@@ -1,0 +1,80 @@
+{
+  "development_gates": {
+    "core_adherence_min": 0.4,
+    "repetition_collapse_allowed": false,
+    "topic_recall_min": 0.65,
+    "transformer_relative_cpu_throughput_min": 1.75,
+    "ttft_no_worse_than_transformer": true,
+    "validation_bpb_max": 1.75
+  },
+  "early_stop_rule": "Reject the branch if the substrate checkpoint is not more grammatical under autonomous generation or if the first selective-cake checkpoint does not improve both topic recall and core adherence over its substrate control. Do not rescue it with rank, route-map, corpus-mixture, loss-weight, tokenizer, width, depth, or nearby adapter sweeps.",
+  "final_gates": {
+    "autonomous_neural_generation": true,
+    "canonical_cake_abi": true,
+    "core_adherence_min": 0.55,
+    "independent_seeds_min": 3,
+    "persistent_incremental_state": true,
+    "physical_sparse_execution": true,
+    "process_resident_memory_bytes_max_exclusive": 214990848,
+    "topic_recall_min": 0.82,
+    "transformer_relative_cpu_throughput_1024_min": 2.0,
+    "transformer_relative_cpu_throughput_128_min": 2.0,
+    "ttft_no_worse_than_transformer": true,
+    "validation_bpb_max": 1.7174
+  },
+  "format": "layercake-phase2-selective-english-cakes-preregistration/1",
+  "hypothesis": {
+    "claim": "The measured failure is an undertrained autonomous English surface distribution rather than missing prompt capacity alone. Additional knowledge-light English-substrate training, followed by frozen-substrate instruction learning in one physically selected low-rank core-function cake, will improve grammaticality and instruction adherence while keeping per-token work below the CPU gate.",
+    "domain_knowledge_policy": "Broad factual and specialist knowledge remains excluded from the English core and belongs in later independently attachable cakes. The substrate corpus is used only for English narrative form; Phase 2 instruction data is knowledge-light and grounded in supplied or synthetic context.",
+    "id": "SELECTIVE_ENGLISH_SUBSTRATE_TASK_CAKES",
+    "inference_templates_or_hard_constraints": false,
+    "material_difference_from_closed_branches": "Closed branches changed representations or prompt memories while retaining the same weak autonomous surface decoder. This branch first changes the measured limiting factor—English substrate exposure—then freezes it and learns instruction functions in physically selected low-rank neural cakes. It removes per-token dense vocabulary pointers and factor-memory reads.",
+    "prompt_encoding": "one encode-once bidirectional recurrent classifier and bounded global prompt record",
+    "representation": "locked shared 2816-unit English BPE with UTF-8 input/output",
+    "runtime_control": "one predicted core-function route is cached at prefill and selects exactly one low-rank residual cake at every decode step",
+    "task_cake_count": 10,
+    "task_cake_rank": 64,
+    "unbounded_prompt_state": false
+  },
+  "parent_checkpoint_sha256": "d185882d498df657dbd50e23a5de1593860e0dda6c4eb6929e475a522a237359",
+  "parent_checkpoint_path": "artifacts/moonshot/representation_bakeoff/shared_tokenizer_neural_only/seed-9824",
+  "prior_branch_decision": "results/moonshot/phase2_factorized_control/branch_decision.json",
+  "promotion_rule": "Only one integrated checkpoint lineage may supply quality, behavior, speed, TTFT, RSS, sparsity, incremental-state, and ABI evidence.",
+  "status": "PREREGISTERED",
+  "substrate_contract": {
+    "builder": "scripts/build_phase2_english_substrate.py",
+    "distinct_output_bytes": 200000000,
+    "mixture": {
+      "tiny_stories_narrative_bytes": 150000000,
+      "wikitext_english_bytes": 50000000
+    },
+    "output": "data/moonshot/phase2/english_substrate_200m.bin",
+    "pretraining_raw_bytes_exposure": 200003584,
+    "pretraining_steps": 24414,
+    "source_ordering": "deterministic row order, UTF-8 encoding, double-newline record separators, exact byte budgets with codepoint-safe truncation",
+    "tiny_stories_source_bytes": 248731111,
+    "tiny_stories_source_sha256": "77cf780cebe52b6e83e3a2ac84bc56d8059363113e41d17a023f1d8b2ed0fc0b",
+    "tiny_stories_source_snapshot": "f54c09fd23315a6f9c86f9dc80f725de7d8f9c64/data/train-00000-of-00004-2d5a1467fff1081b.parquet",
+    "wikitext_source": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "wikitext_source_sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6"
+  },
+  "systems_optimization_rule": "At most one profiler-directed runtime optimization, only after behavioral quality passes and speed or RSS is within 10 percent of its gate.",
+  "training_contract": {
+    "automatic_mixed_precision": false,
+    "instruction_curriculum": "data/moonshot/phase2/instruction_curriculum_semantic_control_v2.jsonl",
+    "instruction_curriculum_sha256": "bae6c1fe300a0214c1f6cb19a8c8eeee4f0b75681290be56f258a247cd488e53",
+    "instruction_initial_steps": 3000,
+    "instruction_same_lineage_extension_steps_max": 6000,
+    "multi_horizon_recovery_schedule": [
+      8,
+      32,
+      64
+    ],
+    "nearby_architecture_sweeps_allowed": false,
+    "random_seed": 9824,
+    "specialist_domain_training_allowed": false,
+    "substrate_frozen_during_instruction_training": true,
+    "supervised_task_auxiliary_required": true,
+    "test_split_access_allowed": false
+  }
+}

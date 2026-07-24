@@ -1,0 +1,63 @@
+{
+  "architecture": "SUPERVISED_FACTOR_CONTROL_SHARED_BPE",
+  "decision": "CLOSED_NEGATIVE",
+  "development_gates": {
+    "core_adherence_minimum": 0.4,
+    "topic_recall_minimum": 0.65,
+    "transformer_relative_cpu_throughput_minimum": 1.75,
+    "validation_bpb_maximum": 1.75
+  },
+  "diagnostic_control": {
+    "candidate": "distilgpt2 local frozen pretrained control",
+    "parameter_count": 81912576,
+    "purpose": "separate English-substrate insufficiency from prompt-controller insufficiency; not a promotion candidate",
+    "three_prompt_cpu_throughput_bytes_per_second": [
+      260.45,
+      313.66,
+      305.81
+    ],
+    "observation": "The dense pretrained control was more locally grammatical but did not reliably follow the frozen-style instructions and was slower than the optimized transformer-relative requirement."
+  },
+  "evidence": [
+    {
+      "audit_file_sha256": "6bca0070ab0db2ddf0988b416822ef34d94232de43354786474a882710b3d047",
+      "checkpoint_sha256": "9dbdf38d001fe0d5db044952bc6c896ba1426bb79b159f3080abdf48dd9d00c6",
+      "core_adherence": 0.0,
+      "cumulative_instruction_steps": 1200,
+      "metadata_file_sha256": "60d5ecd4121c7f764ac415e21974270e032cfb03345674592887249e43fcd37e",
+      "repetition_rate": 0.28859959065430263,
+      "resident_memory_bytes": 405477376,
+      "screen_file_sha256": "0e49658458a0c685b32c745b70060d0559f962d1ad1bb979a550244827900388",
+      "time_to_first_output_seconds": 0.02503055,
+      "topic_phrase_present": 0.01,
+      "topic_recall": 0.1,
+      "transformer_relative_cpu_throughput": 1.3397774579191248,
+      "validation_bpb": 1.709505643440983
+    }
+  ],
+  "failed_development_gates": [
+    "topic_recall",
+    "core_adherence",
+    "transformer_relative_cpu_throughput",
+    "memory_trend"
+  ],
+  "falsified_claim": "Supervised global, task, and topic records plus multi-horizon recovery are sufficient to give the existing compact shared-BPE decoder autonomous prompt adherence without sacrificing the CPU frontier.",
+  "format": "layercake-phase2-factorized-control-branch-decision/1",
+  "mechanistic_diagnosis": {
+    "autonomous_output_observation": "Outputs were printable but morphologically malformed, frequently blended partial words, and were dominated by generic comparison language rather than the requested topic or task.",
+    "factor_auxiliary_losses_are_not_behavioral_evidence": true,
+    "heldout_instruction_loss_at_final_step": 1.0770664518734194,
+    "initial_extension_condition_met": false,
+    "initial_to_fast_control_core_adherence_change": 0.0,
+    "initial_to_fast_control_topic_recall_change": -0.105,
+    "language_substrate_limitation": "The branch learned task and topic auxiliaries while autonomous sequence realization remained weak; prompt control alone cannot repair an undertrained surface-language distribution.",
+    "successful_optimizer_steps": 1200
+  },
+  "nearby_control_record_pointer_recovery_or_loss_sweeps_authorized": false,
+  "negative_evidence_preserved": true,
+  "phase2_status": "OPEN_RESEARCH_DIRECTION_REQUIRED",
+  "phase3_status": "LOCKED",
+  "promotion": false,
+  "systems_optimization_authorized": false,
+  "test_accessed": false
+}
