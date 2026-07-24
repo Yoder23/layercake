@@ -1,0 +1,254 @@
+{
+  "accelerator_hours": 0.0,
+  "accounting": {
+    "active_model_parameters": 60756490,
+    "active_parameter_seconds": 220435068.75504997,
+    "dense_trainable_parameters": 24237322,
+    "end_to_end_wall_time_seconds": 11.307927899993956,
+    "estimated_executed_cpu_multiply_accumulates": 214393946112,
+    "forward_backward_supervised_target_units": 7387,
+    "measured_step_wall_time_seconds": 3.628173200180754,
+    "median_step_wall_time_seconds": 0.17992140352725983,
+    "model_initialization_wall_time_seconds": 0.5305557000683621,
+    "model_visible_nonpadding_units": 2560,
+    "optimizer_steps": 20,
+    "peak_process_resident_memory_bytes": 1339330560,
+    "process_system_cpu_seconds": 3.78125,
+    "process_user_cpu_seconds": 26.53125,
+    "raw_utf8_training_bytes_exposed": 13146,
+    "tokenization_wall_time_seconds": 6.581830999930389,
+    "tokenizer_training_wall_time_seconds": 0.0,
+    "total_model_parameters": 61655050,
+    "training_loop_wall_time_seconds_including_warmup": 4.195504300063476,
+    "units_per_wall_second": 705.5892480194887
+  },
+  "configuration": {
+    "batch_size": 1,
+    "dense_optimizer": "AdamW",
+    "negative_vocabulary_rows": 2048,
+    "prediction_horizons": [
+      1,
+      2,
+      4
+    ],
+    "pretrained_weights_loaded": false,
+    "random_initialization": true,
+    "route_homogeneous_batches": true,
+    "sequence_units": 128,
+    "sparse_vocabulary_gradient": true,
+    "steps": 20,
+    "threads": 14,
+    "tokenizer_only_reused": true,
+    "vocabulary_optimizer": "stateless row-sparse SGD",
+    "warmup_steps": 3
+  },
+  "cuda_memory_allocated_before_and_after": [
+    0,
+    0
+  ],
+  "device": "cpu",
+  "evidence_sha256": "fe9236c69d283ad9810d4cb3a05f50e65fbb040e829df574ce383c8e52688855",
+  "final_inference_auxiliaries": [],
+  "format": "layercake-phase3-cpu-training-profile/1",
+  "hardware": {
+    "instruction_set_observed_by_pytorch": "AVX2",
+    "logical_processors": 20,
+    "physical_cores": 14,
+    "processor_identifier": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "promoted_accelerator_hours": 0.0,
+    "system_memory_bytes": 68473409536
+  },
+  "phase2_inference_architecture_unchanged": true,
+  "profile_role": "pre-promoted systems and feasibility measurement",
+  "promotion_eligible": false,
+  "protocol": {
+    "path": "moonshot/phase3_training_efficiency_lock.json",
+    "phase2_architecture_sha256": "b8020040300df16d627895685b584a1b615492275bda59ed42fca52762e12ad0",
+    "sha256": "b58c71ed824f4d6c0da9a3835a6622a0ff47825f8381732549f104e7f93b2654"
+  },
+  "seed": 9824,
+  "status": "PASS",
+  "step_records": [
+    {
+      "candidate_vocabulary_rows": 2084,
+      "instruction_batch": true,
+      "loss": 16.768619537353516,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2097,
+      "step": 1,
+      "wall_seconds": 0.19416059996001422
+    },
+    {
+      "candidate_vocabulary_rows": 2093,
+      "instruction_batch": false,
+      "loss": 12.541805267333984,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2094,
+      "step": 2,
+      "wall_seconds": 0.18560540000908077
+    },
+    {
+      "candidate_vocabulary_rows": 2073,
+      "instruction_batch": false,
+      "loss": 11.252918243408203,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2073,
+      "step": 3,
+      "wall_seconds": 0.1834588999627158
+    },
+    {
+      "candidate_vocabulary_rows": 2099,
+      "instruction_batch": false,
+      "loss": 12.204686164855957,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2100,
+      "step": 4,
+      "wall_seconds": 0.1770115999970585
+    },
+    {
+      "candidate_vocabulary_rows": 2097,
+      "instruction_batch": true,
+      "loss": 12.696232795715332,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2111,
+      "step": 5,
+      "wall_seconds": 0.18183759995736182
+    },
+    {
+      "candidate_vocabulary_rows": 2094,
+      "instruction_batch": false,
+      "loss": 11.975334167480469,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2094,
+      "step": 6,
+      "wall_seconds": 0.19558190007228404
+    },
+    {
+      "candidate_vocabulary_rows": 2078,
+      "instruction_batch": false,
+      "loss": 11.899354934692383,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2079,
+      "step": 7,
+      "wall_seconds": 0.1760903000831604
+    },
+    {
+      "candidate_vocabulary_rows": 2089,
+      "instruction_batch": false,
+      "loss": 11.849669456481934,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2090,
+      "step": 8,
+      "wall_seconds": 0.18073119991458952
+    },
+    {
+      "candidate_vocabulary_rows": 2087,
+      "instruction_batch": true,
+      "loss": 11.824798583984375,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2101,
+      "step": 9,
+      "wall_seconds": 0.17161680001299828
+    },
+    {
+      "candidate_vocabulary_rows": 2091,
+      "instruction_batch": false,
+      "loss": 12.744768142700195,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2091,
+      "step": 10,
+      "wall_seconds": 0.17914560006465763
+    },
+    {
+      "candidate_vocabulary_rows": 2092,
+      "instruction_batch": false,
+      "loss": 11.568136215209961,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2093,
+      "step": 11,
+      "wall_seconds": 0.1741008999524638
+    },
+    {
+      "candidate_vocabulary_rows": 2095,
+      "instruction_batch": false,
+      "loss": 12.262717247009277,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2096,
+      "step": 12,
+      "wall_seconds": 0.17992139991838485
+    },
+    {
+      "candidate_vocabulary_rows": 2096,
+      "instruction_batch": true,
+      "loss": 11.2522554397583,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2110,
+      "step": 13,
+      "wall_seconds": 0.1882887000683695
+    },
+    {
+      "candidate_vocabulary_rows": 2098,
+      "instruction_batch": false,
+      "loss": 11.995092391967773,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2099,
+      "step": 14,
+      "wall_seconds": 0.16892800002824515
+    },
+    {
+      "candidate_vocabulary_rows": 2079,
+      "instruction_batch": false,
+      "loss": 11.649744987487793,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2079,
+      "step": 15,
+      "wall_seconds": 0.19886870007030666
+    },
+    {
+      "candidate_vocabulary_rows": 2101,
+      "instruction_batch": false,
+      "loss": 11.337712287902832,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2102,
+      "step": 16,
+      "wall_seconds": 0.18602090002968907
+    },
+    {
+      "candidate_vocabulary_rows": 2093,
+      "instruction_batch": true,
+      "loss": 11.598820686340332,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2105,
+      "step": 17,
+      "wall_seconds": 0.17772679997142404
+    },
+    {
+      "candidate_vocabulary_rows": 2085,
+      "instruction_batch": false,
+      "loss": 11.50041675567627,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2085,
+      "step": 18,
+      "wall_seconds": 0.18598259997088462
+    },
+    {
+      "candidate_vocabulary_rows": 2094,
+      "instruction_batch": false,
+      "loss": 12.56013298034668,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2095,
+      "step": 19,
+      "wall_seconds": 0.16719280008692294
+    },
+    {
+      "candidate_vocabulary_rows": 2074,
+      "instruction_batch": false,
+      "loss": 11.590778350830078,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 2075,
+      "step": 20,
+      "wall_seconds": 0.1759025000501424
+    }
+  ],
+  "system": "layercake_complete"
+}

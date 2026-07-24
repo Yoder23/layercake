@@ -1,0 +1,102 @@
+{
+  "accelerator_hours": 0.0,
+  "accounting": {
+    "active_model_parameters": 60756490,
+    "active_parameter_seconds": 11337161.034939293,
+    "checkpointing_wall_time_seconds": 0.0,
+    "dense_trainable_parameters": 24237322,
+    "end_to_end_wall_time_seconds": 10.528441299917176,
+    "estimated_executed_cpu_multiply_accumulates": 4456710144,
+    "evaluation_wall_time_seconds": 4.00003045797348e-07,
+    "forward_backward_supervised_target_units": 192,
+    "measured_step_wall_time_seconds": 0.18660000001545995,
+    "median_step_wall_time_seconds": 0.186599999666214,
+    "model_initialization_wall_time_seconds": 1.2421626000432298,
+    "model_visible_nonpadding_units": 64,
+    "optimizer_steps": 1,
+    "peak_process_resident_memory_bytes": 1251368960,
+    "process_system_cpu_seconds": 1.671875,
+    "process_user_cpu_seconds": 9.171875,
+    "raw_utf8_training_bytes_exposed": 299,
+    "tokenization_wall_time_seconds": 9.096815599943511,
+    "tokenizer_training_wall_time_seconds": 0.0,
+    "total_model_parameters": 61655050,
+    "training_loop_wall_time_seconds_including_warmup": 0.18942329997662455,
+    "units_per_wall_second": 342.9796355557211
+  },
+  "checkpoint": null,
+  "configuration": {
+    "batch_size": 1,
+    "dense_optimizer": "AdamW",
+    "instruction_period_steps": 32,
+    "negative_vocabulary_rows": 128,
+    "optimizer_state_reset_at_resume": true,
+    "prediction_horizons": [
+      1,
+      2,
+      4
+    ],
+    "pretrained_weights_loaded": false,
+    "random_initialization": true,
+    "resume_parent": {
+      "metadata_sha256": "64be2a40998689dd0829b8056f77e1675e164fe993213aec8f37676841effc4d",
+      "model_sha256": "d48be5836832aa3d7d0ab2de72e823850e04e90da8ce4399f0f32fd6733b1830",
+      "optimizer_state_reset": true,
+      "path": "artifacts/moonshot/phase3_cpu_training/layercake-seed9824-units5m-paired"
+    },
+    "route_homogeneous_batches": true,
+    "sequence_units": 64,
+    "sparse_vocabulary_gradient": true,
+    "steps": 1,
+    "target_model_visible_nonpadding_units": null,
+    "threads": 14,
+    "tokenizer_only_reused": true,
+    "vocabulary_optimizer": "stateless row-sparse SGD",
+    "warmup_steps": 0
+  },
+  "cuda_memory_allocated_before_and_after": [
+    0,
+    0
+  ],
+  "device": "cpu",
+  "evidence_sha256": "577c4462b3a67e770cb270090c90afd6de20a82daeaedc01ffb9dce95c104b9c",
+  "final_inference_auxiliaries": [],
+  "format": "layercake-phase3-cpu-training-profile/1",
+  "hardware": {
+    "instruction_set_observed_by_pytorch": "AVX2",
+    "logical_processors": 20,
+    "physical_cores": 14,
+    "processor_identifier": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "promoted_accelerator_hours": 0.0,
+    "system_memory_bytes": 68473409536
+  },
+  "phase2_inference_architecture_unchanged": true,
+  "profile_role": "pre-promoted systems and feasibility measurement",
+  "promotion_eligible": false,
+  "protocol": {
+    "path": "moonshot/phase3_training_efficiency_lock.json",
+    "phase2_architecture_sha256": "b8020040300df16d627895685b584a1b615492275bda59ed42fca52762e12ad0",
+    "sha256": "b58c71ed824f4d6c0da9a3835a6622a0ff47825f8381732549f104e7f93b2654"
+  },
+  "quality": null,
+  "seed": 9824,
+  "status": "PASS",
+  "step_records": [
+    {
+      "candidate_vocabulary_rows": 176,
+      "instruction_batch": false,
+      "loss": 7.5176167488098145,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 177,
+      "step": 1,
+      "wall_seconds": 0.18660000001545995
+    }
+  ],
+  "system": "layercake_complete",
+  "training_parent": {
+    "metadata_sha256": "64be2a40998689dd0829b8056f77e1675e164fe993213aec8f37676841effc4d",
+    "model_sha256": "d48be5836832aa3d7d0ab2de72e823850e04e90da8ce4399f0f32fd6733b1830",
+    "optimizer_state_reset": true,
+    "path": "artifacts/moonshot/phase3_cpu_training/layercake-seed9824-units5m-paired"
+  }
+}

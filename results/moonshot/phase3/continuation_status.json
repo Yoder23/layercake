@@ -1,0 +1,106 @@
+{
+  "closed_branches": [
+    {
+      "branch": "sampled_multihorizon_static_instruction_1_in_4",
+      "reason": "both systems overfit instruction batches while missing the frozen full-vocabulary BPB threshold"
+    },
+    {
+      "branch": "curriculum_reallocation_alone",
+      "reason": "LayerCake BPB improved only from 2.2697 to 2.1512 in the second 5M-unit segment and remained above 1.7174"
+    }
+  ],
+  "format": "layercake-phase3-continuation-status/1",
+  "gates": {
+    "phase2_inference_sentinel": "NOT_YET_DUE_NO_QUALITY_CROSSING",
+    "pretrained_weights_loaded": false,
+    "promoted_accelerator_hours": 0.0,
+    "random_initialization": true,
+    "sample_efficiency_ratio_le_0p5": false,
+    "three_seed_time_to_quality": false,
+    "wall_time_to_quality_ratio_le_0p5": false
+  },
+  "invalid_or_diagnostic_only_evidence": [
+    {
+      "glob": "results/moonshot/phase3/profiles/*_s128.json",
+      "reason": "LayerCake and transformer profiles ran concurrently"
+    },
+    {
+      "glob": "results/moonshot/phase3/learning_curves/*_units0p8m.json",
+      "reason": "model-dependent route choices broke exact paired example order"
+    },
+    {
+      "glob": "results/moonshot/phase3/profiles/*.json",
+      "reason": "feasibility profiles are not quality promotion runs"
+    }
+  ],
+  "layercake_adaptive_continuation_10m": {
+    "checkpoint_sha256": "884e0d6b12a870200056d24e136e2ee26fe98574bec28c7ffeaffc5226d4e726",
+    "cumulative_end_to_end_hours": 2.0170971978333223,
+    "cumulative_end_to_end_seconds": 7261.54991219996,
+    "cumulative_model_visible_nonpadding_units": 10001413,
+    "cumulative_raw_utf8_bytes": 46567288,
+    "paired_transformer_continuation_available": false,
+    "path": "results/moonshot/phase3/learning_curves/layercake_seed9824_units10m_adaptive.json",
+    "promotion_credit": false,
+    "quality_gate_passed": false,
+    "sha256": "a79667c476c53e5d65057d483074fdb693dc0fb98e97f1fb32ed67d9f223f105",
+    "validation_bpb": 2.1512136399326756
+  },
+  "measured_limiting_factor": "sampled-vocabulary training is not transferring sufficient probability mass to the full 50,257-way tied inference head",
+  "next_bounded_experiment": {
+    "change": "add infrequent chunked exact next-token normalization while preserving paired data, exact inference architecture, CPU-only execution, and physically sparse instruction-cake updates",
+    "name": "chunked_exact_softmax_calibration",
+    "nearby_sweeps_authorized": false,
+    "prerequisite": "profile wall time, dense-gradient memory, and BPB gain on one short validation-only branch before any additional 5M run"
+  },
+  "phase2_status": "SEALED",
+  "phase2_tag": "layercake-moonshot-phase2-r3",
+  "phase3_status": "OPEN",
+  "protocol": {
+    "locked_before_runs": true,
+    "path": "moonshot/phase3_training_efficiency_lock.json",
+    "sha256": "b58c71ed824f4d6c0da9a3835a6622a0ff47825f8381732549f104e7f93b2654"
+  },
+  "regression_suite": {
+    "errors": 0,
+    "failures": 0,
+    "junit_sha256": "962d65ca6b5c97bf3423c2dfc7a8c7efcf8cb15d83db337c61454276aa02363f",
+    "passed": 510,
+    "path": "results/moonshot/phase3/test_results.json",
+    "status": "PASS",
+    "tests": 510
+  },
+  "status": "CONTINUATION_REQUIRED",
+  "valid_paired_seed9824_5m": {
+    "layercake": {
+      "checkpoint_sha256": "d48be5836832aa3d7d0ab2de72e823850e04e90da8ce4399f0f32fd6733b1830",
+      "end_to_end_seconds": 3546.739896300016,
+      "model_visible_nonpadding_units": 5000927,
+      "path": "results/moonshot/phase3/learning_curves/layercake_seed9824_units5m_paired.json",
+      "peak_rss": 1718427648,
+      "raw_utf8_bytes": 23399246,
+      "sha256": "5d3312d2c08563eb119ed810adc3f7c5779d8748bc7af9393769acf2fc2bca21",
+      "validation_bpb": 2.2697349758625167
+    },
+    "promotion_credit": false,
+    "quality_gate_passed": false,
+    "ratios_layercake_over_transformer": {
+      "active_parameter_seconds": 0.3575787205277572,
+      "end_to_end_wall_time": 0.48333398732000754,
+      "executed_cpu_operations": 0.5579074995931689,
+      "model_visible_nonpadding_units": 1.0,
+      "peak_rss": 0.7240666943955928,
+      "raw_utf8_bytes": 1.0
+    },
+    "transformer": {
+      "checkpoint_sha256": "bc6bd7b7b2d18e338699e66b25193f79ae7314834e8d7b7d17087fa3533343ce",
+      "end_to_end_seconds": 7338.072615099954,
+      "model_visible_nonpadding_units": 5000927,
+      "path": "results/moonshot/phase3/learning_curves/transformer_seed9824_units5m_paired.json",
+      "peak_rss": 2373300224,
+      "raw_utf8_bytes": 23399246,
+      "sha256": "c677437d6bed674a4b1af6738dacfb0a83f5af75e7dcbf48cb9c9b93963f0d13",
+      "validation_bpb": 2.320457577317977
+    }
+  }
+}
