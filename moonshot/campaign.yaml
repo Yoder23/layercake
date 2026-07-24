@@ -13,7 +13,7 @@
       "reason": "separate same-scale/product comparisons; single-request cold timing; authoritative token accounting; promoted 100-prompt depth"
     }
   ],
-  "current_phase": 2,
+  "current_phase": 3,
   "forward_contract_amendments": [
     {
       "amendment_id": "phase4-cpu-cake-training/1",
@@ -218,18 +218,26 @@
       "invalidation": "results/moonshot/phase2_recertification/invalidation.json",
       "invalidation_sha256": "7fe0f757a88d1b46ef95c6fe3be9b3c9a0fee90c5c27be803f70ed4228dc1241",
       "phase_implementation_commit": "b40e26453abce0c6a3533f370c310204788ee4c1",
+      "phase_release_commit": "187cd9d9a43de2726157c204389e2a1eb2edf733",
+      "phase_tag": "layercake-moonshot-phase2-r3",
       "raw_evidence_manifest_sha256": "70dc284cc7def3c6da5bd465fefba99ae9213752e1ae3af80bb4a8c2dfc74023",
       "recertification_id": "phase2-quality-speed-english-core/3",
+      "seal": "results/moonshot/phase2_recertification/seal.json",
       "superseded_release_commit": "ba6e826c32a9209304c52915ca093784c8d41971",
       "superseded_tag": "layercake-moonshot-phase2",
-      "superseded_tag_commit": "4402b7a338ef09b7cb971c15886cc5d42001415d"
+      "superseded_tag_commit": "4402b7a338ef09b7cb971c15886cc5d42001415d",
+      "working_tree_clean_at_release": {
+        "command": "git status --porcelain=v1",
+        "porcelain": "",
+        "status": "CLEAN"
+      }
     }
   },
   "phases": {
     "phase0_governance": "SEALED",
     "phase1_benchmark_truth": "SEALED",
-    "phase2_cpu_quality_speed": "PASS",
-    "phase3_training_speed": "LOCKED",
+    "phase2_cpu_quality_speed": "SEALED",
+    "phase3_training_speed": "OPEN",
     "phase4_portable_domain": "LOCKED",
     "phase5_multi_domain": "LOCKED",
     "phase6_orchestration": "LOCKED",
