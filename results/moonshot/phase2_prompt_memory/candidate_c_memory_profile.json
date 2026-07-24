@@ -1,0 +1,63 @@
+{
+  "active_state": {
+    "generated_tokens": 128,
+    "kv_layers": 3,
+    "prompt_memory_shapes": [
+      [
+        1,
+        128
+      ],
+      [
+        1,
+        128,
+        288
+      ],
+      [
+        1,
+        128
+      ],
+      [
+        1,
+        16,
+        288
+      ],
+      [
+        1,
+        16
+      ]
+    ]
+  },
+  "checkpoint": "C:/Python310/layercake_merged_nextgen_perfectA_option1_full_ready/layercake_release/artifacts/moonshot/phase2_prompt_memory/candidate_c_10m/seed-9824",
+  "checkpoint_sha256": "5fb5daa3dc4671a2fb498cdcc61f72bbca7c2bbcfbb7327cf16bf56afd8da1e8",
+  "components_rss_bytes": {
+    "decode_peak_increment": 6033408,
+    "model_and_tokenizer": 45559808,
+    "prefill_increment": 7495680,
+    "torch_and_native_runtime": 317177856
+  },
+  "decode_steps": 128,
+  "exact_command": [
+    "C:\\Python310\\python.exe",
+    "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\scripts\\profile_phase2_prompt_memory.py",
+    "--child",
+    "--checkpoint",
+    "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2_prompt_memory\\candidate_c_10m\\seed-9824",
+    "--threads",
+    "14",
+    "--decode-steps",
+    "128"
+  ],
+  "format": "layercake-phase2-fresh-process-memory-profile/1",
+  "metadata_checkpoint_sha256": "5fb5daa3dc4671a2fb498cdcc61f72bbca7c2bbcfbb7327cf16bf56afd8da1e8",
+  "profile_sha256": "bf16803c842ce5b73d1c33af4a28d144e73ea615aea42f4a62175f3659c981be",
+  "stages_rss_bytes": {
+    "checkpoint_loaded": 381943808,
+    "decode_complete": 395472896,
+    "decode_peak": 395472896,
+    "prefill_state_ready": 389439488,
+    "python_process_baseline": 19206144,
+    "torch_runtime_loaded": 336384000
+  },
+  "status": "PASS",
+  "threads": 14
+}

@@ -1,0 +1,164 @@
+{
+  "campaign": "bounded semantic memory / hierarchical summary / co-adapted token-efficient core",
+  "decision_sha256": "4891b957699fc0e0003ccb134c8808c423101a9d2894d18d070e873275f22fa2",
+  "evidence": {
+    "curriculum_manifest": {
+      "path": "data/moonshot/phase2/instruction_curriculum_prompt_memory_v1.manifest.json",
+      "sha256": "fedeb059fe051d5be57d98e045a0dc1ddd0dfd830b1da32cf2644c4c91a44377"
+    },
+    "memory_profile": {
+      "path": "results/moonshot/phase2_prompt_memory/candidate_c_memory_profile.json",
+      "sha256": "fc7e2a60ee9dcad5605c5f6e493aae34ae96f07071db4d962b4fb94788b31861"
+    }
+  },
+  "format": "layercake-phase2-prompt-memory-decision/1",
+  "locked_continuation_gates": {
+    "core_adherence_pass_rate_min": 0.4,
+    "process_resident_memory_trend_max_bytes": 394829824,
+    "repetition_rate_collapse_max": 0.5,
+    "topic_token_recall_min": 0.65,
+    "transformer_relative_cpu_throughput_min": 1.75,
+    "validation_bpb_max": 1.75
+  },
+  "locked_final_gates": {
+    "core_adherence_pass_rate_min": 0.55,
+    "independent_seeds_min": 3,
+    "process_resident_memory_bytes_max_exclusive": 214990848,
+    "topic_token_recall_min": 0.82,
+    "transformer_relative_cpu_throughput_1024_min": 2.0,
+    "transformer_relative_cpu_throughput_128_min": 2.0,
+    "validation_bpb_max": 1.7174
+  },
+  "measured_limiting_factors": {
+    "memory": {
+      "conclusion": "the Python/Torch runtime alone exceeds the locked transformer RSS; a native deployment runtime is required",
+      "fresh_process_peak_rss_bytes": 395472896,
+      "model_and_tokenizer_rss_bytes": 45559808,
+      "torch_and_native_runtime_rss_bytes": 317177856
+    },
+    "quality": "unseen-topic binding remains absent despite low held-out instruction loss",
+    "speed": "best observed frozen-suite median is 1.626x the optimized transformer, below both continuation and final gates"
+  },
+  "pareto_rows": [
+    {
+      "branch": "A_FIXED_SEMANTIC_SLOTS",
+      "category_structure_pass_rate": 0.51,
+      "checkpoint": "artifacts/moonshot/phase2_prompt_memory/candidate_a_10m/seed-9824",
+      "checkpoint_sha256": "df9ceccc39d4ae6b3899b211c4f2946fa1f3b20f214f166577aa3091ac8af707",
+      "continuation_gates": {
+        "core_adherence": false,
+        "cpu_throughput": false,
+        "memory_trend": false,
+        "no_repetition_collapse": true,
+        "topic_token_recall": false,
+        "validation_bpb": true
+      },
+      "continuation_pass": false,
+      "core_adherence_pass_rate": 0.0,
+      "distinct_frozen_prompts": 100,
+      "median_cpu_bytes_per_second": 709.3832773984466,
+      "median_process_resident_memory_bytes": 401737728.0,
+      "median_time_to_first_output_seconds": 0.01080655,
+      "repetition_rate": 0.35221124832099626,
+      "screen": {
+        "path": "results/moonshot/phase2_prompt_memory/candidate_a_10m_screen.json",
+        "payload_sha256": "47d38d9b1af728a829c6e3186cec14c7ec96279cbec74458c8e4c4d2cba5a19f",
+        "sha256": "05ec43e124139492fedbcf6a183c1c427542c87f4d0ae49c32ebf3206f5bc72e"
+      },
+      "semantic_audit": {
+        "path": "results/moonshot/phase2_prompt_memory/candidate_a_10m_semantic_audit.json",
+        "payload_sha256": "f0058a84b4bfd07e00ee256a4404210ef75e145bf69ee86b7eb4f1d957adc66b",
+        "sha256": "5a11cfffbc1854f04c6ec39b55884a4b73187a1ebb930f4f8483ac7b560068e6"
+      },
+      "topic_phrase_present_rate": 0.0,
+      "topic_token_recall": 0.175,
+      "transformer_relative_cpu_throughput": 1.4012239366104038,
+      "valid_utf8_rate": 0.99,
+      "validation_bpb": 1.6466396652221138,
+      "word_diversity": 0.6788783105451354
+    },
+    {
+      "branch": "B_HIERARCHICAL_CHUNK_SUMMARIES",
+      "category_structure_pass_rate": 0.51,
+      "checkpoint": "artifacts/moonshot/phase2_prompt_memory/candidate_b_10m/seed-9824",
+      "checkpoint_sha256": "f18b92bcdf36f47032809a867f6af9f5e5cd62eb103b739a317a4387861bcc7e",
+      "continuation_gates": {
+        "core_adherence": false,
+        "cpu_throughput": false,
+        "memory_trend": false,
+        "no_repetition_collapse": true,
+        "topic_token_recall": false,
+        "validation_bpb": true
+      },
+      "continuation_pass": false,
+      "core_adherence_pass_rate": 0.0,
+      "distinct_frozen_prompts": 100,
+      "median_cpu_bytes_per_second": 695.9284136105821,
+      "median_process_resident_memory_bytes": 406609920.0,
+      "median_time_to_first_output_seconds": 0.011436950000000001,
+      "repetition_rate": 0.27819302300346405,
+      "screen": {
+        "path": "results/moonshot/phase2_prompt_memory/candidate_b_10m_screen.json",
+        "payload_sha256": "0df67d9ed76067381957f9a92194a1fffaf2f2511ef03082d57aeaf0d01674f3",
+        "sha256": "127ca1caae47379b80795f5a95f5b9a3af0c7793a9c579896bdc03620fc7a03d"
+      },
+      "semantic_audit": {
+        "path": "results/moonshot/phase2_prompt_memory/candidate_b_10m_semantic_audit.json",
+        "payload_sha256": "9a7afc6b5d5bf5ae7387af3c27afacf678bfc63987fb7216b9c81b77321563aa",
+        "sha256": "003a6d246423ff36cf99e67f0435829d13783ea5c718e76b585b745541cfa39f"
+      },
+      "topic_phrase_present_rate": 0.0,
+      "topic_token_recall": 0.17,
+      "transformer_relative_cpu_throughput": 1.374646939655345,
+      "valid_utf8_rate": 0.97,
+      "validation_bpb": 1.6466396652221138,
+      "word_diversity": 0.6930463230311706
+    },
+    {
+      "branch": "C_COADAPTED_TOKEN_EFFICIENT_CORE",
+      "category_structure_pass_rate": 0.58,
+      "checkpoint": "artifacts/moonshot/phase2_prompt_memory/candidate_c_10m/seed-9824",
+      "checkpoint_sha256": "5fb5daa3dc4671a2fb498cdcc61f72bbca7c2bbcfbb7327cf16bf56afd8da1e8",
+      "continuation_gates": {
+        "core_adherence": false,
+        "cpu_throughput": false,
+        "memory_trend": false,
+        "no_repetition_collapse": true,
+        "topic_token_recall": false,
+        "validation_bpb": true
+      },
+      "continuation_pass": false,
+      "core_adherence_pass_rate": 0.0,
+      "distinct_frozen_prompts": 100,
+      "median_cpu_bytes_per_second": 823.2714286553094,
+      "median_process_resident_memory_bytes": 406417408.0,
+      "median_time_to_first_output_seconds": 0.01142265,
+      "repetition_rate": 0.19482655822229414,
+      "screen": {
+        "path": "results/moonshot/phase2_prompt_memory/candidate_c_10m_screen.json",
+        "payload_sha256": "e8e21d7fb1bd705d91f826ef6fd0201469bc196778280d4cf8e4d1d70a189e1e",
+        "sha256": "94837e1c2c2630317b2e375f35c77e88ca1732c02b14064a1a822c1806a41c9b"
+      },
+      "semantic_audit": {
+        "path": "results/moonshot/phase2_prompt_memory/candidate_c_10m_semantic_audit.json",
+        "payload_sha256": "d84d15eb272eb2087081a0e693810943afb50ed8ac9612688aa265bb6fa1cecc",
+        "sha256": "6600d5a30a7be6c188f2faf4d76eb791fae80edfcbd9389187fb89433ee0c9c8"
+      },
+      "topic_phrase_present_rate": 0.02,
+      "topic_token_recall": 0.26,
+      "transformer_relative_cpu_throughput": 1.6261838542203417,
+      "valid_utf8_rate": 0.99,
+      "validation_bpb": 1.6508581627974852,
+      "word_diversity": 0.800651893937315
+    }
+  ],
+  "phase2_r3_tag_created": false,
+  "phase2_status": "OPEN_RESEARCH_DIRECTION_REQUIRED",
+  "phase3_execution_authorized": false,
+  "phase3_status": "LOCKED",
+  "reason": "A and B failed prompt adherence; C learned fluent non-collapsed instruction form but failed topic/core adherence, the 1.75x continuation speed floor, and the memory trend gate. No candidate may be promoted or advanced to Phase 3.",
+  "status": "CONTINUATION_REQUIRED",
+  "test_accessed": false,
+  "three_seed_promotion_authorized": false,
+  "winner": null
+}

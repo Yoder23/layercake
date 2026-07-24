@@ -450,6 +450,292 @@ def enable_multislot_prompt_checkpoint(
     return result
 
 
+def enable_recurrent_prompt_memory_checkpoint(
+    root: Path,
+    source_path: Path,
+    output_path: Path,
+    key_width: int,
+) -> dict[str, Any]:
+    """Add bounded per-step neural access to the existing fixed prompt slots."""
+
+    source_path = _resolve(root, source_path)
+    output_path = _resolve(root, output_path)
+    if output_path.exists():
+        raise RuntimeError(f"prompt-memory artifact is immutable: {output_path}")
+    metadata = _read(source_path / "metadata.json")
+    architecture = dict(metadata["architecture"])
+    if int(architecture.get("prompt_state_slots", 0)) < 2:
+        raise ValueError("recurrent prompt memory requires existing prompt slots")
+    if bool(architecture.get("recurrent_prompt_memory")):
+        raise ValueError("source checkpoint already has recurrent prompt memory")
+    if bool(architecture.get("constrained_english_planner")):
+        raise ValueError("planner-enabled source checkpoints are prohibited")
+    architecture.update({
+        "recurrent_prompt_memory": True,
+        "prompt_memory_key_width": int(key_width),
+        "architecture_version": (
+            "layercake-sparse-bpe-core/7-bounded-recurrent-prompt-memory"
+        ),
+    })
+    torch.manual_seed(20260727)
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(**architecture))
+    source_state = load_file(
+        str(source_path / "model.safetensors"), device="cpu"
+    )
+    converted_state = model.state_dict()
+    for name, value in source_state.items():
+        if name not in converted_state:
+            raise ValueError(f"source tensor absent from memory model: {name}")
+        if converted_state[name].shape != value.shape:
+            raise ValueError(f"source tensor shape changed: {name}")
+        converted_state[name].copy_(value)
+    added_tensors = sorted(set(converted_state).difference(source_state))
+    expected = {
+        "prompt_memory_gate.bias",
+        "prompt_memory_gate.weight",
+        "prompt_memory_key.weight",
+        "prompt_memory_norm.bias",
+        "prompt_memory_norm.weight",
+        "prompt_memory_query.weight",
+        "prompt_pointer_gate.bias",
+        "prompt_pointer_gate.weight",
+    }
+    if set(added_tensors) != expected:
+        raise RuntimeError(f"unexpected recurrent-memory tensors: {added_tensors}")
+    model.load_state_dict(converted_state, strict=True)
+
+    output_path.mkdir(parents=True, exist_ok=False)
+    checkpoint_output = output_path / "model.safetensors"
+    tokenizer_output = output_path / "tokenizer.json"
+    save_file(
+        {
+            name: value.detach().cpu().contiguous()
+            for name, value in model.state_dict().items()
+        },
+        str(checkpoint_output),
+    )
+    shutil.copyfile(source_path / "tokenizer.json", tokenizer_output)
+    converted = dict(metadata)
+    converted.update({
+        "format": "layercake-bounded-recurrent-prompt-memory-checkpoint/1",
+        "architecture": architecture,
+        "parameters": {
+            "total": model.parameter_count(),
+            "active": model.active_parameter_count(),
+            "active_fraction": (
+                model.active_parameter_count() / model.parameter_count()
+            ),
+        },
+        "checkpoint": {
+            "path": checkpoint_output.relative_to(root).as_posix(),
+            "sha256": sha256_file(checkpoint_output),
+        },
+        "tokenizer": {
+            "path": tokenizer_output.relative_to(root).as_posix(),
+            "sha256": sha256_file(tokenizer_output),
+        },
+        "prompt_memory_conversion": {
+            "source_checkpoint_path": (
+                source_path / "model.safetensors"
+            ).relative_to(root).as_posix(),
+            "source_checkpoint_sha256": sha256_file(
+                source_path / "model.safetensors"
+            ),
+            "source_neural_tensors_changed": False,
+            "new_neural_tensors_added": added_tensors,
+            "new_tensor_initialization_seed": 20260727,
+            "training_performed": False,
+            "recurrent_decode_graph_changed": True,
+            "recurrent_memory_bound": {
+                "slots": architecture["prompt_state_slots"],
+                "slot_width": architecture["width"],
+                "key_width": key_width,
+                "copy_distribution_vocab": architecture["vocab_size"],
+                "independent_of_prompt_length": True,
+            },
+            "generation_authority": (
+                "frozen neural LM logits mixed by a learned pointer gate with "
+                "a learned slot-attended distribution over prompt units"
+            ),
+        },
+    })
+    _write(output_path / "metadata.json", converted)
+    loaded, _, _ = _load_candidate(output_path)
+    prompt = torch.tensor([[65, 66, 67, 68]], dtype=torch.long)
+    state = loaded.prefill(prompt)
+    if state.prompt_memory_slots.shape != (
+        1,
+        architecture["prompt_state_slots"],
+        architecture["width"],
+    ):
+        raise RuntimeError("prompt memory slots are not fixed-width")
+    memory_elements = state.prompt_memory_slots.numel()
+    _, state = loaded.decode_step(state)
+    if state.prompt_memory_slots.numel() != memory_elements:
+        raise RuntimeError("prompt memory grew during recurrent decode")
+    result = {
+        "status": "PASS",
+        "output": output_path.relative_to(root).as_posix(),
+        "checkpoint_sha256": sha256_file(checkpoint_output),
+        "tokenizer_sha256": sha256_file(tokenizer_output),
+        "source_neural_tensors_changed": False,
+        "new_neural_tensors_added": added_tensors,
+        "prompt_memory_slots": architecture["prompt_state_slots"],
+        "prompt_memory_key_width": key_width,
+        "prompt_memory_elements_before_and_after_decode": memory_elements,
+        "bounded_recurrent_memory": True,
+    }
+    _append_ledger(root, {
+        "event": "bounded_recurrent_prompt_memory_enabled",
+        **result,
+    })
+    return result
+
+
+def enable_hierarchical_prompt_memory_checkpoint(
+    root: Path,
+    source_path: Path,
+    output_path: Path,
+    key_width: int,
+    capacity: int,
+    chunk_size: int,
+) -> dict[str, Any]:
+    """Add fixed-capacity chunk-to-token prompt recall without a dense pointer."""
+
+    source_path = _resolve(root, source_path)
+    output_path = _resolve(root, output_path)
+    if output_path.exists():
+        raise RuntimeError(f"hierarchical-memory artifact is immutable: {output_path}")
+    metadata = _read(source_path / "metadata.json")
+    architecture = dict(metadata["architecture"])
+    if bool(architecture.get("hierarchical_prompt_memory")):
+        raise ValueError("source already has hierarchical prompt memory")
+    if bool(architecture.get("recurrent_prompt_memory")):
+        raise ValueError("Candidate B must start from the pre-Candidate-A lineage")
+    if bool(architecture.get("constrained_english_planner")):
+        raise ValueError("planner-enabled source checkpoints are prohibited")
+    architecture.update({
+        "hierarchical_prompt_memory": True,
+        "prompt_memory_key_width": int(key_width),
+        "prompt_memory_capacity": int(capacity),
+        "prompt_memory_chunk_size": int(chunk_size),
+        "architecture_version": (
+            "layercake-sparse-bpe-core/8-bounded-hierarchical-prompt-memory"
+        ),
+    })
+    torch.manual_seed(20260728)
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(**architecture))
+    source_state = load_file(
+        str(source_path / "model.safetensors"), device="cpu"
+    )
+    converted_state = model.state_dict()
+    for name, value in source_state.items():
+        if name not in converted_state:
+            raise ValueError(f"source tensor absent from hierarchical model: {name}")
+        if converted_state[name].shape != value.shape:
+            raise ValueError(f"source tensor shape changed: {name}")
+        converted_state[name].copy_(value)
+    added_tensors = sorted(set(converted_state).difference(source_state))
+    expected = {
+        "hierarchical_chunk_key.weight",
+        "hierarchical_memory_gate.bias",
+        "hierarchical_memory_gate.weight",
+        "hierarchical_memory_norm.bias",
+        "hierarchical_memory_norm.weight",
+        "hierarchical_memory_query.weight",
+        "hierarchical_pointer_strength",
+        "hierarchical_token_key.weight",
+    }
+    if set(added_tensors) != expected:
+        raise RuntimeError(f"unexpected hierarchical-memory tensors: {added_tensors}")
+    model.load_state_dict(converted_state, strict=True)
+
+    output_path.mkdir(parents=True, exist_ok=False)
+    checkpoint_output = output_path / "model.safetensors"
+    tokenizer_output = output_path / "tokenizer.json"
+    save_file(
+        {
+            name: value.detach().cpu().contiguous()
+            for name, value in model.state_dict().items()
+        },
+        str(checkpoint_output),
+    )
+    shutil.copyfile(source_path / "tokenizer.json", tokenizer_output)
+    converted = dict(metadata)
+    converted.update({
+        "format": "layercake-bounded-hierarchical-prompt-memory-checkpoint/1",
+        "architecture": architecture,
+        "parameters": {
+            "total": model.parameter_count(),
+            "active": model.active_parameter_count(),
+            "active_fraction": (
+                model.active_parameter_count() / model.parameter_count()
+            ),
+        },
+        "checkpoint": {
+            "path": checkpoint_output.relative_to(root).as_posix(),
+            "sha256": sha256_file(checkpoint_output),
+        },
+        "tokenizer": {
+            "path": tokenizer_output.relative_to(root).as_posix(),
+            "sha256": sha256_file(tokenizer_output),
+        },
+        "prompt_memory_conversion": {
+            "source_checkpoint_path": (
+                source_path / "model.safetensors"
+            ).relative_to(root).as_posix(),
+            "source_checkpoint_sha256": sha256_file(
+                source_path / "model.safetensors"
+            ),
+            "source_neural_tensors_changed": False,
+            "new_neural_tensors_added": added_tensors,
+            "new_tensor_initialization_seed": 20260728,
+            "training_performed": False,
+            "recurrent_decode_graph_changed": True,
+            "recurrent_memory_bound": {
+                "token_slots": capacity,
+                "chunk_slots": capacity // chunk_size,
+                "slot_width": architecture["width"],
+                "key_width": key_width,
+                "independent_of_prompt_length": True,
+            },
+            "generation_authority": (
+                "neural LM logits plus learned hierarchical chunk-to-token "
+                "recall and a sparse additive prompt-token bias"
+            ),
+        },
+    })
+    _write(output_path / "metadata.json", converted)
+    loaded, _, _ = _load_candidate(output_path)
+    short = torch.tensor([[65, 66, 67, 68]], dtype=torch.long)
+    state = loaded.prefill(short)
+    memory = state.hierarchical_prompt_memory
+    shapes_before = [list(value.shape) for value in memory]
+    _, state = loaded.decode_step(state)
+    shapes_after = [
+        list(value.shape) for value in state.hierarchical_prompt_memory
+    ]
+    if shapes_before != shapes_after:
+        raise RuntimeError("hierarchical prompt memory grew during decode")
+    result = {
+        "status": "PASS",
+        "output": output_path.relative_to(root).as_posix(),
+        "checkpoint_sha256": sha256_file(checkpoint_output),
+        "tokenizer_sha256": sha256_file(tokenizer_output),
+        "source_neural_tensors_changed": False,
+        "new_neural_tensors_added": added_tensors,
+        "prompt_memory_capacity": capacity,
+        "prompt_memory_chunks": capacity // chunk_size,
+        "state_shapes_before_and_after_decode": shapes_before,
+        "bounded_recurrent_memory": True,
+    }
+    _append_ledger(root, {
+        "event": "bounded_hierarchical_prompt_memory_enabled",
+        **result,
+    })
+    return result
+
+
 def _load_prompts(root: Path) -> tuple[Path, list[dict[str, Any]]]:
     path = root / QUALITY_MANIFEST
     document = _read(path)
@@ -2233,6 +2519,16 @@ def build_parser() -> argparse.ArgumentParser:
     command.add_argument("--source", type=Path, required=True)
     command.add_argument("--output", type=Path, required=True)
     command.add_argument("--slots", type=int, default=4)
+    command = sub.add_parser("enable-recurrent-prompt-memory")
+    command.add_argument("--source", type=Path, required=True)
+    command.add_argument("--output", type=Path, required=True)
+    command.add_argument("--key-width", type=int, default=32)
+    command = sub.add_parser("enable-hierarchical-prompt-memory")
+    command.add_argument("--source", type=Path, required=True)
+    command.add_argument("--output", type=Path, required=True)
+    command.add_argument("--key-width", type=int, default=32)
+    command.add_argument("--capacity", type=int, default=128)
+    command.add_argument("--chunk-size", type=int, default=8)
     command = sub.add_parser("screen")
     command.add_argument("--checkpoint", type=Path, required=True)
     command.add_argument("--output", type=Path, required=True)
@@ -2294,6 +2590,22 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.source,
             args.output,
             args.slots,
+        )
+    elif args.command == "enable-recurrent-prompt-memory":
+        result = enable_recurrent_prompt_memory_checkpoint(
+            root,
+            args.source,
+            args.output,
+            args.key_width,
+        )
+    elif args.command == "enable-hierarchical-prompt-memory":
+        result = enable_hierarchical_prompt_memory_checkpoint(
+            root,
+            args.source,
+            args.output,
+            args.key_width,
+            args.capacity,
+            args.chunk_size,
         )
     elif args.command == "screen":
         result = screen_checkpoint(

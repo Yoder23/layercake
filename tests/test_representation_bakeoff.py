@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 
+import pytest
 import torch
 
 from layercake.models.baseline_transformer import BytePairTokenizer
@@ -99,3 +100,98 @@ def test_multislot_prompt_state_is_prefill_only_and_prompt_conditioned():
     ] == [length + 1 for length in cached_lengths]
     assert first.prompt_context.shape == (1, 32)
     assert torch.isfinite(first.next_logits).all()
+
+
+def test_recurrent_prompt_memory_is_bounded_and_changes_neural_logits():
+    torch.manual_seed(7)
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(
+        vocab_size=320,
+        width=32,
+        layers=2,
+        heads=4,
+        max_tokens=64,
+        expansion=1,
+        routed_experts=3,
+        expert_expansion=1,
+        route_after_layers=1,
+        prompt_conditioning=True,
+        prompt_state_slots=4,
+        recurrent_prompt_memory=True,
+        prompt_memory_key_width=8,
+    )).eval()
+    state = model.prefill(
+        torch.tensor([[65, 66, 67, 68, 69]], dtype=torch.long)
+    )
+    assert state.prompt_memory_slots.shape == (1, 4, 32)
+    assert state.prompt_memory_copy_distribution.shape == (1, 4, 320)
+    memory_elements = (
+        state.prompt_memory_slots.numel()
+        + state.prompt_memory_copy_distribution.numel()
+    )
+    recurrent_logits = state.next_logits.clone()
+    state.prompt_memory_slots = None
+    state.prompt_memory_copy_distribution = None
+    _, state = model.decode_step(
+        state, next_token=torch.tensor([70], dtype=torch.long)
+    )
+    assert (
+        state.prompt_memory_slots is None
+        and state.prompt_memory_copy_distribution is None
+    )
+    assert torch.isfinite(state.next_logits).all()
+    fresh = model.prefill(
+        torch.tensor([[65, 66, 67, 68, 69]], dtype=torch.long)
+    )
+    _, fresh = model.decode_step(
+        fresh, next_token=torch.tensor([70], dtype=torch.long)
+    )
+    assert (
+        fresh.prompt_memory_slots.numel()
+        + fresh.prompt_memory_copy_distribution.numel()
+    ) == memory_elements
+    assert not torch.equal(recurrent_logits, state.next_logits)
+    assert not torch.equal(fresh.next_logits, state.next_logits)
+
+
+def test_hierarchical_prompt_memory_has_fixed_abi_and_sparse_pointer_bias():
+    torch.manual_seed(11)
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(
+        vocab_size=320,
+        width=32,
+        layers=2,
+        heads=4,
+        max_tokens=96,
+        expansion=1,
+        routed_experts=3,
+        expert_expansion=1,
+        route_after_layers=1,
+        prompt_conditioning=True,
+        prompt_state_slots=4,
+        hierarchical_prompt_memory=True,
+        prompt_memory_key_width=8,
+        prompt_memory_capacity=16,
+        prompt_memory_chunk_size=4,
+    )).eval()
+    prompt = torch.tensor([[65, 66, 67, 68, 69]], dtype=torch.long)
+    state = model.prefill(prompt)
+    memory = state.hierarchical_prompt_memory
+    assert [tuple(value.shape) for value in memory] == [
+        (1, 16),
+        (1, 16, 32),
+        (1, 16),
+        (1, 4, 32),
+        (1, 4),
+    ]
+    assert torch.isfinite(state.next_logits).all()
+    shapes = [tuple(value.shape) for value in memory]
+    _, state = model.decode_step(
+        state, next_token=torch.tensor([70], dtype=torch.long)
+    )
+    assert [
+        tuple(value.shape) for value in state.hierarchical_prompt_memory
+    ] == shapes
+    assert state.generated_ids.shape == (1, 1)
+    assert torch.isfinite(state.next_logits).all()
+    assert model.last_prompt_memory_aux["pointer_mass"].item() == pytest.approx(
+        1.0, abs=1e-6
+    )
