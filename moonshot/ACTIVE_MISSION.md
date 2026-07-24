@@ -125,10 +125,13 @@ The machine-readable boundary is
 The encode-once semantic-slot branch is closed negative: its twelve learned
 slots collapsed onto one record and its dense vocabulary pointer produced
 lexical blends while autonomous adherence remained below the locked
-development gates. The active Phase 2 hypothesis therefore retains at most 128
-contextual prompt-token states directly and copies only exact observed token
-IDs. Its immutable contract is
-`moonshot/phase2_contextual_token_memory_preregistration.json`.
+development gates. Direct contextual token memory is also closed negative:
+after its full allowance it missed topic, adherence, and CPU gates despite
+improved BPB. The active Phase 2 hypothesis uses the faster shared English BPE
+and supervises three fixed neural control records—global, task, and topic—then
+trains autonomous recovery at multiple response horizons. It has no inference
+template or hard structural constraint. Its immutable contract is
+`moonshot/phase2_factorized_control_preregistration.json`.
 
 ## Phase 4 and later CPU cake-training lock
 

@@ -1,0 +1,69 @@
+{
+  "development_gates": {
+    "absolute_rss_final_gate_plausible": true,
+    "core_adherence_min": 0.4,
+    "repetition_collapse_allowed": false,
+    "topic_recall_min": 0.65,
+    "transformer_relative_cpu_throughput_min": 1.75,
+    "ttft_no_worse_than_transformer": true,
+    "validation_bpb_max": 1.75
+  },
+  "early_stop_rule": "Reject the branch if the initial run and single same-lineage extension fail the development behavior gates. Do not rescue it with control-width, taxonomy, recovery-horizon, pointer-weight, loss-weight, vocabulary, or decoder sweeps.",
+  "final_gates": {
+    "autonomous_neural_generation": true,
+    "canonical_cake_abi": true,
+    "core_adherence_min": 0.55,
+    "independent_seeds_min": 3,
+    "persistent_incremental_state": true,
+    "physical_sparse_execution": true,
+    "process_resident_memory_bytes_max_exclusive": 214990848,
+    "topic_recall_min": 0.82,
+    "transformer_relative_cpu_throughput_1024_min": 2.0,
+    "transformer_relative_cpu_throughput_128_min": 2.0,
+    "ttft_no_worse_than_transformer": true,
+    "validation_bpb_max": 1.7174
+  },
+  "format": "layercake-phase2-factorized-control-preregistration/1",
+  "hypothesis": {
+    "claim": "Supervised factorization of an encode-once prompt into global, task, and topic records, combined with sparse topic-sequence copying and multi-horizon on-policy recovery, will prevent latent-record collapse and sustain prompt adherence across the complete response while retaining the fast shared-BPE sparse decoder.",
+    "control_records": [
+      "global prompt record",
+      "neural task record",
+      "neural topic-span record"
+    ],
+    "dense_vocabulary_pointer_state": false,
+    "id": "SUPERVISED_FACTOR_CONTROL_SHARED_BPE",
+    "inference_templates_or_hard_constraints": false,
+    "material_difference_from_closed_branches": "Prior semantic records were unsupervised and collapsed; direct token memory had no explicit task/topic factorization and recovery covered only a fixed 12-unit prefix. This branch supervises factor identity from knowledge-light training metadata, uses a neural topic locator and task classifier at encode time, and trains recovery at fixed 8, 32, and 64-unit horizons.",
+    "prompt_encoder": "one encode-once bidirectional recurrent layer",
+    "representation": "locked shared 2816-unit English BPE from the prior representation bake-off",
+    "runtime_control": "three fixed records injected into the neural decoder; all selection remains neural",
+    "sparse_topic_copy": "topic-locator weights are scattered only onto source token IDs with a learned successor bias",
+    "task_taxonomy_size": 10,
+    "unbounded_prompt_state": false
+  },
+  "parent_checkpoint_sha256": "5398c331f5db10a5b572a23b690ff1289f5a142a42327622947df95f432b6e4e",
+  "parent_source_commit": "8d09345b781076edea5fd7381de875dfb36ab551",
+  "prior_contextual_branch_decision": "results/moonshot/phase2_contextual_token_memory/branch_decision.json",
+  "prior_shared_tokenizer_decision": "results/moonshot/representation_bakeoff/token_branch/branch_decision.json",
+  "prior_shared_tokenizer_decision_sha256": "7ef55c5bba3fd04bb0b8fc511c708dbeb32d94eace37c27f93db97c1bb879ede",
+  "promotion_rule": "Only one integrated checkpoint lineage may supply quality, behavior, speed, TTFT, RSS, sparsity, incremental-state, and ABI evidence.",
+  "status": "PREREGISTERED",
+  "systems_optimization_rule": "At most one profiler-directed runtime optimization, only after behavioral quality passes and speed or RSS is within 10 percent of its gate.",
+  "training_contract": {
+    "curriculum": "the frozen knowledge-light semantic-control v2 corpus",
+    "exact_frozen_prompt_training_allowed": false,
+    "frozen_topic_training_allowed": false,
+    "initial_instruction_steps": 1200,
+    "multi_horizon_recovery_schedule": [
+      8,
+      32,
+      64
+    ],
+    "nearby_architecture_sweeps_allowed": false,
+    "random_seed": 9824,
+    "same_lineage_extension_steps_max": 2400,
+    "specialist_domain_training_allowed": false,
+    "supervised_task_and_topic_auxiliaries_required": true
+  }
+}

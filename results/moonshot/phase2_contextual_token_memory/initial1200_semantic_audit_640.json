@@ -1,0 +1,3463 @@
+{
+  "audit_sha256": "e6a0dca7cb88e507fc8a3082147b73b0eae543e17433ae00062f1cb6f4bed6bc",
+  "candidate": "phase2_contextual_token_memory/initial1200-seed-9824",
+  "checkpoint_sha256": "2201c120f5ab09db92162278bfef9e671cb3b973750b3829db1ac5711b268bad",
+  "comparison": {
+    "category_structure_pass_delta_layercake_minus_qwen": -0.14,
+    "core_adherence_pass_delta_layercake_minus_qwen": -0.51,
+    "minimum_80_words_pass_delta_layercake_minus_qwen": -0.010000000000000009,
+    "product_semantic_noninferiority_pass": false,
+    "topic_phrase_present_delta_layercake_minus_qwen": -0.65,
+    "topic_token_recall_delta_layercake_minus_qwen": -0.455,
+    "word_count_delta_layercake_minus_qwen": -2.9599999999999937
+  },
+  "distinct_prompts": 100,
+  "format": "layercake-phase2-functional-semantic-audit/1",
+  "prompt_manifest": "results/moonshot/phase1/quality_suite_manifest.json",
+  "prompt_manifest_sha256": "dd5f228bd92eb2d52fac29186adfe89261d0859e719efc877dd206470edffecb",
+  "qwen_functional_quality_sha256": "44cf5f1b11a41277ac2dc9f3943622027d37234e00947b1995fc98bc5efb5c66",
+  "qwen_raw_evidence_sha256": "f59848e1840104df99996ddf166fd2fa13b5dc84057f349a4a8ffe17c54e7359",
+  "scope": {
+    "covers": [
+      "minimum requested length",
+      "explicit topic phrase and topic-token recall",
+      "category-specific surface structure"
+    ],
+    "does_not_replace": [
+      "human semantic judgment",
+      "factuality evaluation",
+      "reasoning correctness evaluation"
+    ],
+    "kind": "deterministic_adherence_proxy",
+    "promotion_rule": "a pass is necessary but not sufficient; raw-output adversarial review remains required"
+  },
+  "screen_path": "results/moonshot/phase2_contextual_token_memory/initial1200_screen_640.json",
+  "screen_sha256": "a271b3110f59fca23df641069c9a59547123c453b157621f5b25c9018d0881c1",
+  "status": "PASS",
+  "systems": {
+    "layercake": {
+      "aggregates": {
+        "category_structure_pass": 0.64,
+        "core_adherence_pass": 0.09,
+        "minimum_80_words_pass": 0.99,
+        "topic_phrase_present": 0.13,
+        "topic_token_recall": 0.415,
+        "word_count": 94.06
+      },
+      "records": [
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 8,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 92
+          },
+          "output_sha256": "7c31f4d7772a31968e7a0967906e18ff3f506c84135005d20816f9d9fa5575cc",
+          "prompt_id": "functional-00-00",
+          "prompt_sha256": "f78c34de5585d1be8fa7e124c70478690cd98cd7d999d8eeddec71fca591ac5f"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 98
+          },
+          "output_sha256": "7df1639c9f1ecc4846b0014a8984117bed2216a84c32724dee81840eabb290ea",
+          "prompt_id": "functional-00-01",
+          "prompt_sha256": "62c763360511ea6af10dea81b601c15017aa710e928eed86d43a4efba2a6ea18"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 92
+          },
+          "output_sha256": "78a7cf604fd41be4e65ef12bf7af7f11f728804957743e2947c5dab0e4b7c762",
+          "prompt_id": "functional-00-02",
+          "prompt_sha256": "38a4b76f71f7790c7c9cff8ff8695f80fe4c145db387ae79deb8a5b1e3b1edeb"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 8,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 89
+          },
+          "output_sha256": "02f4eabdfd8f06b8177bd53b4c89098315bdde568d006532f112d6e7c9de4cb7",
+          "prompt_id": "functional-00-03",
+          "prompt_sha256": "ed39e7e0bda4c3c64909ccd2ead83b8408e17716584c72f16481c6db83c34670"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 96
+          },
+          "output_sha256": "1acabb2aec3aa4a59900f693d3e7e05aa8918c6bb23d8a2ca8a6818ffb974307",
+          "prompt_id": "functional-00-04",
+          "prompt_sha256": "510b1af3f3ca02d631745106c8eaa5f01aa3141e08cee265f0ef9751af3452e7"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 93
+          },
+          "output_sha256": "13a0e4d5191683ea6585c00b9fde4917366de3d260f0ace25b17cfd044254a97",
+          "prompt_id": "functional-00-05",
+          "prompt_sha256": "7e16d6d0be01a388a94700252da4a60e814e97221ea592938e6c9412d3c1ed9a"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 92
+          },
+          "output_sha256": "5b7ad8c4ff9f956e838055a213b4c9560e036fd64ee1108164e8836ce0e43b36",
+          "prompt_id": "functional-00-06",
+          "prompt_sha256": "098e8c02018f9549d4906e06ac4796b82fd7dfaa95addd3c22562e6a1a9e6180"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 88
+          },
+          "output_sha256": "ef31d36181b5eee2ed1fd0b7b57a176360026deb2b2cadd7d1a15e32f37aa29c",
+          "prompt_id": "functional-00-07",
+          "prompt_sha256": "24010d1ad8808c399dd7d0b24a6db64d4ac56bb8136568c2c34fa34857a1d41b"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 8,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 95
+          },
+          "output_sha256": "ea4fc14161c8e145dc620958e7e89a7e9bd916d9dae3081cdab397232bebc57f",
+          "prompt_id": "functional-00-08",
+          "prompt_sha256": "9d89935088192c0c08f887306a14e07fd82aae2d3cbb15e3e4b97ff116e3aef0"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 89
+          },
+          "output_sha256": "c97bd4d1550f4f72478bc6c70d1435a7b4316274bae9d33acc44f34e25e25690",
+          "prompt_id": "functional-00-09",
+          "prompt_sha256": "a14f1922b80fd8df544fd41dd1a42970542b6c7b52b1b9ca158799ca2054026c"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "public libraries",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 95
+          },
+          "output_sha256": "9be2c1b1a7a95385655dc5b2c2d08be40318458ce68705b704b30368af56bab2",
+          "prompt_id": "functional-01-00",
+          "prompt_sha256": "9ebb8b40e4c47e3bb003e45395d29391b1e144c6e466ca6e6b30a37c0402c324"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "public libraries",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 98
+          },
+          "output_sha256": "8fbde242329281594122f22fe2156498adfba895c90a9994fbe61485902e4090",
+          "prompt_id": "functional-01-01",
+          "prompt_sha256": "ab32530d6cbb2cce2a5a0853d66b6952d1126dcf49ce56a628b5084b7b2fa160"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "public libraries",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 101
+          },
+          "output_sha256": "2ef62d4dc5ead5609f2cd4d47ba0aba19bb1a089d10c7fa5bb55ad459021b2c9",
+          "prompt_id": "functional-01-02",
+          "prompt_sha256": "9324c34ce3ee0c2b948794668f96eacb819186d0f5929e162bed8b778fdc099f"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "public libraries",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 97
+          },
+          "output_sha256": "dcce5e5030f34562beba0a45b04654bc5a459087a0abaa2406b6cbf7a3732a67",
+          "prompt_id": "functional-01-03",
+          "prompt_sha256": "faa3d6c14a1a385cce2a3a026431f3fae047b7b656bfaf7d33ba72c86aed519a"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "public libraries",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 96
+          },
+          "output_sha256": "cdb9079c17bd0f5840e4105e9bfeee0c733b141dc78e7b95a9e4c2da28770b73",
+          "prompt_id": "functional-01-04",
+          "prompt_sha256": "403584bcb18eb4629026ee6d6c5bc1b6e767bd31ea2d0c3480e4ac1749b12637"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "public libraries",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 90
+          },
+          "output_sha256": "c94d17501f0ff83637e6abaa8ff4c5b3609b5d4d0b98c6ecabbf5cf691a6d347",
+          "prompt_id": "functional-01-05",
+          "prompt_sha256": "815f0fef6b782c8a4e20439ce498123d86eeba67539807ed8aa2353e031de631"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "public libraries",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 88
+          },
+          "output_sha256": "61b2b090fce6dda51fb1ba01e7b44ab780aba13f1b5655dc9b4b0ab23d7b10b2",
+          "prompt_id": "functional-01-06",
+          "prompt_sha256": "948c31130d7c5b9d6c298e960503970cc6b4e90e0f18829e30652c72f47ce36a"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "public libraries",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 95
+          },
+          "output_sha256": "c0bf608a05eba592b21c45da8b6b252687f0a6a5829409c13f66918e23a58d8f",
+          "prompt_id": "functional-01-07",
+          "prompt_sha256": "4f789cdf7dfb54672f78312cf1f20b473c9b3d15ebd9952a687f9609551aaa6a"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "public libraries",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 95
+          },
+          "output_sha256": "a73c2ed6dea5f0c40b4f1b58fc85d8fee2e50f6ddadfabffe74a42c5e18b3ef0",
+          "prompt_id": "functional-01-08",
+          "prompt_sha256": "eb8459111e4a7da4f9974dbed73f9af3aa387ae91ad700afbbb42e9627bac9e4"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "public libraries",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 90
+          },
+          "output_sha256": "ce6994c6813e62edc57450c8f4c8a22738b1a580dca3dcd80ba77174b1390905",
+          "prompt_id": "functional-01-09",
+          "prompt_sha256": "874800d765a2fc263052792a2b7798a73014dc1c674b8ea9d7a04c2534c5213f"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "urban gardens",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 95
+          },
+          "output_sha256": "fba26c0c60565ad14e09ccd04f6806ebc1fec85201a7c869ab5a5b80372da122",
+          "prompt_id": "functional-02-00",
+          "prompt_sha256": "b21e6bcb379848617bf11ee4a2bb5bf8c521516fc5c9d11b5029aa9ca51b63a6"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "urban gardens",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 96
+          },
+          "output_sha256": "1387a190ed2366565c7f0f855861661ca3fc71288daa7c725a018357ab77460b",
+          "prompt_id": "functional-02-01",
+          "prompt_sha256": "6823d3c242848c4d751df65a6a937429c0c059a425eb7888b137469f13fb8980"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 8,
+            "topic": "urban gardens",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 94
+          },
+          "output_sha256": "322904a292804f77ef14880561797fa242cc88357100e542e49793f3df951723",
+          "prompt_id": "functional-02-02",
+          "prompt_sha256": "c0376c2d379778788df59eb5d26ad828157cd35af85b4ad6017ec9a9360d23c1"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "urban gardens",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 95
+          },
+          "output_sha256": "cbcb0ab3ed4cfde5fb0d748a525222d72d5f09b30d1cc09e64d1c81f4547c48b",
+          "prompt_id": "functional-02-03",
+          "prompt_sha256": "ffcaa8fa7ca10fbc8ea1dc48a3c4737e27246c2b581a5d87f4c872cdc4869635"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "urban gardens",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 96
+          },
+          "output_sha256": "c53634a44ddbfbcf97371c9d875c7cff76b3bc99eb94b920034570f5b1880e04",
+          "prompt_id": "functional-02-04",
+          "prompt_sha256": "3c5a50be0e8b0dcd514876198ccf694d109e9bc232380af4dbce1b8b82c56f87"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "urban gardens",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 105
+          },
+          "output_sha256": "e124315eef2f7a0e50665738b06d8fc8a9881421b7595e13596f47bd4f258328",
+          "prompt_id": "functional-02-05",
+          "prompt_sha256": "9081b727f762990aee3c88242d03bd06379a5ef073d751db6349b33bd110eea9"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "urban gardens",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 90
+          },
+          "output_sha256": "ba9b1f33533d4de97f024b2e07ea49b0938552ba8c66b389561423dbf5a73fe1",
+          "prompt_id": "functional-02-06",
+          "prompt_sha256": "10bcfd4111cc622396b6ee70c6c94fd861a863445b2d6950c107bfb9e6053ffa"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "urban gardens",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 105
+          },
+          "output_sha256": "9188369d9e9ae8ed4a271df33b87b573e613d68203f305a2e9e33042a9961237",
+          "prompt_id": "functional-02-07",
+          "prompt_sha256": "1c2639a2706edb1143031a4f88e7184847a9dd4ae322521ad1a1abddb98ceba4"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "urban gardens",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 94
+          },
+          "output_sha256": "ac56fe6ac551659a6d18925f295dce2a70b16547863373cbd17886ec55e2fc27",
+          "prompt_id": "functional-02-08",
+          "prompt_sha256": "1f149d52438b10e8ac3d37dcc2d3a004a137f9e7cd6f3f6e3906ab3a42a065c1"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "urban gardens",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 101
+          },
+          "output_sha256": "06eff906e6b2054b74a0c35fa1dfe301c02442c4f70483f4b5152bb4017758b0",
+          "prompt_id": "functional-02-09",
+          "prompt_sha256": "9d634cfdd70ef3b6257964163f46f312cc9ff0617acb1c3ca5ed3a7eb1a8084e"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 90
+          },
+          "output_sha256": "8e78ad3e80d58de46e5f249b9c1063ba5306bffb7322cb3d9139ee479f67259c",
+          "prompt_id": "functional-03-00",
+          "prompt_sha256": "8b6133a552c2ea49fac3b426837ca48fac2e57726ca744917b6e2ff562e87276"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 100
+          },
+          "output_sha256": "843d05c58193127c5cab0d63bf89046772c68c6c13800549f96e29e961ebe936",
+          "prompt_id": "functional-03-01",
+          "prompt_sha256": "730678b055f9d40f90c070c842a0af92a4475660bb2fc78993470487e784d63f"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 9,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 97
+          },
+          "output_sha256": "b65474e60c99206a2e258ec345d7d85cae282fe16986133f0c1f92e9ccde39c8",
+          "prompt_id": "functional-03-02",
+          "prompt_sha256": "8799c39d512c444133c398a5e9259f421b42b26b9506d7def55a7cad9380780d"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 92
+          },
+          "output_sha256": "f9af02f9a1b4d74e3ff85b7988dc8c3228ebcd294ef20d69df89f7bb4731391c",
+          "prompt_id": "functional-03-03",
+          "prompt_sha256": "f582404399a18d0c2204f139a8b0a88a20a5e20eb036c5de4355aea9cb0d5453"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 90
+          },
+          "output_sha256": "816fe480657390c0c78176889fa40ad1888423a348f49ae56f9891aaa2d3fbb1",
+          "prompt_id": "functional-03-04",
+          "prompt_sha256": "8ed9c01b0f382f9e9f5a0a68eb9887de5390f94bea0fafe60f146e28202f3969"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 98
+          },
+          "output_sha256": "417ea05b1c56fce401d3e0ea975d247dd99cf30428a34c2a6345457689d413b7",
+          "prompt_id": "functional-03-05",
+          "prompt_sha256": "d83677961b921ba11ef2a0a7196992bc5d52fc5fd604f9ba09a0bfcf052d5959"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 93
+          },
+          "output_sha256": "da79fdea04a70c6cd5cf5d41c7d2b3e1f46985087894b857e9ef54bb144d694f",
+          "prompt_id": "functional-03-06",
+          "prompt_sha256": "249e0b1760a1d3f90420cffa746ee2c17f3375aca48dae487214af9679393d62"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 9,
+            "topic": "coastal weather",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 104
+          },
+          "output_sha256": "ede8bb24438b48ccc12dbe7dc45b456d3c009a77b79308c5aa1356672a5fb5a6",
+          "prompt_id": "functional-03-07",
+          "prompt_sha256": "557b26f7e74d2fc728732e9901adac4b0a954d15070245fc27789a807818a8e0"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 8,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 93
+          },
+          "output_sha256": "3538ca5e9b09ab1be7b5db9eb004c1da1b83cd00ad24edab1684bc9e8fe544a3",
+          "prompt_id": "functional-03-08",
+          "prompt_sha256": "55bf4e64a2141fc20d37888cc3859d58b35217cf25c39c7fa15abb04209c03f9"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 8,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 96
+          },
+          "output_sha256": "3a7a5e0bc6b1c4c67d73a64f229e109d7ef74cb95f955fdcf0a724cc5843dd33",
+          "prompt_id": "functional-03-09",
+          "prompt_sha256": "cfd7f3d87c66a529a33df04232499ceaa47f86bea2980f6222a4ff9d9f6ae58b"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 98
+          },
+          "output_sha256": "40219bf68b337eefd4f59b5413f9d591eae9e2ad0a00c8a6803138672ab57e69",
+          "prompt_id": "functional-04-00",
+          "prompt_sha256": "d4a179858420c51a349008b5db31e1228dd877188d94e2eb2f87387fe20da308"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 93
+          },
+          "output_sha256": "197a69ad6a25187d57b91a5681d2a66f8d181f2728f85b90a18ef5d3048918c2",
+          "prompt_id": "functional-04-01",
+          "prompt_sha256": "a9c71afd79f47494f8e7218a6aa8dcc4d6f6cf65812f8696fca6f0558162015d"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 96
+          },
+          "output_sha256": "3caf8f86898fe842cf31d00917f5d7aed6970ce1de52c3f8ec34d79fe86ab08e",
+          "prompt_id": "functional-04-02",
+          "prompt_sha256": "c2f778049b4c937bf9acb5985d2d3f7c778007346c990537ea294743b2632e94"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 89
+          },
+          "output_sha256": "1f9227d1e59d6b59c6fe620963be49fd5713f12158d86d2cf35054ebef989508",
+          "prompt_id": "functional-04-03",
+          "prompt_sha256": "a7b1aa15a98ab6b9ecbcec07bd0390c98ec06882e85d82a6dc882db94bcb5e30"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 99
+          },
+          "output_sha256": "d02106a191252528ba4de5c7418e4e9fdb88f68529065d6cc52d6652ad23b13e",
+          "prompt_id": "functional-04-04",
+          "prompt_sha256": "8963969cec9b210b394cae4656171ae2c18de4db2eea1521d35d057efcb4efa8"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 87
+          },
+          "output_sha256": "31dc1a9467b397c10f2773dd6600cd8b2a1ad05c69e5ee122ac3fed877556bc5",
+          "prompt_id": "functional-04-05",
+          "prompt_sha256": "031f1d6c65b68015aedb813c59dd6dea2ca160d67972628254dbcc1f76a411ac"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 100
+          },
+          "output_sha256": "0b1fa6d6084e8774fa72bf67aec88411d28af9d0be8327b2950de1c995bc9adf",
+          "prompt_id": "functional-04-06",
+          "prompt_sha256": "d0d506a7406a46501e44acb9c0318bb96e81e42a75c7d7b12e3cb29701178db1"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 94
+          },
+          "output_sha256": "021771c1be0aee85d09320699c613a6e588bb7da48c837a4a108d1bf787c2b6b",
+          "prompt_id": "functional-04-07",
+          "prompt_sha256": "1a67f09eec6c7d9b59bd7edbc1616857b094f336f2fa9e33fbe37e1ea8482768"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 96
+          },
+          "output_sha256": "68e6126f504d13f17e5340a00831c1bf5bf974777fd8c634737207fcc780f7f6",
+          "prompt_id": "functional-04-08",
+          "prompt_sha256": "e123f94b4983dd42c875f06ecf74e29e9e63dc822e4cacf8e258bdcdc35134c5"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 93
+          },
+          "output_sha256": "6d43c289826d05700454a87ea7671e09a5f488ca794a79419ead06b1ab1d2e8d",
+          "prompt_id": "functional-04-09",
+          "prompt_sha256": "e407907338e2b2bd1bd4ce6946f49af3a62366e5f088c7f20fe0ca7698558b13"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "music practice",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 94
+          },
+          "output_sha256": "fe8cf00ac46e035cfa57028aad9dcb0a277b7106a120b91798af83f7c77698a1",
+          "prompt_id": "functional-05-00",
+          "prompt_sha256": "7d1d813a879c75f7c0e900a5e2c6e0d902942d154b0127054c968b9cce407068"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "music practice",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 96
+          },
+          "output_sha256": "1a76e2a42731601caf5f6e2fa6bf25aa70e8557897edb93b466063f04a74f1ae",
+          "prompt_id": "functional-05-01",
+          "prompt_sha256": "faad81bbf459a6fce52f3a22814fcddbcacabd38bcb99d5f8a4269d3ba5f3b42"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "music practice",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 99
+          },
+          "output_sha256": "80e1c87de29e05ea134df050212d92fadaa593e570c63e352a9fa6b730465813",
+          "prompt_id": "functional-05-02",
+          "prompt_sha256": "2a8d0ecb90929bac5c58e6f2d898f86a988660fd2008765d635fd642c47eb5a8"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 11,
+            "topic": "music practice",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 90
+          },
+          "output_sha256": "9fe3830600a2c399d7c73fca76879d468494d90c37b32f9efea274d264cff8ec",
+          "prompt_id": "functional-05-03",
+          "prompt_sha256": "af5bfdd4f336c1e830fa1980235db5015dc419d6cd69e8f516139f4766f8b5dd"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "music practice",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 93
+          },
+          "output_sha256": "7386d8fe526ded8355d40b84d8a51c94f5d0f88c9cc628aea15cfeef4ca009d7",
+          "prompt_id": "functional-05-04",
+          "prompt_sha256": "9a27c3737782cd1a9c89c8614653a92601636e976072497db755b7954075fd80"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "music practice",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 98
+          },
+          "output_sha256": "2b284c322dc6c838cb3a073d7c572846172abc47badd9d1922ec68c962a95c1c",
+          "prompt_id": "functional-05-05",
+          "prompt_sha256": "9243f76864f4694e98c8d37a1dddd2baf7da93519c004a3fbc50e779c7d27794"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "music practice",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 91
+          },
+          "output_sha256": "44a0252ad63e6d64e7c5a3b4ed904978b7a7b96d4ec8de60a2372ea12f543ed6",
+          "prompt_id": "functional-05-06",
+          "prompt_sha256": "29dbd0760aa93864e2a4384358b7ffa36978534af0d13535a2bccc7d3cea2742"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "music practice",
+            "topic_phrase_present": false,
+            "topic_token_recall": 1.0,
+            "word_count": 103
+          },
+          "output_sha256": "73e5620e62c47c824ffa4efb1efdad9c93eb026802c53f7d62d288e2944cba10",
+          "prompt_id": "functional-05-07",
+          "prompt_sha256": "cf67e5cd95166ddd25dbc4fbda7462dc2fd36006dab5b6705fd2e84c45dec8de"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 2,
+            "topic": "music practice",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 103
+          },
+          "output_sha256": "0a67833f6533d8be9b1a98dfc83d7b6c059d848364af1b4c9dae2d7f23f820e4",
+          "prompt_id": "functional-05-08",
+          "prompt_sha256": "a87c35795fcd59fc91e4e6ff8268eb60d1382ce2a6f2c65430ce2e518f8c409d"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "music practice",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 92
+          },
+          "output_sha256": "3a0a260963fd30fd2f9b39ec6244669ed382221383a37502eda78dad28cdbe00",
+          "prompt_id": "functional-05-09",
+          "prompt_sha256": "3d5a4ab6b194257d2914935addb88f600d2b0b009229f935e96eff8ae9eb6a18"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "safe navigation",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 91
+          },
+          "output_sha256": "e11e1bf1a75cce76405a83589e21eaf8a0f3925259768b9d0fe534565b8fe29e",
+          "prompt_id": "functional-06-00",
+          "prompt_sha256": "aad6b08a429808947de7ca09fad2738c359574f8997cebe504580e5a653fc84a"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "safe navigation",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 95
+          },
+          "output_sha256": "f1f6244cdcd87d40af8f13fd93c6f6e828026dd87130c51f043e41404d295820",
+          "prompt_id": "functional-06-01",
+          "prompt_sha256": "56a7e47abb9de7b3e0e81ffc53e965ada1218c95a1b180e61ea6fe9d7604edc6"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 8,
+            "topic": "safe navigation",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 97
+          },
+          "output_sha256": "aec64df824d17ed595fad8d8f51d9f021436a9488e9ce5a8af26f0635c34e69e",
+          "prompt_id": "functional-06-02",
+          "prompt_sha256": "00810e6df046740a7cbbd1087ef38a34d45aee6273d200bd80b75679355c391b"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "safe navigation",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 92
+          },
+          "output_sha256": "60b9319564aea166f8b8ef2b166ffb39647604c04600f724306e4da1655ad8ad",
+          "prompt_id": "functional-06-03",
+          "prompt_sha256": "917b12f1110e0e29ea8e8560e227c53702d5c8998094a6268d686f63eca46db1"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "safe navigation",
+            "topic_phrase_present": false,
+            "topic_token_recall": 1.0,
+            "word_count": 93
+          },
+          "output_sha256": "1ddd78eaa54fc65fccb0cacaf5353df5e380c10d0781aa4623b097fc094e9e30",
+          "prompt_id": "functional-06-04",
+          "prompt_sha256": "57024ddb772b73a4263d6fc58457785118a47c8ff8e3cc39632cad1e7524eac6"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "safe navigation",
+            "topic_phrase_present": false,
+            "topic_token_recall": 1.0,
+            "word_count": 103
+          },
+          "output_sha256": "2f836229aaa61d86ab4021c25a68c59245813889bd7bd6425271ba9b4e05c0cb",
+          "prompt_id": "functional-06-05",
+          "prompt_sha256": "f57ef7e381024eb550fc28e597f1afbece11f7eaedb46ece690b665b554b9f01"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "safe navigation",
+            "topic_phrase_present": false,
+            "topic_token_recall": 1.0,
+            "word_count": 90
+          },
+          "output_sha256": "d4e2524ba1c77779b4d77817a8da05c121ca3d524789adef6a85a525b035646f",
+          "prompt_id": "functional-06-06",
+          "prompt_sha256": "3b063b130eb7e172289c571e7296bf7540f981ea919fd96aec3452ecdc1e65c0"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "safe navigation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 95
+          },
+          "output_sha256": "dba6b9457d326ae6f0e79361f78a69e33316ed426f774deac9331110bfad9453",
+          "prompt_id": "functional-06-07",
+          "prompt_sha256": "f83714733c061224a5ac6c25243353d8337639c18a8aa96ec017cb9c3bf87433"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "safe navigation",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 91
+          },
+          "output_sha256": "84751ca63948d53317aa85de1dc8f19693778e8d0c6bbf8ca6ef1e0f45a73095",
+          "prompt_id": "functional-06-08",
+          "prompt_sha256": "b97d2743e56232c58332dff5fe4f69565921e6d5fcc4dd17ea815eea13b47d68"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "safe navigation",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 85
+          },
+          "output_sha256": "40863657a8db43487116dc6a2410a4c4a2b7f7af066150747d72c83ec9dd2dfc",
+          "prompt_id": "functional-06-09",
+          "prompt_sha256": "436fafcfbc362b0d443fad0edf2b513901c06c431c74d101b3d9d5748f737054"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 9,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 83
+          },
+          "output_sha256": "6368f5ff8b460d91a8d786beb52775573f465cc9653bbbb0a66b1b6899853c79",
+          "prompt_id": "functional-07-00",
+          "prompt_sha256": "b6718945e42466bc8eb9b96003d3ce22aa273b0819f3f8e4f167ec1bc8a77302"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 9,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 94
+          },
+          "output_sha256": "9fd0b26ecd3386982a5546be8a4f64e4389ece9d5236ad5cd352a94d75cfc39a",
+          "prompt_id": "functional-07-01",
+          "prompt_sha256": "df22ee873823785d921892d00a43a4c76fac1fd35b3071a1ba7444ccda2b0683"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 9,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 90
+          },
+          "output_sha256": "f539dc92c113fcd3cda72011edcb30435f26b2623547cf033b1fb52baa08110d",
+          "prompt_id": "functional-07-02",
+          "prompt_sha256": "e9a27fe9947a31bcc669b6c2e88a59032f214da1d444483568f6960a843968bc"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 9,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 91
+          },
+          "output_sha256": "aecdaed286707608e34695f15cfd6b4aa6f521c7d760cd2ca3f997e1bfaf876a",
+          "prompt_id": "functional-07-03",
+          "prompt_sha256": "ae3282722923d6748dd8ad04ee529012dc4b24d53d30ee0e01eb1bf79738855a"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 100
+          },
+          "output_sha256": "2042836bbb430a710b40904cc4afab6374553f64527c43ab6e38193ab8d14088",
+          "prompt_id": "functional-07-04",
+          "prompt_sha256": "b0bf03cf7bea2cb073d4508f2523cb9b4cbc8a07b7e7faa8decf0e95dfcd14b0"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 96
+          },
+          "output_sha256": "4f4293199d963e490a4ee6b1ac83576a23e2627c1c2cdcffb5f23de1d90429fd",
+          "prompt_id": "functional-07-05",
+          "prompt_sha256": "2a95e284becd5d669e91330c7a92b9674f016096212f578f3d06aae446b20184"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "local history",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 91
+          },
+          "output_sha256": "5f78e94e21efc598aa17ec0e1b14bd96bfd2592644eea622c956cb1ee41a8b0d",
+          "prompt_id": "functional-07-06",
+          "prompt_sha256": "25bbf0fe667dbda5e4d7ec3bdbb581dce44dbcc084075d29ca189273e7423f40"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "local history",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 93
+          },
+          "output_sha256": "603e9e9e2c57953aab1a425c4b11c1e7e1a0229dc00ff949718e99c380beac4c",
+          "prompt_id": "functional-07-07",
+          "prompt_sha256": "ea4ee9869e67ba8f770966bff32447bdf45f910973843586443f0078faf87aee"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 91
+          },
+          "output_sha256": "50d4660ec59fcdd2b7e3d34a364a2f5829af9365c1734facc47e230d1b90df48",
+          "prompt_id": "functional-07-08",
+          "prompt_sha256": "e32b3a3ff4ac87a56d8ced023171cb48d6009bbabbd0c3b17dffbe2366d5874b"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 94
+          },
+          "output_sha256": "34ea63c365a6c72ebfd985cc7149f6ee1ff76a4cc821fb874d53f0b73271346e",
+          "prompt_id": "functional-07-09",
+          "prompt_sha256": "0d19153243c687471fd7171abb86d75261f47eda8e272b69e7a877d6ca653c3e"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 96
+          },
+          "output_sha256": "956ce78e1628e552906515f869530f6349dfecf9617ef936d81c45887ad5c6ab",
+          "prompt_id": "functional-08-00",
+          "prompt_sha256": "99dea4f8598c90532f9f5f16974b016f1afc762e388636366fb49d5a2b675fda"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 96
+          },
+          "output_sha256": "a3ea40b428942c7ef55cb52d566eb07c720eac3cda1575285cc7840995b26cbd",
+          "prompt_id": "functional-08-01",
+          "prompt_sha256": "48e09435cca14102e73e32707a39497020d4d0f7017794c1ee2a9db767f8a67d"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 99
+          },
+          "output_sha256": "5ca773f9cdb34719689611c2360c4c3157f3292f627ab1f4e05b892e3a1feb76",
+          "prompt_id": "functional-08-02",
+          "prompt_sha256": "2797d6ffa9b214a0d96420d231799089a9c2e708dd818d8c1ccacc25fee5870d"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "water conservation",
+            "topic_phrase_present": false,
+            "topic_token_recall": 1.0,
+            "word_count": 90
+          },
+          "output_sha256": "315f5acf116e2e03f86cdbe050966c4a4ca46dc98200f407dba2391789b42aa1",
+          "prompt_id": "functional-08-03",
+          "prompt_sha256": "bea1859b97f2009e0e756e95fbf3492fe303b034b563083071bb00fdc772ca15"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 86
+          },
+          "output_sha256": "8c5deb25f5c1e179641dadf96b420e6f309c220aa5919b7c24077c4a30c75ab7",
+          "prompt_id": "functional-08-04",
+          "prompt_sha256": "99c4c515a30fdb8bf2aacfd0feabbc79a7845d6fee041c28c9cd64d0486e35ca"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": false,
+            "ordered_step_markers": 0,
+            "sentence_count": 8,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 76
+          },
+          "output_sha256": "24c22eaefd0cb13f3289426e63fec599546b8393b769565aa89c4b041c1d44c0",
+          "prompt_id": "functional-08-05",
+          "prompt_sha256": "935087631e94ebbe068a1ae2b258284b8b472ad4bc69031c150cfa48aacb8ae4"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 8,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 94
+          },
+          "output_sha256": "66f522bf0bd3bef558113c4b76c62151e39c32d137ed10735e71f5b99fd54b7e",
+          "prompt_id": "functional-08-06",
+          "prompt_sha256": "cdbe0e56de81f773d08284bb2f1179aa04c2da11de53e70a30a1185eaba087b8"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 90
+          },
+          "output_sha256": "648d0c62cc58005349136be47a6d8065b171ed47a49d4f3e7168b28354c5fcf0",
+          "prompt_id": "functional-08-07",
+          "prompt_sha256": "181f730c273fdfdaf2c51894385ae7e80e6a14e135839ebaec83bb1eeb48d6ec"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 90
+          },
+          "output_sha256": "0cb6a511d51185302975173332473901e9fb5afef68b0eb8aeca3e34f334893e",
+          "prompt_id": "functional-08-08",
+          "prompt_sha256": "dd977c5b06c78a839c8b3ee8fbe229d26da8f1a9da8ceffe61c549edf3019b99"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 97
+          },
+          "output_sha256": "62d705f77d41ab29b429706bec0cd4ba5e64e019937e1a8280ce59b14e9416dd",
+          "prompt_id": "functional-08-09",
+          "prompt_sha256": "3ebe9fe2f80f1b328ffbf24b88c84360066779dcb670b5bee25312475cb41bfb"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "collaborative design",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 92
+          },
+          "output_sha256": "fc565e1d3e7d7b78c3e795b4fa68b4c0987b5c9ca13203ce4db6995fd65e2d0f",
+          "prompt_id": "functional-09-00",
+          "prompt_sha256": "0bc4571fe404fc78a7e63f74abd8c25425f6be3bb769899cc317c7762b4e1ba6"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "collaborative design",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 97
+          },
+          "output_sha256": "0c53c69ba6bf25c365bd57563a5999b1b95506ec2da823457c46e1d7736efded",
+          "prompt_id": "functional-09-01",
+          "prompt_sha256": "866614a0737f11cce8fbd5a9601ee31299a819ba6915d28207c607efdc0a5624"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "collaborative design",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 102
+          },
+          "output_sha256": "c800620f957b3cb21237159f5215cc3560ac6e2f8c0a156ba0b7ff251b312a34",
+          "prompt_id": "functional-09-02",
+          "prompt_sha256": "723e7fe3105956c88c5629b168e61c67cfb829419b6184e8ecc97477c6c94cb9"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "collaborative design",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 87
+          },
+          "output_sha256": "a2b5264a652b3bb69d954b79a54e317269ca78b2e04a9a28060752aca67ce95d",
+          "prompt_id": "functional-09-03",
+          "prompt_sha256": "0eaf7578d8cca66af5e73e937560f8003ef8e4e34a22782221d544bbebf5f0f6"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "collaborative design",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 93
+          },
+          "output_sha256": "50c37c0d7d6b902c943c906be846333f81fca573ddc9bab9e559c57687bc56ec",
+          "prompt_id": "functional-09-04",
+          "prompt_sha256": "d6cd626413eb59337bda695db0515654fe23732e3db0abedbdc67ce9c8136c43"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 11,
+            "topic": "collaborative design",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 94
+          },
+          "output_sha256": "a230eada2018679b0422b9e1febd745a6157547376892b7003156c78e813b150",
+          "prompt_id": "functional-09-05",
+          "prompt_sha256": "c127dbabd98d791b5a990ca2f7560a33279ef9e32aedf02a0208c5bf2d6fa673"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "collaborative design",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 86
+          },
+          "output_sha256": "0fab980439b0b94f8b32a5f6ae88922f05ddda7dc7a58ca80d600df5ab5f0ba8",
+          "prompt_id": "functional-09-06",
+          "prompt_sha256": "5fbd801f81e0df55f6572af89c37180d90cb243602239f9c63e5e15ab2980025"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 7,
+            "topic": "collaborative design",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 93
+          },
+          "output_sha256": "9de09f26f020248b49dc7cb7691863ca5ab4d8443e83d011963106eea587b519",
+          "prompt_id": "functional-09-07",
+          "prompt_sha256": "e9d19a4aaf5e478a414d57e9c0f86fc247621518b83844683208766a9ebda331"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "collaborative design",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 96
+          },
+          "output_sha256": "b8faae80932199f9510364dccc3ec74748414afc512cc6c8deab637cab0fea7c",
+          "prompt_id": "functional-09-08",
+          "prompt_sha256": "5c9e62091ea2060a5c52d4fb402b51c83bcd34b8514abff374cece532be7ab8d"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "collaborative design",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 100
+          },
+          "output_sha256": "8fff47a0c91fe8ac4aa5efe28e91af83102983286c50306f5d7fe4473942af93",
+          "prompt_id": "functional-09-09",
+          "prompt_sha256": "e11711e7def2abf7a0699aea611a9f9de1e4e53780b33d48b36133debed922ab"
+        }
+      ]
+    },
+    "qwen25-05b-cpu": {
+      "aggregates": {
+        "category_structure_pass": 0.78,
+        "core_adherence_pass": 0.6,
+        "minimum_80_words_pass": 1.0,
+        "topic_phrase_present": 0.78,
+        "topic_token_recall": 0.87,
+        "word_count": 97.02
+      },
+      "records": [
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "efficient computing",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 101
+          },
+          "output_sha256": "3a98b583ee6baebd1e72d69b02523177c210f0763ac76d569a11369895b51aa3",
+          "prompt_id": "functional-00-00",
+          "prompt_sha256": "f78c34de5585d1be8fa7e124c70478690cd98cd7d999d8eeddec71fca591ac5f"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "efficient computing",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 103
+          },
+          "output_sha256": "01462256e1d4b88797aa4aaac58c1d6e9f27f57ea976d59aedaf59dd402f108d",
+          "prompt_id": "functional-00-01",
+          "prompt_sha256": "62c763360511ea6af10dea81b601c15017aa710e928eed86d43a4efba2a6ea18"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 7,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 89
+          },
+          "output_sha256": "9453f827bb8f3e9bf85927fbc08b9a9fbadd893ba2f4c4bea585fe2c8162cf4f",
+          "prompt_id": "functional-00-02",
+          "prompt_sha256": "38a4b76f71f7790c7c9cff8ff8695f80fe4c145db387ae79deb8a5b1e3b1edeb"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 101
+          },
+          "output_sha256": "c15b0f5ea0af5b7d8da4d455cb423708004fd0355411d3afae3faebe5438ffd8",
+          "prompt_id": "functional-00-03",
+          "prompt_sha256": "ed39e7e0bda4c3c64909ccd2ead83b8408e17716584c72f16481c6db83c34670"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "efficient computing",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 101
+          },
+          "output_sha256": "95c11b009db963e8856b98954b3741d933815df131496a1eb40bf7605555cab4",
+          "prompt_id": "functional-00-04",
+          "prompt_sha256": "510b1af3f3ca02d631745106c8eaa5f01aa3141e08cee265f0ef9751af3452e7"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 1.0,
+            "word_count": 102
+          },
+          "output_sha256": "4f8ddf5b58e472c85e15f0481dece950cfbdd2264ec6b7a910ff3955bd851aac",
+          "prompt_id": "functional-00-05",
+          "prompt_sha256": "7e16d6d0be01a388a94700252da4a60e814e97221ea592938e6c9412d3c1ed9a"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 7,
+            "topic": "efficient computing",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 94
+          },
+          "output_sha256": "6b38ea4c670b8d06f96ac03cbc6741ca764c0d87300466d7166e6413c691f2cc",
+          "prompt_id": "functional-00-06",
+          "prompt_sha256": "098e8c02018f9549d4906e06ac4796b82fd7dfaa95addd3c22562e6a1a9e6180"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "efficient computing",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 97
+          },
+          "output_sha256": "e721d8888ebae9f9d3bb7c56a137d17763edf0520aea40035142fe3162a19cda",
+          "prompt_id": "functional-00-07",
+          "prompt_sha256": "24010d1ad8808c399dd7d0b24a6db64d4ac56bb8136568c2c34fa34857a1d41b"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "efficient computing",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 99
+          },
+          "output_sha256": "3026e33b50e61e048ee00e253fc6a52202a01fe34e11c68016e428c0c5d9893c",
+          "prompt_id": "functional-00-08",
+          "prompt_sha256": "9d89935088192c0c08f887306a14e07fd82aae2d3cbb15e3e4b97ff116e3aef0"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "efficient computing",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 97
+          },
+          "output_sha256": "1b06b03c20c2591688da2b0606618a29664824bbfdcf630275cc7f21f1bcbdca",
+          "prompt_id": "functional-00-09",
+          "prompt_sha256": "a14f1922b80fd8df544fd41dd1a42970542b6c7b52b1b9ca158799ca2054026c"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "public libraries",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 94
+          },
+          "output_sha256": "053306326629078d4d36314c670065b1a732debb7443cff3a0f90ed8d0d833f2",
+          "prompt_id": "functional-01-00",
+          "prompt_sha256": "9ebb8b40e4c47e3bb003e45395d29391b1e144c6e466ca6e6b30a37c0402c324"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "public libraries",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 99
+          },
+          "output_sha256": "b0927b4c52a9e962dfe04681b6a4f1e690464b8beb669d564d165d772f3e57e3",
+          "prompt_id": "functional-01-01",
+          "prompt_sha256": "ab32530d6cbb2cce2a5a0853d66b6952d1126dcf49ce56a628b5084b7b2fa160"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 7,
+            "topic": "public libraries",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 85
+          },
+          "output_sha256": "ce12c871a4a633531f01cbb513802388708df5da5cda8a9d83a3d2be3826b6b7",
+          "prompt_id": "functional-01-02",
+          "prompt_sha256": "9324c34ce3ee0c2b948794668f96eacb819186d0f5929e162bed8b778fdc099f"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "public libraries",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 98
+          },
+          "output_sha256": "17d92f9ff3718d77b358c84212aba87126992abedeb694f2044eeb3bad0d65e8",
+          "prompt_id": "functional-01-03",
+          "prompt_sha256": "faa3d6c14a1a385cce2a3a026431f3fae047b7b656bfaf7d33ba72c86aed519a"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "public libraries",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 96
+          },
+          "output_sha256": "69e22a5a71747b0aeea1cb68f01dc44896aee4d2c3b8849312f2d9da1ab51f05",
+          "prompt_id": "functional-01-04",
+          "prompt_sha256": "403584bcb18eb4629026ee6d6c5bc1b6e767bd31ea2d0c3480e4ac1749b12637"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "public libraries",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 102
+          },
+          "output_sha256": "059125b3368626c5153dc2fc21154611a58f93566e3e024d0638a8a1e810e934",
+          "prompt_id": "functional-01-05",
+          "prompt_sha256": "815f0fef6b782c8a4e20439ce498123d86eeba67539807ed8aa2353e031de631"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "public libraries",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 92
+          },
+          "output_sha256": "d589a1aabc69d07c409bef8104b8ed75fd405b6ebe96275c7f6f7c2dcc4fc7d8",
+          "prompt_id": "functional-01-06",
+          "prompt_sha256": "948c31130d7c5b9d6c298e960503970cc6b4e90e0f18829e30652c72f47ce36a"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "public libraries",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 96
+          },
+          "output_sha256": "1e9015fd31c9d18e73d2e302f2047101922af56d0c1e5593270b3396473e7078",
+          "prompt_id": "functional-01-07",
+          "prompt_sha256": "4f789cdf7dfb54672f78312cf1f20b473c9b3d15ebd9952a687f9609551aaa6a"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "public libraries",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 98
+          },
+          "output_sha256": "87783b6cbeaa6b37db9d883d285a676c74f6eeeab76d0d622e79dd3cc07e7c40",
+          "prompt_id": "functional-01-08",
+          "prompt_sha256": "eb8459111e4a7da4f9974dbed73f9af3aa387ae91ad700afbbb42e9627bac9e4"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "public libraries",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 99
+          },
+          "output_sha256": "d6aa1569dd7d05c33dcf5fe88624abffb94336883ab1ec522cbf4eab808558df",
+          "prompt_id": "functional-01-09",
+          "prompt_sha256": "874800d765a2fc263052792a2b7798a73014dc1c674b8ea9d7a04c2534c5213f"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "urban gardens",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 102
+          },
+          "output_sha256": "5d7236a0a1b7d52f262811ba1f20565a72349789492e247d735ede595f125695",
+          "prompt_id": "functional-02-00",
+          "prompt_sha256": "b21e6bcb379848617bf11ee4a2bb5bf8c521516fc5c9d11b5029aa9ca51b63a6"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "urban gardens",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 101
+          },
+          "output_sha256": "7e7846b6d4183de458eac3df85fceec9085644471f1fbb493f54c73d419ba7ec",
+          "prompt_id": "functional-02-01",
+          "prompt_sha256": "6823d3c242848c4d751df65a6a937429c0c059a425eb7888b137469f13fb8980"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 7,
+            "topic": "urban gardens",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 88
+          },
+          "output_sha256": "73b1b550582d161faee3a47f782d0bb4d45869006ab2102e509f258c12a80522",
+          "prompt_id": "functional-02-02",
+          "prompt_sha256": "c0376c2d379778788df59eb5d26ad828157cd35af85b4ad6017ec9a9360d23c1"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "urban gardens",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 103
+          },
+          "output_sha256": "59e9ae78e9e69755e4b96a46ab9b67770ebd8d8a00bd00116936a74e33586bd7",
+          "prompt_id": "functional-02-03",
+          "prompt_sha256": "ffcaa8fa7ca10fbc8ea1dc48a3c4737e27246c2b581a5d87f4c872cdc4869635"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "urban gardens",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 99
+          },
+          "output_sha256": "2f25697159aedcbe12e0a82dbf92967b7e7e88060489df16b2b4521f62382a18",
+          "prompt_id": "functional-02-04",
+          "prompt_sha256": "3c5a50be0e8b0dcd514876198ccf694d109e9bc232380af4dbce1b8b82c56f87"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "urban gardens",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 101
+          },
+          "output_sha256": "15a6fa8ee7d4e69772e10d51a35da40a75d686f16d12ea7b44157a9baed4f0ae",
+          "prompt_id": "functional-02-05",
+          "prompt_sha256": "9081b727f762990aee3c88242d03bd06379a5ef073d751db6349b33bd110eea9"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "urban gardens",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 95
+          },
+          "output_sha256": "8c8e4b26dc11c9527db92155fbeb26ce3de89a729528aaa20e792319bb3a4edc",
+          "prompt_id": "functional-02-06",
+          "prompt_sha256": "10bcfd4111cc622396b6ee70c6c94fd861a863445b2d6950c107bfb9e6053ffa"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "urban gardens",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 102
+          },
+          "output_sha256": "873cc79033515b00309b91ad1db614e211a59a019d0eddd005a107a076b1a9f2",
+          "prompt_id": "functional-02-07",
+          "prompt_sha256": "1c2639a2706edb1143031a4f88e7184847a9dd4ae322521ad1a1abddb98ceba4"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "urban gardens",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 97
+          },
+          "output_sha256": "9d4367c45aea71660843caaf4b35788748a8855a8bc563f636b43c09f595e32f",
+          "prompt_id": "functional-02-08",
+          "prompt_sha256": "1f149d52438b10e8ac3d37dcc2d3a004a137f9e7cd6f3f6e3906ab3a42a065c1"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "urban gardens",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 96
+          },
+          "output_sha256": "437d9ea4c36271177279e3fae1c54c21bf7d6ce94af7b2362c9a3f9fb57569e8",
+          "prompt_id": "functional-02-09",
+          "prompt_sha256": "9d634cfdd70ef3b6257964163f46f312cc9ff0617acb1c3ca5ed3a7eb1a8084e"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 93
+          },
+          "output_sha256": "1de75872b44a4d911d1ce71f2ea0cd7662a4d596d964f6b4181bcdb5251573ac",
+          "prompt_id": "functional-03-00",
+          "prompt_sha256": "8b6133a552c2ea49fac3b426837ca48fac2e57726ca744917b6e2ff562e87276"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "coastal weather",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 92
+          },
+          "output_sha256": "b79796bb3d5906792d763809f2a3cdf53efe0ccca0d8cf5ab35d67b75e5f7c51",
+          "prompt_id": "functional-03-01",
+          "prompt_sha256": "730678b055f9d40f90c070c842a0af92a4475660bb2fc78993470487e784d63f"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 2,
+            "sentence_count": 5,
+            "topic": "coastal weather",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 88
+          },
+          "output_sha256": "b0815a53c4d0ac98313c296dc116cf4b47dcfb12d77811719a70b4be30aec5ae",
+          "prompt_id": "functional-03-02",
+          "prompt_sha256": "8799c39d512c444133c398a5e9259f421b42b26b9506d7def55a7cad9380780d"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "coastal weather",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 97
+          },
+          "output_sha256": "6c19f405e21e74f1e5e7860fc147e66639d8aebc7799db94ec0f671db5f43843",
+          "prompt_id": "functional-03-03",
+          "prompt_sha256": "f582404399a18d0c2204f139a8b0a88a20a5e20eb036c5de4355aea9cb0d5453"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 1.0,
+            "word_count": 92
+          },
+          "output_sha256": "6dd4ec590ca998e4103cfd2cd654a2af1845efece2f667357eb57f955b1a2573",
+          "prompt_id": "functional-03-04",
+          "prompt_sha256": "8ed9c01b0f382f9e9f5a0a68eb9887de5390f94bea0fafe60f146e28202f3969"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 98
+          },
+          "output_sha256": "2eaa9ae5030b930de6e4e8495e5ff4c229a9c5112352e8b87f669280003aa1ab",
+          "prompt_id": "functional-03-05",
+          "prompt_sha256": "d83677961b921ba11ef2a0a7196992bc5d52fc5fd604f9ba09a0bfcf052d5959"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 11,
+            "topic": "coastal weather",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 88
+          },
+          "output_sha256": "f1f2db395e9ffe17b95e74d057d5e97d4ce73e5c576a7a770c6ca2361065702a",
+          "prompt_id": "functional-03-06",
+          "prompt_sha256": "249e0b1760a1d3f90420cffa746ee2c17f3375aca48dae487214af9679393d62"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "coastal weather",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 98
+          },
+          "output_sha256": "a7d56c454d05682a616f79e20001e0e4e09d4e9f48affa7c23063ffd4dca8f31",
+          "prompt_id": "functional-03-07",
+          "prompt_sha256": "557b26f7e74d2fc728732e9901adac4b0a954d15070245fc27789a807818a8e0"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "coastal weather",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 100
+          },
+          "output_sha256": "ea4c19e0c56c6278d337570292e3fa7c50fcd8c724208bc69b822bd5558a477e",
+          "prompt_id": "functional-03-08",
+          "prompt_sha256": "55bf4e64a2141fc20d37888cc3859d58b35217cf25c39c7fa15abb04209c03f9"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "coastal weather",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 97
+          },
+          "output_sha256": "3954b2ea922419903e22d39d7d8fd7f9c967630a60a0ee3131a5fbef6d183ccf",
+          "prompt_id": "functional-03-09",
+          "prompt_sha256": "cfd7f3d87c66a529a33df04232499ceaa47f86bea2980f6222a4ff9d9f6ae58b"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 2,
+            "sentence_count": 6,
+            "topic": "scientific replication",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 97
+          },
+          "output_sha256": "c625338bcb78f58a4161aee2786df7d6ccc1442d96e776a8606e3a55fa3d4fc3",
+          "prompt_id": "functional-04-00",
+          "prompt_sha256": "d4a179858420c51a349008b5db31e1228dd877188d94e2eb2f87387fe20da308"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 102
+          },
+          "output_sha256": "2e37dfd98d70e100b19ad5b5060df7c3afcabb9c2ad84ad2835774bcb63177c0",
+          "prompt_id": "functional-04-01",
+          "prompt_sha256": "a9c71afd79f47494f8e7218a6aa8dcc4d6f6cf65812f8696fca6f0558162015d"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 8,
+            "topic": "scientific replication",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 92
+          },
+          "output_sha256": "9897262e14871abd7fe931c5d45493081aacb71ee77fcb558ba337298a1cc76c",
+          "prompt_id": "functional-04-02",
+          "prompt_sha256": "c2f778049b4c937bf9acb5985d2d3f7c778007346c990537ea294743b2632e94"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "scientific replication",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 98
+          },
+          "output_sha256": "7926726e3ac01b3c03e0c97855deaa750cc1eab6e60e3ba279b97f77a4c65771",
+          "prompt_id": "functional-04-03",
+          "prompt_sha256": "a7b1aa15a98ab6b9ecbcec07bd0390c98ec06882e85d82a6dc882db94bcb5e30"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 9,
+            "topic": "scientific replication",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 97
+          },
+          "output_sha256": "f5d7cabebecdf24f640f8531c365e8a2a554514f360a82dd23ef200dd73513ea",
+          "prompt_id": "functional-04-04",
+          "prompt_sha256": "8963969cec9b210b394cae4656171ae2c18de4db2eea1521d35d057efcb4efa8"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 105
+          },
+          "output_sha256": "f1c188347f457cd73d6ce7399f06ce8f976a5af99a8f1fb580f81ee01dd766b1",
+          "prompt_id": "functional-04-05",
+          "prompt_sha256": "031f1d6c65b68015aedb813c59dd6dea2ca160d67972628254dbcc1f76a411ac"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "scientific replication",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 105
+          },
+          "output_sha256": "e924843dc0c19bf2de3842fb72667b9f8a19f35e1e05959fd5b78f2db87c01dd",
+          "prompt_id": "functional-04-06",
+          "prompt_sha256": "d0d506a7406a46501e44acb9c0318bb96e81e42a75c7d7b12e3cb29701178db1"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "scientific replication",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 106
+          },
+          "output_sha256": "e9738ced2b4e1a5b50203dd4cd64f6b5ed7768714c2f4f362857225c22b1b209",
+          "prompt_id": "functional-04-07",
+          "prompt_sha256": "1a67f09eec6c7d9b59bd7edbc1616857b094f336f2fa9e33fbe37e1ea8482768"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "scientific replication",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 102
+          },
+          "output_sha256": "59921857dff2dc3137f645c8db170556a51f7c359543b0d4568aecf4d7c418f7",
+          "prompt_id": "functional-04-08",
+          "prompt_sha256": "e123f94b4983dd42c875f06ecf74e29e9e63dc822e4cacf8e258bdcdc35134c5"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "scientific replication",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 101
+          },
+          "output_sha256": "90a12e52d8d676ebc7860f85e9cca99a1a54c9b6b9b2c03fe51422137376c31f",
+          "prompt_id": "functional-04-09",
+          "prompt_sha256": "e407907338e2b2bd1bd4ce6946f49af3a62366e5f088c7f20fe0ca7698558b13"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "music practice",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 101
+          },
+          "output_sha256": "f84bf063f3d7af38cde42a991b94b8b782307bcc1aaf5015ffa035b8415cf84a",
+          "prompt_id": "functional-05-00",
+          "prompt_sha256": "7d1d813a879c75f7c0e900a5e2c6e0d902942d154b0127054c968b9cce407068"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "music practice",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 98
+          },
+          "output_sha256": "9f17f8ac2b6a4110f19f419ff81772de23100c69f93410c6ebc246cce7bbc70f",
+          "prompt_id": "functional-05-01",
+          "prompt_sha256": "faad81bbf459a6fce52f3a22814fcddbcacabd38bcb99d5f8a4269d3ba5f3b42"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 7,
+            "topic": "music practice",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 94
+          },
+          "output_sha256": "84e2be631c3f3408c9b43c6e14cb9f8d4de1eadf9fd069df1bfd98148f24a18d",
+          "prompt_id": "functional-05-02",
+          "prompt_sha256": "2a8d0ecb90929bac5c58e6f2d898f86a988660fd2008765d635fd642c47eb5a8"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "music practice",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 100
+          },
+          "output_sha256": "0f30f5fb12ed65cf922557cc48c49d432ff2d5d4138664406b84cefc2c3ca2c7",
+          "prompt_id": "functional-05-03",
+          "prompt_sha256": "af5bfdd4f336c1e830fa1980235db5015dc419d6cd69e8f516139f4766f8b5dd"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "music practice",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 100
+          },
+          "output_sha256": "bc55294ba4998f71bd5e4ee84053c96e7e3c4ea713c9868f0130abf99f839c19",
+          "prompt_id": "functional-05-04",
+          "prompt_sha256": "9a27c3737782cd1a9c89c8614653a92601636e976072497db755b7954075fd80"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "music practice",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 104
+          },
+          "output_sha256": "699e7405a20e2b629d7ef10ec2126dce901b2bbc79cf912cf55706c286c09eac",
+          "prompt_id": "functional-05-05",
+          "prompt_sha256": "9243f76864f4694e98c8d37a1dddd2baf7da93519c004a3fbc50e779c7d27794"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "music practice",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 94
+          },
+          "output_sha256": "da81b0832d03c01f04d98a83b748841b4cff8baa9697f91c02fb313b94d9ef79",
+          "prompt_id": "functional-05-06",
+          "prompt_sha256": "29dbd0760aa93864e2a4384358b7ffa36978534af0d13535a2bccc7d3cea2742"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "music practice",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 98
+          },
+          "output_sha256": "b10b1b7680cb38c535df47321bac8f4848b3d877fa57648b793ddc097d3dadc1",
+          "prompt_id": "functional-05-07",
+          "prompt_sha256": "cf67e5cd95166ddd25dbc4fbda7462dc2fd36006dab5b6705fd2e84c45dec8de"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "music practice",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 98
+          },
+          "output_sha256": "42312a180f5a7df861d9960a395206ba22671c747e30cf243d76c1972ea867e4",
+          "prompt_id": "functional-05-08",
+          "prompt_sha256": "a87c35795fcd59fc91e4e6ff8268eb60d1382ce2a6f2c65430ce2e518f8c409d"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "music practice",
+            "topic_phrase_present": false,
+            "topic_token_recall": 1.0,
+            "word_count": 97
+          },
+          "output_sha256": "e70ffb1065e70cbffeae08e2d4d9925cd4db90f29ed12d7abfc6ca692e036ff2",
+          "prompt_id": "functional-05-09",
+          "prompt_sha256": "3d5a4ab6b194257d2914935addb88f600d2b0b009229f935e96eff8ae9eb6a18"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "safe navigation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 92
+          },
+          "output_sha256": "445d438b9149ff4f14ce0bdbb3896956b38052426fcca61d76fb16a9d47e298e",
+          "prompt_id": "functional-06-00",
+          "prompt_sha256": "aad6b08a429808947de7ca09fad2738c359574f8997cebe504580e5a653fc84a"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "safe navigation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 96
+          },
+          "output_sha256": "28f570af2658342939aceba29d6f33080485f918b6a48d1d396cc8831d3b80a9",
+          "prompt_id": "functional-06-01",
+          "prompt_sha256": "56a7e47abb9de7b3e0e81ffc53e965ada1218c95a1b180e61ea6fe9d7604edc6"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 8,
+            "topic": "safe navigation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 90
+          },
+          "output_sha256": "41906d4bf492a03371ca1e9c4b12a90da8a4bf7cb8bd7825a5b09df7bd7a8383",
+          "prompt_id": "functional-06-02",
+          "prompt_sha256": "00810e6df046740a7cbbd1087ef38a34d45aee6273d200bd80b75679355c391b"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "safe navigation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 96
+          },
+          "output_sha256": "e75fb453ea637e02cc84292abb16b25460ec42341cefe800f222422610734ef9",
+          "prompt_id": "functional-06-03",
+          "prompt_sha256": "917b12f1110e0e29ea8e8560e227c53702d5c8998094a6268d686f63eca46db1"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "safe navigation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 92
+          },
+          "output_sha256": "dc38dd3574838b4e9c38db55858e54cafb844ea1c90e7be428769402b03ef356",
+          "prompt_id": "functional-06-04",
+          "prompt_sha256": "57024ddb772b73a4263d6fc58457785118a47c8ff8e3cc39632cad1e7524eac6"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "safe navigation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 99
+          },
+          "output_sha256": "b125d8928944b6919e8506e6b4c7d9021ab71f3f6fb7e2a8de6d418497c7d4ff",
+          "prompt_id": "functional-06-05",
+          "prompt_sha256": "f57ef7e381024eb550fc28e597f1afbece11f7eaedb46ece690b665b554b9f01"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "safe navigation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 99
+          },
+          "output_sha256": "b09a211f9e48e71d2e6553c26826f7882efcb8207f1df18503d649b7683bf0a2",
+          "prompt_id": "functional-06-06",
+          "prompt_sha256": "3b063b130eb7e172289c571e7296bf7540f981ea919fd96aec3452ecdc1e65c0"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 11,
+            "topic": "safe navigation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 91
+          },
+          "output_sha256": "e2e670f112d423f8b9b9ae90a67c94ddf4d5c871fa9c4da305f1807e1df621b9",
+          "prompt_id": "functional-06-07",
+          "prompt_sha256": "f83714733c061224a5ac6c25243353d8337639c18a8aa96ec017cb9c3bf87433"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "safe navigation",
+            "topic_phrase_present": false,
+            "topic_token_recall": 1.0,
+            "word_count": 98
+          },
+          "output_sha256": "ea5db00949d91b5c509f4ed754c37fffb1b32682eb21aa030610da745bd222aa",
+          "prompt_id": "functional-06-08",
+          "prompt_sha256": "b97d2743e56232c58332dff5fe4f69565921e6d5fcc4dd17ea815eea13b47d68"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 6,
+            "topic": "safe navigation",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 92
+          },
+          "output_sha256": "9effb06381e81b025f2db041661da05ba9a9ce2149ad3668d98a7a417e39afe8",
+          "prompt_id": "functional-06-09",
+          "prompt_sha256": "436fafcfbc362b0d443fad0edf2b513901c06c431c74d101b3d9d5748f737054"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 101
+          },
+          "output_sha256": "3310cf7981a48dec148f37e482eec675365fb936eae537e7f098e1379ac47e84",
+          "prompt_id": "functional-07-00",
+          "prompt_sha256": "b6718945e42466bc8eb9b96003d3ce22aa273b0819f3f8e4f167ec1bc8a77302"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 92
+          },
+          "output_sha256": "325878318bbf5abd9011bc8f693055f29ecd77ed2217c4d7b43eb4f684f455c6",
+          "prompt_id": "functional-07-01",
+          "prompt_sha256": "df22ee873823785d921892d00a43a4c76fac1fd35b3071a1ba7444ccda2b0683"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 2,
+            "sentence_count": 6,
+            "topic": "local history",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 94
+          },
+          "output_sha256": "87d6472eb62d84fd46f5b1ed70aff239e167abd58ecb5619981535c73b0ebea9",
+          "prompt_id": "functional-07-02",
+          "prompt_sha256": "e9a27fe9947a31bcc669b6c2e88a59032f214da1d444483568f6960a843968bc"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 1,
+            "sentence_count": 5,
+            "topic": "local history",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 97
+          },
+          "output_sha256": "73326b57af49a5b2860cd87acdd8212bbdada20784aca86c393d727fca774aa3",
+          "prompt_id": "functional-07-03",
+          "prompt_sha256": "ae3282722923d6748dd8ad04ee529012dc4b24d53d30ee0e01eb1bf79738855a"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 2,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 1.0,
+            "word_count": 102
+          },
+          "output_sha256": "edc7d52769071838d61c6d4ff73d273be2bf8eb1f0b0f48ac2421c52da66d8c5",
+          "prompt_id": "functional-07-04",
+          "prompt_sha256": "b0bf03cf7bea2cb073d4508f2523cb9b4cbc8a07b7e7faa8decf0e95dfcd14b0"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "local history",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 102
+          },
+          "output_sha256": "dac98f6104447f27585b4b8d198834cb0970f9c07684e585d889ccccff9b4ae0",
+          "prompt_id": "functional-07-05",
+          "prompt_sha256": "2a95e284becd5d669e91330c7a92b9674f016096212f578f3d06aae446b20184"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "local history",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 97
+          },
+          "output_sha256": "350686ba96c834aa84da60a4113ecd4ba671860125b6aee333f3545231d3cf30",
+          "prompt_id": "functional-07-06",
+          "prompt_sha256": "25bbf0fe667dbda5e4d7ec3bdbb581dce44dbcc084075d29ca189273e7423f40"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "local history",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 105
+          },
+          "output_sha256": "4367e25b227a151f2db6677ad0af859b70645bce45dd897f672e4112ed8c52a3",
+          "prompt_id": "functional-07-07",
+          "prompt_sha256": "ea4ee9869e67ba8f770966bff32447bdf45f910973843586443f0078faf87aee"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 103
+          },
+          "output_sha256": "a442b90625e44f382a88be526f8d2fc2ea30f58b1e8c162f7b20a2134887e6c6",
+          "prompt_id": "functional-07-08",
+          "prompt_sha256": "e32b3a3ff4ac87a56d8ced023171cb48d6009bbabbd0c3b17dffbe2366d5874b"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "local history",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.0,
+            "word_count": 99
+          },
+          "output_sha256": "a8624fecd7f6310ef85fb37789b6ca71f8f54d2457b2d39bcb87c68717758aa1",
+          "prompt_id": "functional-07-09",
+          "prompt_sha256": "0d19153243c687471fd7171abb86d75261f47eda8e272b69e7a877d6ca653c3e"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 99
+          },
+          "output_sha256": "a8bb89647d1a028b894ba90581ac980096b45d27875d9ad17191b9e3732c33fd",
+          "prompt_id": "functional-08-00",
+          "prompt_sha256": "99dea4f8598c90532f9f5f16974b016f1afc762e388636366fb49d5a2b675fda"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 2,
+            "sentence_count": 4,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 98
+          },
+          "output_sha256": "6be068810e6b52a44e763dab601acdd14ccc85dcc0bc95239f4084c9ff91037b",
+          "prompt_id": "functional-08-01",
+          "prompt_sha256": "48e09435cca14102e73e32707a39497020d4d0f7017794c1ee2a9db767f8a67d"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 7,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 89
+          },
+          "output_sha256": "85fb77c3ae703af926dddea302726b5ad974317371d469ce79f316f862ab42fb",
+          "prompt_id": "functional-08-02",
+          "prompt_sha256": "2797d6ffa9b214a0d96420d231799089a9c2e708dd818d8c1ccacc25fee5870d"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 6,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 89
+          },
+          "output_sha256": "3c61054b4782f857acbfdec4977ab546d0d7207d06ce8735315a292b1dc44d89",
+          "prompt_id": "functional-08-03",
+          "prompt_sha256": "bea1859b97f2009e0e756e95fbf3492fe303b034b563083071bb00fdc772ca15"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 104
+          },
+          "output_sha256": "68c0147060ac0ac96a2c85def69aca9292873c43f229f8e187f40f3215139b08",
+          "prompt_id": "functional-08-04",
+          "prompt_sha256": "99c4c515a30fdb8bf2aacfd0feabbc79a7845d6fee041c28c9cd64d0486e35ca"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 3,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 102
+          },
+          "output_sha256": "fb58b915c1c104ee5515a68c51437e99a6caf9bc5d623c7fcb362b2485e08f54",
+          "prompt_id": "functional-08-05",
+          "prompt_sha256": "935087631e94ebbe068a1ae2b258284b8b472ad4bc69031c150cfa48aacb8ae4"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 1,
+            "sentence_count": 6,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 94
+          },
+          "output_sha256": "2a3710ca5866981f70f3801e76374ccf38505278f822d318fe6445ca71feb98f",
+          "prompt_id": "functional-08-06",
+          "prompt_sha256": "cdbe0e56de81f773d08284bb2f1179aa04c2da11de53e70a30a1185eaba087b8"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 13,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 85
+          },
+          "output_sha256": "dbdfa5a77c04a1568f8d24d2d30027c9f743e24133a5db5e51f26538c78e4053",
+          "prompt_id": "functional-08-07",
+          "prompt_sha256": "181f730c273fdfdaf2c51894385ae7e80e6a14e135839ebaec83bb1eeb48d6ec"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 103
+          },
+          "output_sha256": "8eef8991057056b5b347074efb602252b8414d0ebf740ff00667ae2e369dd85e",
+          "prompt_id": "functional-08-08",
+          "prompt_sha256": "dd977c5b06c78a839c8b3ee8fbe229d26da8f1a9da8ceffe61c549edf3019b99"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 2,
+            "sentence_count": 4,
+            "topic": "water conservation",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 86
+          },
+          "output_sha256": "4e7e3d03bcfcd3c06999dccfcdc1046d38a9d72a5941eb82173a29ee491489e6",
+          "prompt_id": "functional-08-09",
+          "prompt_sha256": "3ebe9fe2f80f1b328ffbf24b88c84360066779dcb670b5bee25312475cb41bfb"
+        },
+        {
+          "category": "continuation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "collaborative design",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 95
+          },
+          "output_sha256": "24ab7146ec70f3dddda4c1bafb43f2a9fc7bea0543f78db3641fbb9cbfb08475",
+          "prompt_id": "functional-09-00",
+          "prompt_sha256": "0bc4571fe404fc78a7e63f74abd8c25425f6be3bb769899cc317c7762b4e1ba6"
+        },
+        {
+          "category": "explanation",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "collaborative design",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 96
+          },
+          "output_sha256": "f1fd9c118af23db7b8468f3bb325295d5a2765c81bc6d241f08be3f0e7c1208c",
+          "prompt_id": "functional-09-01",
+          "prompt_sha256": "866614a0737f11cce8fbd5a9601ee31299a819ba6915d28207c607efdc0a5624"
+        },
+        {
+          "category": "planning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 7,
+            "topic": "collaborative design",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 94
+          },
+          "output_sha256": "4f2ee9e85892f3ae9ca074a852a6ba1124bd170db722ccacb919443940b60ab8",
+          "prompt_id": "functional-09-02",
+          "prompt_sha256": "723e7fe3105956c88c5629b168e61c67cfb829419b6184e8ecc97477c6c94cb9"
+        },
+        {
+          "category": "comparison",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "collaborative design",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 98
+          },
+          "output_sha256": "41d28d3fb084cf13b830c65b9d17299d1af2fac4c21a121fb75a859126e2f892",
+          "prompt_id": "functional-09-03",
+          "prompt_sha256": "0eaf7578d8cca66af5e73e937560f8003ef8e4e34a22782221d544bbebf5f0f6"
+        },
+        {
+          "category": "instruction_following",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "collaborative design",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 92
+          },
+          "output_sha256": "48599f8f9e1ae684883454aa1b01b5806adc9241863a562322eb9f01c4265d6e",
+          "prompt_id": "functional-09-04",
+          "prompt_sha256": "d6cd626413eb59337bda695db0515654fe23732e3db0abedbdc67ce9c8136c43"
+        },
+        {
+          "category": "reasoning",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "collaborative design",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 94
+          },
+          "output_sha256": "b73ebc4864c471b5e9a32ff3ac4b6352a681a3512447d5f68e35f5d6dde7d64f",
+          "prompt_id": "functional-09-05",
+          "prompt_sha256": "c127dbabd98d791b5a990ca2f7560a33279ef9e32aedf02a0208c5bf2d6fa673"
+        },
+        {
+          "category": "summarization",
+          "metrics": {
+            "category_structure_pass": false,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 3,
+            "sentence_count": 8,
+            "topic": "collaborative design",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 93
+          },
+          "output_sha256": "cc9a2e093c9643181873df5e270c818a2364a732808d6c6d172e0104c6534f9c",
+          "prompt_id": "functional-09-06",
+          "prompt_sha256": "5fbd801f81e0df55f6572af89c37180d90cb243602239f9c63e5e15ab2980025"
+        },
+        {
+          "category": "question_answering",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "collaborative design",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 97
+          },
+          "output_sha256": "8b1744c6f6036a8ece2b35999180e553fbda3561daeadfe3d052c16563fe730b",
+          "prompt_id": "functional-09-07",
+          "prompt_sha256": "e9d19a4aaf5e478a414d57e9c0f86fc247621518b83844683208766a9ebda331"
+        },
+        {
+          "category": "coherence",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": true,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 5,
+            "topic": "collaborative design",
+            "topic_phrase_present": true,
+            "topic_token_recall": 1.0,
+            "word_count": 101
+          },
+          "output_sha256": "c46cf75cddc5b454346f4e613bdf3f37cd067b4243ed27d433e4f4fb4be5a30a",
+          "prompt_id": "functional-09-08",
+          "prompt_sha256": "5c9e62091ea2060a5c52d4fb402b51c83bcd34b8514abff374cece532be7ab8d"
+        },
+        {
+          "category": "repetition_control",
+          "metrics": {
+            "category_structure_pass": true,
+            "core_adherence_pass": false,
+            "minimum_80_words_pass": true,
+            "ordered_step_markers": 0,
+            "sentence_count": 4,
+            "topic": "collaborative design",
+            "topic_phrase_present": false,
+            "topic_token_recall": 0.5,
+            "word_count": 97
+          },
+          "output_sha256": "32e8877ce3fd7897db32ee8456569bf7e7cf0e6ff2f47fdeb3b92ece0984552a",
+          "prompt_id": "functional-09-09",
+          "prompt_sha256": "e11711e7def2abf7a0699aea611a9f9de1e4e53780b33d48b36133debed922ab"
+        }
+      ]
+    }
+  }
+}

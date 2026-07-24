@@ -1,0 +1,62 @@
+{
+  "architecture": "CONTEXTUAL_TOKEN_MEMORY_SPARSE_COPY",
+  "decision": "CLOSED_NEGATIVE",
+  "development_gates": {
+    "core_adherence_minimum": 0.4,
+    "topic_recall_minimum": 0.65,
+    "transformer_relative_cpu_throughput_minimum": 1.75,
+    "validation_bpb_maximum": 1.75
+  },
+  "evidence": [
+    {
+      "audit_file_sha256": "0e378e74a15b9b9ffdcf9c40814445461ada3e9d4f9e106b96a4f8eef45a1845",
+      "checkpoint_sha256": "2201c120f5ab09db92162278bfef9e671cb3b973750b3829db1ac5711b268bad",
+      "core_adherence": 0.09,
+      "cumulative_instruction_steps": 1200,
+      "metadata_file_sha256": "d61c90bd6e8eede57d3f3073d9d0b1321392ccdc941a8ab67b0841153398f8ef",
+      "screen_file_sha256": "a271b3110f59fca23df641069c9a59547123c453b157621f5b25c9018d0881c1",
+      "topic_phrase_present": 0.13,
+      "topic_recall": 0.415,
+      "transformer_relative_cpu_throughput": 1.8717743161538603,
+      "validation_bpb": 1.7084959811984346
+    },
+    {
+      "audit_file_sha256": "05cf5563311aac651dc358bbb4e9814b0560008d55bf83473b90181490e4c203",
+      "checkpoint_sha256": "d9dda713b644051c26d608d2ee5eba6dc82ee1296b4a2661a44e8632e7fc1fc0",
+      "core_adherence": 0.05,
+      "cumulative_instruction_steps": 2400,
+      "metadata_file_sha256": "c1ae930e0b29111dddc930ca035f02eafccc41aa67d284466938db12750e4fb2",
+      "screen_file_sha256": "3983dc4120370700b12f0e6934b2e749e2e360403d9062763d9cb7166d5eeb7f",
+      "topic_phrase_present": 0.11,
+      "topic_recall": 0.36,
+      "transformer_relative_cpu_throughput": 1.525937152479764,
+      "validation_bpb": 1.6993401899397347
+    }
+  ],
+  "failed_development_gates": [
+    "topic_recall",
+    "core_adherence",
+    "transformer_relative_cpu_throughput"
+  ],
+  "falsified_claim": "Direct contextual token memory and exact sparse source-unit copying are insufficient to produce autonomous prompt adherence while preserving the CPU gate when rare English words remain long fallback-unit sequences.",
+  "format": "layercake-phase2-contextual-token-memory-branch-decision/1",
+  "mechanistic_diagnosis": {
+    "free_generation_observation": "Outputs retained generic response frames but blended or truncated multi-unit topic words and often drifted after early tokens.",
+    "initial_to_final_core_adherence_change": -0.039999999999999994,
+    "initial_to_final_topic_recall_change": -0.05499999999999999,
+    "multi_unit_example": {
+      "shared_bpe_units": 10,
+      "text": " efficient computing",
+      "word_byte_hybrid_units": 11
+    },
+    "teacher_forced_loss_final": 0.420936,
+    "training_loss_free_generation_divergence": true
+  },
+  "nearby_capacity_attention_pointer_or_loss_sweeps_authorized": false,
+  "negative_evidence_preserved": true,
+  "phase2_status": "OPEN_RESEARCH_DIRECTION_REQUIRED",
+  "phase3_status": "LOCKED",
+  "promotion": false,
+  "systems_optimization_authorized": false,
+  "test_accessed": false
+}

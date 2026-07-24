@@ -48,13 +48,17 @@ def main() -> int:
             ]["contract_sha256"] == _sha(preregistration_path)
         ),
         "prior_branch_decision_hash": (
-            task["latest_batch_sha256"] == _sha(decision_path)
+            _sha(decision_path)
+            == "53f4e975298802fc3a89a2e8e48d46bfdebcb7bcd69bbffc628cde0263b53519"
         ),
         "prior_branch_closed": (
             _read(decision_path)["decision"] == "CLOSED_NEGATIVE"
         ),
-        "single_active_candidate": (
-            task["active_candidate"] == preregistration["hypothesis"]["id"]
+        "branch_terminal_negative": (
+            task["representation_branches"][
+                "contextual_token_memory_sparse_copy"
+            ]
+            == "CLOSED_NEGATIVE"
         ),
         "phase3_task_lock": task["phase3_status"] == "LOCKED",
         "no_nearby_sweeps": (
