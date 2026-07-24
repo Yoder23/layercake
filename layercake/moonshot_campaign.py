@@ -63,7 +63,7 @@ class CampaignVerificationError(RuntimeError):
 
 
 PHASE1_CORRECTION_ID = "phase1-final-corrections/1"
-PHASE2_RECERTIFICATION_ID = "phase2-tokenizer-free-free-generation/2"
+PHASE2_RECERTIFICATION_ID = "phase2-quality-speed-english-core/3"
 PHASE2_RECERTIFICATION_DIR = Path("results/moonshot/phase2_recertification")
 PHASE2_RECERTIFICATION_ARTIFACT_DIR = Path("artifacts/moonshot/phase2_recertification")
 
@@ -482,6 +482,18 @@ def verify_derived_claim(root: Path, phase: int, claim: Mapping[str, Any]) -> fl
     if not isinstance(raw_path, str):
         raise CampaignVerificationError("headline claim has no raw artifact")
     required_prefix = f"results/moonshot/phase{phase}/raw_runs/"
+    if phase == 2:
+        campaign_path = _path(root, CAMPAIGN_DIR / "campaign.yaml")
+        # Unit-level claim verification can operate on a deliberately minimal
+        # evidence tree with no campaign state.  A real campaign repository
+        # always has this file and selects the revision-specific raw prefix.
+        if campaign_path.is_file():
+            campaign = read_document(campaign_path)
+            record = campaign.get("phase_records", {}).get("phase2", {})
+            if record.get("recertification_id") == PHASE2_RECERTIFICATION_ID:
+                required_prefix = (
+                    PHASE2_RECERTIFICATION_DIR / "raw_runs"
+                ).as_posix() + "/"
     if not raw_path.replace("\\", "/").startswith(required_prefix):
         raise CampaignVerificationError("headline raw artifact is outside the phase raw_runs directory")
     path = _path(root, raw_path)
@@ -767,9 +779,9 @@ def _completion_tag(root: Path, claim_contract: Mapping[str, Any], phase: int) -
             record = campaign.get("phase_records", {}).get("phase2", {})
             if record.get("recertification_id") == PHASE2_RECERTIFICATION_ID:
                 tag = record.get("completion_tag", tag)
-                if tag != "layercake-moonshot-phase2-r2":
+                if tag != "layercake-moonshot-phase2-r3":
                     raise CampaignVerificationError(
-                        "Phase 2 recertification completion tag must be layercake-moonshot-phase2-r2"
+                        "Phase 2 recertification completion tag must be layercake-moonshot-phase2-r3"
                     )
     commit = _git(root, "rev-list", "-n", "1", tag, check=False) or None
     return tag, commit
@@ -883,6 +895,32 @@ def _verify_phase_evidence(root: Path, phase: int, contracts: Mapping[str, Mappi
         except Phase1EvidenceError as error:
             raise CampaignVerificationError(f"Phase 1 typed evidence failed: {error}") from error
     if phase == 2:
+        campaign = contracts["campaign.yaml"]
+        record = campaign.get("phase_records", {}).get("phase2", {})
+        if record.get("recertification_id") == PHASE2_RECERTIFICATION_ID:
+            try:
+                from .evaluation.phase2_r3_evidence import (
+                    Phase2R3EvidenceError,
+                    validate_phase2_r3_bundle,
+                )
+                summary = validate_phase2_r3_bundle(
+                    root, _phase_dir(root, 2)
+                )
+                payload = read_document(
+                    _lifecycle_path(root, 2, "certificate_payload.json")
+                )
+                validate_required_gates(
+                    root, 2, payload, contracts["claim_contract.yaml"]
+                )
+                validate_matched_quality(
+                    {"phase": 2, **payload},
+                    contracts["benchmark_contract.yaml"],
+                )
+                return summary
+            except Phase2R3EvidenceError as error:
+                raise CampaignVerificationError(
+                    f"Phase 2 r3 typed evidence failed: {error}"
+                ) from error
         try:
             from .evaluation.phase2_evidence import Phase2EvidenceError, validate_phase2_bundle
             summary = validate_phase2_bundle(root, _phase_dir(root, 2))
@@ -1044,7 +1082,13 @@ def promote_phase(root: Path, phase: int) -> dict[str, Any]:
         validate_baselines(certificate, contracts["claim_contract.yaml"])
     if phase == 2:
         payload = read_document(_lifecycle_path(root, 2, "certificate_payload.json"))
-        core_manifest_path = _path(root, "artifacts/moonshot/phase2/final_core/manifest.json")
+        core_manifest_path = _path(
+            root,
+            payload["lineage"].get(
+                "final_core_manifest",
+                "artifacts/moonshot/phase2/final_core/manifest.json",
+            ),
+        )
         core_manifest = read_document(core_manifest_path)
         architecture_id = core_manifest.get("architecture_id")
         if not isinstance(architecture_id, str) or not architecture_id:
@@ -1220,13 +1264,29 @@ def verify_sealed(root: Path, phase: int) -> dict[str, Any]:
                 f"sealed Phase 1 typed evidence failed structural verification: {error}"
             ) from error
     if phase == 2:
-        try:
-            from .evaluation.phase2_evidence import Phase2EvidenceError, validate_phase2_bundle
-            validate_phase2_bundle(root, _phase_dir(root, 2))
-        except Phase2EvidenceError as error:
-            raise CampaignVerificationError(
-                f"sealed Phase 2 typed evidence failed structural verification: {error}"
-            ) from error
+        record = campaign.get("phase_records", {}).get("phase2", {})
+        if record.get("recertification_id") == PHASE2_RECERTIFICATION_ID:
+            try:
+                from .evaluation.phase2_r3_evidence import (
+                    Phase2R3EvidenceError,
+                    validate_phase2_r3_bundle,
+                )
+                validate_phase2_r3_bundle(root, _phase_dir(root, 2))
+            except Phase2R3EvidenceError as error:
+                raise CampaignVerificationError(
+                    f"sealed Phase 2 r3 evidence failed: {error}"
+                ) from error
+            record = None
+        if record is None:
+            pass
+        else:
+            try:
+                from .evaluation.phase2_evidence import Phase2EvidenceError, validate_phase2_bundle
+                validate_phase2_bundle(root, _phase_dir(root, 2))
+            except Phase2EvidenceError as error:
+                raise CampaignVerificationError(
+                    f"sealed Phase 2 typed evidence failed structural verification: {error}"
+                ) from error
     remote = _git(root, "ls-remote", "--tags", "origin", f"refs/tags/{tag}", check=False)
     remote_status = "PUBLISHED" if remote else "NOT_VERIFIED_OR_NOT_PUBLISHED"
     return {

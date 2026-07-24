@@ -1,0 +1,43 @@
+{
+  "attachment": {
+    "cake_input": "abi_state",
+    "cake_output": "semantic residual with identical shape",
+    "combination": "host adds the bounded semantic residual before its tied language-model head",
+    "core_only_behavior": "identity residual; no cake session or cake matrix operation",
+    "direct_one_cake_behavior": "one explicitly selected cake consumes abi_state; no router is required",
+    "inactive_cake_compute": 0,
+    "location": "after the selected English instruction cake and before the tied language-model head"
+  },
+  "compatibility": {
+    "cross_representation_portability_claimed": false,
+    "host_requirements": [
+      "exact ABI version and contract hash",
+      "width 768",
+      "declared normalization and coordinate basis",
+      "declared GPT-2 byte-fallback tokenizer class"
+    ],
+    "semantic_cross_host_portability_deferred_to_phase4": true
+  },
+  "external_boundary": {
+    "input": "UTF-8 bytes",
+    "output": "UTF-8 bytes"
+  },
+  "format": "layercake-canonical-semantic-cake-abi/1",
+  "representation": {
+    "internal": "GPT-2 byte-fallback BPE",
+    "private_host_token_ids_exposed_to_cake": false,
+    "tokenizer_sha256": "1fe93b6152957cf9cfd6d89002467f789ce8b3f3e000b3a2edf27c808ddd0b9e"
+  },
+  "state": {
+    "coordinate_basis": "layercake-shallow-sparse-english/1 post-instruction-cake semantic coordinates",
+    "dtype": "float32 at the runtime boundary",
+    "normalization": "the core final LayerNorm followed by one bounded rank-64 English instruction residual",
+    "shape": [
+      "batch",
+      768
+    ],
+    "temporal_scope": "one state for the most recently processed causal unit"
+  },
+  "status": "LOCKED",
+  "version": "lc-semantic-gpt2-768/1"
+}

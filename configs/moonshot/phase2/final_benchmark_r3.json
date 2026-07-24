@@ -1,0 +1,76 @@
+{
+  "architecture_frozen": true,
+  "candidate": {
+    "architecture_version": "layercake-shallow-sparse-english/1-three-block-task-cakes",
+    "checkpoint_template": "artifacts/moonshot/phase2_shallow_sparse_pretrained/student2400-seed-{seed}",
+    "native_runtime_template": "artifacts/moonshot/phase2_shallow_sparse_pretrained/student2400-onnx-int8-v5-seed-{seed}",
+    "primary_seed": 9824,
+    "replication_seeds": [
+      9824,
+      9825,
+      9826
+    ]
+  },
+  "decoding": {
+    "external_override": false,
+    "mode": "deterministic neural greedy with declared repetition controls",
+    "no_repeat_ngram_size": 4,
+    "repetition_penalty": 1.15
+  },
+  "final_gates": {
+    "active_model_memory_lower_than_transformer": true,
+    "core_adherence_min": 0.55,
+    "independent_seeds_min": 3,
+    "physical_sparse_execution": true,
+    "process_resident_memory_bytes_max_exclusive": 214990848,
+    "topic_recall_min": 0.82,
+    "transformer_relative_cpu_throughput_1024_min": 2.0,
+    "transformer_relative_cpu_throughput_128_min": 2.0,
+    "ttfo_no_worse_than_transformer": true,
+    "validation_bpb_max": 1.7174
+  },
+  "format": "layercake-phase2-r3-benchmark-lock/1",
+  "functional_quality": {
+    "distinct_prompts": 100,
+    "minimum_generated_bytes": 640,
+    "prompt_manifest": "results/moonshot/phase1/quality_suite_manifest.json",
+    "semantic_audit": "layercake.phase2_recertification audit-functional-semantics"
+  },
+  "hidden_evaluation": {
+    "architecture_or_threshold_changes_after_access_allowed": false,
+    "exact_codeword_suite": "legacy frozen adversarial diagnostic; disclosed because its Qwen reference accuracy is 0.05 and it is not a powered noninferiority gate",
+    "final_bpb_corpus": "data/moonshot/v2/wikitext103/test.bin",
+    "required": true
+  },
+  "knowledge_policy": {
+    "broad_or_specialist_closed_book_knowledge_used_for_promotion": false,
+    "core_scope_contract": "moonshot/phase2_core_cake_boundary.json",
+    "domain_knowledge_location": "independently attachable cakes"
+  },
+  "locked_before_final_r3_evaluation": true,
+  "product_reference": {
+    "checkpoint_sha256": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+    "headline_128_raw": "results/moonshot/phase1/raw_runs/headline_qwen_product.json",
+    "model_id": "qwen25-05b-cpu",
+    "precision": "Q4_K_M",
+    "runtime": "Ollama optimized CPU",
+    "sustained_1024_raw": "results/moonshot/phase2/raw_runs/qwen_sustained.json",
+    "threads": 14
+  },
+  "runtime": {
+    "device": "cpu",
+    "precision": "dynamic signed int8 matrix weights plus signed int8 embedding",
+    "provider": "onnxruntime CPUExecutionProvider",
+    "threads": 14
+  },
+  "statistics": {
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20260724,
+    "confidence": 0.95,
+    "headline_128_distinct_prompts": 100,
+    "headline_128_repeated_prompts": 20,
+    "sustained_1024_distinct_prompts": 20,
+    "sustained_1024_repeated_prompts": 20
+  },
+  "test_access_before_freeze": false
+}

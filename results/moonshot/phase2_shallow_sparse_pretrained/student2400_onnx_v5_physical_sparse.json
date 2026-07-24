@@ -1,0 +1,70 @@
+{
+  "cake_parameter_gathers": [
+    {
+      "installed_shape": [
+        10,
+        768
+      ],
+      "node": "/Gather_1",
+      "selected_output": "/Gather_1_output_0",
+      "weight": "onnx::Gather_1039"
+    },
+    {
+      "installed_shape": [
+        10,
+        768
+      ],
+      "node": "/Gather_2",
+      "selected_output": "/Gather_2_output_0",
+      "weight": "onnx::Gather_1050"
+    },
+    {
+      "installed_shape": [
+        10,
+        64,
+        768
+      ],
+      "node": "/Gather_3",
+      "selected_output": "/Gather_3_output_0",
+      "weight": "onnx::Gather_1061"
+    },
+    {
+      "installed_shape": [
+        10,
+        768,
+        64
+      ],
+      "node": "/Gather_4",
+      "selected_output": "/Gather_4_output_0",
+      "weight": "onnx::Gather_1072"
+    }
+  ],
+  "checks": {
+    "all_selected_tensors_have_consumers": true,
+    "four_route_indexed_cake_parameter_gathers": true,
+    "no_matrix_node_consumes_all_installed_cakes": true,
+    "one_route_input": true
+  },
+  "dense_all_cake_matrix_nodes": [],
+  "evidence_sha256": "48ecb36a564a6c16eaa8c0e043813a56e17a0e145ead55b9d1e5a01f395faf13",
+  "format": "layercake-shallow-sparse-onnx-physical-proof/1",
+  "installed_task_cakes": 10,
+  "maximum_active_task_cakes_per_sequence": 1,
+  "runtime_graph_sha256": "aee6337743617adc3c1e1730bc6d5d8a62e74480fe2d993feaa4be89874832b5",
+  "selected_tensor_consumers": {
+    "/Gather_1_output_0": [
+      "/Unsqueeze_1"
+    ],
+    "/Gather_2_output_0": [
+      "/Unsqueeze_2"
+    ],
+    "/Gather_3_output_0": [
+      "/Transpose"
+    ],
+    "/Gather_4_output_0": [
+      "/Transpose_1"
+    ]
+  },
+  "status": "PASS",
+  "test_accessed": false
+}

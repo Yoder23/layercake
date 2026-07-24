@@ -1,12 +1,10 @@
-"""LayerCake v2 research primitives.
+"""LayerCake v2 research primitives with lazy public imports.
 
-The original flat ``model.py`` API remains supported.  This package contains
-the versioned ABI, byte-patch, sparse-brick, alignment, and orchestration work.
+Keeping the package initializer dependency-free is required by the native
+runtime: importing an ONNX entry point must not silently load PyTorch.
 """
 
-from .abi import ABISpec, ABICompatibilityError
-from .input_interfaces import InputInterfaceSpec
-from .portable_domain import LayerCakeRuntime, PortableDomainDecoder, PortableDomainSpec
+from importlib import import_module
 
 __all__ = [
     "ABISpec",
@@ -16,3 +14,22 @@ __all__ = [
     "PortableDomainDecoder",
     "PortableDomainSpec",
 ]
+
+_LAZY_EXPORTS = {
+    "ABISpec": (".abi", "ABISpec"),
+    "ABICompatibilityError": (".abi", "ABICompatibilityError"),
+    "InputInterfaceSpec": (".input_interfaces", "InputInterfaceSpec"),
+    "LayerCakeRuntime": (".portable_domain", "LayerCakeRuntime"),
+    "PortableDomainDecoder": (".portable_domain", "PortableDomainDecoder"),
+    "PortableDomainSpec": (".portable_domain", "PortableDomainSpec"),
+}
+
+
+def __getattr__(name: str):
+    try:
+        module_name, symbol_name = _LAZY_EXPORTS[name]
+    except KeyError as error:
+        raise AttributeError(name) from error
+    symbol = getattr(import_module(module_name, __name__), symbol_name)
+    globals()[name] = symbol
+    return symbol

@@ -378,14 +378,16 @@ def train_teacher(output: Path, *, steps: int = 1200) -> dict[str, Any]:
     return metadata
 
 
-def initialize_student(teacher_path: Path, output: Path) -> dict[str, Any]:
+def initialize_student(
+    teacher_path: Path, output: Path, *, seed: int = 9824
+) -> dict[str, Any]:
     teacher_path = (
         teacher_path if teacher_path.is_absolute() else ROOT / teacher_path
     ).resolve()
     output = (output if output.is_absolute() else ROOT / output).resolve()
     if output.exists():
         raise RuntimeError(f"student base artifact is immutable: {output}")
-    torch.manual_seed(9824)
+    torch.manual_seed(seed)
     teacher = AutoModelForCausalLM.from_pretrained(
         teacher_path, local_files_only=True
     ).eval()
@@ -416,6 +418,7 @@ def initialize_student(teacher_path: Path, output: Path) -> dict[str, Any]:
     metadata = {
         "format": "layercake-shallow-sparse-english/1",
         "status": "UNTRAINED_TASK_CAKES",
+        "seed": seed,
         "architecture": model.config.canonical_dict(),
         "checkpoint": {
             "path": checkpoint.relative_to(ROOT).as_posix(),
@@ -588,6 +591,7 @@ def train_student(
     output: Path,
     *,
     steps: int = 2400,
+    seed: int = 9824,
 ) -> dict[str, Any]:
     teacher_path = (
         teacher_path if teacher_path.is_absolute() else ROOT / teacher_path
@@ -596,7 +600,7 @@ def train_student(
     output = (output if output.is_absolute() else ROOT / output).resolve()
     if output.exists():
         raise RuntimeError(f"student artifact is immutable: {output}")
-    torch.manual_seed(9824)
+    torch.manual_seed(seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model, tokenizer, parent = load_student(base_path, device=device)
     teacher = AutoModelForCausalLM.from_pretrained(
@@ -605,7 +609,7 @@ def train_student(
     model.train()
     train_rows, validation_rows = _rows()
     wiki = _wiki_tokens(tokenizer)
-    rng = random.Random(9824)
+    rng = random.Random(seed)
     cake_parameters = list(model.task_classifier.parameters())
     for cake in model.task_cakes:
         cake_parameters.extend(cake.parameters())
@@ -762,6 +766,7 @@ def train_student(
         **parent,
         "format": "layercake-shallow-sparse-english/1",
         "status": "TRAINED",
+        "seed": seed,
         "checkpoint": {
             "path": checkpoint.relative_to(ROOT).as_posix(),
             "sha256": sha256_file(checkpoint),
@@ -1167,6 +1172,43 @@ def screen_student(
     }
 
 
+def evaluate_final_quality(
+    checkpoint: Path, output: Path, *, seed: int
+) -> dict[str, Any]:
+    """One-way access to the frozen final BPB split after architecture freeze."""
+
+    checkpoint = (
+        checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
+    ).resolve()
+    output = (output if output.is_absolute() else ROOT / output).resolve()
+    model, tokenizer, metadata = load_student(checkpoint)
+    test_path = ROOT / "data/moonshot/v2/wikitext103/test.bin"
+    metrics = evaluate_bpb(
+        model, tokenizer, test_path, device=torch.device("cpu")
+    )
+    document = {
+        "format": "layercake-phase2-r3-final-quality/1",
+        "status": "PASS",
+        "seed": seed,
+        "checkpoint_path": checkpoint.relative_to(ROOT).as_posix(),
+        "checkpoint_sha256": metadata["checkpoint"]["sha256"],
+        "validation": metadata["quality"]["validation"],
+        "test": metrics,
+        "test_corpus": {
+            "path": test_path.relative_to(ROOT).as_posix(),
+            "sha256": sha256_file(test_path),
+        },
+        "test_accessed": True,
+    }
+    document["evidence_sha256"] = _canonical_sha(document)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        json.dumps(document, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return document
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
@@ -1176,11 +1218,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     initialize = sub.add_parser("initialize-student")
     initialize.add_argument("--teacher", type=Path, required=True)
     initialize.add_argument("--output", type=Path, required=True)
+    initialize.add_argument("--seed", type=int, default=9824)
     student = sub.add_parser("train-student")
     student.add_argument("--teacher", type=Path, required=True)
     student.add_argument("--base", type=Path, required=True)
     student.add_argument("--output", type=Path, required=True)
     student.add_argument("--steps", type=int, default=2400)
+    student.add_argument("--seed", type=int, default=9824)
     screen = sub.add_parser("screen-student")
     screen.add_argument("--checkpoint", type=Path, required=True)
     screen.add_argument("--output", type=Path, required=True)
@@ -1190,14 +1234,24 @@ def main(argv: Sequence[str] | None = None) -> int:
     teacher_screen.add_argument("--checkpoint", type=Path, required=True)
     teacher_screen.add_argument("--output", type=Path, required=True)
     teacher_screen.add_argument("--output-bytes", type=int, default=640)
+    final_quality = sub.add_parser("evaluate-final-quality")
+    final_quality.add_argument("--checkpoint", type=Path, required=True)
+    final_quality.add_argument("--output", type=Path, required=True)
+    final_quality.add_argument("--seed", type=int, required=True)
     args = parser.parse_args(argv)
     if args.command == "train-teacher":
         result = train_teacher(args.output, steps=args.steps)
     elif args.command == "initialize-student":
-        result = initialize_student(args.teacher, args.output)
+        result = initialize_student(
+            args.teacher, args.output, seed=args.seed
+        )
     elif args.command == "train-student":
         result = train_student(
-            args.teacher, args.base, args.output, steps=args.steps
+            args.teacher,
+            args.base,
+            args.output,
+            steps=args.steps,
+            seed=args.seed,
         )
     elif args.command == "screen-student":
         result = screen_student(
@@ -1206,11 +1260,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             output_bytes=args.output_bytes,
             threads=args.threads,
         )
-    else:
+    elif args.command == "screen-teacher":
         result = screen_teacher(
             args.checkpoint,
             args.output,
             output_bytes=args.output_bytes,
+        )
+    else:
+        result = evaluate_final_quality(
+            args.checkpoint, args.output, seed=args.seed
         )
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0

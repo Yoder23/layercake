@@ -13,6 +13,7 @@
       "reason": "separate same-scale/product comparisons; single-request cold timing; authoritative token accounting; promoted 100-prompt depth"
     }
   ],
+  "current_phase": 2,
   "forward_contract_amendments": [
     {
       "amendment_id": "phase4-cpu-cake-training/1",
@@ -105,7 +106,6 @@
       "reason": "Following failure of additional English-substrate exposure on the compact decoder, predeclare one final capacity-changing three-block pretrained English student with physically selected instruction cakes and a bounded native-runtime path."
     }
   ],
-  "current_phase": 2,
   "invalidation_history": [
     {
       "invalidated_certificate_sha256": "0cdcf0ab0f73a5e8ec091040daa0dcd923d99006e5d18fc9ef4541ff03a4bea2",
@@ -123,16 +123,22 @@
   ],
   "lineage": {
     "abi_hash": null,
-    "architecture_hash": null,
-    "architecture_id": null,
+    "architecture_hash": "b8020040300df16d627895685b584a1b615492275bda59ed42fca52762e12ad0",
+    "architecture_id": "layercake-shallow-sparse-english/1-three-block-task-cakes",
     "cake_package_hashes": {},
-    "core_checkpoint_hashes": {},
+    "core_checkpoint_hashes": {
+      "seed-9824": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+      "seed-9825": "81f78a2154353f0ea3c2a4ff685c3e4ffb91876328cd0075559a11bd0d1c2a01",
+      "seed-9826": "f2987c0629460f2050489dda07e3d660e80f48d3c19f1574d51477ce8bdcbf1d"
+    },
     "data_hashes": {},
     "governance_commit": "25aae41044b8cae8decd41fff38fd4184c667458",
     "model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
     "router_hash": null,
     "runtime_hashes": {},
-    "transformer_checkpoint_hashes": {}
+    "transformer_checkpoint_hashes": {
+      "optimized_cpu": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67"
+    }
   },
   "phase_records": {
     "phase0": {
@@ -179,8 +185,14 @@
     "phase2": {
       "active_artifact_dir": "artifacts/moonshot/phase2_recertification",
       "active_evidence_dir": "results/moonshot/phase2_recertification",
-      "completion_tag": "layercake-moonshot-phase2-r2",
+      "candidate": "results/moonshot/phase2_recertification/candidate.json",
+      "candidate_verification": "results/moonshot/phase2_recertification/candidate_verification.json",
+      "certificate": "results/moonshot/phase2_recertification/release_certificate.json",
+      "certificate_sha256": "1ab54f8b70065ca19fe4ab7abe3ba0ba55bff90d7472c29868c7f2c5058b5db3",
+      "completion_tag": "layercake-moonshot-phase2-r3",
       "governance_commit": "25aae41044b8cae8decd41fff38fd4184c667458",
+      "handoff": "results/moonshot/phase2_recertification/handoff.json",
+      "handoff_sha256": "1b6a62a78646c2738d36af5a97ad8361751659369c87078bc138ebfe2e92c462",
       "historical_record": {
         "candidate": "results/moonshot/phase2/candidate.json",
         "candidate_verification": "results/moonshot/phase2/candidate_verification.json",
@@ -205,7 +217,9 @@
       "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
       "invalidation": "results/moonshot/phase2_recertification/invalidation.json",
       "invalidation_sha256": "7fe0f757a88d1b46ef95c6fe3be9b3c9a0fee90c5c27be803f70ed4228dc1241",
-      "recertification_id": "phase2-tokenizer-free-free-generation/2",
+      "phase_implementation_commit": "b40e26453abce0c6a3533f370c310204788ee4c1",
+      "raw_evidence_manifest_sha256": "70dc284cc7def3c6da5bd465fefba99ae9213752e1ae3af80bb4a8c2dfc74023",
+      "recertification_id": "phase2-quality-speed-english-core/3",
       "superseded_release_commit": "ba6e826c32a9209304c52915ca093784c8d41971",
       "superseded_tag": "layercake-moonshot-phase2",
       "superseded_tag_commit": "4402b7a338ef09b7cb971c15886cc5d42001415d"
@@ -214,7 +228,7 @@
   "phases": {
     "phase0_governance": "SEALED",
     "phase1_benchmark_truth": "SEALED",
-    "phase2_cpu_quality_speed": "OPEN",
+    "phase2_cpu_quality_speed": "PASS",
     "phase3_training_speed": "LOCKED",
     "phase4_portable_domain": "LOCKED",
     "phase5_multi_domain": "LOCKED",
