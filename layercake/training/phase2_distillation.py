@@ -943,6 +943,7 @@ def finetune(
             "hierarchical_",
             "structured_",
             "semantic_",
+            "contextual_",
         )
         for name, parameter in model.named_parameters():
             parameter.requires_grad_(
@@ -974,6 +975,7 @@ def finetune(
         device.type == "cuda"
         and not prompt_memory_only
         and not model.config.semantic_prompt_encoder
+        and not model.config.contextual_token_memory
     )
     scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
     autocast = (
@@ -1103,6 +1105,24 @@ def finetune(
                     target_ids,
                 ).squeeze(-1)
                 pointer_focus = focus_mask & (labels >= 0)
+                if bool(pointer_focus.any()):
+                    pointer_alignment_loss = -torch.log(
+                        pointer_probability[pointer_focus].clamp_min(1e-9)
+                    ).mean()
+            elif (
+                pointer_alignment_weight > 0.0
+                and model.last_contextual_pointer_weights is not None
+                and model.last_contextual_pointer_ids is not None
+            ):
+                contextual_weights = (
+                    model.last_contextual_pointer_weights.float()
+                )
+                contextual_ids = model.last_contextual_pointer_ids
+                matches = labels[:, :, None] == contextual_ids[:, None, :]
+                pointer_probability = (
+                    contextual_weights * matches.to(contextual_weights.dtype)
+                ).sum(dim=-1)
+                pointer_focus = focus_mask & matches.any(dim=-1)
                 if bool(pointer_focus.any()):
                     pointer_alignment_loss = -torch.log(
                         pointer_probability[pointer_focus].clamp_min(1e-9)

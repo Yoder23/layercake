@@ -313,3 +313,68 @@ def test_semantic_prompt_encoder_is_contextual_bounded_and_encode_once():
     )
     assert not torch.equal(state.prompt_context, alternate.prompt_context)
     assert torch.isfinite(state.next_logits).all()
+
+
+def test_contextual_token_memory_is_direct_bounded_and_encode_once():
+    torch.manual_seed(19)
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(
+        vocab_size=320,
+        width=32,
+        layers=2,
+        heads=4,
+        max_tokens=96,
+        expansion=1,
+        routed_experts=3,
+        expert_expansion=1,
+        route_after_layers=1,
+        prompt_conditioning=True,
+        contextual_token_memory=True,
+        prompt_memory_key_width=8,
+        prompt_memory_capacity=16,
+    )).eval()
+    prompt = torch.tensor([[65, 66, 67, 68, 69]], dtype=torch.long)
+    state = model.prefill(prompt)
+    memory = state.contextual_token_memory
+    assert [tuple(value.shape) for value in memory] == [
+        (1, 32),
+        (1, 16),
+        (1, 16, 32),
+        (1, 16),
+    ]
+    assert memory[1][0, :5].tolist() == prompt[0].tolist()
+    assert memory[3].sum().item() == 5
+    frozen = [value.clone() for value in memory]
+    _, state = model.decode_step(
+        state, next_token=torch.tensor([70], dtype=torch.long)
+    )
+    assert all(
+        torch.equal(before, after)
+        for before, after in zip(frozen, state.contextual_token_memory)
+    )
+    assert model.last_contextual_pointer_weights.shape == (1, 1, 16)
+    assert model.last_contextual_pointer_weights.sum().item() == pytest.approx(
+        1.0, abs=1e-6
+    )
+    assert torch.equal(
+        model.last_contextual_pointer_ids,
+        state.contextual_token_memory[1],
+    )
+    alternate = model.prefill(
+        torch.tensor([[65, 66, 90, 91, 92]], dtype=torch.long)
+    )
+    assert not torch.equal(state.prompt_context, alternate.prompt_context)
+    assert torch.isfinite(state.next_logits).all()
+
+
+def test_contextual_token_memory_rejects_semantic_slot_combination():
+    with pytest.raises(ValueError, match="exclusive"):
+        SparseBPELayerCakeConfig(
+            vocab_size=320,
+            width=32,
+            layers=2,
+            heads=4,
+            route_after_layers=1,
+            prompt_conditioning=True,
+            semantic_prompt_encoder=True,
+            contextual_token_memory=True,
+        )

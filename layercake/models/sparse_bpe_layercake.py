@@ -35,6 +35,7 @@ class SparseBPELayerCakeConfig:
     structured_prompt_roles: int = 6
     semantic_prompt_encoder: bool = False
     semantic_prompt_slots: int = 12
+    contextual_token_memory: bool = False
     prompt_memory_capacity: int = 128
     prompt_memory_chunk_size: int = 8
     constrained_english_planner: bool = False
@@ -69,10 +70,13 @@ class SparseBPELayerCakeConfig:
             raise ValueError("structured and legacy hierarchical memory are exclusive")
         if self.semantic_prompt_encoder and not self.prompt_conditioning:
             raise ValueError("semantic prompt encoder requires prompt conditioning")
+        if self.contextual_token_memory and not self.prompt_conditioning:
+            raise ValueError("contextual token memory requires prompt conditioning")
         if self.semantic_prompt_encoder and any((
             self.recurrent_prompt_memory,
             self.hierarchical_prompt_memory,
             self.structured_prompt_memory,
+            self.contextual_token_memory,
         )):
             raise ValueError(
                 "semantic prompt encoder is exclusive with legacy prompt memories"
@@ -81,7 +85,22 @@ class SparseBPELayerCakeConfig:
             raise ValueError(
                 "semantic prompt encoder replaces uncontextualized prompt slots"
             )
-        if self.semantic_prompt_encoder and self.width % 2:
+        if self.contextual_token_memory and any((
+            self.recurrent_prompt_memory,
+            self.hierarchical_prompt_memory,
+            self.structured_prompt_memory,
+            self.semantic_prompt_encoder,
+        )):
+            raise ValueError(
+                "contextual token memory is exclusive with other prompt memories"
+            )
+        if self.contextual_token_memory and self.prompt_state_slots:
+            raise ValueError(
+                "contextual token memory replaces uncontextualized prompt slots"
+            )
+        if (
+            self.semantic_prompt_encoder or self.contextual_token_memory
+        ) and self.width % 2:
             raise ValueError("bidirectional semantic encoder requires even width")
         if self.semantic_prompt_slots < 2:
             raise ValueError("semantic prompt encoder requires multiple slots")
@@ -213,6 +232,26 @@ class LayerCakeSparseBPECore(nn.Module):
                 )
                 self.semantic_memory_gate = nn.Linear(cfg.width, 1)
                 self.semantic_pointer_gate = nn.Linear(cfg.width, 1)
+            if cfg.contextual_token_memory:
+                self.contextual_prompt_encoder = nn.GRU(
+                    cfg.width,
+                    cfg.width // 2,
+                    batch_first=True,
+                    bidirectional=True,
+                )
+                self.contextual_encoder_norm = nn.LayerNorm(cfg.width)
+                self.contextual_context_projection = nn.Linear(
+                    cfg.width, cfg.width, bias=False
+                )
+                self.contextual_memory_norm = nn.LayerNorm(cfg.width)
+                self.contextual_memory_query = nn.Linear(
+                    cfg.width, cfg.prompt_memory_key_width, bias=False
+                )
+                self.contextual_token_key = nn.Linear(
+                    cfg.width, cfg.prompt_memory_key_width, bias=False
+                )
+                self.contextual_memory_gate = nn.Linear(cfg.width, 1)
+                self.contextual_pointer_gate = nn.Linear(cfg.width, 1)
         if cfg.constrained_english_planner:
             self.register_buffer(
                 "english_planner_spec",
@@ -246,12 +285,18 @@ class LayerCakeSparseBPECore(nn.Module):
             with torch.no_grad():
                 self.semantic_memory_gate.bias.fill_(-1.5)
                 self.semantic_pointer_gate.bias.fill_(-1.5)
+        if cfg.contextual_token_memory:
+            with torch.no_grad():
+                self.contextual_memory_gate.bias.fill_(-1.5)
+                self.contextual_pointer_gate.bias.fill_(-1.5)
         self.last_routing_aux: dict | None = None
         self.last_prompt_memory_aux: dict | None = None
         self.last_structured_pointer_weights: torch.Tensor | None = None
         self.last_structured_pointer_ids: torch.Tensor | None = None
         self.last_semantic_slot_weights: torch.Tensor | None = None
         self.last_semantic_pointer_distribution: torch.Tensor | None = None
+        self.last_contextual_pointer_weights: torch.Tensor | None = None
+        self.last_contextual_pointer_ids: torch.Tensor | None = None
 
     @staticmethod
     def _initialize(module: nn.Module) -> None:
@@ -669,6 +714,78 @@ class LayerCakeSparseBPECore(nn.Module):
         }
         return hidden, pointer_distribution
 
+    def _contextual_token_features(
+        self,
+        token_ids: torch.Tensor,
+        prompt_lengths: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Encode a bounded prompt once without learned slot compression."""
+
+        batch = token_ids.shape[0]
+        capacity = self.config.prompt_memory_capacity
+        positions = torch.arange(capacity, device=token_ids.device)[None]
+        retained = prompt_lengths.clamp(min=1, max=capacity)
+        indexes = torch.div(
+            positions * prompt_lengths[:, None],
+            capacity,
+            rounding_mode="floor",
+        )
+        indexes = torch.where(
+            prompt_lengths[:, None] <= capacity,
+            positions,
+            indexes,
+        )
+        indexes = indexes.clamp_max(token_ids.shape[1] - 1)
+        memory_ids = token_ids.gather(1, indexes.expand(batch, -1))
+        token_mask = positions < retained[:, None]
+        embedded = self.prompt_projection(self.embedding(memory_ids))
+        packed = nn.utils.rnn.pack_padded_sequence(
+            embedded,
+            retained.detach().cpu(),
+            batch_first=True,
+            enforce_sorted=False,
+        )
+        contextual_packed, _ = self.contextual_prompt_encoder(packed)
+        contextual, _ = nn.utils.rnn.pad_packed_sequence(
+            contextual_packed,
+            batch_first=True,
+            total_length=capacity,
+        )
+        contextual = self.contextual_encoder_norm(contextual)
+        contextual = contextual * token_mask[:, :, None]
+        pooled = contextual.sum(dim=1) / retained[:, None]
+        context = self.contextual_context_projection(pooled)
+        return context, memory_ids, contextual, token_mask
+
+    def _apply_contextual_token_memory(
+        self,
+        hidden: torch.Tensor,
+        memory_ids: torch.Tensor,
+        token_memory: torch.Tensor,
+        token_mask: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Read contextual prompt tokens and retain exact sparse copy weights."""
+
+        normalized = self.contextual_memory_norm(hidden)
+        query = self.contextual_memory_query(normalized)
+        keys = self.contextual_token_key(token_memory)
+        scores = torch.matmul(query, keys.transpose(-1, -2))
+        scores = scores / self.config.prompt_memory_key_width ** 0.5
+        scores = scores.masked_fill(~token_mask[:, None], -torch.inf)
+        weights = torch.softmax(scores, dim=-1)
+        recalled = torch.matmul(weights, token_memory)
+        gate = torch.sigmoid(self.contextual_memory_gate(normalized))
+        hidden = hidden + gate * recalled
+        self.last_contextual_pointer_weights = weights
+        self.last_contextual_pointer_ids = memory_ids
+        self.last_prompt_memory_aux = {
+            "mean_gate": gate.detach().mean(),
+            "maximum_gate": gate.detach().amax(),
+            "slot_activation": weights.detach().mean(dim=(0, 1)),
+            "pointer_mass": weights.detach().sum(dim=-1).mean(),
+        }
+        return hidden, weights
+
     def _output_logits(
         self,
         hidden: torch.Tensor,
@@ -678,6 +795,8 @@ class LayerCakeSparseBPECore(nn.Module):
         pointer_token_weights: torch.Tensor | None = None,
         structured_token_ids: torch.Tensor | None = None,
         structured_token_weights: torch.Tensor | None = None,
+        contextual_token_ids: torch.Tensor | None = None,
+        contextual_token_weights: torch.Tensor | None = None,
     ) -> torch.Tensor:
         normalized = self.norm(hidden)
         logits = F.linear(normalized, self.embedding.weight)
@@ -731,6 +850,38 @@ class LayerCakeSparseBPECore(nn.Module):
                 F.softplus(self.structured_pointer_strength)
                 * structured_token_weights.to(logits.dtype),
             )
+        if (
+            contextual_token_ids is not None
+            and contextual_token_weights is not None
+        ):
+            pointer_distribution = torch.zeros_like(
+                logits, dtype=torch.float32
+            )
+            if logits.ndim == 3:
+                indexes = contextual_token_ids[:, None].expand(
+                    -1, logits.shape[1], -1
+                )
+            else:
+                indexes = contextual_token_ids
+            pointer_distribution.scatter_add_(
+                -1,
+                indexes,
+                contextual_token_weights.float(),
+            )
+            pointer_distribution = pointer_distribution / (
+                pointer_distribution.sum(
+                    dim=-1, keepdim=True
+                ).clamp_min(1e-9)
+            )
+            pointer_gate = torch.sigmoid(
+                self.contextual_pointer_gate(normalized).float()
+            )
+            probabilities = (
+                (1.0 - pointer_gate)
+                * torch.softmax(logits.float(), dim=-1)
+                + pointer_gate * pointer_distribution
+            )
+            logits = probabilities.clamp_min(1e-12).log()
         return logits
 
     def forward(
@@ -749,6 +900,8 @@ class LayerCakeSparseBPECore(nn.Module):
         structured = None
         structured_weights = None
         semantic = None
+        contextual = None
+        contextual_weights = None
         if self.config.prompt_conditioning and prompt_lengths is not None:
             if self.config.semantic_prompt_encoder:
                 context, semantic_slots, semantic_copy = (
@@ -758,6 +911,11 @@ class LayerCakeSparseBPECore(nn.Module):
                     )
                 )
                 semantic = (semantic_slots, semantic_copy)
+            elif self.config.contextual_token_memory:
+                contextual = self._contextual_token_features(
+                    token_ids, prompt_lengths
+                )
+                context = contextual[0]
             else:
                 (
                     context,
@@ -833,6 +991,18 @@ class LayerCakeSparseBPECore(nn.Module):
                             semantic[1],
                         )
                     )
+                if (
+                    self.config.contextual_token_memory
+                    and contextual is not None
+                ):
+                    hidden, contextual_weights = (
+                        self._apply_contextual_token_memory(
+                            hidden,
+                            contextual[1],
+                            contextual[2],
+                            contextual[3],
+                        )
+                    )
         return self._output_logits(
             hidden,
             copy_bias,
@@ -845,6 +1015,8 @@ class LayerCakeSparseBPECore(nn.Module):
             hierarchical_weights,
             structured[0] if structured is not None else None,
             structured_weights,
+            contextual[1] if contextual is not None else None,
+            contextual_weights,
         )
 
     @torch.inference_mode()
@@ -863,6 +1035,8 @@ class LayerCakeSparseBPECore(nn.Module):
         structured = None
         structured_weights = None
         semantic = None
+        contextual = None
+        contextual_weights = None
         if self.config.prompt_conditioning:
             lengths = torch.full(
                 (token_ids.shape[0],), token_ids.shape[1], dtype=torch.long,
@@ -873,6 +1047,11 @@ class LayerCakeSparseBPECore(nn.Module):
                     self._semantic_prompt_features(token_ids, lengths)
                 )
                 semantic = (semantic_slots, semantic_copy)
+            elif self.config.contextual_token_memory:
+                contextual = self._contextual_token_features(
+                    token_ids, lengths
+                )
+                prompt_context = contextual[0]
             else:
                 (
                     prompt_context,
@@ -945,6 +1124,18 @@ class LayerCakeSparseBPECore(nn.Module):
                             semantic[1],
                         )
                     )
+                if (
+                    self.config.contextual_token_memory
+                    and contextual is not None
+                ):
+                    hidden, contextual_weights = (
+                        self._apply_contextual_token_memory(
+                            hidden,
+                            contextual[1],
+                            contextual[2],
+                            contextual[3],
+                        )
+                    )
         logits = self._output_logits(
             hidden[:, -1],
             prompt_copy_bias,
@@ -965,6 +1156,12 @@ class LayerCakeSparseBPECore(nn.Module):
                 if structured_weights is not None
                 else None
             ),
+            contextual[1] if contextual is not None else None,
+            (
+                contextual_weights[:, -1]
+                if contextual_weights is not None
+                else None
+            ),
         )
         state = TransformerGenerationState(
             keys_values=keys_values,
@@ -981,6 +1178,7 @@ class LayerCakeSparseBPECore(nn.Module):
         state.hierarchical_prompt_memory = hierarchical
         state.structured_prompt_memory = structured
         state.semantic_prompt_memory = semantic
+        state.contextual_token_memory = contextual
         return state
 
     @torch.inference_mode()
@@ -1001,6 +1199,7 @@ class LayerCakeSparseBPECore(nn.Module):
         pointer_distribution = None
         hierarchical_weights = None
         structured_weights = None
+        contextual_weights = None
         new_cache = []
         for index, (block, past) in enumerate(zip(self.blocks, state.keys_values), start=1):
             hidden, cache = block.forward_cached(hidden, past)
@@ -1066,6 +1265,21 @@ class LayerCakeSparseBPECore(nn.Module):
                             semantic[1],
                         )
                     )
+                contextual = getattr(
+                    state, "contextual_token_memory", None
+                )
+                if (
+                    self.config.contextual_token_memory
+                    and contextual is not None
+                ):
+                    hidden, contextual_weights = (
+                        self._apply_contextual_token_memory(
+                            hidden,
+                            contextual[1],
+                            contextual[2],
+                            contextual[3],
+                        )
+                    )
         state.keys_values = new_cache
         state.next_logits = self._output_logits(
             hidden[:, 0],
@@ -1093,6 +1307,16 @@ class LayerCakeSparseBPECore(nn.Module):
             (
                 structured_weights[:, 0]
                 if structured_weights is not None
+                else None
+            ),
+            (
+                state.contextual_token_memory[1]
+                if self.config.contextual_token_memory
+                else None
+            ),
+            (
+                contextual_weights[:, 0]
+                if contextual_weights is not None
                 else None
             ),
         )

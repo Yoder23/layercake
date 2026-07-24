@@ -1060,6 +1060,170 @@ def enable_semantic_prompt_encoder_checkpoint(
     return result
 
 
+def enable_contextual_token_memory_checkpoint(
+    root: Path,
+    source_path: Path,
+    output_path: Path,
+    key_width: int,
+    capacity: int,
+) -> dict[str, Any]:
+    """Replace collapsed semantic slots with direct contextual token memory."""
+
+    source_path = _resolve(root, source_path)
+    output_path = _resolve(root, output_path)
+    if output_path.exists():
+        raise RuntimeError(
+            f"contextual-token artifact is immutable: {output_path}"
+        )
+    metadata = _read(source_path / "metadata.json")
+    architecture = dict(metadata["architecture"])
+    if not bool(architecture.get("semantic_prompt_encoder")):
+        raise ValueError(
+            "contextual token memory requires the trained semantic parent"
+        )
+    if bool(architecture.get("constrained_english_planner")):
+        raise ValueError("planner-enabled source checkpoints are prohibited")
+    architecture.update({
+        "semantic_prompt_encoder": False,
+        "contextual_token_memory": True,
+        "prompt_memory_key_width": int(key_width),
+        "prompt_memory_capacity": int(capacity),
+        "architecture_version": (
+            "layercake-sparse-bpe-core/12-contextual-token-sparse-copy"
+        ),
+    })
+    torch.manual_seed(20260801)
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(**architecture))
+    source_state = load_file(
+        str(source_path / "model.safetensors"), device="cpu"
+    )
+    converted_state = model.state_dict()
+    prefix_mapping = {
+        "semantic_prompt_encoder.": "contextual_prompt_encoder.",
+        "semantic_encoder_norm.": "contextual_encoder_norm.",
+        "semantic_context_projection.": "contextual_context_projection.",
+        "semantic_memory_norm.": "contextual_memory_norm.",
+        "semantic_memory_query.": "contextual_memory_query.",
+        "semantic_slot_key.": "contextual_token_key.",
+        "semantic_memory_gate.": "contextual_memory_gate.",
+        "semantic_pointer_gate.": "contextual_pointer_gate.",
+    }
+    transferred = {}
+    dropped = []
+    for source_name, value in source_state.items():
+        if source_name == "semantic_slot_queries":
+            dropped.append(source_name)
+            continue
+        target_name = source_name
+        for source_prefix, target_prefix in prefix_mapping.items():
+            if source_name.startswith(source_prefix):
+                target_name = (
+                    target_prefix + source_name[len(source_prefix):]
+                )
+                break
+        if target_name not in converted_state:
+            raise ValueError(
+                f"source tensor absent from contextual model: {source_name}"
+            )
+        if converted_state[target_name].shape != value.shape:
+            raise ValueError(
+                f"source tensor shape changed: {source_name} -> {target_name}"
+            )
+        converted_state[target_name].copy_(value)
+        transferred[source_name] = target_name
+    if set(converted_state) != set(transferred.values()):
+        missing = sorted(set(converted_state).difference(transferred.values()))
+        raise RuntimeError(
+            f"contextual conversion unexpectedly initialized tensors: {missing}"
+        )
+    model.load_state_dict(converted_state, strict=True)
+    output_path.mkdir(parents=True, exist_ok=False)
+    checkpoint_output = output_path / "model.safetensors"
+    tokenizer_output = output_path / "tokenizer.json"
+    save_file(
+        {
+            name: value.detach().cpu().contiguous()
+            for name, value in model.state_dict().items()
+        },
+        str(checkpoint_output),
+    )
+    shutil.copyfile(source_path / "tokenizer.json", tokenizer_output)
+    converted = dict(metadata)
+    converted.update({
+        "format": "layercake-contextual-token-sparse-copy/1",
+        "architecture": architecture,
+        "parameters": {
+            "total": model.parameter_count(),
+            "active": model.active_parameter_count(),
+            "active_fraction": (
+                model.active_parameter_count() / model.parameter_count()
+            ),
+        },
+        "checkpoint": {
+            "path": checkpoint_output.relative_to(root).as_posix(),
+            "sha256": sha256_file(checkpoint_output),
+        },
+        "tokenizer": {
+            "path": tokenizer_output.relative_to(root).as_posix(),
+            "sha256": sha256_file(tokenizer_output),
+        },
+        "contextual_token_memory_conversion": {
+            "source_checkpoint_path": (
+                source_path / "model.safetensors"
+            ).relative_to(root).as_posix(),
+            "source_checkpoint_sha256": sha256_file(
+                source_path / "model.safetensors"
+            ),
+            "dropped_collapsed_tensors": dropped,
+            "transferred_tensor_mapping": transferred,
+            "new_neural_tensors_added": [],
+            "training_performed": False,
+            "prompt_encoding_runs_once": True,
+            "decode_state_bound": {
+                "contextual_tokens": capacity,
+                "token_width": architecture["width"],
+                "associative_key_width": key_width,
+                "dense_slot_vocabulary_distributions": 0,
+                "independent_of_generated_length": True,
+            },
+            "generation_authority": (
+                "neural decoder logits mixed with attention mass scattered "
+                "only onto exact contextual source token IDs"
+            ),
+        },
+    })
+    _write(output_path / "metadata.json", converted)
+    loaded, _, _ = _load_candidate(output_path)
+    prompt = torch.tensor([[65, 66, 67, 68]], dtype=torch.long)
+    state = loaded.prefill(prompt)
+    memory = state.contextual_token_memory
+    shapes_before = [list(value.shape) for value in memory]
+    _, state = loaded.decode_step(state)
+    shapes_after = [
+        list(value.shape) for value in state.contextual_token_memory
+    ]
+    if shapes_before != shapes_after:
+        raise RuntimeError("contextual token memory grew during decode")
+    result = {
+        "status": "PASS",
+        "output": output_path.relative_to(root).as_posix(),
+        "checkpoint_sha256": sha256_file(checkpoint_output),
+        "tokenizer_sha256": sha256_file(tokenizer_output),
+        "new_neural_tensors_added": [],
+        "dropped_collapsed_tensors": dropped,
+        "prompt_memory_capacity": capacity,
+        "state_shapes_before_and_after_decode": shapes_before,
+        "prompt_encoding_runs_once": True,
+        "bounded_contextual_memory": True,
+        "dense_slot_vocabulary_distributions": 0,
+    }
+    _append_ledger(root, {
+        "event": "contextual_token_sparse_copy_enabled",
+        **result,
+    })
+    return result
+
+
 def convert_word_byte_hybrid_checkpoint(
     root: Path,
     source_path: Path,
@@ -3007,6 +3171,11 @@ def build_parser() -> argparse.ArgumentParser:
     command.add_argument("--key-width", type=int, default=32)
     command.add_argument("--capacity", type=int, default=128)
     command.add_argument("--slots", type=int, default=12)
+    command = sub.add_parser("enable-contextual-token-memory")
+    command.add_argument("--source", type=Path, required=True)
+    command.add_argument("--output", type=Path, required=True)
+    command.add_argument("--key-width", type=int, default=32)
+    command.add_argument("--capacity", type=int, default=128)
     command = sub.add_parser("convert-word-byte-hybrid")
     command.add_argument("--source", type=Path, required=True)
     command.add_argument("--tokenizer", type=Path, required=True)
@@ -3106,6 +3275,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.key_width,
             args.capacity,
             args.slots,
+        )
+    elif args.command == "enable-contextual-token-memory":
+        result = enable_contextual_token_memory_checkpoint(
+            root,
+            args.source,
+            args.output,
+            args.key_width,
+            args.capacity,
         )
     elif args.command == "convert-word-byte-hybrid":
         result = convert_word_byte_hybrid_checkpoint(
