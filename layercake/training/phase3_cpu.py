@@ -23,7 +23,7 @@ import psutil
 import torch
 from torch import nn
 import torch.nn.functional as F
-from safetensors.torch import save_file
+from safetensors.torch import load_file, save_file
 from transformers import AutoTokenizer, GPT2Config, GPT2LMHeadModel
 
 from layercake.models.shallow_sparse_english import ShallowSparseEnglishCore
@@ -553,6 +553,8 @@ def profile_training(
     checkpoint_directory: Path | None = None,
     target_units: int | None = None,
     progress_every: int = 0,
+    resume_directory: Path | None = None,
+    instruction_period: int = 4,
 ) -> dict[str, Any]:
     protocol = _validate_lock()
     if system not in {"layercake_complete", "dense_transformer"}:
@@ -587,6 +589,35 @@ def profile_training(
     )
     model.train()
     heads = TrainingOnlyHorizonHeads(768, horizons)
+    parent_checkpoint = None
+    if resume_directory is not None:
+        parent_metadata_path = resume_directory / "metadata.json"
+        parent_metadata = json.loads(
+            parent_metadata_path.read_text(encoding="utf-8")
+        )
+        if (
+            parent_metadata.get("random_initialization") is not True
+            or parent_metadata.get("pretrained_weights_loaded") is not False
+            or parent_metadata.get("system") != system
+        ):
+            raise RuntimeError("resume parent violates random-init lineage")
+        model_path = resume_directory / "model.safetensors"
+        model.load_state_dict(load_file(str(model_path)), strict=True)
+        heads.load_state_dict(
+            load_file(
+                str(
+                    resume_directory
+                    / "training_only_horizon_heads.safetensors"
+                )
+            ),
+            strict=True,
+        )
+        parent_checkpoint = {
+            "path": resume_directory.relative_to(ROOT).as_posix(),
+            "metadata_sha256": _sha(parent_metadata_path),
+            "model_sha256": _sha(model_path),
+            "optimizer_state_reset": True,
+        }
     dense = _dense_parameters(model, heads)
     optimizer = torch.optim.AdamW(
         dense, lr=3.0e-4, betas=(0.9, 0.95), weight_decay=0.1
@@ -608,10 +639,12 @@ def profile_training(
             # trace.  Later intervals may adapt the *shared* trace from paired
             # validation deficits, but may never let each model choose its own
             # examples because that would break paired data order.
-            instruction = step % 4 == 0
+            instruction = step % instruction_period == 0
             prompt_lengths = None
             if instruction:
-                route = ((step // 4) - 1) % len(TASK_TAXONOMY)
+                route = (
+                    (step // instruction_period) - 1
+                ) % len(TASK_TAXONOMY)
                 (
                     inputs,
                     targets,
@@ -741,6 +774,11 @@ def profile_training(
                 "seed": seed,
                 "random_initialization": True,
                 "pretrained_weights_loaded": False,
+                "training_parent": parent_checkpoint,
+                "optimizer_state_reset_at_resume": (
+                    resume_directory is not None
+                ),
+                "instruction_period_steps": instruction_period,
                 "model_visible_nonpadding_units": model_visible_units,
                 "raw_utf8_training_bytes_exposed": raw_bytes,
                 "quality": quality,
@@ -783,6 +821,11 @@ def profile_training(
             "threads": threads,
             "random_initialization": True,
             "pretrained_weights_loaded": False,
+            "resume_parent": parent_checkpoint,
+            "optimizer_state_reset_at_resume": (
+                resume_directory is not None
+            ),
+            "instruction_period_steps": instruction_period,
             "tokenizer_only_reused": True,
             "route_homogeneous_batches": True,
             "sparse_vocabulary_gradient": True,
@@ -832,6 +875,7 @@ def profile_training(
             if checkpoint is not None and checkpoint_directory is not None
             else None
         ),
+        "training_parent": parent_checkpoint,
         "phase2_inference_architecture_unchanged": (
             system == "layercake_complete"
         ),
@@ -872,11 +916,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--checkpoint-directory", type=Path)
     parser.add_argument("--target-units", type=int)
     parser.add_argument("--progress-every", type=int, default=0)
+    parser.add_argument("--resume-directory", type=Path)
+    parser.add_argument("--instruction-period", type=int, default=4)
     args = parser.parse_args(argv)
     output = args.output if args.output.is_absolute() else ROOT / args.output
     checkpoint_directory = args.checkpoint_directory
     if checkpoint_directory is not None and not checkpoint_directory.is_absolute():
         checkpoint_directory = ROOT / checkpoint_directory
+    resume_directory = args.resume_directory
+    if resume_directory is not None and not resume_directory.is_absolute():
+        resume_directory = ROOT / resume_directory
     result = profile_training(
         system=args.system,
         output=output,
@@ -892,6 +941,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         checkpoint_directory=checkpoint_directory,
         target_units=args.target_units,
         progress_every=args.progress_every,
+        resume_directory=resume_directory,
+        instruction_period=args.instruction_period,
     )
     print(json.dumps(result["accounting"], indent=2, sort_keys=True))
     return 0
