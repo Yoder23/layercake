@@ -64,7 +64,13 @@
       "required_gates": [
         {"id": "time_to_matched_quality_ratio", "operator": "le", "threshold": 0.50},
         {"id": "phase2_cpu_speed_retention", "operator": "ge", "threshold": 0.95},
-        {"id": "equal_raw_data_exposure", "operator": "eq", "threshold": 1.0},
+        {"id": "sample_efficiency_ratio", "operator": "le", "threshold": 0.50},
+        {"id": "raw_data_exposure_ratio", "operator": "le", "threshold": 1.0},
+        {"id": "executed_cpu_operations_ratio", "operator": "le", "threshold": 0.50},
+        {"id": "active_parameter_seconds_ratio", "operator": "le", "threshold": 0.50},
+        {"id": "peak_training_memory_ratio", "operator": "lt", "threshold": 1.0},
+        {"id": "promoted_accelerator_hours", "operator": "eq", "threshold": 0.0},
+        {"id": "single_seed_training_hours", "operator": "le", "threshold": 168.0},
         {"id": "threshold_frozen_before_training", "operator": "eq", "threshold": 1.0},
         {"id": "lower_parameter_seconds_or_training_memory", "operator": "eq", "threshold": 1.0}
       ],
@@ -78,6 +84,10 @@
         {"id": "core_plus_cake_phase3_throughput_retention", "operator": "ge", "threshold": 0.90},
         {"id": "core_plus_cake_cpu_transformer_ratio", "operator": "ge", "threshold": 2.0},
         {"id": "cake_adaptation_time_ratio", "operator": "le", "threshold": 0.20},
+        {"id": "cpu_only_cake_training", "operator": "eq", "threshold": 1.0},
+        {"id": "english_core_parameters_changed", "operator": "eq", "threshold": 0.0},
+        {"id": "cake_trainable_parameter_ratio", "operator": "lt", "threshold": 1.0},
+        {"id": "cake_peak_training_memory_ratio", "operator": "lt", "threshold": 1.0},
         {"id": "source_success_retention_ratio", "operator": "eq", "threshold": 1.0},
         {"id": "receiver_training_examples", "operator": "eq", "threshold": 0.0},
         {"id": "receiver_calibration_runs", "operator": "eq", "threshold": 0.0}

@@ -1,11 +1,87 @@
 {
   "format": "layercake-phase3-training-efficiency-lock/1",
-  "status": "LOCKED_PENDING_PHASE2_R3",
+  "status": "LOCKED_BEFORE_PROMOTED_CPU_TRAINING",
+  "phase2_parent": {
+    "completion_tag": "layercake-moonshot-phase2-r3",
+    "release_commit": "187cd9d9a43de2726157c204389e2a1eb2edf733",
+    "seal_commit": "03fe38f7aa5cb891e516de039f78e6ab3f63268c",
+    "final_core_manifest": "artifacts/moonshot/phase2/final_core_r3/manifest.json",
+    "final_core_manifest_sha256": "518dcee35de4878e7ecab4064d75883b934a434d930afc6894e4f28592e4ecb6",
+    "architecture_id": "layercake-shallow-sparse-english/1-three-block-task-cakes",
+    "architecture_sha256": "b8020040300df16d627895685b584a1b615492275bda59ed42fca52762e12ad0"
+  },
   "representation_policy": {
     "external_boundary": "UTF-8 bytes in / UTF-8 bytes out",
     "internal_byte_level_required": false,
     "candidate_representation": "exact Phase 2 r3 winner",
-    "candidate_architecture": "exact Phase 2 r3 winner"
+    "candidate_architecture": {
+      "width": 768,
+      "layers": 3,
+      "heads": 12,
+      "vocabulary": 50257,
+      "maximum_context_units": 1024,
+      "installed_task_cakes": 10,
+      "task_cake_rank": 64,
+      "total_parameters": 61655050,
+      "active_parameters": 60756490
+    },
+    "random_initialization_required": true,
+    "pretrained_weight_loading_allowed": false,
+    "training_only_auxiliaries_must_be_removed_before_inference": true
+  },
+  "declared_cpu": {
+    "processor_identifier": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "physical_cores": 14,
+    "logical_processors": 20,
+    "system_memory_bytes": 68473409536,
+    "instruction_set_observed_by_pytorch": "AVX2",
+    "promoted_accelerator_hours": 0.0
+  },
+  "frozen_data": {
+    "foundation_train": {
+      "path": "data/moonshot/v2/wikitext103/train_development.bin",
+      "bytes": 10000000,
+      "sha256": "ceca1962b8aab7bad3ba4dc47739217e3813a2cf16b546df47c81147bd200de3"
+    },
+    "foundation_validation": {
+      "path": "data/moonshot/v2/wikitext103/validation.bin",
+      "bytes": 567414,
+      "sha256": "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10"
+    },
+    "knowledge_light_instruction_curriculum": {
+      "path": "data/moonshot/phase2/instruction_curriculum_semantic_control_v2.jsonl",
+      "bytes": 2981988,
+      "sha256": "bae6c1fe300a0214c1f6cb19a8c8eeee4f0b75681290be56f258a247cd488e53"
+    },
+    "tokenizer": {
+      "path": "artifacts/moonshot/phase2_shallow_sparse_pretrained/student2400-seed-9824/tokenizer.json",
+      "sha256": "1fe93b6152957cf9cfd6d89002467f789ce8b3f3e000b3a2edf27c808ddd0b9e",
+      "training_time_charged_to_both_systems": true
+    }
+  },
+  "frozen_comparator": {
+    "id": "same-purpose-dense-transformer-random-init",
+    "architecture": "GPT-2-compatible dense causal transformer",
+    "width": 768,
+    "layers": 6,
+    "heads": 12,
+    "vocabulary": 50257,
+    "maximum_context_units": 1024,
+    "parameters": 81912576,
+    "tied_input_output_embedding": true,
+    "random_initialization_required": true,
+    "same_training_system_optimizations_required_when_architecture_agnostic": true
+  },
+  "frozen_quality_threshold": {
+    "validation_bits_per_byte_max": 1.7174,
+    "topic_recall_min": 0.82,
+    "core_adherence_min": 0.55,
+    "valid_utf8_min": 1.0,
+    "repetition_rate_max": 0.24426637744126508,
+    "autonomous_generation_prompts": 100,
+    "first_crossing_rule": "first immutable scheduled checkpoint passing every quality dimension",
+    "evaluation_interval_nonpadding_units": 5000000,
+    "test_set_used_for_crossing": false
   },
   "comparability": {
     "minimum_independent_seeds_per_system": 3,
@@ -26,14 +102,43 @@
       "bootstrap_95pct_upper_bound_max": 0.5
     },
     "paired_nonpadding_model_visible_unit_ratio_layercake_over_transformer": {
-      "point_estimate_max_exclusive": 1.0,
-      "bootstrap_95pct_upper_bound_max_exclusive": 1.0
+      "point_estimate_max": 0.5,
+      "bootstrap_95pct_upper_bound_max": 0.5
     },
     "raw_utf8_training_bytes_layercake_over_transformer_max": 1.0,
+    "executed_cpu_operations_ratio_layercake_over_transformer_max": 0.5,
+    "active_parameter_seconds_ratio_layercake_over_transformer_max": 0.5,
     "peak_active_training_memory_layercake_over_transformer_max_exclusive": 1.0,
     "phase2_cpu_throughput_retention_min": 0.95,
     "optimized_cpu_transformer_throughput_ratio_min": 2.0,
-    "phase2_quality_generation_memory_incremental_sparsity_abi_and_long_output_gates": "PASS"
+    "phase2_quality_generation_memory_incremental_sparsity_abi_and_long_output_gates": "PASS",
+    "single_seed_cpu_wall_time_hours_max": 168.0
+  },
+  "phase2_inference_sentinel": {
+    "output_128_bytes_per_second_min": 1050.139215,
+    "output_1024_bytes_per_second_min": 1572.790032,
+    "optimized_transformer_ratio_min": 2.0,
+    "topic_recall_min": 0.82,
+    "core_adherence_min": 0.55,
+    "process_resident_memory_bytes_max_exclusive": 214990848
+  },
+  "required_systems": [
+    "final LayerCake core",
+    "same-purpose dense transformer",
+    "dense LayerCake ablation",
+    "LayerCake without sparse optimizer state",
+    "LayerCake without adaptive curriculum",
+    "best complete CPU-training configuration"
+  ],
+  "promoted_methods": {
+    "device": "cpu",
+    "physical_sparse_gradient_updates": true,
+    "sparse_optimizer_state_allocation": true,
+    "route_homogeneous_batches": true,
+    "bounded_backpropagation": true,
+    "adaptive_competency_curriculum": true,
+    "multiple_learning_signals_per_example": true,
+    "checkpoint_selection_from_validation_only": true
   },
   "required_accounting": [
     "raw_utf8_training_bytes_exposed",
