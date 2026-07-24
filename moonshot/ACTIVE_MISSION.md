@@ -132,16 +132,23 @@ well: auxiliary losses improved, but autonomous output remained
 morphologically malformed, topic recall fell to 0.10, adherence remained zero,
 and decode speed fell to 1.34x.
 
-The active Phase 2 hypothesis attacks that measured English-substrate failure
-instead of adding another prompt-memory variant. It continues the compact
-shared-BPE core on a hash-bound 200 MB knowledge-light English mixture, freezes
-the resulting substrate during instruction learning, and places
-domain-independent instruction functions in one of ten physically selected
-low-rank neural cakes. Broad factual and specialist knowledge remains outside
-the English core and must enter through later independently attachable domain
-cakes. No template, planner, forced output, retrieval answer, or stored
-response is permitted. The immutable contract is
-`moonshot/phase2_selective_english_cakes_preregistration.json`.
+The selective English-substrate branch is also closed negative before task
+cakes were implemented. Another 200 MB of knowledge-light narrative and
+WikiText exposure improved validation BPB from 1.6500 to 1.6333, but autonomous
+output degraded into repetitive story fragments and malformed words; topic
+recall fell to 0.01, adherence stayed zero, and CPU throughput fell to 1.18x.
+This falsifies more exposure on the same 7.2M-parameter decoder as the repair.
+
+The final active materially distinct Phase 2 hypothesis changes the measured
+capacity limit. A six-block pretrained English model is instruction-tuned only
+as a non-promotable diagnostic control. Blocks 0, 2, and 5 are then transferred
+into one three-block LayerCake student with ten physically dispatched low-rank
+instruction cakes and a cached neural route. Only the integrated three-block
+student can be promoted, and it must still pass every locked quality, speed,
+memory, sparsity, and ABI gate. Broad factual and specialist knowledge remains
+assigned to later attachable domain cakes; no closed-book knowledge metric can
+support Phase 2 promotion. The immutable contract is
+`moonshot/phase2_shallow_sparse_pretrained_preregistration.json`.
 
 ## Phase 4 and later CPU cake-training lock
 

@@ -1,0 +1,15 @@
+{
+  "affected_contract": "moonshot/phase2_selective_english_cakes_preregistration.json",
+  "affected_contract_sha256": "1fca392efd4b996a9133cd962c55bf09baa403aff1c115b1314424e973f73a6d",
+  "correction": {
+    "field": "substrate_contract.pretraining_raw_bytes_exposure",
+    "correct_value": 199999488,
+    "incorrect_value": 200003584,
+    "machine_derivation": "24414 steps * 32 sequences/step * 256 raw bytes/sequence = 199999488"
+  },
+  "format": "layercake-preregistration-arithmetic-correction/1",
+  "nonadaptive": true,
+  "reason": "The fixed step, batch, and sequence budgets were correct before execution; only their manually entered product was off by 4096 bytes. No threshold, architecture, data mixture, step count, or stopping rule changes.",
+  "status": "CORRECTED_WITH_ORIGINAL_PRESERVED",
+  "test_accessed": false
+}

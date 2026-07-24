@@ -1,0 +1,83 @@
+{
+  "development_gates": {
+    "core_adherence_min": 0.4,
+    "repetition_collapse_allowed": false,
+    "topic_recall_min": 0.65,
+    "transformer_relative_cpu_throughput_min": 1.75,
+    "ttft_no_worse_than_transformer": true,
+    "validation_bpb_max": 1.75
+  },
+  "early_stop_rule": "First instruction-tune the six-block source as a non-promotable capacity control. Continue only if its autonomous topic and adherence metrics materially improve. Then transfer blocks 0, 2, and 5 into the three-block sparse LayerCake student and run the one fixed distillation/fine-tuning allowance. Reject the branch if that student fails a development behavior gate. Do not sweep retained blocks, width, adapter rank, tokenizer, layer count, curriculum, or loss weights.",
+  "final_gates": {
+    "autonomous_neural_generation": true,
+    "canonical_cake_abi": true,
+    "core_adherence_min": 0.55,
+    "independent_seeds_min": 3,
+    "persistent_incremental_state": true,
+    "physical_sparse_execution": true,
+    "process_resident_memory_bytes_max_exclusive": 214990848,
+    "topic_recall_min": 0.82,
+    "transformer_relative_cpu_throughput_1024_min": 2.0,
+    "transformer_relative_cpu_throughput_128_min": 2.0,
+    "ttft_no_worse_than_transformer": true,
+    "validation_bpb_max": 1.7174
+  },
+  "format": "layercake-phase2-shallow-sparse-pretrained-preregistration/1",
+  "hypothesis": {
+    "attention_blocks": 3,
+    "claim": "A three-block pretrained English substrate with one physically selected low-rank instruction cake can retain enough stable autonomous syntax and prompt grounding to pass quality while remaining small enough for a quantized native runtime to clear CPU and absolute-RSS gates.",
+    "domain_knowledge_policy": "The Phase 2 training objective remains knowledge-light and no closed-book domain score can support promotion. Broad or specialist knowledge is assigned to attachable cakes through the canonical ABI. The pretrained source is an architecture-and-language-substrate bootstrap only; Phase 3 must retrain the passed architecture from random initialization under the CPU-only contract.",
+    "id": "SHALLOW_SPARSE_PRETRAINED_ENGLISH_CORE",
+    "inference_templates_or_hard_constraints": false,
+    "material_difference_from_closed_branches": "All closed prompt-memory and data-exposure branches retained a 7.2M-parameter decoder that failed autonomous syntax. This branch increases shared English capacity using a measured pretrained control, then removes half its sequential blocks and adds physically dispatched task cakes. It changes the limiting decoder capacity and future native-runtime graph, not another prompt-memory hyperparameter.",
+    "prompt_encoding": "causal prompt prefill in the three shared blocks; a neural task classifier caches one bounded route",
+    "representation": "GPT-2 byte-fallback BPE with UTF-8 input/output",
+    "shared_width": 768,
+    "task_cake_count": 10,
+    "task_cake_rank": 64,
+    "task_cake_runtime": "exactly one low-rank nonlinear residual cake after the final shared block",
+    "unbounded_prompt_state": false
+  },
+  "prior_branch_decision": "results/moonshot/phase2_selective_english_cakes/branch_decision.json",
+  "promotion_rule": "Only the three-block integrated sparse student may be promoted. The six-block source control cannot supply speed, RSS, sparsity, or final quality credit.",
+  "source_control": {
+    "config_sha256": "4ec5947c1d59fee6212cdf3b0ec1a53eac02092554c5ff0a733488cbd2c64f3a",
+    "model_id": "distilgpt2",
+    "model_parameter_count": 81912576,
+    "model_sha256": "e1ff18884359fe8beb795a5f414feb85a6ce3d929ad019c0d958c039d2b94a1b",
+    "snapshot": "2290a62682d06624634c1f46a6ad5be0f47f38aa",
+    "tokenizer_json_sha256": "8414cab924d8b9b33013f0d221c5862f365ee9be39c5c2bfae8a5a9e970478a6",
+    "unmodified_three_prompt_cpu_bytes_per_second": [
+      260.45,
+      313.66,
+      305.81
+    ]
+  },
+  "student_contract": {
+    "retained_source_blocks": [
+      0,
+      2,
+      5
+    ],
+    "source_control_instruction_steps": 1200,
+    "student_distillation_and_instruction_steps": 2400,
+    "student_initialization": "copy source embeddings, positions, final norm, tied LM head, and blocks 0/2/5 after source-control instruction tuning; initialize ten rank-64 zero-output task cakes and neural classifier",
+    "student_parameter_count_max": 70000000
+  },
+  "systems_optimization_rule": "If and only if the student passes behavioral quality and is within 10 percent of either speed or RSS, perform one profiler-directed native int8 runtime implementation with numerical-equivalence tests. No Python baseline subtraction is allowed.",
+  "training_contract": {
+    "instruction_curriculum": "data/moonshot/phase2/instruction_curriculum_semantic_control_v2.jsonl",
+    "instruction_curriculum_sha256": "bae6c1fe300a0214c1f6cb19a8c8eeee4f0b75681290be56f258a247cd488e53",
+    "knowledge_light_only": true,
+    "multi_horizon_recovery_schedule": [
+      8,
+      32,
+      64
+    ],
+    "nearby_architecture_sweeps_allowed": false,
+    "random_seed": 9824,
+    "specialist_domain_training_allowed": false,
+    "test_split_access_allowed": false,
+    "wikitext_regularization_weight": 0.25
+  }
+}

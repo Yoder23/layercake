@@ -1,0 +1,52 @@
+{
+  "architecture": "SELECTIVE_ENGLISH_SUBSTRATE_TASK_CAKES",
+  "decision": "CLOSED_NEGATIVE_BEFORE_TASK_CAKE_IMPLEMENTATION",
+  "development_gates": {
+    "core_adherence_minimum": 0.4,
+    "topic_recall_minimum": 0.65,
+    "transformer_relative_cpu_throughput_minimum": 1.75,
+    "validation_bpb_maximum": 1.75
+  },
+  "evidence": [
+    {
+      "audit_file_sha256": "36702bcd67d117f58eae3b37cca71d0a67067ccc406327aaf2887a3990738b93",
+      "checkpoint_sha256": "474a30ac867c5f3c5fda03fc39484c5d3bc46ac09709fcdbad598e0b049edaa9",
+      "core_adherence": 0.0,
+      "metadata_file_sha256": "e46ade515b5c4877fcad5bf549cc569468c38e2750345bef45a6358d5ef81a7f",
+      "repetition_rate": 0.34626033498548564,
+      "resident_memory_bytes": 405176320,
+      "screen_file_sha256": "d316e4cd87cc14760eb51ee88dfe5dc412251297016e20633c9b1b3ee6605c82",
+      "time_to_first_output_seconds": 0.01335775,
+      "topic_phrase_present": 0.0,
+      "topic_recall": 0.01,
+      "training_raw_bytes_exposed": 199999488,
+      "transformer_relative_cpu_throughput": 1.1776078454631767,
+      "validation_bpb": 1.633267190693753
+    }
+  ],
+  "failed_development_gates": [
+    "autonomous_english_grammaticality",
+    "topic_recall",
+    "core_adherence",
+    "transformer_relative_cpu_throughput",
+    "repetition_collapse",
+    "memory_trend"
+  ],
+  "falsified_claim": "Additional knowledge-light narrative exposure is sufficient to repair the autonomous English substrate of the 7.2M-parameter decoder before selective instruction cakes are added.",
+  "format": "layercake-phase2-selective-english-cakes-branch-decision/1",
+  "mechanistic_diagnosis": {
+    "autonomous_output_observation": "The model produced short grammatical TinyStories fragments and then degraded into blended partial words, repeated conjunctions, and unrelated narrative continuations.",
+    "bpB_improvement_is_not_semantic_evidence": true,
+    "parent_validation_bpb": 1.6500439132561247,
+    "substrate_validation_bpb": 1.633267190693753,
+    "surface_capacity_conclusion": "A lower teacher-forced BPB after 320M cumulative raw bytes did not yield stable autonomous syntax. The limiting factor is compact decoder capacity or architecture rather than another prompt controller or more exposure on the same graph.",
+    "task_cake_implementation_skipped_by_early_stop_rule": true
+  },
+  "nearby_data_exposure_mixture_task_cake_or_loss_sweeps_authorized": false,
+  "negative_evidence_preserved": true,
+  "phase2_status": "OPEN_RESEARCH_DIRECTION_REQUIRED",
+  "phase3_status": "LOCKED",
+  "promotion": false,
+  "systems_optimization_authorized": false,
+  "test_accessed": false
+}
