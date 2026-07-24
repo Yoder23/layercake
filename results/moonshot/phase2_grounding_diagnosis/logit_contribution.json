@@ -1,0 +1,895 @@
+{
+  "autonomous_neural_generation": true,
+  "checkpoint": "artifacts/moonshot/phase2_multislot_prompt_state/continuation10m-seed-9824",
+  "checkpoint_sha256": "8b15cc67295e60d8a77f080f97ce5518f117a0307daa1b3f9b4c1f6ee770d269",
+  "decoding": {
+    "kind": "greedy_with_repetition_control",
+    "no_repeat_ngram_size": 4,
+    "repetition_penalty": 1.15
+  },
+  "evidence_sha256": "f7e707af3b5b8e017baced579689d5735ee6ebdbc09e23049816cae428e36640",
+  "format": "layercake-phase2-grounding-logit-contribution/1",
+  "hierarchical_prompt_memory_enabled": false,
+  "prompt_copy_strength": 0.612795352935791,
+  "records": [
+    {
+      "horizons": [
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9995157122612,
+            "jensen_shannon_nats": 0.010185020044445992,
+            "maximum_absolute_logit_delta": 1.914850115776062,
+            "mean_absolute_logit_delta": 0.16117887198925018,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.999536395072937,
+            "jensen_shannon_nats": 0.006195261143147945,
+            "maximum_absolute_logit_delta": 1.7045023441314697,
+            "mean_absolute_logit_delta": 0.16001014411449432,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999728798866272,
+            "jensen_shannon_nats": 0.0024977740831673145,
+            "maximum_absolute_logit_delta": 0.6127955913543701,
+            "mean_absolute_logit_delta": 0.0067468867637217045,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 16
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.999768853187561,
+            "jensen_shannon_nats": 0.0024439585395157337,
+            "maximum_absolute_logit_delta": 1.024690866470337,
+            "mean_absolute_logit_delta": 0.26419374346733093,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9997758269309998,
+            "jensen_shannon_nats": 0.002398270182311535,
+            "maximum_absolute_logit_delta": 0.944633424282074,
+            "mean_absolute_logit_delta": 0.2617543041706085,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999723434448242,
+            "jensen_shannon_nats": 0.0007819154998287559,
+            "maximum_absolute_logit_delta": 0.6127955913543701,
+            "mean_absolute_logit_delta": 0.006746888160705566,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 64
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9999083280563354,
+            "jensen_shannon_nats": 0.004660865291953087,
+            "maximum_absolute_logit_delta": 0.9699678421020508,
+            "mean_absolute_logit_delta": 0.1543879508972168,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9999476075172424,
+            "jensen_shannon_nats": 0.0006729969754815102,
+            "maximum_absolute_logit_delta": 0.45349013805389404,
+            "mean_absolute_logit_delta": 0.14923307299613953,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999710321426392,
+            "jensen_shannon_nats": 0.0029394030570983887,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.006746887695044279,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 128
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9996933937072754,
+            "jensen_shannon_nats": 1.6676778614055365e-05,
+            "maximum_absolute_logit_delta": 0.989621639251709,
+            "mean_absolute_logit_delta": 0.09194887429475784,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9997298121452332,
+            "jensen_shannon_nats": 1.981983041332569e-05,
+            "maximum_absolute_logit_delta": 0.8669037818908691,
+            "mean_absolute_logit_delta": 0.08943002671003342,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999389052391052,
+            "jensen_shannon_nats": 2.6217010145046515e-06,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.0067468867637217045,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 256
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9994208812713623,
+            "jensen_shannon_nats": 0.021113015711307526,
+            "maximum_absolute_logit_delta": 1.0383315086364746,
+            "mean_absolute_logit_delta": 0.2036428302526474,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.999478280544281,
+            "jensen_shannon_nats": 0.013299021869897842,
+            "maximum_absolute_logit_delta": 0.824777364730835,
+            "mean_absolute_logit_delta": 0.20022526383399963,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.999921441078186,
+            "jensen_shannon_nats": 0.005257885437458754,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.006746887695044279,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 1024
+        }
+      ],
+      "probe_id": "topic"
+    },
+    {
+      "horizons": [
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9994159936904907,
+            "jensen_shannon_nats": 0.019032154232263565,
+            "maximum_absolute_logit_delta": 1.230179786682129,
+            "mean_absolute_logit_delta": 0.39360663294792175,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9994674921035767,
+            "jensen_shannon_nats": 0.012085353955626488,
+            "maximum_absolute_logit_delta": 1.1423892974853516,
+            "mean_absolute_logit_delta": 0.38694527745246887,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999450445175171,
+            "jensen_shannon_nats": 0.0033622572664171457,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.009247999638319016,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 16
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9987891912460327,
+            "jensen_shannon_nats": 0.017380841076374054,
+            "maximum_absolute_logit_delta": 1.7139948606491089,
+            "mean_absolute_logit_delta": 0.39404183626174927,
+            "top_token_changed": true
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9987986087799072,
+            "jensen_shannon_nats": 0.009368494153022766,
+            "maximum_absolute_logit_delta": 1.7139948606491089,
+            "mean_absolute_logit_delta": 0.39203789830207825,
+            "top_token_changed": true
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999533295631409,
+            "jensen_shannon_nats": 0.006062460597604513,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.009247999638319016,
+            "top_token_changed": true
+          },
+          "horizon_bytes": 64
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9997755289077759,
+            "jensen_shannon_nats": 0.007867790758609772,
+            "maximum_absolute_logit_delta": 1.2318499088287354,
+            "mean_absolute_logit_delta": 0.19201645255088806,
+            "top_token_changed": true
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9997971057891846,
+            "jensen_shannon_nats": 0.004436924587935209,
+            "maximum_absolute_logit_delta": 0.9686629772186279,
+            "mean_absolute_logit_delta": 0.19026078283786774,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999594688415527,
+            "jensen_shannon_nats": 0.0073240529745817184,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.009247999638319016,
+            "top_token_changed": true
+          },
+          "horizon_bytes": 128
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9983717799186707,
+            "jensen_shannon_nats": 0.02012230083346367,
+            "maximum_absolute_logit_delta": 1.423475980758667,
+            "mean_absolute_logit_delta": 0.41071465611457825,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9984656572341919,
+            "jensen_shannon_nats": 0.01225573942065239,
+            "maximum_absolute_logit_delta": 1.7141002416610718,
+            "mean_absolute_logit_delta": 0.4079435169696808,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999299645423889,
+            "jensen_shannon_nats": 0.003573752474039793,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.009247999638319016,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 256
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9999204277992249,
+            "jensen_shannon_nats": 0.008114553987979889,
+            "maximum_absolute_logit_delta": 0.6872658729553223,
+            "mean_absolute_logit_delta": 0.07816675305366516,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9999585747718811,
+            "jensen_shannon_nats": 0.0015190914273262024,
+            "maximum_absolute_logit_delta": 0.26221394538879395,
+            "mean_absolute_logit_delta": 0.07188651710748672,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999502897262573,
+            "jensen_shannon_nats": 0.00792347826063633,
+            "maximum_absolute_logit_delta": 0.6127955913543701,
+            "mean_absolute_logit_delta": 0.009247999638319016,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 1024
+        }
+      ],
+      "probe_id": "entity"
+    },
+    {
+      "horizons": [
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9999257326126099,
+            "jensen_shannon_nats": 0.010540751740336418,
+            "maximum_absolute_logit_delta": 0.7617893218994141,
+            "mean_absolute_logit_delta": 0.06311554461717606,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9999613165855408,
+            "jensen_shannon_nats": 0.0012099600862711668,
+            "maximum_absolute_logit_delta": 0.4011053144931793,
+            "mean_absolute_logit_delta": 0.057520683854818344,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999654293060303,
+            "jensen_shannon_nats": 0.008668441325426102,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.0065800221636891365,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 16
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9997271299362183,
+            "jensen_shannon_nats": 0.0027735335752367973,
+            "maximum_absolute_logit_delta": 1.3777904510498047,
+            "mean_absolute_logit_delta": 0.07732190936803818,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9997838139533997,
+            "jensen_shannon_nats": 0.0011960804695263505,
+            "maximum_absolute_logit_delta": 0.7649950981140137,
+            "mean_absolute_logit_delta": 0.07437640428543091,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999451637268066,
+            "jensen_shannon_nats": 0.001142122084274888,
+            "maximum_absolute_logit_delta": 0.6127955913543701,
+            "mean_absolute_logit_delta": 0.0065800221636891365,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 64
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9997378587722778,
+            "jensen_shannon_nats": 0.014257574453949928,
+            "maximum_absolute_logit_delta": 0.9928488731384277,
+            "mean_absolute_logit_delta": 0.12854579091072083,
+            "top_token_changed": true
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9997661113739014,
+            "jensen_shannon_nats": 0.01323293149471283,
+            "maximum_absolute_logit_delta": 0.8913249969482422,
+            "mean_absolute_logit_delta": 0.12480472773313522,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999654293060303,
+            "jensen_shannon_nats": 0.005569214001297951,
+            "maximum_absolute_logit_delta": 0.6127958297729492,
+            "mean_absolute_logit_delta": 0.0065800221636891365,
+            "top_token_changed": true
+          },
+          "horizon_bytes": 128
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9973979592323303,
+            "jensen_shannon_nats": 0.006921451538801193,
+            "maximum_absolute_logit_delta": 1.3289653062820435,
+            "mean_absolute_logit_delta": 0.17106211185455322,
+            "top_token_changed": true
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.997427761554718,
+            "jensen_shannon_nats": 0.007210351526737213,
+            "maximum_absolute_logit_delta": 0.9191927909851074,
+            "mean_absolute_logit_delta": 0.1700517237186432,
+            "top_token_changed": true
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9998185634613037,
+            "jensen_shannon_nats": 0.0006360508850775659,
+            "maximum_absolute_logit_delta": 0.6127954125404358,
+            "mean_absolute_logit_delta": 0.0065800221636891365,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 256
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.8778912425041199,
+            "jensen_shannon_nats": 0.019491126760840416,
+            "maximum_absolute_logit_delta": 3.006443738937378,
+            "mean_absolute_logit_delta": 0.8768797516822815,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.8775985240936279,
+            "jensen_shannon_nats": 0.015137927606701851,
+            "maximum_absolute_logit_delta": 2.7961513996124268,
+            "mean_absolute_logit_delta": 0.875680148601532,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9996461868286133,
+            "jensen_shannon_nats": 0.0018434009980410337,
+            "maximum_absolute_logit_delta": 0.6127954721450806,
+            "mean_absolute_logit_delta": 0.0065800221636891365,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 1024
+        }
+      ],
+      "probe_id": "constraint"
+    },
+    {
+      "horizons": [
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.998564600944519,
+            "jensen_shannon_nats": 0.026434998959302902,
+            "maximum_absolute_logit_delta": 1.9690284729003906,
+            "mean_absolute_logit_delta": 0.4028284251689911,
+            "top_token_changed": true
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9985812306404114,
+            "jensen_shannon_nats": 0.027271613478660583,
+            "maximum_absolute_logit_delta": 1.9690284729003906,
+            "mean_absolute_logit_delta": 0.40102025866508484,
+            "top_token_changed": true
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999630451202393,
+            "jensen_shannon_nats": 0.0002202307223342359,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.006268051452934742,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 16
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9997718334197998,
+            "jensen_shannon_nats": 0.007218167185783386,
+            "maximum_absolute_logit_delta": 0.968679666519165,
+            "mean_absolute_logit_delta": 0.17853425443172455,
+            "top_token_changed": true
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9997876882553101,
+            "jensen_shannon_nats": 0.002822867827489972,
+            "maximum_absolute_logit_delta": 0.643286943435669,
+            "mean_absolute_logit_delta": 0.17631341516971588,
+            "top_token_changed": true
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999728202819824,
+            "jensen_shannon_nats": 0.0036173108965158463,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.006268050987273455,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 64
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9999152421951294,
+            "jensen_shannon_nats": 0.011319143697619438,
+            "maximum_absolute_logit_delta": 0.7745962142944336,
+            "mean_absolute_logit_delta": 0.05594879016280174,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.999942421913147,
+            "jensen_shannon_nats": 0.002404599217697978,
+            "maximum_absolute_logit_delta": 0.4664938449859619,
+            "mean_absolute_logit_delta": 0.05190873518586159,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999709129333496,
+            "jensen_shannon_nats": 0.006044687703251839,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.006268051452934742,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 128
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9995517730712891,
+            "jensen_shannon_nats": 0.04211420565843582,
+            "maximum_absolute_logit_delta": 1.4353835582733154,
+            "mean_absolute_logit_delta": 0.3083871603012085,
+            "top_token_changed": true
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9995989203453064,
+            "jensen_shannon_nats": 0.028367094695568085,
+            "maximum_absolute_logit_delta": 1.0097074508666992,
+            "mean_absolute_logit_delta": 0.30475789308547974,
+            "top_token_changed": true
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999675750732422,
+            "jensen_shannon_nats": 0.0036648001987487078,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.006268050987273455,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 256
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9994255304336548,
+            "jensen_shannon_nats": 0.05145948380231857,
+            "maximum_absolute_logit_delta": 1.7776029109954834,
+            "mean_absolute_logit_delta": 0.2391197830438614,
+            "top_token_changed": true
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9994550943374634,
+            "jensen_shannon_nats": 0.04147805646061897,
+            "maximum_absolute_logit_delta": 1.7776029109954834,
+            "mean_absolute_logit_delta": 0.23676590621471405,
+            "top_token_changed": true
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999806880950928,
+            "jensen_shannon_nats": 0.0035029370337724686,
+            "maximum_absolute_logit_delta": 0.6127955913543701,
+            "mean_absolute_logit_delta": 0.006268051452934742,
+            "top_token_changed": true
+          },
+          "horizon_bytes": 1024
+        }
+      ],
+      "probe_id": "format"
+    },
+    {
+      "horizons": [
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9996280074119568,
+            "jensen_shannon_nats": 0.0060365996323525906,
+            "maximum_absolute_logit_delta": 0.7822478413581848,
+            "mean_absolute_logit_delta": 0.20480990409851074,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9996986985206604,
+            "jensen_shannon_nats": 0.002656343625858426,
+            "maximum_absolute_logit_delta": 0.6047500371932983,
+            "mean_absolute_logit_delta": 0.20160937309265137,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.999901294708252,
+            "jensen_shannon_nats": 0.0018489910289645195,
+            "maximum_absolute_logit_delta": 0.6127954125404358,
+            "mean_absolute_logit_delta": 0.008359711617231369,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 16
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9998519420623779,
+            "jensen_shannon_nats": 0.0011121860006824136,
+            "maximum_absolute_logit_delta": 1.2748970985412598,
+            "mean_absolute_logit_delta": 0.07861841470003128,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9999014139175415,
+            "jensen_shannon_nats": 0.0006837937980890274,
+            "maximum_absolute_logit_delta": 0.6621017456054688,
+            "mean_absolute_logit_delta": 0.07254219800233841,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999604225158691,
+            "jensen_shannon_nats": 0.0003498276637401432,
+            "maximum_absolute_logit_delta": 0.6127955913543701,
+            "mean_absolute_logit_delta": 0.008359711617231369,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 64
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9996057152748108,
+            "jensen_shannon_nats": 0.005307932384312153,
+            "maximum_absolute_logit_delta": 0.9901602268218994,
+            "mean_absolute_logit_delta": 0.17840677499771118,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9996484518051147,
+            "jensen_shannon_nats": 0.008102430030703545,
+            "maximum_absolute_logit_delta": 0.880096435546875,
+            "mean_absolute_logit_delta": 0.17489109933376312,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999333620071411,
+            "jensen_shannon_nats": 0.003673364408314228,
+            "maximum_absolute_logit_delta": 0.6127954125404358,
+            "mean_absolute_logit_delta": 0.008359711617231369,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 128
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9993775486946106,
+            "jensen_shannon_nats": 0.004641540348529816,
+            "maximum_absolute_logit_delta": 1.2740169763565063,
+            "mean_absolute_logit_delta": 0.1312769502401352,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9994198679924011,
+            "jensen_shannon_nats": 0.0020421473309397697,
+            "maximum_absolute_logit_delta": 1.2740169763565063,
+            "mean_absolute_logit_delta": 0.12879231572151184,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999278783798218,
+            "jensen_shannon_nats": 0.0015553130069747567,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.008359711617231369,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 256
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9990168809890747,
+            "jensen_shannon_nats": 0.0012842899886891246,
+            "maximum_absolute_logit_delta": 1.1482491493225098,
+            "mean_absolute_logit_delta": 0.2596018612384796,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9991004467010498,
+            "jensen_shannon_nats": 0.0008778924820944667,
+            "maximum_absolute_logit_delta": 0.9309219121932983,
+            "mean_absolute_logit_delta": 0.25571033358573914,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9998891353607178,
+            "jensen_shannon_nats": 0.00044653049553744495,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.008359711617231369,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 1024
+        }
+      ],
+      "probe_id": "grounded_qa"
+    },
+    {
+      "horizons": [
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9985213279724121,
+            "jensen_shannon_nats": 0.05938900634646416,
+            "maximum_absolute_logit_delta": 2.8488826751708984,
+            "mean_absolute_logit_delta": 0.21864058077335358,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.998563289642334,
+            "jensen_shannon_nats": 0.04568388685584068,
+            "maximum_absolute_logit_delta": 2.516279697418213,
+            "mean_absolute_logit_delta": 0.21843670308589935,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999589323997498,
+            "jensen_shannon_nats": 0.008182663470506668,
+            "maximum_absolute_logit_delta": 0.6127958297729492,
+            "mean_absolute_logit_delta": 0.007839705795049667,
+            "top_token_changed": true
+          },
+          "horizon_bytes": 16
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9998273849487305,
+            "jensen_shannon_nats": 0.008104562759399414,
+            "maximum_absolute_logit_delta": 0.7515168190002441,
+            "mean_absolute_logit_delta": 0.09806015342473984,
+            "top_token_changed": true
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.999866247177124,
+            "jensen_shannon_nats": 0.0031101228669285774,
+            "maximum_absolute_logit_delta": 0.37335753440856934,
+            "mean_absolute_logit_delta": 0.09410446137189865,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999359250068665,
+            "jensen_shannon_nats": 0.006405046209692955,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.007839705795049667,
+            "top_token_changed": true
+          },
+          "horizon_bytes": 64
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9983971118927002,
+            "jensen_shannon_nats": 0.0032188957557082176,
+            "maximum_absolute_logit_delta": 1.4395256042480469,
+            "mean_absolute_logit_delta": 0.15924373269081116,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9985844492912292,
+            "jensen_shannon_nats": 0.0031917982269078493,
+            "maximum_absolute_logit_delta": 1.0204811096191406,
+            "mean_absolute_logit_delta": 0.15618987381458282,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9998113512992859,
+            "jensen_shannon_nats": 9.289324225392193e-06,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.007839705795049667,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 128
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9990090131759644,
+            "jensen_shannon_nats": 0.013455330394208431,
+            "maximum_absolute_logit_delta": 1.2091765403747559,
+            "mean_absolute_logit_delta": 0.12005695700645447,
+            "top_token_changed": true
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9990810751914978,
+            "jensen_shannon_nats": 0.015393943525850773,
+            "maximum_absolute_logit_delta": 1.110541820526123,
+            "mean_absolute_logit_delta": 0.11809194833040237,
+            "top_token_changed": true
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9998596906661987,
+            "jensen_shannon_nats": 0.0023801871575415134,
+            "maximum_absolute_logit_delta": 0.6127954721450806,
+            "mean_absolute_logit_delta": 0.007839705795049667,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 256
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9959226250648499,
+            "jensen_shannon_nats": 0.0035269465297460556,
+            "maximum_absolute_logit_delta": 3.292489528656006,
+            "mean_absolute_logit_delta": 0.3088602125644684,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9959477186203003,
+            "jensen_shannon_nats": 0.0043819802813231945,
+            "maximum_absolute_logit_delta": 3.541234016418457,
+            "mean_absolute_logit_delta": 0.30777275562286377,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999164342880249,
+            "jensen_shannon_nats": 0.00011986012395936996,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.007839705795049667,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 1024
+        }
+      ],
+      "probe_id": "abstention"
+    },
+    {
+      "horizons": [
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.999843418598175,
+            "jensen_shannon_nats": 0.01394588127732277,
+            "maximum_absolute_logit_delta": 0.9375795125961304,
+            "mean_absolute_logit_delta": 0.1298491656780243,
+            "top_token_changed": true
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9998844265937805,
+            "jensen_shannon_nats": 0.004681489430367947,
+            "maximum_absolute_logit_delta": 0.6144154071807861,
+            "mean_absolute_logit_delta": 0.12514673173427582,
+            "top_token_changed": true
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999527335166931,
+            "jensen_shannon_nats": 0.0035930676385760307,
+            "maximum_absolute_logit_delta": 0.6127958297729492,
+            "mean_absolute_logit_delta": 0.008825131691992283,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 16
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9997415542602539,
+            "jensen_shannon_nats": 0.0009554584976285696,
+            "maximum_absolute_logit_delta": 1.221527099609375,
+            "mean_absolute_logit_delta": 0.37286585569381714,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9997962713241577,
+            "jensen_shannon_nats": 9.985255019273609e-05,
+            "maximum_absolute_logit_delta": 0.8264427185058594,
+            "mean_absolute_logit_delta": 0.3672187626361847,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999611377716064,
+            "jensen_shannon_nats": 0.0005626496858894825,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.008825131691992283,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 64
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.998290479183197,
+            "jensen_shannon_nats": 0.016308458521962166,
+            "maximum_absolute_logit_delta": 1.3018980026245117,
+            "mean_absolute_logit_delta": 0.4707750976085663,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.998431921005249,
+            "jensen_shannon_nats": 0.01194899994879961,
+            "maximum_absolute_logit_delta": 1.3018980026245117,
+            "mean_absolute_logit_delta": 0.4691888988018036,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9998732805252075,
+            "jensen_shannon_nats": 0.00327541446313262,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.008825131691992283,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 128
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9998475313186646,
+            "jensen_shannon_nats": 0.003850460983812809,
+            "maximum_absolute_logit_delta": 0.7744242548942566,
+            "mean_absolute_logit_delta": 0.22377847135066986,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.999860405921936,
+            "jensen_shannon_nats": 0.005911415908485651,
+            "maximum_absolute_logit_delta": 0.7744242548942566,
+            "mean_absolute_logit_delta": 0.22285428643226624,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999585151672363,
+            "jensen_shannon_nats": 0.000944767496548593,
+            "maximum_absolute_logit_delta": 0.612795352935791,
+            "mean_absolute_logit_delta": 0.008825131691992283,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 256
+        },
+        {
+          "combined_ablation": {
+            "cosine_similarity": 0.9994436502456665,
+            "jensen_shannon_nats": 0.011825690977275372,
+            "maximum_absolute_logit_delta": 1.368412971496582,
+            "mean_absolute_logit_delta": 0.2318708300590515,
+            "top_token_changed": false
+          },
+          "context_ablation": {
+            "cosine_similarity": 0.9994838833808899,
+            "jensen_shannon_nats": 0.017521478235721588,
+            "maximum_absolute_logit_delta": 1.0645523071289062,
+            "mean_absolute_logit_delta": 0.23002487421035767,
+            "top_token_changed": false
+          },
+          "copy_bias_ablation": {
+            "cosine_similarity": 0.9999339580535889,
+            "jensen_shannon_nats": 0.002096469746902585,
+            "maximum_absolute_logit_delta": 0.6127954721450806,
+            "mean_absolute_logit_delta": 0.008825131691992283,
+            "top_token_changed": false
+          },
+          "horizon_bytes": 1024
+        }
+      ],
+      "probe_id": "quoted_distractor"
+    }
+  ],
+  "recurrent_prompt_memory_enabled": false,
+  "source_commit": "219fdc33e3fc19cc738310170f3e214567841884",
+  "test_accessed": false,
+  "threads": 14
+}

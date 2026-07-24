@@ -1,0 +1,46 @@
+{
+  "active_state": {
+    "generated_tokens": 128,
+    "kv_layers": 3,
+    "prompt_memory_kind": "fixed_fused_context",
+    "prompt_memory_shapes": [
+      [
+        1,
+        288
+      ]
+    ]
+  },
+  "checkpoint": "C:/Python310/layercake_merged_nextgen_perfectA_option1_full_ready/layercake_release/artifacts/moonshot/phase2_multislot_prompt_state/continuation10m-seed-9824",
+  "checkpoint_sha256": "8b15cc67295e60d8a77f080f97ce5518f117a0307daa1b3f9b4c1f6ee770d269",
+  "components_rss_bytes": {
+    "decode_peak_increment": 5140480,
+    "model_and_tokenizer": 45301760,
+    "prefill_increment": 6320128,
+    "torch_and_native_runtime": 317644800
+  },
+  "decode_steps": 128,
+  "exact_command": [
+    "C:\\Python310\\python.exe",
+    "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\scripts\\profile_phase2_prompt_memory.py",
+    "--child",
+    "--checkpoint",
+    "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2_multislot_prompt_state\\continuation10m-seed-9824",
+    "--threads",
+    "14",
+    "--decode-steps",
+    "128"
+  ],
+  "format": "layercake-phase2-fresh-process-memory-profile/1",
+  "metadata_checkpoint_sha256": "8b15cc67295e60d8a77f080f97ce5518f117a0307daa1b3f9b4c1f6ee770d269",
+  "profile_sha256": "1f646f1b130522193ee196cb746b42ec0bdfdc4e23a17542710bf8919251632d",
+  "stages_rss_bytes": {
+    "checkpoint_loaded": 382119936,
+    "decode_complete": 393072640,
+    "decode_peak": 393580544,
+    "prefill_state_ready": 388440064,
+    "python_process_baseline": 19173376,
+    "torch_runtime_loaded": 336818176
+  },
+  "status": "PASS",
+  "threads": 14
+}

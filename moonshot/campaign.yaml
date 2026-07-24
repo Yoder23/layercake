@@ -13,6 +13,22 @@
       "reason": "separate same-scale/product comparisons; single-request cold timing; authoritative token accounting; promoted 100-prompt depth"
     }
   ],
+  "forward_contract_amendments": [
+    {
+      "amendment_id": "phase4-cpu-cake-training/1",
+      "applies_to_phases": [
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "contract": "moonshot/phase4_cpu_cake_training_lock.json",
+      "contract_sha256": "2cdbe292fc0126aed898495dda4481a216211e111b6e24d0ba6a3098059410d2",
+      "effective_while_phase4_is_locked": true,
+      "reason": "Require CPU-only cake training, frozen English-core weights, 5x functional-error reduction, 5x time-to-matched-quality dominance over every applicable strong adaptation baseline, lower trainable parameters and peak RAM, preserved inference, and lossless portability."
+    }
+  ],
   "current_phase": 2,
   "invalidation_history": [
     {

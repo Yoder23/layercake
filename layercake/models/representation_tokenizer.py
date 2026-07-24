@@ -12,6 +12,8 @@ from .baseline_transformer import BytePairTokenizer
 
 HYBRID_FORMAT = "layercake-hybrid-token-byte/1"
 HYBRID_CONTRACT_VERSION = "layercake-hybrid-fallback/1"
+WORD_BYTE_HYBRID_FORMAT = "layercake-word-byte-hybrid/1"
+WORD_BYTE_HYBRID_CONTRACT_VERSION = "layercake-word-byte-fallback/1"
 
 
 class HybridTokenByteTokenizer:
@@ -111,7 +113,100 @@ class HybridTokenByteTokenizer:
         return hashlib.sha256(raw).hexdigest()
 
 
+class WordByteHybridTokenizer:
+    """Whole lexical units for English with universal raw-byte fallback."""
+
+    def __init__(self, forms: list[bytes]):
+        if len(set(forms)) != len(forms):
+            raise ValueError("word-byte vocabulary contains duplicate forms")
+        if any(not form or len(form) < 2 for form in forms):
+            raise ValueError("word-byte lexical forms must contain at least two bytes")
+        self.forms = list(forms)
+        self.pieces = {
+            **{index: bytes([index]) for index in range(256)},
+            **{index: form for index, form in enumerate(forms, start=256)},
+        }
+        self.form_ids = {
+            form: index for index, form in enumerate(forms, start=256)
+        }
+
+    @property
+    def vocab_size(self) -> int:
+        return 256 + len(self.forms)
+
+    @staticmethod
+    def _ascii_letter(value: int) -> bool:
+        return 65 <= value <= 90 or 97 <= value <= 122
+
+    def encode(self, value: bytes | str) -> list[int]:
+        if isinstance(value, str):
+            value = value.encode("utf-8")
+        result: list[int] = []
+        index = 0
+        while index < len(value):
+            start = index
+            if (
+                value[index] == 32
+                and index + 1 < len(value)
+                and self._ascii_letter(value[index + 1])
+            ):
+                index += 1
+                while index < len(value) and self._ascii_letter(value[index]):
+                    index += 1
+                span = value[start:index]
+            elif self._ascii_letter(value[index]):
+                index += 1
+                while index < len(value) and self._ascii_letter(value[index]):
+                    index += 1
+                span = value[start:index]
+            else:
+                result.append(value[index])
+                index += 1
+                continue
+            token_id = self.form_ids.get(span)
+            if token_id is None:
+                result.extend(span)
+            else:
+                result.append(token_id)
+        return result
+
+    def decode(self, ids: list[int]) -> bytes:
+        try:
+            return b"".join(self.pieces[int(index)] for index in ids)
+        except KeyError as error:
+            raise ValueError(f"undefined word-byte token id: {error.args[0]}") from error
+
+    def canonical_dict(self) -> dict[str, Any]:
+        return {
+            "format": WORD_BYTE_HYBRID_FORMAT,
+            "forms_hex": [form.hex() for form in self.forms],
+            "hybrid_contract": {
+                "version": WORD_BYTE_HYBRID_CONTRACT_VERSION,
+                "external_input": "UTF-8 bytes",
+                "external_output": "UTF-8 bytes",
+                "ordinary_spans": "frequency-locked whole English lexical forms",
+                "fallback_unit_ids": [0, 255],
+                "fallback_semantics": "identity byte values",
+                "unknown_names_and_exact_strings": "raw byte units",
+                "fallback_execution": "neural next-unit distribution over byte IDs",
+            },
+        }
+
+    def hash(self) -> str:
+        raw = json.dumps(
+            self.canonical_dict(), sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
+        return hashlib.sha256(raw).hexdigest()
+
+
 def tokenizer_from_document(document: dict[str, Any]):
+    if document.get("format") == WORD_BYTE_HYBRID_FORMAT:
+        contract = document.get("hybrid_contract", {})
+        if contract.get("version") != WORD_BYTE_HYBRID_CONTRACT_VERSION:
+            raise ValueError("unsupported word-byte hybrid contract")
+        return WordByteHybridTokenizer(
+            [bytes.fromhex(value) for value in document["forms_hex"]]
+        )
     base = BytePairTokenizer([tuple(pair) for pair in document["merges"]])
     if document.get("format") == HYBRID_FORMAT:
         contract = document.get("hybrid_contract", {})

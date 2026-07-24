@@ -16,10 +16,70 @@ import re
 
 from layercake.models.baseline_transformer import BytePairTokenizer
 from layercake.models.phase2_english_planner import realize_english
+from layercake.models.representation_tokenizer import WordByteHybridTokenizer
 from layercake.training.data import sha256_file
 
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def build_word_byte_hybrid_tokenizer(
+    root: Path,
+    *,
+    corpus_path: Path,
+    output_path: Path,
+    vocabulary_size: int,
+    training_bytes: int,
+) -> dict:
+    """Build direct whole-word units without spending IDs on merge prefixes."""
+
+    corpus_path = (root / corpus_path).resolve()
+    output_path = (root / output_path).resolve()
+    output_path.relative_to(root.resolve())
+    manifest_path = output_path.with_suffix(".manifest.json")
+    if output_path.exists() or manifest_path.exists():
+        raise RuntimeError(f"word-byte tokenizer artifact is immutable: {output_path}")
+    if vocabulary_size <= 256:
+        raise ValueError("word-byte vocabulary must include lexical units")
+    corpus = corpus_path.read_bytes()[:training_bytes]
+    counts = Counter(re.findall(rb" ?[A-Za-z]{2,}", corpus))
+    forms = sorted(
+        counts,
+        key=lambda value: (-counts[value], value),
+    )[: vocabulary_size - 256]
+    tokenizer = WordByteHybridTokenizer(forms)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(tokenizer.canonical_dict(), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    sample = corpus[: min(len(corpus), 200_000)]
+    encoded = tokenizer.encode(sample)
+    if tokenizer.decode(encoded) != sample:
+        raise RuntimeError("word-byte tokenizer failed exact byte round-trip")
+    manifest = {
+        "format": "layercake-phase2-word-byte-hybrid-tokenizer/1",
+        "status": "PASS",
+        "tokenizer_path": output_path.relative_to(root).as_posix(),
+        "tokenizer_sha256": sha256_file(output_path),
+        "vocab_size": tokenizer.vocab_size,
+        "lexical_forms": len(forms),
+        "training_corpus_path": corpus_path.relative_to(root).as_posix(),
+        "training_corpus_sha256": sha256_file(corpus_path),
+        "training_bytes": len(corpus),
+        "evaluation_data_accessed": False,
+        "sample_raw_bytes": len(sample),
+        "sample_units": len(encoded),
+        "sample_bytes_per_unit": len(sample) / len(encoded),
+        "sample_sha256": hashlib.sha256(sample).hexdigest(),
+        "round_trip_exact": True,
+        "unknown_names_and_unicode_use_raw_byte_fallback": True,
+    }
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return manifest
 
 
 def build_extended_tokenizer(
@@ -212,12 +272,22 @@ def main() -> int:
     parser.add_argument("--merges", type=int, default=2048)
     parser.add_argument("--training-bytes", type=int, default=10_000_000)
     parser.add_argument("--planner-extension-merges", type=int, default=0)
+    parser.add_argument("--word-byte-hybrid", action="store_true")
+    parser.add_argument("--vocab-size", type=int, default=8448)
     parser.add_argument(
         "--curriculum", type=Path,
         default=Path("data/moonshot/phase2/instruction_curriculum_clean.jsonl"),
     )
     args = parser.parse_args()
-    if args.planner_extension_merges:
+    if args.word_byte_hybrid:
+        result = build_word_byte_hybrid_tokenizer(
+            args.root.resolve(),
+            corpus_path=args.corpus,
+            output_path=args.output,
+            vocabulary_size=args.vocab_size,
+            training_bytes=args.training_bytes,
+        )
+    elif args.planner_extension_merges:
         result = build_planner_tokenizer(
             args.root.resolve(), base_path=args.base, curriculum_path=args.curriculum,
             output_path=args.output, extension_merges=args.planner_extension_merges,

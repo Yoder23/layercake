@@ -1,0 +1,204 @@
+{
+  "decision_sha256": "5ebfc2416c5afb3cd764a112cc7b5791681c4c17becffb85def70c9056113734",
+  "diagnosis": {
+    "entity_retention": 0.0,
+    "evidence": {
+      "constraint_retention.json": {
+        "path": "results/moonshot/phase2_grounding_diagnosis/constraint_retention.json",
+        "sha256": "6335d0ad5a7d1c7dc08c74d82573608fdedb3ec63646886d7297bb553fc4b912"
+      },
+      "diagnosis.md": {
+        "path": "results/moonshot/phase2_grounding_diagnosis/diagnosis.md",
+        "sha256": "1ca9f890a023cb5b3eba1f6ca51188b47e2b5f8ff1e25eabfae1ea24b48de45b"
+      },
+      "entity_retention.json": {
+        "path": "results/moonshot/phase2_grounding_diagnosis/entity_retention.json",
+        "sha256": "12dbe5389212e9ace4ffac1289a7c632d42b5efe4e1d45a4194b33cf103ebacf"
+      },
+      "logit_contribution.json": {
+        "path": "results/moonshot/phase2_grounding_diagnosis/logit_contribution.json",
+        "sha256": "099ce9ebb36f96393add08898b9818d5eb438a1446f36ea429bcfdd6f59c8780"
+      },
+      "memory_profile.json": {
+        "path": "results/moonshot/phase2_grounding_diagnosis/memory_profile.json",
+        "sha256": "9294f4a1c810371831300c24914db41a8fac4a80ae7424e6b394b18c0bebd1a7"
+      },
+      "prompt_probe_results.json": {
+        "path": "results/moonshot/phase2_grounding_diagnosis/prompt_probe_results.json",
+        "sha256": "446de1755772fa4bd0fbab176c395f5f310fe620c5b64b3d5ce0a124cc659230"
+      },
+      "state_drift.json": {
+        "path": "results/moonshot/phase2_grounding_diagnosis/state_drift.json",
+        "sha256": "d210a17367621cbcf8e067019ddf7457d63f57d4b5f043fa678415a3cedb71c7"
+      }
+    },
+    "falsified_mechanism": "The fixed prompt state remains intact, but fused prompt features have weak causal influence on later logits and local generation dynamics dominate.",
+    "fresh_process_peak_rss_bytes": 393580544,
+    "mean_prompt_ablation_js_nats": 0.01304088,
+    "model_and_tokenizer_rss_bytes": 45301760,
+    "prompt_state_overwrite_detected": false,
+    "runtime_consequence": "A minimal native runtime is mandatory once a lineage first passes behavioral quality; Python/Torch overhead alone exceeds the absolute RSS gate.",
+    "topic_phrase_retention": 0.0,
+    "torch_and_native_runtime_rss_bytes": 317644800
+  },
+  "format": "layercake-phase2-grounding-campaign-decision/1",
+  "historical_representation_label_note": "The immutable Hypothesis B functional screen records the legacy generic label 'shared_tokenizer'. Its bound tokenizer and metadata identify layercake-word-byte-hybrid/1. Raw evidence was preserved rather than silently rewritten.",
+  "hypothesis_rows": [
+    {
+      "branch": "A_ENCODE_ONCE_STRUCTURED_MEMORY",
+      "category_structure_rate": 0.62,
+      "checkpoint": "artifacts/moonshot/phase2_grounding_hypothesis_a/continuation10m-seed-9824",
+      "checkpoint_sha256": "827d45604b7965528326e4f5acef4f31955e353396c3b51b0ea6af352a34d689",
+      "core_adherence_rate": 0.0,
+      "development_gates": {
+        "core_adherence": false,
+        "cpu_throughput": false,
+        "memory_trend": false,
+        "no_repetition_collapse": true,
+        "topic_recall": false,
+        "ttft": true,
+        "validation_bpb": true
+      },
+      "development_pass": false,
+      "distinct_frozen_prompts": 100,
+      "final_long_output_benchmark": "NOT_RUN_BECAUSE_DEVELOPMENT_BEHAVIOR_GATES_FAILED",
+      "hypothesis": "encode-once separately addressable role/token prompt memory",
+      "median_cpu_bytes_per_second": 834.537041471462,
+      "median_process_resident_memory_bytes": 405647360.0,
+      "median_ttft_seconds": 0.01223915,
+      "repetition_rate": 0.20143456676674454,
+      "representation": {
+        "class": "shared_tokenizer",
+        "external_input": "UTF-8 bytes",
+        "external_output": "UTF-8 bytes",
+        "tokenizer_format": "layercake-byte-bpe/1",
+        "tokenizer_sha256": "d1c03801fd9559b8586490733a3788439ff230bf5f09666a0abb7ddb615e9f10"
+      },
+      "screen": {
+        "path": "results/moonshot/phase2_grounding_hypothesis_a/functional_screen_640.json",
+        "payload_sha256": "fe4f1c95a9d56f5d12f5001793abb81458cc9206aafe85b92bb3d712e04968b6",
+        "sha256": "e68be961115f1d8f85f4d56ad1111f6971d03f569f831a08e12b63a7b3b2c8f0"
+      },
+      "semantic_audit": {
+        "path": "results/moonshot/phase2_grounding_hypothesis_a/semantic_audit_640.json",
+        "payload_sha256": "d9d50ef0828e1cbf99e726634d038b39397cf679d129a6fea0cb98acec791a1a",
+        "sha256": "4b3aed372490d30c7727db43823478e86b058a785d240dbf36bc34d287764cb4"
+      },
+      "systems_optimization_authorized": false,
+      "systems_optimization_reason": "The locked bounded optimization is available only after behavioral quality passes; this candidate failed topic/core adherence.",
+      "topic_phrase_present_rate": 0.0,
+      "topic_recall": 0.245,
+      "transformer_relative_cpu_throughput": 1.648436488080657,
+      "valid_utf8_rate": 1.0,
+      "validation_bpb": 1.6782889520698854
+    },
+    {
+      "branch": "B_WORD_BYTE_HYBRID_STRUCTURED_MEMORY",
+      "category_structure_rate": 0.6,
+      "checkpoint": "artifacts/moonshot/phase2_grounding_hypothesis_b/instruction10m-seed-9824",
+      "checkpoint_sha256": "d91e3803871d00ad72a07ea69d5babb1176ee055003584f317d0f695c5f37324",
+      "core_adherence_rate": 0.0,
+      "development_gates": {
+        "core_adherence": false,
+        "cpu_throughput": true,
+        "memory_trend": false,
+        "no_repetition_collapse": true,
+        "topic_recall": false,
+        "ttft": true,
+        "validation_bpb": true
+      },
+      "development_pass": false,
+      "distinct_frozen_prompts": 100,
+      "final_long_output_benchmark": "NOT_RUN_BECAUSE_DEVELOPMENT_BEHAVIOR_GATES_FAILED",
+      "hypothesis": "whole-lexical-unit plus raw-byte fallback and persistent prompt memory",
+      "median_cpu_bytes_per_second": 1040.9237152172914,
+      "median_process_resident_memory_bytes": 415307776.0,
+      "median_ttft_seconds": 0.011214749999999999,
+      "repetition_rate": 0.20243659380420617,
+      "representation": {
+        "class": "hybrid_token_byte",
+        "external_input": "UTF-8 bytes",
+        "external_output": "UTF-8 bytes",
+        "tokenizer_format": "layercake-word-byte-hybrid/1",
+        "tokenizer_sha256": "4dc08a393eba61fae946972960c371f2c7f893cb914d466049be66fa1c5ef3a8"
+      },
+      "screen": {
+        "path": "results/moonshot/phase2_grounding_hypothesis_b/functional_screen_640.json",
+        "payload_sha256": "96ecb210769fd36bb940cc353ab96dd83adc9d1c0d80a8a549bde26c65f856dd",
+        "sha256": "6d8a53118970df431bfa30b2aa26b047788d274c95583233665e85c1c88f0edc"
+      },
+      "semantic_audit": {
+        "path": "results/moonshot/phase2_grounding_hypothesis_b/semantic_audit_640.json",
+        "payload_sha256": "9cf9a3297dd9c9dad8d0d796f490b2b45073281dcc9f7415ba663618c491b3f8",
+        "sha256": "3fd6b42e1ade60d94bbf9c713d4dd37c1e996da836e4809fe862536505fe408a"
+      },
+      "systems_optimization_authorized": false,
+      "systems_optimization_reason": "The locked bounded optimization is available only after behavioral quality passes; this candidate failed topic/core adherence.",
+      "topic_phrase_present_rate": 0.0,
+      "topic_recall": 0.155,
+      "transformer_relative_cpu_throughput": 2.056106018310679,
+      "valid_utf8_rate": 0.99,
+      "validation_bpb": 1.7301740066772773
+    }
+  ],
+  "locked_development_gates": {
+    "core_adherence_min": 0.4,
+    "repetition_rate_max": 0.5,
+    "topic_recall_min": 0.65,
+    "transformer_relative_cpu_throughput_min": 1.75,
+    "transformer_ttft_seconds_max": 0.0213021,
+    "validation_bpb_max": 1.75
+  },
+  "locked_final_gates": {
+    "core_adherence_min": 0.55,
+    "independent_seeds_min": 3,
+    "process_resident_memory_bytes_max_exclusive": 214990848,
+    "topic_recall_min": 0.82,
+    "transformer_relative_cpu_throughput_1024_min": 2.0,
+    "transformer_relative_cpu_throughput_128_min": 2.0,
+    "transformer_ttft_seconds_max": 0.0213021,
+    "validation_bpb_max": 1.7174
+  },
+  "phase2_r3_tag_created": false,
+  "phase2_status": "OPEN_RESEARCH_DIRECTION_REQUIRED",
+  "phase3_execution_authorized": false,
+  "phase3_status": "LOCKED",
+  "phase4_cpu_cake_training_contract": {
+    "path": "moonshot/phase4_cpu_cake_training_lock.json",
+    "sha256": "2cdbe292fc0126aed898495dda4481a216211e111b6e24d0ba6a3098059410d2",
+    "status": "LOCKED_PENDING_PHASE3"
+  },
+  "reason": "Hypothesis A failed topic recall, core adherence, CPU development throughput, and RSS. Hypothesis B recovered the >=2x CPU frontier but failed final BPB, topic recall, core adherence, UTF-8 product surface, and RSS. Neither behavior-passing candidate exists for the bounded profiler-directed runtime optimization or three-seed promotion, so Phase 3 remains scientifically locked.",
+  "selected_architecture": null,
+  "speed_and_distributional_quality_control": {
+    "benchmark_1024": {
+      "path": "results/moonshot/phase2_multislot_prompt_state/benchmark_1024x20.json",
+      "sha256": "2355b6575f1d3e603889f83628bc1579924a4c669891c24a8f6a17e9173ef6a6"
+    },
+    "benchmark_128": {
+      "path": "results/moonshot/phase2_multislot_prompt_state/benchmark_128x20.json",
+      "sha256": "3e7aaa1b29f5bd88fdd188b3b966ff9e8c742d3e39778eb86846b1985098cce4"
+    },
+    "checkpoint_sha256": "8b15cc67295e60d8a77f080f97ce5518f117a0307daa1b3f9b4c1f6ee770d269",
+    "core_adherence_rate": 0.0,
+    "cpu_1024_transformer_relative": 2.3951326455390793,
+    "cpu_128_transformer_relative": 2.333788903777076,
+    "repetitions_each_headline_configuration": 20,
+    "rss_1024_bytes": 394829824.0,
+    "screen": {
+      "path": "results/moonshot/phase2_multislot_prompt_state/functional_screen_seed9824_640.json",
+      "sha256": "3cd3412d0d4189a7d32a1154f5496bf0aca9b74a97bb9d56c109c6c4af0ac4ff"
+    },
+    "semantic_audit": {
+      "path": "results/moonshot/phase2_multislot_prompt_state/functional_semantic_audit_seed9824_640.json",
+      "sha256": "53a9806fbb696b67dbeeb5274a1771e068ee80d5de7a3c0ad791862b2d50d2b2"
+    },
+    "topic_recall": 0.205,
+    "ttft_1024_seconds": 0.00955885,
+    "validation_bpb": 1.6466396652221138
+  },
+  "status": "CONTINUATION_REQUIRED",
+  "test_accessed": false,
+  "three_seed_promotion_authorized": false,
+  "winner": null
+}

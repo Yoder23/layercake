@@ -20,6 +20,7 @@ from layercake.models.sparse_bpe_layercake import (
 )
 from layercake.models.representation_tokenizer import (
     HybridTokenByteTokenizer,
+    WordByteHybridTokenizer,
     tokenizer_from_document,
 )
 from .baseline import _token_batch, evaluate_transformer
@@ -248,7 +249,10 @@ def train_sparse_bpe_layercake(config_path: str | Path, output_dir: str | Path) 
         "representation": {
             "class": (
                 "hybrid_token_byte"
-                if isinstance(tokenizer, HybridTokenByteTokenizer)
+                if isinstance(
+                    tokenizer,
+                    (HybridTokenByteTokenizer, WordByteHybridTokenizer),
+                )
                 else "shared_tokenizer"
             ),
             "external_input": "UTF-8 bytes",

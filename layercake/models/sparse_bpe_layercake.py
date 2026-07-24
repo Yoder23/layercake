@@ -31,6 +31,8 @@ class SparseBPELayerCakeConfig:
     recurrent_prompt_memory: bool = False
     prompt_memory_key_width: int = 32
     hierarchical_prompt_memory: bool = False
+    structured_prompt_memory: bool = False
+    structured_prompt_roles: int = 6
     prompt_memory_capacity: int = 128
     prompt_memory_chunk_size: int = 8
     constrained_english_planner: bool = False
@@ -59,6 +61,12 @@ class SparseBPELayerCakeConfig:
             raise ValueError("prompt_memory_key_width must be positive")
         if self.hierarchical_prompt_memory and not self.prompt_conditioning:
             raise ValueError("hierarchical prompt memory requires prompt conditioning")
+        if self.structured_prompt_memory and not self.prompt_conditioning:
+            raise ValueError("structured prompt memory requires prompt conditioning")
+        if self.structured_prompt_memory and self.hierarchical_prompt_memory:
+            raise ValueError("structured and legacy hierarchical memory are exclusive")
+        if self.structured_prompt_roles < 2:
+            raise ValueError("structured prompt memory requires multiple roles")
         if self.prompt_memory_capacity <= 0:
             raise ValueError("prompt memory capacity must be positive")
         if self.prompt_memory_chunk_size <= 0:
@@ -130,6 +138,38 @@ class LayerCakeSparseBPECore(nn.Module):
                 self.hierarchical_pointer_strength = nn.Parameter(
                     torch.tensor(-2.0)
                 )
+            if cfg.structured_prompt_memory:
+                self.structured_prompt_depthwise = nn.Conv1d(
+                    cfg.width,
+                    cfg.width,
+                    kernel_size=3,
+                    padding=1,
+                    groups=cfg.width,
+                    bias=False,
+                )
+                self.structured_prompt_pointwise = nn.Linear(
+                    cfg.width, cfg.width, bias=False
+                )
+                self.structured_role_queries = nn.Parameter(
+                    torch.empty(cfg.structured_prompt_roles, cfg.width)
+                )
+                self.structured_memory_norm = nn.LayerNorm(cfg.width)
+                self.structured_memory_query = nn.Linear(
+                    cfg.width, cfg.prompt_memory_key_width, bias=False
+                )
+                self.structured_token_key = nn.Linear(
+                    cfg.width, cfg.prompt_memory_key_width, bias=False
+                )
+                self.structured_role_key = nn.Linear(
+                    cfg.width, cfg.prompt_memory_key_width, bias=False
+                )
+                self.structured_memory_gate = nn.Linear(cfg.width, 1)
+                self.structured_pointer_strength = nn.Parameter(
+                    torch.tensor(1.5)
+                )
+                self.structured_successor_strength = nn.Parameter(
+                    torch.tensor(1.0)
+                )
         if cfg.constrained_english_planner:
             self.register_buffer(
                 "english_planner_spec",
@@ -154,8 +194,14 @@ class LayerCakeSparseBPECore(nn.Module):
         if cfg.hierarchical_prompt_memory:
             with torch.no_grad():
                 self.hierarchical_memory_gate.bias.fill_(-2.0)
+        if cfg.structured_prompt_memory:
+            nn.init.normal_(self.structured_role_queries, mean=0.0, std=0.02)
+            with torch.no_grad():
+                self.structured_memory_gate.bias.fill_(-2.0)
         self.last_routing_aux: dict | None = None
         self.last_prompt_memory_aux: dict | None = None
+        self.last_structured_pointer_weights: torch.Tensor | None = None
+        self.last_structured_pointer_ids: torch.Tensor | None = None
 
     @staticmethod
     def _initialize(module: nn.Module) -> None:
@@ -163,6 +209,8 @@ class LayerCakeSparseBPECore(nn.Module):
             nn.init.normal_(module.weight, mean=0.0, std=0.02)
             if isinstance(module, nn.Linear) and module.bias is not None:
                 nn.init.zeros_(module.bias)
+        elif isinstance(module, nn.Conv1d):
+            nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
     def parameter_count(self) -> int:
         return sum(parameter.numel() for parameter in self.parameters())
@@ -382,6 +430,89 @@ class LayerCakeSparseBPECore(nn.Module):
         }
         return hidden, weights
 
+    def _structured_prompt_features(
+        self, token_ids: torch.Tensor, prompt_lengths: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Encode prompt tokens once into contextual tokens and role records."""
+
+        batch = token_ids.shape[0]
+        capacity = self.config.prompt_memory_capacity
+        positions = torch.arange(capacity, device=token_ids.device)[None]
+        retained = prompt_lengths.clamp(min=1, max=capacity)
+        indexes = torch.div(
+            positions * prompt_lengths[:, None],
+            capacity,
+            rounding_mode="floor",
+        )
+        indexes = torch.where(
+            prompt_lengths[:, None] <= capacity, positions, indexes
+        )
+        indexes = indexes.clamp_max(token_ids.shape[1] - 1)
+        memory_ids = token_ids.gather(1, indexes.expand(batch, -1))
+        token_mask = positions < retained[:, None]
+        base = self.prompt_projection(self.embedding(memory_ids))
+        local = self.structured_prompt_depthwise(
+            base.transpose(1, 2)
+        ).transpose(1, 2)
+        contextual = base + self.structured_prompt_pointwise(F.silu(local))
+        contextual = contextual * token_mask[:, :, None]
+        role_scores = torch.einsum(
+            "bpw,rw->brp", contextual, self.structured_role_queries
+        ) / self.config.width ** 0.5
+        role_scores = role_scores.masked_fill(
+            ~token_mask[:, None], -torch.inf
+        )
+        role_weights = torch.softmax(role_scores, dim=-1)
+        role_memory = torch.einsum(
+            "brp,bpw->brw", role_weights, contextual
+        )
+        return memory_ids, contextual, token_mask, role_memory
+
+    def _apply_structured_prompt_memory(
+        self,
+        hidden: torch.Tensor,
+        input_token_ids: torch.Tensor,
+        memory_ids: torch.Tensor,
+        token_memory: torch.Tensor,
+        token_mask: torch.Tensor,
+        role_memory: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Read bounded role/token records with an associative successor prior."""
+
+        normalized = self.structured_memory_norm(hidden)
+        query = self.structured_memory_query(normalized)
+        scale = self.config.prompt_memory_key_width ** 0.5
+        role_scores = torch.matmul(
+            query, self.structured_role_key(role_memory).transpose(-1, -2)
+        ) / scale
+        role_weights = torch.softmax(role_scores, dim=-1)
+        role_recall = torch.matmul(role_weights, role_memory)
+        token_scores = torch.matmul(
+            query, self.structured_token_key(token_memory).transpose(-1, -2)
+        ) / scale
+        matches = input_token_ids[:, :, None] == memory_ids[:, None, :]
+        successor = torch.zeros_like(matches)
+        successor[:, :, 1:] = matches[:, :, :-1]
+        token_scores = token_scores + F.softplus(
+            self.structured_successor_strength
+        ) * successor.to(token_scores.dtype)
+        token_scores = token_scores.masked_fill(
+            ~token_mask[:, None], -torch.inf
+        )
+        token_weights = torch.softmax(token_scores, dim=-1)
+        token_recall = torch.matmul(token_weights, token_memory)
+        gate = torch.sigmoid(self.structured_memory_gate(normalized))
+        hidden = hidden + gate * (role_recall + token_recall)
+        self.last_structured_pointer_weights = token_weights
+        self.last_structured_pointer_ids = memory_ids
+        self.last_prompt_memory_aux = {
+            "mean_gate": gate.detach().mean(),
+            "maximum_gate": gate.detach().amax(),
+            "slot_activation": role_weights.detach().mean(dim=(0, 1)),
+            "pointer_mass": token_weights.detach().sum(dim=-1).mean(),
+        }
+        return hidden, token_weights
+
     def _output_logits(
         self,
         hidden: torch.Tensor,
@@ -389,6 +520,8 @@ class LayerCakeSparseBPECore(nn.Module):
         pointer_distribution: torch.Tensor | None = None,
         pointer_token_ids: torch.Tensor | None = None,
         pointer_token_weights: torch.Tensor | None = None,
+        structured_token_ids: torch.Tensor | None = None,
+        structured_token_weights: torch.Tensor | None = None,
     ) -> torch.Tensor:
         normalized = self.norm(hidden)
         logits = F.linear(normalized, self.embedding.weight)
@@ -423,6 +556,22 @@ class LayerCakeSparseBPECore(nn.Module):
             logits = logits + F.softplus(
                 self.hierarchical_pointer_strength
             ) * dynamic_bias
+        if (
+            structured_token_ids is not None
+            and structured_token_weights is not None
+        ):
+            if logits.ndim == 3:
+                indexes = structured_token_ids[:, None].expand(
+                    -1, logits.shape[1], -1
+                )
+            else:
+                indexes = structured_token_ids
+            logits = logits.scatter_add(
+                -1,
+                indexes,
+                F.softplus(self.structured_pointer_strength)
+                * structured_token_weights.to(logits.dtype),
+            )
         return logits
 
     def forward(
@@ -438,6 +587,8 @@ class LayerCakeSparseBPECore(nn.Module):
         pointer_distribution = None
         hierarchical = None
         hierarchical_weights = None
+        structured = None
+        structured_weights = None
         if self.config.prompt_conditioning and prompt_lengths is not None:
             (
                 context,
@@ -448,6 +599,10 @@ class LayerCakeSparseBPECore(nn.Module):
             hidden = hidden + context[:, None]
             if self.config.hierarchical_prompt_memory:
                 hierarchical = self._hierarchical_prompt_features(
+                    token_ids, prompt_lengths
+                )
+            if self.config.structured_prompt_memory:
+                structured = self._structured_prompt_features(
                     token_ids, prompt_lengths
                 )
         for index, block in enumerate(self.blocks, start=1):
@@ -484,6 +639,20 @@ class LayerCakeSparseBPECore(nn.Module):
                             chunk_mask,
                         )
                     )
+                if (
+                    self.config.structured_prompt_memory
+                    and structured is not None
+                ):
+                    hidden, structured_weights = (
+                        self._apply_structured_prompt_memory(
+                            hidden,
+                            token_ids,
+                            structured[0],
+                            structured[1],
+                            structured[2],
+                            structured[3],
+                        )
+                    )
         return self._output_logits(
             hidden,
             copy_bias,
@@ -494,6 +663,8 @@ class LayerCakeSparseBPECore(nn.Module):
                 else None
             ),
             hierarchical_weights,
+            structured[0] if structured is not None else None,
+            structured_weights,
         )
 
     @torch.inference_mode()
@@ -509,6 +680,8 @@ class LayerCakeSparseBPECore(nn.Module):
         pointer_distribution = None
         hierarchical = None
         hierarchical_weights = None
+        structured = None
+        structured_weights = None
         if self.config.prompt_conditioning:
             lengths = torch.full(
                 (token_ids.shape[0],), token_ids.shape[1], dtype=torch.long,
@@ -523,6 +696,10 @@ class LayerCakeSparseBPECore(nn.Module):
             hidden = hidden + prompt_context[:, None]
             if self.config.hierarchical_prompt_memory:
                 hierarchical = self._hierarchical_prompt_features(
+                    token_ids, lengths
+                )
+            if self.config.structured_prompt_memory:
+                structured = self._structured_prompt_features(
                     token_ids, lengths
                 )
         keys_values = []
@@ -556,6 +733,20 @@ class LayerCakeSparseBPECore(nn.Module):
                             hierarchical[4],
                         )
                     )
+                if (
+                    self.config.structured_prompt_memory
+                    and structured is not None
+                ):
+                    hidden, structured_weights = (
+                        self._apply_structured_prompt_memory(
+                            hidden,
+                            token_ids,
+                            structured[0],
+                            structured[1],
+                            structured[2],
+                            structured[3],
+                        )
+                    )
         logits = self._output_logits(
             hidden[:, -1],
             prompt_copy_bias,
@@ -568,6 +759,12 @@ class LayerCakeSparseBPECore(nn.Module):
             (
                 hierarchical_weights[:, -1]
                 if hierarchical_weights is not None
+                else None
+            ),
+            structured[0] if structured is not None else None,
+            (
+                structured_weights[:, -1]
+                if structured_weights is not None
                 else None
             ),
         )
@@ -584,6 +781,7 @@ class LayerCakeSparseBPECore(nn.Module):
             prompt_memory_copy_distribution
         )
         state.hierarchical_prompt_memory = hierarchical
+        state.structured_prompt_memory = structured
         return state
 
     @torch.inference_mode()
@@ -603,6 +801,7 @@ class LayerCakeSparseBPECore(nn.Module):
             hidden = hidden + prompt_context[:, None]
         pointer_distribution = None
         hierarchical_weights = None
+        structured_weights = None
         new_cache = []
         for index, (block, past) in enumerate(zip(self.blocks, state.keys_values), start=1):
             hidden, cache = block.forward_cached(hidden, past)
@@ -639,6 +838,23 @@ class LayerCakeSparseBPECore(nn.Module):
                             hierarchical[4],
                         )
                     )
+                structured = getattr(
+                    state, "structured_prompt_memory", None
+                )
+                if (
+                    self.config.structured_prompt_memory
+                    and structured is not None
+                ):
+                    hidden, structured_weights = (
+                        self._apply_structured_prompt_memory(
+                            hidden,
+                            selected[:, None],
+                            structured[0],
+                            structured[1],
+                            structured[2],
+                            structured[3],
+                        )
+                    )
         state.keys_values = new_cache
         state.next_logits = self._output_logits(
             hidden[:, 0],
@@ -656,6 +872,16 @@ class LayerCakeSparseBPECore(nn.Module):
             (
                 hierarchical_weights[:, 0]
                 if hierarchical_weights is not None
+                else None
+            ),
+            (
+                state.structured_prompt_memory[0]
+                if self.config.structured_prompt_memory
+                else None
+            ),
+            (
+                structured_weights[:, 0]
+                if structured_weights is not None
                 else None
             ),
         )

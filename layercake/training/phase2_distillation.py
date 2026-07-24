@@ -834,6 +834,7 @@ def finetune(
     output: Path, steps: int = 1200, freeze_router: bool = False,
     focus_weight: float = 0.0, contrastive_weight: float = 0.0,
     contrastive_margin: float = 0.25,
+    pointer_alignment_weight: float = 0.0,
     prompt_memory_only: bool = False,
 ) -> dict[str, Any]:
     base_checkpoint = (root / base_checkpoint).resolve()
@@ -852,6 +853,7 @@ def finetune(
             "prompt_pointer_gate.",
             "prompt_copy_strength",
             "hierarchical_",
+            "structured_",
         )
         for name, parameter in model.named_parameters():
             parameter.requires_grad_(
@@ -938,6 +940,27 @@ def finetune(
                 if bool(focus_mask.any())
                 else instruction_loss.new_zeros(())
             )
+            pointer_alignment_loss = instruction_loss.new_zeros(())
+            if (
+                pointer_alignment_weight > 0.0
+                and model.last_structured_pointer_weights is not None
+                and model.last_structured_pointer_ids is not None
+            ):
+                pointer_weights = (
+                    model.last_structured_pointer_weights.float()
+                )
+                pointer_ids = model.last_structured_pointer_ids
+                matches = (
+                    labels[:, :, None] == pointer_ids[:, None, :]
+                )
+                pointer_probability = (
+                    pointer_weights * matches.to(pointer_weights.dtype)
+                ).sum(dim=-1)
+                pointer_focus = focus_mask & matches.any(dim=-1)
+                if bool(pointer_focus.any()):
+                    pointer_alignment_loss = -torch.log(
+                        pointer_probability[pointer_focus].clamp_min(1e-9)
+                    ).mean()
             prompt_contrastive_loss = instruction_loss.new_zeros(())
             if contrastive_weight > 0.0:
                 negative_prompts = _negative_prompt_rows(selected, train_rows)
@@ -995,6 +1018,7 @@ def finetune(
             loss = (
                 instruction_loss
                 + focus_weight * focus_loss
+                + pointer_alignment_weight * pointer_alignment_loss
                 + contrastive_weight * prompt_contrastive_loss
                 + 0.50 * wiki_loss
                 + 0.02 * (instruction_routing_loss + wiki_routing_loss)
@@ -1015,6 +1039,9 @@ def finetune(
                 "instruction_focus_loss": float(focus_loss.detach()),
                 "prompt_focus_contrastive_loss": float(
                     prompt_contrastive_loss.detach()
+                ),
+                "prompt_pointer_alignment_loss": float(
+                    pointer_alignment_loss.detach()
                 ),
                 "wiki_loss": float(wiki_loss.detach()),
                 "prompt_memory_mean_gate": (
@@ -1075,6 +1102,7 @@ def finetune(
             "instruction_focus_weight": focus_weight,
             "prompt_focus_contrastive_weight": contrastive_weight,
             "prompt_focus_contrastive_margin": contrastive_margin,
+            "prompt_pointer_alignment_weight": pointer_alignment_weight,
             "router_frozen": freeze_router,
             "prompt_memory_only": prompt_memory_only,
             "automatic_mixed_precision": use_amp,
@@ -1152,6 +1180,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     train.add_argument("--focus-weight", type=float, default=0.0)
     train.add_argument("--contrastive-weight", type=float, default=0.0)
     train.add_argument("--contrastive-margin", type=float, default=0.25)
+    train.add_argument("--pointer-alignment-weight", type=float, default=0.0)
     train.add_argument("--prompt-memory-only", action="store_true")
     verify = sub.add_parser("verify-corpus")
     verify.add_argument("--corpus", type=Path, default=Path("data/moonshot/phase2/instruction_distillation.jsonl"))
@@ -1182,6 +1211,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             focus_weight=args.focus_weight,
             contrastive_weight=args.contrastive_weight,
             contrastive_margin=args.contrastive_margin,
+            pointer_alignment_weight=args.pointer_alignment_weight,
             prompt_memory_only=args.prompt_memory_only,
         )
     elif args.command == "verify-corpus":

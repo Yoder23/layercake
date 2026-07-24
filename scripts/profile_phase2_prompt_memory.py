@@ -65,6 +65,7 @@ def _child(checkpoint: Path, threads: int, decode_steps: int) -> dict:
         ),
         "decode_peak_increment": peak - stages["prefill_state_ready"],
     }
+    prompt_memory = getattr(state, "hierarchical_prompt_memory", None)
     return {
         "format": "layercake-phase2-fresh-process-memory-profile/1",
         "checkpoint": checkpoint.as_posix(),
@@ -78,10 +79,24 @@ def _child(checkpoint: Path, threads: int, decode_steps: int) -> dict:
         "active_state": {
             "kv_layers": len(state.keys_values),
             "generated_tokens": int(state.generated_ids.shape[1]),
-            "prompt_memory_shapes": [
-                list(value.shape)
-                for value in state.hierarchical_prompt_memory
-            ],
+            "prompt_memory_kind": (
+                "hierarchical"
+                if prompt_memory is not None
+                else (
+                    "fixed_fused_context"
+                    if getattr(state, "prompt_context", None) is not None
+                    else "none"
+                )
+            ),
+            "prompt_memory_shapes": (
+                [list(value.shape) for value in prompt_memory]
+                if prompt_memory is not None
+                else (
+                    [list(state.prompt_context.shape)]
+                    if getattr(state, "prompt_context", None) is not None
+                    else []
+                )
+            ),
         },
         "status": "PASS",
         "metadata_checkpoint_sha256": metadata["checkpoint"]["sha256"],

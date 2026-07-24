@@ -104,6 +104,25 @@ faster than the optimized CPU-transformer baseline.
 The machine-readable version of this lock is
 `moonshot/phase3_training_efficiency_lock.json`.
 
+## Phase 4 and later CPU cake-training lock
+
+Phase 4 cannot pass unless the Python cake is trained entirely on the declared
+commodity CPU while the sealed English core remains byte-identical. The
+promoted cake must reduce functional error by at least 5x, reach matched
+functional quality at least 5x faster than every applicable strong CPU
+adaptation baseline, use fewer trainable parameters and less peak RAM, preserve
+the core CPU inference advantage, and transfer mathematically and semantically
+losslessly with 100% retention of the locked source-host success set.
+
+LoRA, PEFT, full adaptation, and a specialist transformer are included wherever
+applicable; weak or failed baselines cannot be selected to manufacture a win.
+The same CPU-training and accounting contract applies to every later cake.
+Training a substantial new cake within 24 hours on a commodity CPU is a target,
+not an automatic pass threshold.
+
+The machine-readable version of this lock is
+`moonshot/phase4_cpu_cake_training_lock.json`.
+
 ## Required reread points
 
 Before beginning a representation campaign, selecting a promoted candidate,

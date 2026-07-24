@@ -1,0 +1,53 @@
+{
+  "format": "layercake-phase4-cpu-cake-training-lock/1",
+  "status": "LOCKED_PENDING_PHASE3",
+  "scope": "Phase 4 and every later independently trained cake",
+  "execution_contract": {
+    "training_device": "declared commodity CPU only",
+    "gpu_training_allowed_for_promoted_evidence": false,
+    "english_core_weights_must_remain_byte_identical": true,
+    "receiver_training_allowed_during_transfer": false,
+    "receiver_domain_data_allowed_during_transfer": false,
+    "receiver_specific_calibration_allowed": false,
+    "cake_mutation_during_transfer_allowed": false
+  },
+  "promotion_gates": {
+    "functional_error_reduction_over_frozen_core_min": 5.0,
+    "time_to_matched_functional_quality_advantage_min": 5.0,
+    "baseline_policy": "beat every applicable strong baseline among LoRA, PEFT, full adaptation, and a specialist transformer on the same CPU and frozen task suite",
+    "trainable_parameter_count_less_than_each_adaptation_baseline": true,
+    "peak_process_resident_memory_less_than_each_adaptation_baseline": true,
+    "core_cpu_inference_advantage_preserved": true,
+    "identical_package_bytes_across_compatible_hosts": true,
+    "identical_tensor_hashes_across_compatible_hosts": true,
+    "mathematical_transfer_equivalence": true,
+    "source_success_retention_rate": 1.0,
+    "aggregate_semantic_quality_significant_loss_allowed": false,
+    "minimum_independent_seeds": 3
+  },
+  "required_accounting": [
+    "raw_utf8_training_bytes_exposed",
+    "model_visible_nonpadding_units",
+    "optimizer_steps",
+    "trainable_parameters",
+    "active_parameter_seconds_to_quality",
+    "end_to_end_cpu_wall_time_to_quality",
+    "peak_process_resident_memory_bytes",
+    "energy_to_quality_when_meter_available",
+    "all_seed_learning_curves",
+    "paired_bootstrap_confidence_intervals",
+    "phase2_cpu_inference_sentinel_before_and_after",
+    "package_and_tensor_hashes_on_every_host",
+    "locked_source_success_set_and_receiver_retention"
+  ],
+  "target_not_automatic_pass_gate": {
+    "substantial_new_cake_cpu_training_wall_hours_max": 24
+  },
+  "anti_gaming": {
+    "gpu_trained_checkpoint_substitution_allowed": false,
+    "different_lineage_metric_substitution_allowed": false,
+    "failed_baselines_or_seeds_may_be_omitted": false,
+    "synthetic_proxy_success_counts_as_python_functional_success": false,
+    "installation_time_receiver_learning_counts_as_lossless_transfer": false
+  }
+}
