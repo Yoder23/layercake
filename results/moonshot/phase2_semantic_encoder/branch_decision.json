@@ -1,0 +1,67 @@
+{
+  "architecture": "ENCODE_ONCE_BIDIRECTIONAL_SEMANTIC_CONTROL",
+  "decision": "CLOSED_NEGATIVE",
+  "development_gates": {
+    "core_adherence_minimum": 0.4,
+    "topic_recall_minimum": 0.65,
+    "transformer_relative_cpu_throughput_minimum": 1.75,
+    "validation_bpb_maximum": 1.75
+  },
+  "evidence": [
+    {
+      "audit_file_sha256": "557f2f9b72bbd0d96a21ecd794da29972128ac1827486b15b45b72c04aa096b4",
+      "checkpoint_sha256": "7adeaf69ba2a34ac4f69f30090629e4341ee288ce2649246e2ca2ef1c31314d5",
+      "core_adherence": 0.01,
+      "cumulative_instruction_steps": 1500,
+      "metadata_file_sha256": "407ef219fd4079549352aff7dbe8b79ba0b8061daee569c9c7346e857516eaca",
+      "screen_file_sha256": "084f2524c4c660893e03eca6dcc9dfcfec86d83b95acaaca7fbb4df70676749c",
+      "topic_recall": 0.45,
+      "transformer_relative_cpu_throughput": 1.8190403725302606,
+      "validation_bpb": 1.7114285731362417
+    },
+    {
+      "audit_file_sha256": "f447d299f0d2e9390939177bb8ebba8fb89b28267bb797b6e19859d334e11ccb",
+      "checkpoint_sha256": "d3b8594eeb058c10f9affa1146cd0da4b624e021b45b576331eb4b7b7defea67",
+      "core_adherence": 0.03,
+      "cumulative_instruction_steps": 3000,
+      "metadata_file_sha256": "928ef97276a0d242a2d0bca8df388ed6cfb0982c7788289fa7d2734987390f42",
+      "screen_file_sha256": "8d16c5b35748c1ec3e94b00f9a8d532d033f619e7eebcbd0709fdaa9e7933f97",
+      "topic_recall": 0.445,
+      "transformer_relative_cpu_throughput": 1.8521280851678843,
+      "validation_bpb": 1.701506015378054
+    }
+  ],
+  "failed_development_gates": [
+    "topic_recall",
+    "core_adherence"
+  ],
+  "falsified_claim": "Compressing a bidirectionally contextualized prompt into learned semantic slots, then decoding through a dense slot-to-vocabulary pointer, does not produce autonomous prompt adherence at the locked quality and CPU-speed operating point.",
+  "format": "layercake-phase2-semantic-encoder-branch-decision/1",
+  "mechanistic_diagnosis": {
+    "dense_pointer_effect": "Generated text repeatedly blended lexical fragments even as teacher-forced loss fell.",
+    "semantic_slot_activation_at_3000_steps": [
+      0.00004994246410112828,
+      0.00005466529182740487,
+      0.000036565965274348855,
+      0.000021656593162333593,
+      0.00003669230136438273,
+      0.00003905159974237904,
+      0.9995861053466797,
+      0.00006997222226345912,
+      0.00003897805800079368,
+      0.000013147835081326775,
+      0.00003568515297924727,
+      0.00001755484117893502
+    ],
+    "slot_collapse": true,
+    "teacher_forced_loss_at_3000_steps": 0.5259739914030399,
+    "topic_recall_change_1500_to_3000": -0.0050000000000000044
+  },
+  "nearby_slot_width_pointer_or_loss_sweeps_authorized": false,
+  "negative_evidence_preserved": true,
+  "phase2_status": "OPEN_RESEARCH_DIRECTION_REQUIRED",
+  "phase3_status": "LOCKED",
+  "promotion": false,
+  "systems_optimization_authorized": false,
+  "test_accessed": false
+}

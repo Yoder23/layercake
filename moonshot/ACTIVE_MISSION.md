@@ -122,6 +122,14 @@ bytes.
 The machine-readable boundary is
 `moonshot/phase2_core_cake_boundary.json`.
 
+The encode-once semantic-slot branch is closed negative: its twelve learned
+slots collapsed onto one record and its dense vocabulary pointer produced
+lexical blends while autonomous adherence remained below the locked
+development gates. The active Phase 2 hypothesis therefore retains at most 128
+contextual prompt-token states directly and copies only exact observed token
+IDs. Its immutable contract is
+`moonshot/phase2_contextual_token_memory_preregistration.json`.
+
 ## Phase 4 and later CPU cake-training lock
 
 Phase 4 cannot pass unless the Python cake is trained entirely on the declared

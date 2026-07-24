@@ -1,0 +1,58 @@
+{
+  "development_gates": {
+    "absolute_rss_final_gate_plausible": true,
+    "core_adherence_min": 0.4,
+    "repetition_collapse_allowed": false,
+    "topic_recall_min": 0.65,
+    "transformer_relative_cpu_throughput_min": 1.75,
+    "ttft_no_worse_than_transformer": true,
+    "validation_bpb_max": 1.75
+  },
+  "early_stop_rule": "Reject the branch if the initial run and the single same-lineage extension fail the development behavior gates. Do not rescue it with attention-width, capacity, pointer-weight, loss-weight, decoder, or curriculum sweeps.",
+  "final_gates": {
+    "autonomous_neural_generation": true,
+    "canonical_cake_abi": true,
+    "core_adherence_min": 0.55,
+    "independent_seeds_min": 3,
+    "persistent_incremental_state": true,
+    "physical_sparse_execution": true,
+    "process_resident_memory_bytes_max_exclusive": 214990848,
+    "topic_recall_min": 0.82,
+    "transformer_relative_cpu_throughput_1024_min": 2.0,
+    "transformer_relative_cpu_throughput_128_min": 2.0,
+    "ttft_no_worse_than_transformer": true,
+    "validation_bpb_max": 1.7174
+  },
+  "format": "layercake-phase2-contextual-token-memory-preregistration/1",
+  "hypothesis": {
+    "bounded_contextual_tokens": 128,
+    "claim": "Retaining contextual prompt token states directly and copying only exact source units will remove semantic-slot collapse and dense-pointer lexical blending while reducing decode work enough to preserve the CPU gate.",
+    "context_encoder": "one encode-once bidirectional recurrent layer transferred from the closed semantic branch",
+    "decode_read": "one width-32 query over at most 128 contextual token keys per generated unit",
+    "dense_slot_to_vocabulary_state": false,
+    "id": "CONTEXTUAL_TOKEN_MEMORY_SPARSE_COPY",
+    "inference_templates_or_planner": false,
+    "learned_semantic_slot_compression": false,
+    "material_difference_from_closed_branch": "The closed branch irreversibly compressed all contextual tokens into twelve learned slots and stored twelve dense vocabulary distributions. This branch retains bounded per-token context, removes learned slots, and scatters attention mass only to exact source token IDs.",
+    "prompt_recomputation_during_decode": false,
+    "sparse_copy": "attention weights are scattered only onto observed prompt token IDs",
+    "unbounded_prompt_kv_cache": false
+  },
+  "parent_checkpoint_sha256": "d3b8594eeb058c10f9affa1146cd0da4b624e021b45b576331eb4b7b7defea67",
+  "parent_source_commit": "cbe0b48644d977d414eb5d2b323953a8b7068a7a",
+  "prior_branch_decision": "results/moonshot/phase2_semantic_encoder/branch_decision.json",
+  "promotion_rule": "Only one integrated checkpoint lineage may supply quality, behavior, speed, TTFT, RSS, sparsity, incremental-state, and ABI evidence.",
+  "status": "PREREGISTERED",
+  "systems_optimization_rule": "At most one profiler-directed runtime optimization, only after behavioral quality passes and speed or RSS is within 10 percent of its gate.",
+  "training_contract": {
+    "curriculum": "the frozen knowledge-light semantic-control v2 corpus",
+    "exact_frozen_prompt_training_allowed": false,
+    "frozen_topic_training_allowed": false,
+    "initial_instruction_steps": 1200,
+    "nearby_architecture_sweeps_allowed": false,
+    "random_seed": 9824,
+    "same_lineage_extension_steps_max": 2400,
+    "self_generated_prefix_recovery_required": true,
+    "specialist_domain_training_allowed": false
+  }
+}
