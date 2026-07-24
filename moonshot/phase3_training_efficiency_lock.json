@@ -1,0 +1,72 @@
+{
+  "format": "layercake-phase3-training-efficiency-lock/1",
+  "status": "LOCKED_PENDING_PHASE2_R3",
+  "representation_policy": {
+    "external_boundary": "UTF-8 bytes in / UTF-8 bytes out",
+    "internal_byte_level_required": false,
+    "candidate_representation": "exact Phase 2 r3 winner",
+    "candidate_architecture": "exact Phase 2 r3 winner"
+  },
+  "comparability": {
+    "minimum_independent_seeds_per_system": 3,
+    "same_machine": true,
+    "same_precision": true,
+    "same_data_order_per_paired_seed": true,
+    "same_raw_corpus_and_splits": true,
+    "same_frozen_quality_suite": true,
+    "same_immutable_evaluation_schedule": true,
+    "test_set_used_for_tuning": false,
+    "failed_threshold_crossings_count_as_failures": true,
+    "different_lineage_metric_substitution_allowed": false
+  },
+  "promotion_gates": {
+    "quality": "reach the frozen general-quality threshold",
+    "paired_end_to_end_wall_time_ratio_layercake_over_transformer": {
+      "point_estimate_max": 0.5,
+      "bootstrap_95pct_upper_bound_max": 0.5
+    },
+    "paired_nonpadding_model_visible_unit_ratio_layercake_over_transformer": {
+      "point_estimate_max_exclusive": 1.0,
+      "bootstrap_95pct_upper_bound_max_exclusive": 1.0
+    },
+    "raw_utf8_training_bytes_layercake_over_transformer_max": 1.0,
+    "peak_active_training_memory_layercake_over_transformer_max_exclusive": 1.0,
+    "phase2_cpu_throughput_retention_min": 0.95,
+    "optimized_cpu_transformer_throughput_ratio_min": 2.0,
+    "phase2_quality_generation_memory_incremental_sparsity_abi_and_long_output_gates": "PASS"
+  },
+  "required_accounting": [
+    "raw_utf8_training_bytes_exposed",
+    "model_visible_training_units",
+    "nonpadding_model_visible_training_units",
+    "sequences",
+    "examples",
+    "optimizer_steps",
+    "forward_backward_model_visible_units",
+    "tokenizer_training_wall_time",
+    "tokenization_wall_time",
+    "preprocessing_wall_time",
+    "data_loading_wall_time",
+    "compile_wall_time",
+    "evaluation_wall_time",
+    "checkpointing_wall_time",
+    "end_to_end_wall_time",
+    "peak_process_resident_memory_bytes",
+    "peak_accelerator_memory_bytes",
+    "accelerator_hours",
+    "all_seed_learning_curves",
+    "paired_time_to_threshold_ratios",
+    "paired_nonpadding_unit_to_threshold_ratios",
+    "bootstrap_confidence_intervals"
+  ],
+  "conditional_accounting": {
+    "measured_energy": "report when a meter is available; otherwise mark unmeasured and make no energy-efficiency claim",
+    "hardware_counter_compute": "report when available; otherwise mark unmeasured"
+  },
+  "anti_gaming": {
+    "tokenizer_compression_alone_counts_as_token_efficiency": false,
+    "raw_bytes_and_internal_units_reported_separately": true,
+    "all_runs_and_threshold_failures_preserved": true,
+    "cherry_picked_learning_curve_points_allowed": false
+  }
+}

@@ -66,6 +66,44 @@ preserve the exact Phase 2 representation and architecture and prove at least
 2x lower wall-clock time to the same frozen general-quality threshold while
 retaining at least 95% of certified Phase 2 CPU throughput.
 
+## Phase 3 training-efficiency lock
+
+Phase 3 is representation-neutral. A byte-level internal model is not required.
+The exact Phase 2 winning representation and architecture are frozen for the
+matched training study.
+
+The primary training result is the first immutable evaluation at which the
+frozen quality threshold is reached. LayerCake must reach that point in no more
+than 0.50x the transformer's end-to-end wall-clock time. The study must also
+show strictly fewer non-padding model-visible training units and lower peak
+active training memory, while exposing no more raw UTF-8 training bytes. A
+tokenizer's compression ratio is not, by itself, a token-efficiency result.
+
+Every run must report raw UTF-8 bytes exposed, model-visible units, non-padding
+units, sequences, optimizer steps, examples, forward/backward unit count,
+tokenizer training and tokenization cost, preprocessing, data loading,
+compilation, evaluation, checkpointing, end-to-end wall time, peak process and
+accelerator memory, and accelerator-hours. Measured energy and hardware-counter
+compute are reported when meters are available; if unavailable they are marked
+unmeasured and cannot support an energy-efficiency claim.
+
+At least three independent seeds per system are required on the same machine,
+precision, data order, quality suite, and immutable evaluation schedule. Report
+every learning curve and seed, paired time-to-threshold ratios, and bootstrap
+confidence intervals. Promotion requires the upper 95% confidence bound for
+the paired wall-time ratio to be at most 0.50 and the upper 95% confidence bound
+for the paired non-padding-unit ratio to be below 1.00. Runs that never cross
+the threshold are failures, not censored successes. No favorable point from a
+different lineage may be substituted.
+
+The promoted checkpoint must still pass the Phase 2 quality, generation,
+memory, incremental-state, physical-sparsity, ABI, and long-output CPU gates,
+retain at least 95% of certified Phase 2 throughput, and remain at least 2x
+faster than the optimized CPU-transformer baseline.
+
+The machine-readable version of this lock is
+`moonshot/phase3_training_efficiency_lock.json`.
+
 ## Required reread points
 
 Before beginning a representation campaign, selecting a promoted candidate,

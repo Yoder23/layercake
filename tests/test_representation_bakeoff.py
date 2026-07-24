@@ -70,3 +70,32 @@ def test_cached_prompt_attention_incremental_state_is_prompt_conditioned():
     _, state = model.decode_step(state)
     assert state.generated_ids.shape == (1, 1)
     assert torch.isfinite(state.next_logits).all()
+
+
+def test_multislot_prompt_state_is_prefill_only_and_prompt_conditioned():
+    torch.manual_seed(5)
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(
+        vocab_size=320,
+        width=32,
+        layers=2,
+        heads=4,
+        max_tokens=64,
+        expansion=1,
+        routed_experts=3,
+        expert_expansion=1,
+        route_after_layers=1,
+        prompt_conditioning=True,
+        prompt_state_slots=4,
+    )).eval()
+    first = model.prefill(torch.tensor([[65, 66, 67, 68]], dtype=torch.long))
+    second = model.prefill(torch.tensor([[65, 66, 90, 91]], dtype=torch.long))
+    assert first.prompt_context.shape == (1, 32)
+    assert first.prompt_copy_bias.shape == (1, 320)
+    assert not torch.equal(first.prompt_context, second.prompt_context)
+    cached_lengths = [cache[0].shape[-2] for cache in first.keys_values]
+    _, first = model.decode_step(first)
+    assert [
+        cache[0].shape[-2] for cache in first.keys_values
+    ] == [length + 1 for length in cached_lengths]
+    assert first.prompt_context.shape == (1, 32)
+    assert torch.isfinite(first.next_logits).all()

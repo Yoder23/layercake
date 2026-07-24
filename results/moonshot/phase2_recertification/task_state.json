@@ -41,20 +41,22 @@
     "hybrid token-byte 10m screen and repeated timing",
     "shared-tokenizer neural-only screens",
     "cached prompt-attention bounded candidate",
-    "representation bakeoff closed with no winner"
+    "representation bakeoff closed with no winner",
+    "10m multislot prompt-state closed 18f2f050af9b"
   ],
-  "continuation_command": "C:\\Python310\\python.exe -m layercake.representation_bakeoff verify-decision --decision results/moonshot/representation_bakeoff/representation_decision.json",
-  "continuation_prompt": "results/moonshot/representation_bakeoff/continuation_prompt.txt",
-  "current_stage": "PHASE2_REPRESENTATION_DIAGNOSIS",
+  "continuation_command": "C:\\Python310\\python.exe -m layercake.representation_bakeoff verify-multislot-decision --decision results/moonshot/phase2_multislot_prompt_state/branch_decision.json",
+  "continuation_prompt": "results/moonshot/phase2_multislot_prompt_state/continuation_prompt.txt",
+  "current_stage": "PHASE2_HYPOTHESIS_REFUTED",
   "format": "layercake-phase2-recertification-task-state/1",
   "invalidation_path": "results/moonshot/phase2_recertification/invalidation.json",
   "invalidation_sha256": "7fe0f757a88d1b46ef95c6fe3be9b3c9a0fee90c5c27be803f70ed4228dc1241",
-  "latest_batch": "results/moonshot/representation_bakeoff/representation_decision.json",
-  "latest_batch_sha256": "f5afd0735358fb6f974e2616829520e573b8444d914be71d41e30a0d32fe36d6",
+  "latest_batch": "results/moonshot/phase2_multislot_prompt_state/branch_decision.json",
+  "latest_batch_sha256": "199c52bb00ee9bc70747aff19149222cf0f63d3d543de2ca1c32b7581575617a",
   "mission_status": "ACTIVE",
   "phase2_r3_tag_created": false,
-  "phase2_status": "OPEN_CONTINUATION_REQUIRED",
+  "phase2_status": "OPEN_RESEARCH_DIRECTION_REQUIRED",
   "phase3_status": "LOCKED",
+  "phase3_training_efficiency_lock": "moonshot/phase3_training_efficiency_lock.json",
   "remaining_gates": [
     "falsify or validate materially distinct multi-slot prompt state",
     "one checkpoint functional semantic noninferiority",
@@ -68,9 +70,10 @@
     "byte_patch": "CLOSED_NEGATIVE",
     "dynamic_latent_patch": "NOT_AUTHORIZED",
     "hybrid_token_byte": "CLOSED_NEGATIVE",
+    "multislot_prompt_state": "CLOSED_NEGATIVE",
     "shared_tokenizer": "CLOSED_NEGATIVE"
   },
   "representation_policy": "REPRESENTATION_AGNOSTIC",
   "representation_winner": null,
-  "updated_at_utc": "2026-07-24T02:03:52.939599+00:00"
+  "updated_at_utc": "2026-07-24T02:42:51.710110+00:00"
 }

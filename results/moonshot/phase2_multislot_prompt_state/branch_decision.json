@@ -1,0 +1,213 @@
+{
+  "architecture": {
+    "architecture_version": "layercake-sparse-bpe-core/6-cached-multislot-prompt-state",
+    "constrained_english_planner": false,
+    "expansion": 4,
+    "expert_expansion": 1,
+    "heads": 8,
+    "layers": 3,
+    "max_tokens": 1024,
+    "prompt_attention_pooling": false,
+    "prompt_conditioning": true,
+    "prompt_state_slots": 4,
+    "route_after_layers": 1,
+    "routed_experts": 8,
+    "routing_mode": "learned_top1",
+    "vocab_size": 2816,
+    "width": 288
+  },
+  "candidate": "cached-multislot-prompt-state-4/continuation10m-seed-9824",
+  "checkpoint_sha256": "8b15cc67295e60d8a77f080f97ce5518f117a0307daa1b3f9b4c1f6ee770d269",
+  "continuation_to_100m_authorized": false,
+  "decision_payload_sha256": "18f2f050af9b1fb9c0c74951c40e1393834dadd4ccf7d3f02f4648e6c7a1c39b",
+  "evidence": [
+    {
+      "path": "artifacts/moonshot/phase2_multislot_prompt_state/continuation10m-seed-9824/metadata.json",
+      "sha256": "09def37e65df876d5a6edc353e0cc6d5d85a243e0fc6a13ea4d1ec0426f96b38"
+    },
+    {
+      "path": "artifacts/moonshot/phase2_multislot_prompt_state/continuation10m-seed-9824/model.safetensors",
+      "sha256": "8b15cc67295e60d8a77f080f97ce5518f117a0307daa1b3f9b4c1f6ee770d269"
+    },
+    {
+      "path": "results/moonshot/phase2_multislot_prompt_state/functional_screen_seed9824_640.json",
+      "sha256": "3cd3412d0d4189a7d32a1154f5496bf0aca9b74a97bb9d56c109c6c4af0ac4ff"
+    },
+    {
+      "path": "results/moonshot/phase2_multislot_prompt_state/functional_semantic_audit_seed9824_640.json",
+      "sha256": "53a9806fbb696b67dbeeb5274a1771e068ee80d5de7a3c0ad791862b2d50d2b2"
+    },
+    {
+      "path": "results/moonshot/phase2_multislot_prompt_state/benchmark_128x20.json",
+      "sha256": "3e7aaa1b29f5bd88fdd188b3b966ff9e8c742d3e39778eb86846b1985098cce4"
+    },
+    {
+      "path": "results/moonshot/phase2_multislot_prompt_state/benchmark_1024x20.json",
+      "sha256": "2355b6575f1d3e603889f83628bc1579924a4c669891c24a8f6a17e9173ef6a6"
+    }
+  ],
+  "failed_gates": [
+    "core_adherence_pass_rate",
+    "functional_surface_noninferiority",
+    "process_resident_memory_bytes",
+    "topic_token_recall"
+  ],
+  "format": "layercake-phase2-multislot-continuation-decision/1",
+  "gates": {
+    "core_adherence_pass_rate": {
+      "observed": 0.0,
+      "pass": false,
+      "required_minimum": 0.55
+    },
+    "functional_surface_noninferiority": {
+      "observed": false,
+      "pass": false,
+      "required": true
+    },
+    "long_cpu_ratio": {
+      "observations": 20,
+      "observed": 2.3951326455390793,
+      "pass": true,
+      "required_minimum": 2.0
+    },
+    "no_external_generation_path": {
+      "observed": true,
+      "pass": true,
+      "required": true
+    },
+    "persistent_incremental_state": {
+      "observed": true,
+      "pass": true,
+      "required": true
+    },
+    "physical_top1_sparse_execution": {
+      "expert_forward_calls_one_decode_step": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "observed": true,
+      "pass": true,
+      "required": true
+    },
+    "process_resident_memory_bytes": {
+      "observed": 394829824.0,
+      "pass": false,
+      "required_maximum_exclusive": 214990848
+    },
+    "short_cpu_ratio": {
+      "observations": 20,
+      "observed": 2.333788903777076,
+      "pass": true,
+      "required_minimum": 2.0
+    },
+    "time_to_first_output_seconds": {
+      "observed": 0.00955885,
+      "pass": true,
+      "required_maximum": 0.26304215
+    },
+    "topic_token_recall": {
+      "observed": 0.205,
+      "pass": false,
+      "required_minimum": 0.82
+    },
+    "validation_bpb": {
+      "observed": 1.6466396652221138,
+      "pass": true,
+      "required_maximum": 1.7173530535092476
+    }
+  },
+  "hypothesis_result": "REFUTED: four distinct cached prompt slots did not raise autonomous topic recall or core adherence to the predeclared thresholds",
+  "nearby_multislot_or_loss_variants_authorized": false,
+  "phase2_status": "OPEN_RESEARCH_DIRECTION_REQUIRED",
+  "phase3_status": "LOCKED",
+  "promotion": false,
+  "representation": {
+    "class": "shared_tokenizer",
+    "external_input": "UTF-8 bytes",
+    "external_output": "UTF-8 bytes"
+  },
+  "status": "CLOSED_NEGATIVE",
+  "test_accessed": false,
+  "three_seed_promotion_authorized": false,
+  "training": {
+    "batch_size": 8,
+    "continuation_tier": "10M model-visible forward/backward units",
+    "contrastive_nonpadding_model_visible_units": 3755564,
+    "corpus_path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\phase2\\instruction_curriculum_clean.jsonl",
+    "corpus_sha256": "3b642b018ffffca460cbf3cf2546f1fa5d2a7b25b634936428c2f1f73ad38f5e",
+    "curves": [
+      {
+        "heldout_instruction_loss": 0.33264394402503966,
+        "instruction_focus_loss": 0.04969494417309761,
+        "instruction_loss": 0.01074824295938015,
+        "prompt_focus_contrastive_loss": 0.0,
+        "step": 1,
+        "total_loss": 1.5967739820480347,
+        "wall_seconds": 1.0637812999775633,
+        "wiki_loss": 2.8931071758270264
+      },
+      {
+        "heldout_instruction_loss": 0.3136224706967672,
+        "instruction_focus_loss": 0.0008053380297496915,
+        "instruction_loss": 0.014785458333790302,
+        "prompt_focus_contrastive_loss": 0.0,
+        "step": 300,
+        "total_loss": 1.4912785291671753,
+        "wall_seconds": 50.72461199993268,
+        "wiki_loss": 2.8685688972473145
+      },
+      {
+        "heldout_instruction_loss": 0.3164886345465978,
+        "instruction_focus_loss": 0.0,
+        "instruction_loss": 0.005840632598847151,
+        "prompt_focus_contrastive_loss": 0.0,
+        "step": 600,
+        "total_loss": 1.4404873847961426,
+        "wall_seconds": 102.11426770000253,
+        "wiki_loss": 2.788965940475464
+      },
+      {
+        "heldout_instruction_loss": 0.3235019197066625,
+        "instruction_focus_loss": 0.0,
+        "instruction_loss": 0.005853125359863043,
+        "prompt_focus_contrastive_loss": 0.0,
+        "step": 900,
+        "total_loss": 1.4941250085830688,
+        "wall_seconds": 152.8079751000041,
+        "wiki_loss": 2.896296739578247
+      },
+      {
+        "heldout_instruction_loss": 0.31332219441731773,
+        "instruction_focus_loss": 0.0002634958073031157,
+        "instruction_loss": 0.005372521001845598,
+        "prompt_focus_contrastive_loss": 0.0,
+        "step": 1200,
+        "total_loss": 1.474554181098938,
+        "wall_seconds": 202.32794119999744,
+        "wiki_loss": 2.8561723232269287
+      }
+    ],
+    "forward_backward_model_visible_units": 9600217,
+    "instruction_focus_weight": 2.0,
+    "instruction_nonpadding_model_visible_units": 3609629,
+    "instruction_raw_utf8_bytes_exposed": 8558342,
+    "learning_rate": 0.0001,
+    "prompt_focus_contrastive_margin": 0.25,
+    "prompt_focus_contrastive_weight": 0.5,
+    "raw_utf8_bytes_exposed": 13483142,
+    "response_tokens_seen": 2637483,
+    "router_frozen": false,
+    "routing_balance_weight_per_objective": 0.02,
+    "steps": 1200,
+    "wall_seconds": 202.8131882000016,
+    "wiki_nonpadding_model_visible_units": 2235024,
+    "wiki_raw_utf8_bytes_exposed": 4924800,
+    "wiki_regularization_weight": 0.5
+  }
+}

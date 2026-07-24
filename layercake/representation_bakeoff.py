@@ -21,6 +21,10 @@ from safetensors.torch import load_file, save_file
 
 from layercake.models.baseline_transformer import BytePairTokenizer
 from layercake.models.representation_tokenizer import HybridTokenByteTokenizer
+from layercake.models.sparse_bpe_layercake import (
+    LayerCakeSparseBPECore,
+    SparseBPELayerCakeConfig,
+)
 from layercake.phase2_recertification import _output_quality
 from layercake.training.data import sha256_file
 from layercake.training.phase2_sparse_bpe import load_sparse_bpe_checkpoint
@@ -316,6 +320,131 @@ def enable_prompt_attention_checkpoint(
     }
     _append_ledger(root, {
         "event": "cached_prompt_attention_enabled",
+        **result,
+    })
+    return result
+
+
+def enable_multislot_prompt_checkpoint(
+    root: Path,
+    source_path: Path,
+    output_path: Path,
+    slots: int,
+) -> dict[str, Any]:
+    """Add one prefill-only multi-slot prompt state with a fixed initialization."""
+
+    source_path = _resolve(root, source_path)
+    output_path = _resolve(root, output_path)
+    if output_path.exists():
+        raise RuntimeError(f"multi-slot artifact is immutable: {output_path}")
+    if slots < 2:
+        raise ValueError("multi-slot prompt state requires at least two slots")
+    metadata = _read(source_path / "metadata.json")
+    architecture = dict(metadata["architecture"])
+    if not bool(architecture.get("prompt_conditioning")):
+        raise ValueError("multi-slot prompt state requires prompt conditioning")
+    if bool(architecture.get("constrained_english_planner")):
+        raise ValueError("planner must be stripped before multi-slot conversion")
+    if bool(architecture.get("prompt_attention_pooling")):
+        raise ValueError("start from the neural-only scalar-pooling control")
+    architecture["prompt_attention_pooling"] = False
+    architecture["prompt_state_slots"] = slots
+    architecture["architecture_version"] = (
+        "layercake-sparse-bpe-core/6-cached-multislot-prompt-state"
+    )
+
+    torch.manual_seed(20260724)
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(**architecture))
+    source_state = load_file(
+        str(source_path / "model.safetensors"), device="cpu"
+    )
+    converted_state = model.state_dict()
+    for name, value in source_state.items():
+        if name not in converted_state:
+            raise ValueError(f"source tensor is absent from converted model: {name}")
+        if converted_state[name].shape != value.shape:
+            raise ValueError(f"source tensor shape changed during conversion: {name}")
+        converted_state[name].copy_(value)
+    added_tensors = sorted(set(converted_state).difference(source_state))
+    expected = {"prompt_slot_queries", "prompt_slot_fusion.weight"}
+    if set(added_tensors) != expected:
+        raise RuntimeError(f"unexpected multi-slot tensor set: {added_tensors}")
+    model.load_state_dict(converted_state, strict=True)
+
+    output_path.mkdir(parents=True, exist_ok=False)
+    checkpoint_output = output_path / "model.safetensors"
+    tokenizer_output = output_path / "tokenizer.json"
+    save_file(
+        {
+            name: value.detach().cpu().contiguous()
+            for name, value in model.state_dict().items()
+        },
+        str(checkpoint_output),
+    )
+    shutil.copyfile(source_path / "tokenizer.json", tokenizer_output)
+    converted = dict(metadata)
+    converted.update({
+        "format": "layercake-representation-multislot-prompt-checkpoint/1",
+        "architecture": architecture,
+        "parameters": {
+            "total": model.parameter_count(),
+            "active": model.active_parameter_count(),
+            "active_fraction": (
+                model.active_parameter_count() / model.parameter_count()
+            ),
+        },
+        "checkpoint": {
+            "path": checkpoint_output.relative_to(root).as_posix(),
+            "sha256": sha256_file(checkpoint_output),
+        },
+        "tokenizer": {
+            "path": tokenizer_output.relative_to(root).as_posix(),
+            "sha256": sha256_file(tokenizer_output),
+        },
+        "architecture_conversion": {
+            "source_checkpoint_path": (
+                source_path / "model.safetensors"
+            ).relative_to(root).as_posix(),
+            "source_checkpoint_sha256": sha256_file(
+                source_path / "model.safetensors"
+            ),
+            "source_neural_tensors_changed": False,
+            "new_neural_tensors_added": added_tensors,
+            "new_tensor_initialization_seed": 20260724,
+            "training_performed": False,
+            "decode_graph_changed": False,
+            "prefill_change": (
+                f"{slots} learned content slots with fixed relative-position "
+                "priors, fused once into the existing cached prompt vector"
+            ),
+        },
+    })
+    _write(output_path / "metadata.json", converted)
+    loaded_model, _, _ = _load_candidate(output_path)
+    if loaded_model.config.prompt_state_slots != slots:
+        raise RuntimeError("multi-slot prompt-state contract did not load")
+    prompt = torch.tensor([[65, 66, 67, 68]], dtype=torch.long)
+    state = loaded_model.prefill(prompt)
+    before = tuple(cache[0].shape[-2] for cache in state.keys_values)
+    _, state = loaded_model.decode_step(state)
+    after = tuple(cache[0].shape[-2] for cache in state.keys_values)
+    if state.prompt_context.shape != (1, architecture["width"]):
+        raise RuntimeError("multi-slot state was not fused before decode")
+    if any(post != prior + 1 for prior, post in zip(before, after)):
+        raise RuntimeError("multi-slot decode did not use bounded KV growth")
+    result = {
+        "status": "PASS",
+        "output": output_path.relative_to(root).as_posix(),
+        "checkpoint_sha256": sha256_file(checkpoint_output),
+        "tokenizer_sha256": sha256_file(tokenizer_output),
+        "source_neural_tensors_changed": False,
+        "new_neural_tensors_added": added_tensors,
+        "prompt_state_slots": slots,
+        "cached_prompt_context_shape": [1, architecture["width"]],
+        "decode_graph_changed": False,
+    }
+    _append_ledger(root, {
+        "event": "cached_multislot_prompt_state_enabled",
         **result,
     })
     return result
@@ -1747,6 +1876,342 @@ def verify_decision(root: Path, decision_path: Path) -> dict[str, Any]:
     return result
 
 
+def finalize_multislot_continuation(
+    root: Path,
+    checkpoint_path: Path,
+    screen_path: Path,
+    semantic_path: Path,
+    short_benchmark_path: Path,
+    long_benchmark_path: Path,
+    output_path: Path,
+) -> dict[str, Any]:
+    """Close the one authorized prompt-state counterfactual without promotion."""
+
+    checkpoint_path = _resolve(root, checkpoint_path)
+    screen_path = _resolve(root, screen_path)
+    semantic_path = _resolve(root, semantic_path)
+    short_benchmark_path = _resolve(root, short_benchmark_path)
+    long_benchmark_path = _resolve(root, long_benchmark_path)
+    output_path = _resolve(root, output_path)
+    if output_path.exists():
+        raise RuntimeError(f"multi-slot decision is immutable: {output_path}")
+    model, tokenizer, metadata = _load_candidate(checkpoint_path)
+    screen = _read(screen_path)
+    semantic = _read(semantic_path)
+    short = _read(short_benchmark_path)
+    long = _read(long_benchmark_path)
+    expected_checkpoint = metadata["checkpoint"]["sha256"]
+    for name, document in (
+        ("screen", screen),
+        ("semantic audit", semantic),
+        ("short benchmark", short),
+        ("long benchmark", long),
+    ):
+        if document["checkpoint_sha256"] != expected_checkpoint:
+            raise ValueError(f"{name} uses a different checkpoint")
+
+    prompt = _read(root / QUALITY_MANIFEST)["prompts"][0]["text"]
+    prompt_ids = tokenizer.encode(prompt)
+    state = model.prefill(torch.tensor([prompt_ids], dtype=torch.long))
+    prompt_context_before = state.prompt_context.detach().clone()
+    cache_before = [cache[0].shape[-2] for cache in state.keys_values]
+    expert_calls = [0] * len(model.cakes.experts)
+    handles = [
+        expert.register_forward_hook(
+            lambda _module, _inputs, _output, index=index: expert_calls.__setitem__(
+                index, expert_calls[index] + 1
+            )
+        )
+        for index, expert in enumerate(model.cakes.experts)
+    ]
+    try:
+        _, state = model.decode_step(
+            state, next_token=torch.tensor([prompt_ids[-1]], dtype=torch.long)
+        )
+    finally:
+        for handle in handles:
+            handle.remove()
+    cache_after = [cache[0].shape[-2] for cache in state.keys_values]
+    incremental_pass = (
+        cache_after == [value + 1 for value in cache_before]
+        and torch.equal(prompt_context_before, state.prompt_context)
+        and state.prompt_context.shape == (1, model.config.width)
+    )
+    physical_sparsity_pass = (
+        sum(expert_calls) == 1
+        and sum(value > 0 for value in expert_calls) == 1
+        and metadata["routing"]["maximum_active_experts_per_token"] == 1
+        and metadata["routing"]["physically_dispatched"] is True
+    )
+
+    layercake_semantic = semantic["systems"]["layercake"]["aggregates"]
+    qwen_memory = 214_990_848
+    qwen_ttft = 0.26304215
+    gates = {
+        "validation_bpb": {
+            "observed": metadata["quality"]["validation"]["bits_per_byte"],
+            "required_maximum": 1.7173530535092476,
+        },
+        "topic_token_recall": {
+            "observed": layercake_semantic["topic_token_recall"],
+            "required_minimum": 0.82,
+        },
+        "core_adherence_pass_rate": {
+            "observed": layercake_semantic["core_adherence_pass"],
+            "required_minimum": 0.55,
+        },
+        "functional_surface_noninferiority": {
+            "observed": screen["comparison"][
+                "product_surface_noninferiority_pass"
+            ],
+            "required": True,
+        },
+        "short_cpu_ratio": {
+            "observed": short[
+                "transformer_relative_median_decode_throughput"
+            ],
+            "required_minimum": 2.0,
+            "observations": short["repetitions"],
+        },
+        "long_cpu_ratio": {
+            "observed": long[
+                "transformer_relative_median_decode_throughput"
+            ],
+            "required_minimum": 2.0,
+            "observations": long["repetitions"],
+        },
+        "time_to_first_output_seconds": {
+            "observed": long["summary"]["time_to_first_output_seconds"][
+                "median"
+            ],
+            "required_maximum": qwen_ttft,
+        },
+        "process_resident_memory_bytes": {
+            "observed": long["summary"]["resident_memory_bytes_after"][
+                "median"
+            ],
+            "required_maximum_exclusive": qwen_memory,
+        },
+        "persistent_incremental_state": {
+            "observed": incremental_pass,
+            "required": True,
+        },
+        "physical_top1_sparse_execution": {
+            "observed": physical_sparsity_pass,
+            "required": True,
+            "expert_forward_calls_one_decode_step": expert_calls,
+        },
+        "no_external_generation_path": {
+            "observed": (
+                metadata["english_planner"]["enabled"] is False
+                and metadata["architecture"]["constrained_english_planner"]
+                is False
+            ),
+            "required": True,
+        },
+    }
+    for gate in gates.values():
+        if "required_maximum" in gate:
+            gate["pass"] = gate["observed"] <= gate["required_maximum"]
+        elif "required_maximum_exclusive" in gate:
+            gate["pass"] = gate["observed"] < gate["required_maximum_exclusive"]
+        elif "required_minimum" in gate:
+            gate["pass"] = gate["observed"] >= gate["required_minimum"]
+        else:
+            gate["pass"] = gate["observed"] is gate["required"]
+    failed_gates = sorted(
+        name for name, gate in gates.items() if not gate["pass"]
+    )
+    evidence = []
+    for path in (
+        checkpoint_path / "metadata.json",
+        checkpoint_path / "model.safetensors",
+        screen_path,
+        semantic_path,
+        short_benchmark_path,
+        long_benchmark_path,
+    ):
+        evidence.append({
+            "path": path.relative_to(root).as_posix(),
+            "sha256": sha256_file(path),
+        })
+    document = {
+        "format": "layercake-phase2-multislot-continuation-decision/1",
+        "status": "CLOSED_NEGATIVE",
+        "candidate": "cached-multislot-prompt-state-4/continuation10m-seed-9824",
+        "checkpoint_sha256": expected_checkpoint,
+        "architecture": metadata["architecture"],
+        "representation": metadata["representation"],
+        "training": {
+            "continuation_tier": "10M model-visible forward/backward units",
+            **metadata["instruction_distillation"],
+        },
+        "gates": gates,
+        "failed_gates": failed_gates,
+        "hypothesis_result": (
+            "REFUTED: four distinct cached prompt slots did not raise autonomous "
+            "topic recall or core adherence to the predeclared thresholds"
+        ),
+        "promotion": False,
+        "continuation_to_100m_authorized": False,
+        "three_seed_promotion_authorized": False,
+        "nearby_multislot_or_loss_variants_authorized": False,
+        "phase2_status": "OPEN_RESEARCH_DIRECTION_REQUIRED",
+        "phase3_status": "LOCKED",
+        "test_accessed": False,
+        "evidence": evidence,
+    }
+    document["decision_payload_sha256"] = _canonical_sha(document)
+    _write(output_path, document)
+
+    continuation_path = output_path.with_name("continuation_prompt.txt")
+    continuation_path.write_text(
+        "The one authorized Phase 2 multi-slot prompt-state counterfactual is "
+        "closed negative. Do not run nearby slot-count, pooling, loss-weight, "
+        "larger-data, byte, pointer, auxiliary, planner, template, retrieval, "
+        "or failed-checkpoint variants. Phase 3 remains locked because no "
+        "single Phase 2 checkpoint passes quality, autonomous semantics, speed, "
+        "and memory together. A new Phase 2 experiment requires a materially "
+        "distinct, falsifiable architecture hypothesis grounded in the preserved "
+        "failure evidence.\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    task_path = root / "results/moonshot/phase2_recertification/task_state.json"
+    task = _read(task_path)
+    task["active_candidate"] = None
+    task["completed_batches"].append(
+        f"10m multislot prompt-state closed {document['decision_payload_sha256'][:12]}"
+    )
+    task["continuation_command"] = (
+        "C:\\Python310\\python.exe -m layercake.representation_bakeoff "
+        "verify-multislot-decision --decision "
+        + output_path.relative_to(root).as_posix()
+    )
+    task["continuation_prompt"] = continuation_path.relative_to(root).as_posix()
+    task["current_stage"] = "PHASE2_HYPOTHESIS_REFUTED"
+    task["latest_batch"] = output_path.relative_to(root).as_posix()
+    task["latest_batch_sha256"] = sha256_file(output_path)
+    task["phase2_status"] = "OPEN_RESEARCH_DIRECTION_REQUIRED"
+    task["phase3_status"] = "LOCKED"
+    task["representation_branches"]["multislot_prompt_state"] = "CLOSED_NEGATIVE"
+    task["updated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    _write(task_path, task)
+    _append_ledger(root, {
+        "event": "multislot_prompt_state_continuation_closed",
+        "status": "NEGATIVE_EVIDENCE_PRESERVED",
+        "candidate": document["candidate"],
+        "checkpoint_hash": expected_checkpoint,
+        "decision": output_path.relative_to(root).as_posix(),
+        "decision_sha256": sha256_file(output_path),
+        "decision_payload_sha256": document["decision_payload_sha256"],
+        "failed_gates": failed_gates,
+        "quality": {
+            "validation_bpb": gates["validation_bpb"]["observed"],
+            "topic_token_recall": gates["topic_token_recall"]["observed"],
+            "core_adherence_pass_rate": gates[
+                "core_adherence_pass_rate"
+            ]["observed"],
+        },
+        "speed": {
+            "short_cpu_ratio": gates["short_cpu_ratio"]["observed"],
+            "long_cpu_ratio": gates["long_cpu_ratio"]["observed"],
+        },
+        "process_resident_memory_bytes": gates[
+            "process_resident_memory_bytes"
+        ]["observed"],
+        "continuation_to_100m_authorized": False,
+        "phase3_status": "LOCKED",
+        "test_accessed": False,
+    })
+    return document
+
+
+def verify_multislot_decision(
+    root: Path, decision_path: Path,
+) -> dict[str, Any]:
+    """Adversarially verify that a failed 10M candidate was not promoted."""
+
+    decision_path = _resolve(root, decision_path)
+    document = _read(decision_path)
+    failures = []
+    payload = dict(document)
+    claimed_payload_sha = payload.pop("decision_payload_sha256", None)
+    if _canonical_sha(payload) != claimed_payload_sha:
+        failures.append("decision payload hash mismatch")
+    if document.get("status") != "CLOSED_NEGATIVE":
+        failures.append("negative candidate is not closed")
+    if document.get("promotion") is not False:
+        failures.append("failed candidate was promoted")
+    if document.get("continuation_to_100m_authorized") is not False:
+        failures.append("failed 10M candidate was authorized for larger data")
+    if document.get("three_seed_promotion_authorized") is not False:
+        failures.append("failed 10M candidate was authorized for three seeds")
+    if document.get("phase3_status") != "LOCKED":
+        failures.append("Phase 3 was opened without a Phase 2 winner")
+    required_failures = {
+        "topic_token_recall",
+        "core_adherence_pass_rate",
+        "functional_surface_noninferiority",
+        "process_resident_memory_bytes",
+    }
+    if not required_failures.issubset(document.get("failed_gates", [])):
+        failures.append("predeclared refutation gates were not preserved")
+    for name in (
+        "short_cpu_ratio",
+        "long_cpu_ratio",
+        "persistent_incremental_state",
+        "physical_top1_sparse_execution",
+        "no_external_generation_path",
+        "validation_bpb",
+    ):
+        if document["gates"][name]["pass"] is not True:
+            failures.append(f"known passing gate is false: {name}")
+    for record in document.get("evidence", []):
+        path = root / record["path"]
+        if not path.is_file() or sha256_file(path) != record["sha256"]:
+            failures.append(f"evidence hash mismatch: {record['path']}")
+    for name in ("short_cpu_ratio", "long_cpu_ratio"):
+        if document["gates"][name]["observations"] < 20:
+            failures.append(f"{name} lacks 20 observations")
+    task = _read(
+        root / "results/moonshot/phase2_recertification/task_state.json"
+    )
+    if task["latest_batch"] != decision_path.relative_to(root).as_posix():
+        failures.append("task state does not point to the decision")
+    if task["latest_batch_sha256"] != sha256_file(decision_path):
+        failures.append("task state decision hash is stale")
+    if task["phase3_status"] != "LOCKED":
+        failures.append("task state opened Phase 3")
+    result = {
+        "format": "layercake-phase2-multislot-adversarial-verifier/1",
+        "status": "PASS" if not failures else "FAIL",
+        "decision_path": decision_path.relative_to(root).as_posix(),
+        "decision_sha256": sha256_file(decision_path),
+        "checks": {
+            "negative_evidence_immutable": not any(
+                "hash" in failure for failure in failures
+            ),
+            "no_failed_candidate_promotion": document.get("promotion") is False,
+            "no_larger_data_after_refutation": document.get(
+                "continuation_to_100m_authorized"
+            ) is False,
+            "twenty_repeat_speed_depth": all(
+                document["gates"][name]["observations"] >= 20
+                for name in ("short_cpu_ratio", "long_cpu_ratio")
+            ),
+            "phase3_locked": task["phase3_status"] == "LOCKED",
+        },
+        "failures": failures,
+    }
+    result["verifier_sha256"] = _canonical_sha(result)
+    verifier_path = decision_path.with_name("adversarial_verifier.json")
+    _write(verifier_path, result)
+    if failures:
+        raise RuntimeError("; ".join(failures))
+    return result
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="python -m layercake.representation_bakeoff"
@@ -1764,6 +2229,10 @@ def build_parser() -> argparse.ArgumentParser:
     command = sub.add_parser("enable-prompt-attention")
     command.add_argument("--source", type=Path, required=True)
     command.add_argument("--output", type=Path, required=True)
+    command = sub.add_parser("enable-multislot-prompt-state")
+    command.add_argument("--source", type=Path, required=True)
+    command.add_argument("--output", type=Path, required=True)
+    command.add_argument("--slots", type=int, default=4)
     command = sub.add_parser("screen")
     command.add_argument("--checkpoint", type=Path, required=True)
     command.add_argument("--output", type=Path, required=True)
@@ -1781,6 +2250,15 @@ def build_parser() -> argparse.ArgumentParser:
     command.add_argument("--no-repeat-ngram-size", type=int, default=0)
     command = sub.add_parser("certify-finetune-provenance")
     command.add_argument("--checkpoint", type=Path, required=True)
+    command = sub.add_parser("finalize-multislot-continuation")
+    command.add_argument("--checkpoint", type=Path, required=True)
+    command.add_argument("--screen", type=Path, required=True)
+    command.add_argument("--semantic-audit", type=Path, required=True)
+    command.add_argument("--short-benchmark", type=Path, required=True)
+    command.add_argument("--long-benchmark", type=Path, required=True)
+    command.add_argument("--output", type=Path, required=True)
+    command = sub.add_parser("verify-multislot-decision")
+    command.add_argument("--decision", type=Path, required=True)
     sub.add_parser("finalize")
     command = sub.add_parser("verify-decision")
     command.add_argument("--decision", type=Path, required=True)
@@ -1810,6 +2288,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.source,
             args.output,
         )
+    elif args.command == "enable-multislot-prompt-state":
+        result = enable_multislot_prompt_checkpoint(
+            root,
+            args.source,
+            args.output,
+            args.slots,
+        )
     elif args.command == "screen":
         result = screen_checkpoint(
             root,
@@ -1835,6 +2320,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         result = certify_finetune_provenance(
             root,
             args.checkpoint,
+        )
+    elif args.command == "finalize-multislot-continuation":
+        result = finalize_multislot_continuation(
+            root,
+            args.checkpoint,
+            args.screen,
+            args.semantic_audit,
+            args.short_benchmark,
+            args.long_benchmark,
+            args.output,
+        )
+    elif args.command == "verify-multislot-decision":
+        result = verify_multislot_decision(
+            root,
+            args.decision,
         )
     elif args.command == "finalize":
         result = finalize_bakeoff(root)

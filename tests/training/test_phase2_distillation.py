@@ -2,11 +2,15 @@ import hashlib
 import json
 from pathlib import Path
 
+import torch
+
 from layercake.models.baseline_transformer import BytePairTokenizer
 from layercake.phase1_campaign import _headline_prompts
 from layercake.training.phase2_distillation import (
     TOPICS,
     _instruction_batch,
+    _instruction_focus_mask,
+    _negative_prompt_rows,
     _prompt_rows,
 )
 
@@ -41,6 +45,34 @@ def test_instruction_batch_masks_prompt_and_padding_tokens() -> None:
     assert response_tokens == len("Answer") + len("Reply")
     assert (labels == -100).any()
     assert prompt_lengths.tolist() == [len("Question\n"), len("Longer question\n")]
+
+
+def test_focus_mask_finds_topic_only_in_response_targets() -> None:
+    tokenizer = BytePairTokenizer()
+    rows = [{
+        "prompt": "Teach me about river ecology.",
+        "response": "river ecology connects water and life.",
+        "topic": "river ecology",
+        "task": "teach",
+    }]
+    _, labels, _, _ = _instruction_batch(
+        tokenizer, rows, device="cpu", max_tokens=128
+    )
+    mask = _instruction_focus_mask(
+        tokenizer, rows, labels, device=torch.device("cpu")
+    )
+    assert int(mask.sum()) == len(tokenizer.encode("river ecology"))
+    assert bool((labels[mask] >= 0).all())
+
+
+def test_negative_prompt_pair_preserves_task_and_changes_topic() -> None:
+    rows = [
+        {"prompt": "A", "response": "one", "topic": "river", "task": "teach"},
+        {"prompt": "B", "response": "two", "topic": "forest", "task": "teach"},
+    ]
+    negative = _negative_prompt_rows(rows, rows)
+    assert [row["task"] for row in negative] == ["teach", "teach"]
+    assert [row["topic"] for row in negative] == ["forest", "river"]
 
 
 def test_curated_distillation_artifact_preserves_frozen_suite_separation() -> None:

@@ -17,6 +17,7 @@ import re
 import time
 from typing import Any, Sequence
 
+import psutil
 import torch
 import torch.nn.functional as F
 from safetensors.torch import save_file
@@ -446,6 +447,72 @@ def _instruction_batch(tokenizer, rows, *, device, max_tokens: int):
     )
 
 
+def _instruction_focus_mask(
+    tokenizer, rows, labels: torch.Tensor, *, device,
+) -> torch.Tensor:
+    """Locate topic/codeword target units without consulting evaluation prompts."""
+
+    mask = torch.zeros_like(labels, dtype=torch.bool, device=device)
+    for row_index, row in enumerate(rows):
+        if str(row.get("task")) == "long_context_recall":
+            match = re.search(r"[A-Z]+RECALL[0-9]+", str(row["prompt"]))
+            focus = match.group(0) if match is not None else ""
+        else:
+            focus = str(row.get("topic", ""))
+        needle = tokenizer.encode(focus)
+        if not needle:
+            continue
+        targets = labels[row_index].tolist()
+        for start in range(0, len(targets) - len(needle) + 1):
+            if targets[start:start + len(needle)] == needle:
+                mask[row_index, start:start + len(needle)] = True
+    return mask
+
+
+def _negative_prompt_rows(rows, train_rows):
+    """Pair each response with a same-task, different-topic prompt."""
+
+    by_task: dict[str, list[dict[str, Any]]] = {}
+    for candidate in train_rows:
+        by_task.setdefault(str(candidate.get("task")), []).append(candidate)
+    negative = []
+    for row in rows:
+        alternatives = [
+            candidate
+            for candidate in by_task[str(row.get("task"))]
+            if (
+                candidate.get("topic") != row.get("topic")
+                or candidate.get("prompt") != row.get("prompt")
+            )
+        ]
+        if not alternatives:
+            raise ValueError("contrastive prompt pairing requires another prompt")
+        negative.append(alternatives[0])
+    return negative
+
+
+def _instruction_batch_with_prompts(
+    tokenizer, response_rows, prompt_rows, *, device, max_tokens: int,
+):
+    combined = [
+        {**response_row, "prompt": prompt_row["prompt"]}
+        for response_row, prompt_row in zip(response_rows, prompt_rows)
+    ]
+    return _instruction_batch(
+        tokenizer, combined, device=device, max_tokens=max_tokens
+    )
+
+
+def _encoded_instruction_units(tokenizer, rows, max_tokens: int) -> tuple[int, int]:
+    model_units = 0
+    raw_bytes = 0
+    for row in rows:
+        text = str(row["prompt"]) + "\n" + str(row["response"])
+        raw_bytes += len(text.encode("utf-8"))
+        model_units += max(0, min(len(tokenizer.encode(text)), max_tokens) - 1)
+    return model_units, raw_bytes
+
+
 @torch.inference_mode()
 def _instruction_loss(model, tokenizer, rows, *, device) -> float:
     model.eval()
@@ -463,6 +530,8 @@ def _instruction_loss(model, tokenizer, rows, *, device) -> float:
 def finetune(
     root: Path, *, base_checkpoint: Path, corpus_path: Path,
     output: Path, steps: int = 1200, freeze_router: bool = False,
+    focus_weight: float = 0.0, contrastive_weight: float = 0.0,
+    contrastive_margin: float = 0.25,
 ) -> dict[str, Any]:
     base_checkpoint = (root / base_checkpoint).resolve()
     corpus_path = (root / corpus_path).resolve()
@@ -494,6 +563,15 @@ def finetune(
     started = time.perf_counter()
     model.train()
     response_tokens = 0
+    instruction_model_units = 0
+    instruction_raw_bytes = 0
+    wiki_model_units = 0
+    wiki_raw_bytes = 0
+    contrastive_model_units = 0
+    process = psutil.Process()
+    peak_process_resident = process.memory_info().rss
+    if device.type == "cuda":
+        torch.cuda.reset_peak_memory_stats(device)
     for step, wiki_rows in enumerate(wiki_batches, start=1):
         selected = [train_rows[generator.randrange(len(train_rows))] for _ in range(8)]
         instruction_tokens, labels, observed, prompt_lengths = _instruction_batch(
@@ -502,6 +580,13 @@ def finetune(
         wiki_tokens, _ = _token_batch(
             tokenizer, wiki_rows, device=device, max_tokens=model.config.max_tokens
         )
+        observed_units, observed_raw_bytes = _encoded_instruction_units(
+            tokenizer, selected, model.config.max_tokens
+        )
+        instruction_model_units += observed_units
+        instruction_raw_bytes += observed_raw_bytes
+        wiki_model_units += int(wiki_tokens[:, :-1].numel())
+        wiki_raw_bytes += sum(len(row) for row in wiki_rows)
         optimizer.zero_grad(set_to_none=True)
         with autocast():
             instruction_logits = model(
@@ -511,13 +596,79 @@ def finetune(
             instruction_loss = F.cross_entropy(
                 instruction_logits.flatten(0, 1), labels.flatten(), ignore_index=-100
             )
+            instruction_losses = F.cross_entropy(
+                instruction_logits.flatten(0, 1),
+                labels.flatten(),
+                ignore_index=-100,
+                reduction="none",
+            ).reshape_as(labels)
+            focus_mask = _instruction_focus_mask(
+                tokenizer, selected, labels, device=device
+            )
+            focus_loss = (
+                instruction_losses[focus_mask].mean()
+                if bool(focus_mask.any())
+                else instruction_loss.new_zeros(())
+            )
+            prompt_contrastive_loss = instruction_loss.new_zeros(())
+            if contrastive_weight > 0.0:
+                negative_prompts = _negative_prompt_rows(selected, train_rows)
+                wrong_tokens, wrong_labels, _, wrong_prompt_lengths = (
+                    _instruction_batch_with_prompts(
+                        tokenizer,
+                        selected,
+                        negative_prompts,
+                        device=device,
+                        max_tokens=model.config.max_tokens,
+                    )
+                )
+                wrong_logits = model(
+                    wrong_tokens[:, :-1],
+                    prompt_lengths=wrong_prompt_lengths,
+                )
+                wrong_losses = F.cross_entropy(
+                    wrong_logits.flatten(0, 1),
+                    wrong_labels.flatten(),
+                    ignore_index=-100,
+                    reduction="none",
+                ).reshape_as(wrong_labels)
+                wrong_focus = _instruction_focus_mask(
+                    tokenizer, selected, wrong_labels, device=device
+                )
+                valid = focus_mask.any(dim=1) & wrong_focus.any(dim=1)
+                if bool(valid.any()):
+                    correct_per_example = (
+                        (instruction_losses * focus_mask).sum(dim=1)
+                        / focus_mask.sum(dim=1).clamp_min(1)
+                    )
+                    wrong_per_example = (
+                        (wrong_losses * wrong_focus).sum(dim=1)
+                        / wrong_focus.sum(dim=1).clamp_min(1)
+                    )
+                    prompt_contrastive_loss = torch.relu(
+                        contrastive_margin
+                        + correct_per_example[valid]
+                        - wrong_per_example[valid]
+                    ).mean()
+                wrong_units, _ = _encoded_instruction_units(
+                    tokenizer,
+                    [
+                        {**row, "prompt": prompt["prompt"]}
+                        for row, prompt in zip(selected, negative_prompts)
+                    ],
+                    model.config.max_tokens,
+                )
+                contrastive_model_units += wrong_units
             wiki_logits = model(wiki_tokens[:, :-1])
             wiki_routing_loss = model.last_routing_aux["balance_loss"]
             wiki_loss = F.cross_entropy(
                 wiki_logits.flatten(0, 1), wiki_tokens[:, 1:].flatten()
             )
             loss = (
-                instruction_loss + 0.50 * wiki_loss
+                instruction_loss
+                + focus_weight * focus_loss
+                + contrastive_weight * prompt_contrastive_loss
+                + 0.50 * wiki_loss
                 + 0.02 * (instruction_routing_loss + wiki_routing_loss)
             )
         scaler.scale(loss).backward()
@@ -526,10 +677,17 @@ def finetune(
         scaler.step(optimizer)
         scaler.update()
         response_tokens += observed
+        peak_process_resident = max(
+            peak_process_resident, process.memory_info().rss
+        )
         if step == 1 or step % 300 == 0 or step == steps:
             curve = {
                 "step": step,
                 "instruction_loss": float(instruction_loss.detach()),
+                "instruction_focus_loss": float(focus_loss.detach()),
+                "prompt_focus_contrastive_loss": float(
+                    prompt_contrastive_loss.detach()
+                ),
                 "wiki_loss": float(wiki_loss.detach()),
                 "total_loss": float(loss.detach()),
                 "heldout_instruction_loss": _instruction_loss(
@@ -571,11 +729,35 @@ def finetune(
             "batch_size": 8,
             "learning_rate": 1.0e-4,
             "wiki_regularization_weight": 0.50,
+            "instruction_focus_weight": focus_weight,
+            "prompt_focus_contrastive_weight": contrastive_weight,
+            "prompt_focus_contrastive_margin": contrastive_margin,
             "router_frozen": freeze_router,
             "routing_balance_weight_per_objective": 0.02,
             "response_tokens_seen": response_tokens,
+            "instruction_nonpadding_model_visible_units": instruction_model_units,
+            "contrastive_nonpadding_model_visible_units": contrastive_model_units,
+            "wiki_nonpadding_model_visible_units": wiki_model_units,
+            "forward_backward_model_visible_units": (
+                instruction_model_units
+                + contrastive_model_units
+                + wiki_model_units
+            ),
+            "instruction_raw_utf8_bytes_exposed": instruction_raw_bytes,
+            "wiki_raw_utf8_bytes_exposed": wiki_raw_bytes,
+            "raw_utf8_bytes_exposed": (
+                instruction_raw_bytes + wiki_raw_bytes
+            ),
             "wall_seconds": time.perf_counter() - started,
             "curves": curves,
+        },
+        "memory": {
+            "peak_process_resident_bytes": peak_process_resident,
+            "cuda_peak_allocated_bytes": (
+                int(torch.cuda.max_memory_allocated(device))
+                if device.type == "cuda"
+                else None
+            ),
         },
         "quality": {
             "architecture_selection": selection,
@@ -619,6 +801,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     train.add_argument("--output", type=Path, required=True)
     train.add_argument("--steps", type=int, default=1200)
     train.add_argument("--freeze-router", action="store_true")
+    train.add_argument("--focus-weight", type=float, default=0.0)
+    train.add_argument("--contrastive-weight", type=float, default=0.0)
+    train.add_argument("--contrastive-margin", type=float, default=0.25)
     verify = sub.add_parser("verify-corpus")
     verify.add_argument("--corpus", type=Path, default=Path("data/moonshot/phase2/instruction_distillation.jsonl"))
     curate = sub.add_parser("build-curated-corpus")
@@ -637,6 +822,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         result = finetune(
             root, base_checkpoint=args.base_checkpoint, corpus_path=args.corpus,
             output=args.output, steps=args.steps, freeze_router=args.freeze_router,
+            focus_weight=args.focus_weight,
+            contrastive_weight=args.contrastive_weight,
+            contrastive_margin=args.contrastive_margin,
         )
     elif args.command == "verify-corpus":
         result = verify_corpus(root, corpus_path=args.corpus)

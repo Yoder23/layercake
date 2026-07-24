@@ -27,6 +27,7 @@ class SparseBPELayerCakeConfig:
     route_after_layers: int = 4
     prompt_conditioning: bool = False
     prompt_attention_pooling: bool = False
+    prompt_state_slots: int = 0
     constrained_english_planner: bool = False
     architecture_version: str = "layercake-sparse-bpe-core/1"
 
@@ -35,6 +36,16 @@ class SparseBPELayerCakeConfig:
             raise ValueError("sparse cake bank must be inserted inside the cached core")
         if self.width % self.heads:
             raise ValueError("width must be divisible by heads")
+        if self.prompt_state_slots < 0:
+            raise ValueError("prompt_state_slots cannot be negative")
+        if self.prompt_state_slots == 1:
+            raise ValueError("use zero slots or a genuinely multi-slot prompt state")
+        if self.prompt_state_slots and not self.prompt_conditioning:
+            raise ValueError("prompt-state slots require prompt conditioning")
+        if self.prompt_state_slots and self.prompt_attention_pooling:
+            raise ValueError(
+                "scalar attention pooling and multi-slot prompt state are exclusive"
+            )
 
     def canonical_dict(self) -> dict:
         return asdict(self)
@@ -66,6 +77,15 @@ class LayerCakeSparseBPECore(nn.Module):
                 nn.Tanh(),
             )
             self.prompt_copy_strength = nn.Parameter(torch.tensor(0.5))
+            if cfg.prompt_state_slots:
+                self.prompt_slot_queries = nn.Parameter(
+                    torch.empty(cfg.prompt_state_slots, cfg.width)
+                )
+                self.prompt_slot_fusion = nn.Linear(
+                    cfg.prompt_state_slots * cfg.width,
+                    cfg.width,
+                    bias=False,
+                )
         if cfg.constrained_english_planner:
             self.register_buffer(
                 "english_planner_spec",
@@ -73,6 +93,16 @@ class LayerCakeSparseBPECore(nn.Module):
                 persistent=True,
             )
         self.apply(self._initialize)
+        if cfg.prompt_state_slots:
+            nn.init.normal_(self.prompt_slot_queries, mean=0.0, std=0.02)
+            with torch.no_grad():
+                self.prompt_slot_fusion.weight.zero_()
+                identity = torch.eye(cfg.width)
+                for slot in range(cfg.prompt_state_slots):
+                    start = slot * cfg.width
+                    self.prompt_slot_fusion.weight[
+                        :, start:start + cfg.width
+                    ].copy_(identity / cfg.prompt_state_slots)
         self.last_routing_aux: dict | None = None
 
     @staticmethod
@@ -125,7 +155,34 @@ class LayerCakeSparseBPECore(nn.Module):
         positions = torch.arange(token_ids.shape[1], device=token_ids.device)[None]
         mask = positions < prompt_lengths[:, None]
         embedded = self.embedding(token_ids)
-        if self.config.prompt_attention_pooling:
+        if self.config.prompt_state_slots:
+            projected = self.prompt_projection(embedded)
+            scores = torch.einsum(
+                "btw,sw->bts", projected, self.prompt_slot_queries
+            ) / self.config.width ** 0.5
+            relative_positions = (
+                positions.to(projected.dtype) + 0.5
+            ) / prompt_lengths.clamp_min(1)[:, None].to(projected.dtype)
+            centers = (
+                torch.arange(
+                    self.config.prompt_state_slots,
+                    device=token_ids.device,
+                    dtype=projected.dtype,
+                ) + 0.5
+            ) / self.config.prompt_state_slots
+            scores = scores - 8.0 * (
+                relative_positions[:, :, None] - centers[None, None]
+            ).square()
+            scores = scores.masked_fill(~mask[:, :, None], -torch.inf)
+            weights = torch.softmax(scores, dim=1)
+            slots = torch.einsum("bts,btw->bsw", weights, projected)
+            context = self.prompt_slot_fusion(slots.flatten(1))
+            copy_weights = (
+                weights.amax(dim=-1)
+                * prompt_lengths[:, None].to(weights.dtype)
+                / self.config.prompt_state_slots
+            )
+        elif self.config.prompt_attention_pooling:
             projected = self.prompt_projection(embedded)
             scores = projected.square().mean(dim=-1)
             scores = scores.masked_fill(~mask, -torch.inf)
