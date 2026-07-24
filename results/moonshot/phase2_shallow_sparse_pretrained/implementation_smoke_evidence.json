@@ -1,0 +1,46 @@
+{
+  "architecture": "SHALLOW_SPARSE_PRETRAINED_ENGLISH_CORE",
+  "format": "layercake-phase2-shallow-sparse-implementation-smoke/1",
+  "physical_sparse_gradient_evidence": {
+    "changed_task_cake_routes": [
+      0,
+      1,
+      4,
+      7
+    ],
+    "explanation": "Only four routed cakes changed during the successful optimizer smoke; every unselected cake tensor remained byte-identical. The successful batch followed deterministic AMP-retry batches, so its route set is established by the changed tensor identities rather than the earlier batch-print diagnostic.",
+    "inactive_task_cake_gradients_or_updates": false,
+    "maximum_active_task_cakes_per_batch_row": 1
+  },
+  "smoke_artifacts": {
+    "student_base_checkpoint_sha256": "417f89eb687293fd1598157fc6bd741b46775103d3f6b7b307922881518e37b6",
+    "student_trained_checkpoint_sha256": "9936f97bd35b15292b41283fb9b6572477f3de811c40126807d77bc69a3cbb5a",
+    "teacher_checkpoint_sha256": "0b6fe8b40c2410f7a2a95aa9530b4e7fe98abe0ec782d716653dfd244a206a16"
+  },
+  "student": {
+    "active_parameters": 60756490,
+    "changed_neural_tensors": 54,
+    "changed_task_cake_or_classifier_tensors": 14,
+    "incremental_decode_steps_verified": 1,
+    "installed_task_cakes": 10,
+    "retained_source_blocks": [
+      0,
+      2,
+      5
+    ],
+    "total_parameters": 61655050
+  },
+  "tests": {
+    "command": "C:\\Python310\\python.exe -m pytest tests/test_shallow_sparse_english.py tests/test_representation_bakeoff.py -q",
+    "passed": 16,
+    "status": "PASS"
+  },
+  "training": {
+    "student_skipped_amp_optimizer_steps_before_success": 6,
+    "student_successful_optimizer_steps": 1,
+    "teacher_skipped_amp_optimizer_steps_before_success": 2,
+    "teacher_successful_optimizer_steps": 1
+  },
+  "status": "PASS",
+  "test_accessed": false
+}
