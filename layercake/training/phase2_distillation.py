@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 import random
 import re
+import sys
 import time
 from typing import Any, Sequence
 
@@ -728,6 +729,90 @@ def _instruction_batch(tokenizer, rows, *, device, max_tokens: int):
     )
 
 
+def _self_generated_prefix_recovery_batch(
+    model,
+    tokenizer,
+    rows,
+    *,
+    device,
+    max_tokens: int,
+    prefix_tokens: int,
+):
+    """Condition correction targets on a genuinely autoregressive model prefix."""
+
+    sequences = []
+    targets = []
+    prompt_lengths = []
+    generated_units = 0
+    for row in rows:
+        prompt = tokenizer.encode(str(row["prompt"]) + "\n")
+        response = tokenizer.encode(str(row["response"]))
+        prompt = prompt[:max(1, max_tokens - 2)]
+        available = max(0, max_tokens - len(prompt))
+        response = response[:available]
+        generated_count = min(
+            prefix_tokens,
+            max(0, len(response) - 1),
+            max(0, available - 1),
+        )
+        generated = []
+        if generated_count:
+            with torch.no_grad():
+                state = model.prefill(
+                    torch.tensor([prompt], dtype=torch.long, device=device)
+                )
+                for _ in range(generated_count):
+                    _, state = model.decode_step(state)
+                generated = state.generated_ids[0].tolist()
+        sequence = (
+            prompt
+            + generated
+            + response[generated_count:]
+        )[:max_tokens]
+        sequences.append(sequence)
+        targets.append(response[:max(0, len(sequence) - len(prompt))])
+        prompt_lengths.append(len(prompt))
+        generated_units += len(generated)
+    length = max(len(sequence) for sequence in sequences)
+    tokens = torch.full(
+        (len(sequences), length),
+        32,
+        dtype=torch.long,
+        device=device,
+    )
+    labels = torch.full(
+        (len(sequences), length - 1),
+        -100,
+        dtype=torch.long,
+        device=device,
+    )
+    response_tokens = 0
+    for index, (sequence, target, prompt_length) in enumerate(zip(
+        sequences,
+        targets,
+        prompt_lengths,
+    )):
+        tokens[index, :len(sequence)] = torch.tensor(
+            sequence,
+            dtype=torch.long,
+            device=device,
+        )
+        start = prompt_length - 1
+        labels[index, start:start + len(target)] = torch.tensor(
+            target,
+            dtype=torch.long,
+            device=device,
+        )
+        response_tokens += len(target)
+    return (
+        tokens,
+        labels,
+        response_tokens,
+        torch.tensor(prompt_lengths, dtype=torch.long, device=device),
+        generated_units,
+    )
+
+
 def _instruction_focus_mask(
     tokenizer, rows, labels: torch.Tensor, *, device,
 ) -> torch.Tensor:
@@ -836,6 +921,9 @@ def finetune(
     contrastive_margin: float = 0.25,
     pointer_alignment_weight: float = 0.0,
     prompt_memory_only: bool = False,
+    recovery_probability: float = 0.0,
+    recovery_prefix_tokens: int = 0,
+    recovery_warmup_steps: int = 300,
 ) -> dict[str, Any]:
     base_checkpoint = (root / base_checkpoint).resolve()
     corpus_path = (root / corpus_path).resolve()
@@ -854,6 +942,7 @@ def finetune(
             "prompt_copy_strength",
             "hierarchical_",
             "structured_",
+            "semantic_",
         )
         for name, parameter in model.named_parameters():
             parameter.requires_grad_(
@@ -881,7 +970,11 @@ def finetune(
     # The pointer mixture is evaluated in probability space. Keep the bounded
     # memory-only update in fp32 so GradScaler cannot silently skip finite-loss
     # steps because an unused fp16 tail underflowed.
-    use_amp = device.type == "cuda" and not prompt_memory_only
+    use_amp = (
+        device.type == "cuda"
+        and not prompt_memory_only
+        and not model.config.semantic_prompt_encoder
+    )
     scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
     autocast = (
         (lambda: torch.autocast(device_type="cuda", dtype=torch.float16))
@@ -897,15 +990,51 @@ def finetune(
     wiki_model_units = 0
     wiki_raw_bytes = 0
     contrastive_model_units = 0
+    recovery_batches = 0
+    recovery_generated_units = 0
+    successful_optimizer_steps = 0
+    skipped_amp_optimizer_steps = 0
     process = psutil.Process()
     peak_process_resident = process.memory_info().rss
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(device)
     for step, wiki_rows in enumerate(wiki_batches, start=1):
         selected = [train_rows[generator.randrange(len(train_rows))] for _ in range(8)]
-        instruction_tokens, labels, observed, prompt_lengths = _instruction_batch(
-            tokenizer, selected, device=device, max_tokens=model.config.max_tokens
+        use_recovery = (
+            recovery_probability > 0.0
+            and recovery_prefix_tokens > 0
+            and step > recovery_warmup_steps
+            and generator.random() < recovery_probability
         )
+        if use_recovery:
+            (
+                instruction_tokens,
+                labels,
+                observed,
+                prompt_lengths,
+                generated_units,
+            ) = _self_generated_prefix_recovery_batch(
+                model,
+                tokenizer,
+                selected,
+                device=device,
+                max_tokens=model.config.max_tokens,
+                prefix_tokens=recovery_prefix_tokens,
+            )
+            recovery_batches += 1
+            recovery_generated_units += generated_units
+        else:
+            (
+                instruction_tokens,
+                labels,
+                observed,
+                prompt_lengths,
+            ) = _instruction_batch(
+                tokenizer,
+                selected,
+                device=device,
+                max_tokens=model.config.max_tokens,
+            )
         wiki_tokens, _ = _token_batch(
             tokenizer, wiki_rows, device=device, max_tokens=model.config.max_tokens
         )
@@ -957,6 +1086,23 @@ def finetune(
                     pointer_weights * matches.to(pointer_weights.dtype)
                 ).sum(dim=-1)
                 pointer_focus = focus_mask & matches.any(dim=-1)
+                if bool(pointer_focus.any()):
+                    pointer_alignment_loss = -torch.log(
+                        pointer_probability[pointer_focus].clamp_min(1e-9)
+                    ).mean()
+            elif (
+                pointer_alignment_weight > 0.0
+                and model.last_semantic_pointer_distribution is not None
+            ):
+                semantic_pointer = (
+                    model.last_semantic_pointer_distribution.float()
+                )
+                target_ids = labels.clamp_min(0).unsqueeze(-1)
+                pointer_probability = semantic_pointer.gather(
+                    -1,
+                    target_ids,
+                ).squeeze(-1)
+                pointer_focus = focus_mask & (labels >= 0)
                 if bool(pointer_focus.any()):
                     pointer_alignment_loss = -torch.log(
                         pointer_probability[pointer_focus].clamp_min(1e-9)
@@ -1023,11 +1169,24 @@ def finetune(
                 + 0.50 * wiki_loss
                 + 0.02 * (instruction_routing_loss + wiki_routing_loss)
             )
+        scale_before = scaler.get_scale()
         scaler.scale(loss).backward()
         scaler.unscale_(optimizer)
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        gradient_norm = torch.nn.utils.clip_grad_norm_(
+            model.parameters(), 1.0
+        )
+        if not use_amp and not bool(torch.isfinite(gradient_norm)):
+            raise RuntimeError(
+                "non-finite full-precision gradient; refusing to emit a "
+                "checkpoint with a silently skipped or corrupted update"
+            )
         scaler.step(optimizer)
         scaler.update()
+        scale_after = scaler.get_scale()
+        if use_amp and scale_after < scale_before:
+            skipped_amp_optimizer_steps += 1
+        else:
+            successful_optimizer_steps += 1
         response_tokens += observed
         peak_process_resident = max(
             peak_process_resident, process.memory_info().rss
@@ -1093,6 +1252,12 @@ def finetune(
         "tokenizer": {"path": str(tokenizer_path), "sha256": sha256_file(tokenizer_path)},
         "parent_checkpoint": parent["checkpoint"],
         "instruction_distillation": {
+            "command_argv": [
+                sys.executable,
+                "-m",
+                "layercake.training.phase2_distillation",
+                *sys.argv[1:],
+            ],
             "corpus_path": str(corpus_path),
             "corpus_sha256": sha256_file(corpus_path),
             "steps": steps,
@@ -1105,7 +1270,18 @@ def finetune(
             "prompt_pointer_alignment_weight": pointer_alignment_weight,
             "router_frozen": freeze_router,
             "prompt_memory_only": prompt_memory_only,
+            "self_generated_prefix_recovery_probability": (
+                recovery_probability
+            ),
+            "self_generated_prefix_tokens": recovery_prefix_tokens,
+            "self_generated_prefix_recovery_warmup_steps": (
+                recovery_warmup_steps
+            ),
+            "self_generated_prefix_recovery_batches": recovery_batches,
+            "self_generated_prefix_units": recovery_generated_units,
             "automatic_mixed_precision": use_amp,
+            "successful_optimizer_steps": successful_optimizer_steps,
+            "skipped_amp_optimizer_steps": skipped_amp_optimizer_steps,
             "trainable_parameters": sum(
                 parameter.numel() for parameter in trainable_parameters
             ),
@@ -1182,6 +1358,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     train.add_argument("--contrastive-margin", type=float, default=0.25)
     train.add_argument("--pointer-alignment-weight", type=float, default=0.0)
     train.add_argument("--prompt-memory-only", action="store_true")
+    train.add_argument("--recovery-probability", type=float, default=0.0)
+    train.add_argument("--recovery-prefix-tokens", type=int, default=0)
+    train.add_argument("--recovery-warmup-steps", type=int, default=300)
     verify = sub.add_parser("verify-corpus")
     verify.add_argument("--corpus", type=Path, default=Path("data/moonshot/phase2/instruction_distillation.jsonl"))
     curate = sub.add_parser("build-curated-corpus")
@@ -1213,6 +1392,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             contrastive_margin=args.contrastive_margin,
             pointer_alignment_weight=args.pointer_alignment_weight,
             prompt_memory_only=args.prompt_memory_only,
+            recovery_probability=args.recovery_probability,
+            recovery_prefix_tokens=args.recovery_prefix_tokens,
+            recovery_warmup_steps=args.recovery_warmup_steps,
         )
     elif args.command == "verify-corpus":
         result = verify_corpus(root, corpus_path=args.corpus)

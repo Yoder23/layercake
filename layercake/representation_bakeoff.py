@@ -889,6 +889,177 @@ def enable_structured_prompt_memory_checkpoint(
     return result
 
 
+def enable_semantic_prompt_encoder_checkpoint(
+    root: Path,
+    source_path: Path,
+    output_path: Path,
+    key_width: int,
+    capacity: int,
+    slots: int,
+) -> dict[str, Any]:
+    """Replace shallow prompt pooling with contextual encode-once semantic slots."""
+
+    source_path = _resolve(root, source_path)
+    output_path = _resolve(root, output_path)
+    if output_path.exists():
+        raise RuntimeError(f"semantic-encoder artifact is immutable: {output_path}")
+    metadata = _read(source_path / "metadata.json")
+    architecture = dict(metadata["architecture"])
+    if any(bool(architecture.get(name)) for name in (
+        "recurrent_prompt_memory",
+        "hierarchical_prompt_memory",
+        "structured_prompt_memory",
+        "semantic_prompt_encoder",
+    )):
+        raise ValueError(
+            "semantic encoder must start from the fast fixed-state control"
+        )
+    if bool(architecture.get("constrained_english_planner")):
+        raise ValueError("planner-enabled source checkpoints are prohibited")
+    original_prompt_slots = int(architecture.get("prompt_state_slots", 0))
+    architecture.update({
+        "prompt_state_slots": 0,
+        "semantic_prompt_encoder": True,
+        "semantic_prompt_slots": int(slots),
+        "prompt_memory_key_width": int(key_width),
+        "prompt_memory_capacity": int(capacity),
+        "architecture_version": (
+            "layercake-sparse-bpe-core/11-encode-once-semantic-control"
+        ),
+    })
+    torch.manual_seed(20260731)
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(**architecture))
+    source_state = load_file(
+        str(source_path / "model.safetensors"), device="cpu"
+    )
+    converted_state = model.state_dict()
+    dropped_tensors = {
+        "prompt_slot_queries",
+        "prompt_slot_fusion.weight",
+    } if original_prompt_slots else set()
+    for name, value in source_state.items():
+        if name in dropped_tensors:
+            continue
+        if name not in converted_state:
+            raise ValueError(f"source tensor absent from semantic model: {name}")
+        if converted_state[name].shape != value.shape:
+            raise ValueError(f"source tensor shape changed: {name}")
+        converted_state[name].copy_(value)
+    added_tensors = sorted(set(converted_state).difference(source_state))
+    expected = {
+        "semantic_context_projection.weight",
+        "semantic_encoder_norm.bias",
+        "semantic_encoder_norm.weight",
+        "semantic_memory_gate.bias",
+        "semantic_memory_gate.weight",
+        "semantic_memory_norm.bias",
+        "semantic_memory_norm.weight",
+        "semantic_memory_query.weight",
+        "semantic_pointer_gate.bias",
+        "semantic_pointer_gate.weight",
+        "semantic_prompt_encoder.bias_hh_l0",
+        "semantic_prompt_encoder.bias_hh_l0_reverse",
+        "semantic_prompt_encoder.bias_ih_l0",
+        "semantic_prompt_encoder.bias_ih_l0_reverse",
+        "semantic_prompt_encoder.weight_hh_l0",
+        "semantic_prompt_encoder.weight_hh_l0_reverse",
+        "semantic_prompt_encoder.weight_ih_l0",
+        "semantic_prompt_encoder.weight_ih_l0_reverse",
+        "semantic_slot_key.weight",
+        "semantic_slot_queries",
+    }
+    if set(added_tensors) != expected:
+        raise RuntimeError(f"unexpected semantic-encoder tensors: {added_tensors}")
+    model.load_state_dict(converted_state, strict=True)
+    output_path.mkdir(parents=True, exist_ok=False)
+    checkpoint_output = output_path / "model.safetensors"
+    tokenizer_output = output_path / "tokenizer.json"
+    save_file(
+        {
+            name: value.detach().cpu().contiguous()
+            for name, value in model.state_dict().items()
+        },
+        str(checkpoint_output),
+    )
+    shutil.copyfile(source_path / "tokenizer.json", tokenizer_output)
+    converted = dict(metadata)
+    converted.update({
+        "format": "layercake-encode-once-semantic-control/1",
+        "architecture": architecture,
+        "parameters": {
+            "total": model.parameter_count(),
+            "active": model.active_parameter_count(),
+            "active_fraction": (
+                model.active_parameter_count() / model.parameter_count()
+            ),
+        },
+        "checkpoint": {
+            "path": checkpoint_output.relative_to(root).as_posix(),
+            "sha256": sha256_file(checkpoint_output),
+        },
+        "tokenizer": {
+            "path": tokenizer_output.relative_to(root).as_posix(),
+            "sha256": sha256_file(tokenizer_output),
+        },
+        "semantic_prompt_encoder_conversion": {
+            "source_checkpoint_path": (
+                source_path / "model.safetensors"
+            ).relative_to(root).as_posix(),
+            "source_checkpoint_sha256": sha256_file(
+                source_path / "model.safetensors"
+            ),
+            "source_neural_tensors_changed": False,
+            "dropped_legacy_prompt_tensors": sorted(dropped_tensors),
+            "new_neural_tensors_added": added_tensors,
+            "new_tensor_initialization_seed": 20260731,
+            "training_performed": False,
+            "prompt_encoding_runs_once": True,
+            "decode_state_bound": {
+                "semantic_slots": slots,
+                "slot_width": architecture["width"],
+                "slot_copy_vocabulary": architecture["vocab_size"],
+                "associative_key_width": key_width,
+                "source_prompt_tokens_max": capacity,
+                "independent_of_generated_length": True,
+            },
+            "generation_authority": (
+                "neural decoder logits mixed with a learned contextual "
+                "semantic-slot pointer distribution"
+            ),
+        },
+    })
+    _write(output_path / "metadata.json", converted)
+    loaded, _, _ = _load_candidate(output_path)
+    prompt = torch.tensor([[65, 66, 67, 68]], dtype=torch.long)
+    state = loaded.prefill(prompt)
+    memory = state.semantic_prompt_memory
+    shapes_before = [list(value.shape) for value in memory]
+    _, state = loaded.decode_step(state)
+    shapes_after = [
+        list(value.shape) for value in state.semantic_prompt_memory
+    ]
+    if shapes_before != shapes_after:
+        raise RuntimeError("semantic prompt memory grew during decode")
+    result = {
+        "status": "PASS",
+        "output": output_path.relative_to(root).as_posix(),
+        "checkpoint_sha256": sha256_file(checkpoint_output),
+        "tokenizer_sha256": sha256_file(tokenizer_output),
+        "new_neural_tensors_added": added_tensors,
+        "dropped_legacy_prompt_tensors": sorted(dropped_tensors),
+        "prompt_memory_capacity": capacity,
+        "semantic_prompt_slots": slots,
+        "state_shapes_before_and_after_decode": shapes_before,
+        "prompt_encoding_runs_once": True,
+        "bounded_recurrent_memory": True,
+    }
+    _append_ledger(root, {
+        "event": "encode_once_semantic_prompt_encoder_enabled",
+        **result,
+    })
+    return result
+
+
 def convert_word_byte_hybrid_checkpoint(
     root: Path,
     source_path: Path,
@@ -2830,6 +3001,12 @@ def build_parser() -> argparse.ArgumentParser:
     command.add_argument("--key-width", type=int, default=32)
     command.add_argument("--capacity", type=int, default=128)
     command.add_argument("--roles", type=int, default=6)
+    command = sub.add_parser("enable-semantic-prompt-encoder")
+    command.add_argument("--source", type=Path, required=True)
+    command.add_argument("--output", type=Path, required=True)
+    command.add_argument("--key-width", type=int, default=32)
+    command.add_argument("--capacity", type=int, default=128)
+    command.add_argument("--slots", type=int, default=12)
     command = sub.add_parser("convert-word-byte-hybrid")
     command.add_argument("--source", type=Path, required=True)
     command.add_argument("--tokenizer", type=Path, required=True)
@@ -2920,6 +3097,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.key_width,
             args.capacity,
             args.roles,
+        )
+    elif args.command == "enable-semantic-prompt-encoder":
+        result = enable_semantic_prompt_encoder_checkpoint(
+            root,
+            args.source,
+            args.output,
+            args.key_width,
+            args.capacity,
+            args.slots,
         )
     elif args.command == "convert-word-byte-hybrid":
         result = convert_word_byte_hybrid_checkpoint(

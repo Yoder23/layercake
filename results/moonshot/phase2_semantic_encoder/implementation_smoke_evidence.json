@@ -1,0 +1,60 @@
+{
+  "architecture": "ENCODE_ONCE_BIDIRECTIONAL_SEMANTIC_CONTROL",
+  "base_checkpoint": {
+    "metadata_sha256": "7b864af4207b1479356ed580ed3130ef782350ecb72f8944f38adfd1b6afcde8",
+    "model_sha256": "2ae44f1c47157f3ff4b0e2c14581a74edcfe76c5b884df6b57de183c1448d571",
+    "path": "artifacts/moonshot/phase2_semantic_encoder/base-seed-9824"
+  },
+  "curriculum": {
+    "corpus_sha256": "bae6c1fe300a0214c1f6cb19a8c8eeee4f0b75681290be56f258a247cd488e53",
+    "distinct_prompts": 2520,
+    "distinct_responses": 2400,
+    "failed_manifest": {
+      "manifest_sha256": "b09e0528cf7b2df3f13ef5ce87884879506a28e4d34033547a1845d7cdb58c20",
+      "reason": "The first manifest inverted a boolean check for frozen-answer use. The corpus itself is byte-identical to v2 and was not used for the promoted run."
+    },
+    "frozen_evaluation_answers_used": false,
+    "frozen_evaluation_prompts_used": false,
+    "frozen_evaluation_topics_used": false,
+    "passing_manifest_sha256": "fcc7d80cbac9755c18917dc00e720e055ed2699c290ff407da5b04d767dfc5e2",
+    "path": "data/moonshot/phase2/instruction_curriculum_semantic_control_v2.jsonl"
+  },
+  "engineering_smokes": [
+    {
+      "id": "smoke2",
+      "outcome": "FAIL",
+      "reason": "Self-generated recovery used inference-mode tensors in a differentiable training input."
+    },
+    {
+      "id": "smoke2b",
+      "outcome": "FAIL",
+      "reason": "Autocast exposed a float16/float32 scatter-add source/destination mismatch in the semantic copy distribution."
+    },
+    {
+      "checkpoint_sha256": "2ae44f1c47157f3ff4b0e2c14581a74edcfe76c5b884df6b57de183c1448d571",
+      "id": "smoke2c",
+      "metadata_sha256": "b1e6664a89a7d54ea2f7a22edb2ca17382d0076faf9d00646a98601dad1d84dd",
+      "outcome": "FAIL",
+      "reason": "Both mixed-precision optimizer steps were silently skipped; the emitted checkpoint was byte-identical to the base."
+    },
+    {
+      "architecture_selection_bpb": 1.742882628412512,
+      "automatic_mixed_precision": false,
+      "checkpoint_sha256": "4e48672717923132ebffb23373c66bf274ef554b0d6730196722e078e0288671",
+      "changed_tensors": 91,
+      "heldout_instruction_loss_after_step_1": 5.64332613855038,
+      "heldout_instruction_loss_after_step_2": 5.497587051031725,
+      "id": "smoke2d",
+      "metadata_sha256": "5c79ac4a87e09e0f9240b1a1651c38f3b4cd5702a6af16470ea0961d9d529441",
+      "outcome": "PASS",
+      "semantic_tensors_changed": 20,
+      "skipped_optimizer_steps": 0,
+      "successful_optimizer_steps": 2,
+      "validation_bpb": 1.7203657901323606
+    }
+  ],
+  "format": "layercake-phase2-semantic-implementation-smoke/1",
+  "negative_evidence_preserved": true,
+  "preregistration_sha256": "e630e46b800c9ee89f09acfd7ea605d3cfc1bfc3a4b1b71b9d24f7c498bffeea",
+  "status": "PASS"
+}

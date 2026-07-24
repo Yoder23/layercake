@@ -265,3 +265,51 @@ def test_structured_prompt_memory_is_encode_once_bounded_and_addressable():
         1.0, abs=1e-6
     )
     assert torch.isfinite(state.next_logits).all()
+
+
+def test_semantic_prompt_encoder_is_contextual_bounded_and_encode_once():
+    torch.manual_seed(17)
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(
+        vocab_size=320,
+        width=32,
+        layers=2,
+        heads=4,
+        max_tokens=96,
+        expansion=1,
+        routed_experts=3,
+        expert_expansion=1,
+        route_after_layers=1,
+        prompt_conditioning=True,
+        semantic_prompt_encoder=True,
+        semantic_prompt_slots=6,
+        prompt_memory_key_width=8,
+        prompt_memory_capacity=16,
+    )).eval()
+    prompt = torch.tensor([[65, 66, 67, 68, 69]], dtype=torch.long)
+    state = model.prefill(prompt)
+    memory = state.semantic_prompt_memory
+    assert [tuple(value.shape) for value in memory] == [
+        (1, 6, 32),
+        (1, 6, 320),
+    ]
+    assert torch.allclose(memory[1].sum(dim=-1), torch.ones(1, 6))
+    frozen = [value.clone() for value in memory]
+    _, state = model.decode_step(
+        state, next_token=torch.tensor([70], dtype=torch.long)
+    )
+    assert all(
+        torch.equal(before, after)
+        for before, after in zip(frozen, state.semantic_prompt_memory)
+    )
+    assert model.last_semantic_slot_weights.shape == (1, 1, 6)
+    assert model.last_semantic_slot_weights.sum().item() == pytest.approx(
+        1.0, abs=1e-6
+    )
+    assert model.last_semantic_pointer_distribution.sum().item() == (
+        pytest.approx(1.0, abs=1e-6)
+    )
+    alternate = model.prefill(
+        torch.tensor([[65, 66, 90, 91, 92]], dtype=torch.long)
+    )
+    assert not torch.equal(state.prompt_context, alternate.prompt_context)
+    assert torch.isfinite(state.next_logits).all()

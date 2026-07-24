@@ -6,12 +6,17 @@ import torch
 
 from layercake.models.baseline_transformer import BytePairTokenizer
 from layercake.phase1_campaign import _headline_prompts
+from layercake.models.sparse_bpe_layercake import (
+    LayerCakeSparseBPECore,
+    SparseBPELayerCakeConfig,
+)
 from layercake.training.phase2_distillation import (
     TOPICS,
     _instruction_batch,
     _instruction_focus_mask,
     _negative_prompt_rows,
     _prompt_rows,
+    _self_generated_prefix_recovery_batch,
 )
 
 
@@ -73,6 +78,49 @@ def test_negative_prompt_pair_preserves_task_and_changes_topic() -> None:
     negative = _negative_prompt_rows(rows, rows)
     assert [row["task"] for row in negative] == ["teach", "teach"]
     assert [row["topic"] for row in negative] == ["forest", "river"]
+
+
+def test_recovery_batch_uses_generated_prefix_but_retains_gold_targets() -> None:
+    torch.manual_seed(23)
+    tokenizer = BytePairTokenizer()
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(
+        vocab_size=256,
+        width=32,
+        layers=2,
+        heads=4,
+        max_tokens=64,
+        expansion=1,
+        routed_experts=3,
+        expert_expansion=1,
+        route_after_layers=1,
+        prompt_conditioning=True,
+        semantic_prompt_encoder=True,
+        semantic_prompt_slots=4,
+        prompt_memory_key_width=8,
+        prompt_memory_capacity=16,
+    )).eval()
+    rows = [{
+        "prompt": "Topic",
+        "response": "Answer",
+        "topic": "Answer",
+        "task": "continuation",
+    }]
+    tokens, labels, observed, prompt_lengths, generated = (
+        _self_generated_prefix_recovery_batch(
+            model,
+            tokenizer,
+            rows,
+            device=torch.device("cpu"),
+            max_tokens=64,
+            prefix_tokens=3,
+        )
+    )
+    start = prompt_lengths[0].item() - 1
+    gold = torch.tensor(tokenizer.encode("Answer"))
+    assert generated == 3
+    assert observed == len(gold)
+    assert torch.equal(labels[0, start:start + len(gold)], gold)
+    assert tokens.shape[1] == labels.shape[1] + 1
 
 
 def test_curated_distillation_artifact_preserves_frozen_suite_separation() -> None:

@@ -33,6 +33,8 @@ class SparseBPELayerCakeConfig:
     hierarchical_prompt_memory: bool = False
     structured_prompt_memory: bool = False
     structured_prompt_roles: int = 6
+    semantic_prompt_encoder: bool = False
+    semantic_prompt_slots: int = 12
     prompt_memory_capacity: int = 128
     prompt_memory_chunk_size: int = 8
     constrained_english_planner: bool = False
@@ -65,6 +67,24 @@ class SparseBPELayerCakeConfig:
             raise ValueError("structured prompt memory requires prompt conditioning")
         if self.structured_prompt_memory and self.hierarchical_prompt_memory:
             raise ValueError("structured and legacy hierarchical memory are exclusive")
+        if self.semantic_prompt_encoder and not self.prompt_conditioning:
+            raise ValueError("semantic prompt encoder requires prompt conditioning")
+        if self.semantic_prompt_encoder and any((
+            self.recurrent_prompt_memory,
+            self.hierarchical_prompt_memory,
+            self.structured_prompt_memory,
+        )):
+            raise ValueError(
+                "semantic prompt encoder is exclusive with legacy prompt memories"
+            )
+        if self.semantic_prompt_encoder and self.prompt_state_slots:
+            raise ValueError(
+                "semantic prompt encoder replaces uncontextualized prompt slots"
+            )
+        if self.semantic_prompt_encoder and self.width % 2:
+            raise ValueError("bidirectional semantic encoder requires even width")
+        if self.semantic_prompt_slots < 2:
+            raise ValueError("semantic prompt encoder requires multiple slots")
         if self.structured_prompt_roles < 2:
             raise ValueError("structured prompt memory requires multiple roles")
         if self.prompt_memory_capacity <= 0:
@@ -170,6 +190,29 @@ class LayerCakeSparseBPECore(nn.Module):
                 self.structured_successor_strength = nn.Parameter(
                     torch.tensor(1.0)
                 )
+            if cfg.semantic_prompt_encoder:
+                self.semantic_prompt_encoder = nn.GRU(
+                    cfg.width,
+                    cfg.width // 2,
+                    batch_first=True,
+                    bidirectional=True,
+                )
+                self.semantic_encoder_norm = nn.LayerNorm(cfg.width)
+                self.semantic_slot_queries = nn.Parameter(
+                    torch.empty(cfg.semantic_prompt_slots, cfg.width)
+                )
+                self.semantic_context_projection = nn.Linear(
+                    cfg.width, cfg.width, bias=False
+                )
+                self.semantic_memory_norm = nn.LayerNorm(cfg.width)
+                self.semantic_memory_query = nn.Linear(
+                    cfg.width, cfg.prompt_memory_key_width, bias=False
+                )
+                self.semantic_slot_key = nn.Linear(
+                    cfg.width, cfg.prompt_memory_key_width, bias=False
+                )
+                self.semantic_memory_gate = nn.Linear(cfg.width, 1)
+                self.semantic_pointer_gate = nn.Linear(cfg.width, 1)
         if cfg.constrained_english_planner:
             self.register_buffer(
                 "english_planner_spec",
@@ -198,10 +241,17 @@ class LayerCakeSparseBPECore(nn.Module):
             nn.init.normal_(self.structured_role_queries, mean=0.0, std=0.02)
             with torch.no_grad():
                 self.structured_memory_gate.bias.fill_(-2.0)
+        if cfg.semantic_prompt_encoder:
+            nn.init.normal_(self.semantic_slot_queries, mean=0.0, std=0.02)
+            with torch.no_grad():
+                self.semantic_memory_gate.bias.fill_(-1.5)
+                self.semantic_pointer_gate.bias.fill_(-1.5)
         self.last_routing_aux: dict | None = None
         self.last_prompt_memory_aux: dict | None = None
         self.last_structured_pointer_weights: torch.Tensor | None = None
         self.last_structured_pointer_ids: torch.Tensor | None = None
+        self.last_semantic_slot_weights: torch.Tensor | None = None
+        self.last_semantic_pointer_distribution: torch.Tensor | None = None
 
     @staticmethod
     def _initialize(module: nn.Module) -> None:
@@ -513,6 +563,112 @@ class LayerCakeSparseBPECore(nn.Module):
         }
         return hidden, token_weights
 
+    def _semantic_prompt_features(
+        self,
+        token_ids: torch.Tensor,
+        prompt_lengths: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Contextualize a bounded prompt once and compress it into semantic slots."""
+
+        batch = token_ids.shape[0]
+        capacity = self.config.prompt_memory_capacity
+        positions = torch.arange(capacity, device=token_ids.device)[None]
+        retained = prompt_lengths.clamp(min=1, max=capacity)
+        indexes = torch.div(
+            positions * prompt_lengths[:, None],
+            capacity,
+            rounding_mode="floor",
+        )
+        indexes = torch.where(
+            prompt_lengths[:, None] <= capacity,
+            positions,
+            indexes,
+        )
+        indexes = indexes.clamp_max(token_ids.shape[1] - 1)
+        memory_ids = token_ids.gather(1, indexes.expand(batch, -1))
+        token_mask = positions < retained[:, None]
+        embedded = self.prompt_projection(self.embedding(memory_ids))
+        packed = nn.utils.rnn.pack_padded_sequence(
+            embedded,
+            retained.detach().cpu(),
+            batch_first=True,
+            enforce_sorted=False,
+        )
+        contextual_packed, _ = self.semantic_prompt_encoder(packed)
+        contextual, _ = nn.utils.rnn.pad_packed_sequence(
+            contextual_packed,
+            batch_first=True,
+            total_length=capacity,
+        )
+        contextual = self.semantic_encoder_norm(contextual)
+        contextual = contextual * token_mask[:, :, None]
+        slot_scores = torch.einsum(
+            "bpw,sw->bsp",
+            contextual,
+            self.semantic_slot_queries,
+        ) / self.config.width ** 0.5
+        slot_scores = slot_scores.masked_fill(
+            ~token_mask[:, None],
+            -torch.inf,
+        )
+        slot_token_weights = torch.softmax(slot_scores, dim=-1)
+        slots = torch.einsum(
+            "bsp,bpw->bsw",
+            slot_token_weights,
+            contextual,
+        )
+        slot_copy_distribution = torch.zeros(
+            batch,
+            self.config.semantic_prompt_slots,
+            self.config.vocab_size,
+            dtype=slots.dtype,
+            device=slots.device,
+        )
+        slot_copy_distribution.scatter_add_(
+            2,
+            memory_ids[:, None].expand(
+                -1,
+                self.config.semantic_prompt_slots,
+                -1,
+            ),
+            slot_token_weights.to(slot_copy_distribution.dtype),
+        )
+        context = self.semantic_context_projection(slots.mean(dim=1))
+        return context, slots, slot_copy_distribution
+
+    def _apply_semantic_prompt_memory(
+        self,
+        hidden: torch.Tensor,
+        slots: torch.Tensor,
+        slot_copy_distribution: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Read contextual semantic records with fixed decode-time work."""
+
+        normalized = self.semantic_memory_norm(hidden)
+        query = self.semantic_memory_query(normalized)
+        keys = self.semantic_slot_key(slots)
+        scores = torch.matmul(query, keys.transpose(-1, -2))
+        scores = scores / self.config.prompt_memory_key_width ** 0.5
+        weights = torch.softmax(scores, dim=-1)
+        recalled = torch.matmul(weights, slots)
+        gate = torch.sigmoid(self.semantic_memory_gate(normalized))
+        hidden = hidden + gate * recalled
+        pointer_distribution = torch.matmul(
+            weights,
+            slot_copy_distribution,
+        )
+        self.last_semantic_slot_weights = weights
+        self.last_semantic_pointer_distribution = pointer_distribution
+        self.last_prompt_memory_aux = {
+            "mean_gate": gate.detach().mean(),
+            "maximum_gate": gate.detach().amax(),
+            "slot_activation": weights.detach().mean(dim=(0, 1)),
+            "pointer_mass": (
+                pointer_distribution.detach().sum(dim=-1).mean()
+            ),
+        }
+        return hidden, pointer_distribution
+
     def _output_logits(
         self,
         hidden: torch.Tensor,
@@ -534,9 +690,12 @@ class LayerCakeSparseBPECore(nn.Module):
             pointer_distribution = pointer_distribution / (
                 pointer_distribution.sum(dim=-1, keepdim=True).clamp_min(1e-9)
             )
-            pointer_gate = torch.sigmoid(
-                self.prompt_pointer_gate(normalized).float()
+            pointer_layer = (
+                self.semantic_pointer_gate
+                if self.config.semantic_prompt_encoder
+                else self.prompt_pointer_gate
             )
+            pointer_gate = torch.sigmoid(pointer_layer(normalized).float())
             probabilities = (
                 (1.0 - pointer_gate) * torch.softmax(logits.float(), dim=-1)
                 + pointer_gate * pointer_distribution
@@ -589,13 +748,23 @@ class LayerCakeSparseBPECore(nn.Module):
         hierarchical_weights = None
         structured = None
         structured_weights = None
+        semantic = None
         if self.config.prompt_conditioning and prompt_lengths is not None:
-            (
-                context,
-                copy_bias,
-                memory_slots,
-                slot_copy_distribution,
-            ) = self._prompt_features(token_ids, prompt_lengths)
+            if self.config.semantic_prompt_encoder:
+                context, semantic_slots, semantic_copy = (
+                    self._semantic_prompt_features(
+                        token_ids,
+                        prompt_lengths,
+                    )
+                )
+                semantic = (semantic_slots, semantic_copy)
+            else:
+                (
+                    context,
+                    copy_bias,
+                    memory_slots,
+                    slot_copy_distribution,
+                ) = self._prompt_features(token_ids, prompt_lengths)
             hidden = hidden + context[:, None]
             if self.config.hierarchical_prompt_memory:
                 hierarchical = self._hierarchical_prompt_features(
@@ -653,6 +822,17 @@ class LayerCakeSparseBPECore(nn.Module):
                             structured[3],
                         )
                     )
+                if (
+                    self.config.semantic_prompt_encoder
+                    and semantic is not None
+                ):
+                    hidden, pointer_distribution = (
+                        self._apply_semantic_prompt_memory(
+                            hidden,
+                            semantic[0],
+                            semantic[1],
+                        )
+                    )
         return self._output_logits(
             hidden,
             copy_bias,
@@ -682,17 +862,24 @@ class LayerCakeSparseBPECore(nn.Module):
         hierarchical_weights = None
         structured = None
         structured_weights = None
+        semantic = None
         if self.config.prompt_conditioning:
             lengths = torch.full(
                 (token_ids.shape[0],), token_ids.shape[1], dtype=torch.long,
                 device=token_ids.device,
             )
-            (
-                prompt_context,
-                prompt_copy_bias,
-                prompt_memory_slots,
-                prompt_memory_copy_distribution,
-            ) = self._prompt_features(token_ids, lengths)
+            if self.config.semantic_prompt_encoder:
+                prompt_context, semantic_slots, semantic_copy = (
+                    self._semantic_prompt_features(token_ids, lengths)
+                )
+                semantic = (semantic_slots, semantic_copy)
+            else:
+                (
+                    prompt_context,
+                    prompt_copy_bias,
+                    prompt_memory_slots,
+                    prompt_memory_copy_distribution,
+                ) = self._prompt_features(token_ids, lengths)
             hidden = hidden + prompt_context[:, None]
             if self.config.hierarchical_prompt_memory:
                 hierarchical = self._hierarchical_prompt_features(
@@ -747,6 +934,17 @@ class LayerCakeSparseBPECore(nn.Module):
                             structured[3],
                         )
                     )
+                if (
+                    self.config.semantic_prompt_encoder
+                    and semantic is not None
+                ):
+                    hidden, pointer_distribution = (
+                        self._apply_semantic_prompt_memory(
+                            hidden,
+                            semantic[0],
+                            semantic[1],
+                        )
+                    )
         logits = self._output_logits(
             hidden[:, -1],
             prompt_copy_bias,
@@ -782,6 +980,7 @@ class LayerCakeSparseBPECore(nn.Module):
         )
         state.hierarchical_prompt_memory = hierarchical
         state.structured_prompt_memory = structured
+        state.semantic_prompt_memory = semantic
         return state
 
     @torch.inference_mode()
@@ -853,6 +1052,18 @@ class LayerCakeSparseBPECore(nn.Module):
                             structured[1],
                             structured[2],
                             structured[3],
+                        )
+                    )
+                semantic = getattr(state, "semantic_prompt_memory", None)
+                if (
+                    self.config.semantic_prompt_encoder
+                    and semantic is not None
+                ):
+                    hidden, pointer_distribution = (
+                        self._apply_semantic_prompt_memory(
+                            hidden,
+                            semantic[0],
+                            semantic[1],
                         )
                     )
         state.keys_values = new_cache
