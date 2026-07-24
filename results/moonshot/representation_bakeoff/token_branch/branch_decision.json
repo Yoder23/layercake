@@ -1,0 +1,111 @@
+{
+  "additional_nearby_variants_authorized": false,
+  "branch": "B_SHARED_TOKENIZER",
+  "candidate": {
+    "active_fraction": 0.7567123186879999,
+    "active_parameters": 5430241,
+    "architecture_sha256": "e716314cb0e036144fbae380a89d87194df905dbb057144b54f54ca5037cf7da",
+    "branch": "B_SHARED_TOKENIZER",
+    "candidate": "shared_tokenizer_prompt_attention_curated/seed-9824",
+    "checkpoint_sha256": "69ff748cf521b456be257d2d50e69445098d00a82fe239e49dd454f498c32706",
+    "core_adherence_pass_rate": 0.0,
+    "data_hashes": {
+      "architecture_selection": {
+        "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\architecture_selection.bin",
+        "sha256": "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93"
+      },
+      "test": {
+        "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\test.bin",
+        "sha256": "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388"
+      },
+      "train": {
+        "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\train_medium.bin",
+        "sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6"
+      },
+      "validation": {
+        "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\validation.bin",
+        "sha256": "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10"
+      }
+    },
+    "functional_semantic_pass": false,
+    "functional_surface_pass": false,
+    "language_model_quality_pass": true,
+    "median_cpu_bytes_per_second_1024": 1018.0540755301179,
+    "median_cpu_bytes_per_second_128": 1217.596830640567,
+    "median_process_resident_bytes": 393781248.0,
+    "median_time_to_first_output_seconds": 0.008718050000000001,
+    "persistent_incremental_state": true,
+    "physical_top1_sparse_execution": true,
+    "planner_enabled": false,
+    "quality_ceiling_bpb": 1.7173530535092476,
+    "raw_bytes_seen_before_instruction_finetune": 120020992,
+    "rejection_reasons": [
+      "functional semantic noninferiority failed",
+      "functional surface noninferiority failed",
+      "process-resident memory exceeds the deployment transformer",
+      "shared-tokenizer training provenance is incomplete for production",
+      "canonical portable-cake ABI is not implemented by this candidate"
+    ],
+    "repetition_rate_4gram": 0.3148447324749138,
+    "representation_sha256": "814d0dc4af476b802f090460267a1a2baac57e871c9d742e54968e866ec64ad7",
+    "selection_bpb": 1.654519631618063,
+    "tokenizer_sha256": "d1c03801fd9559b8586490733a3788439ff230bf5f09666a0abb7ddb615e9f10",
+    "topic_token_recall": 0.225,
+    "total_parameters": 7176097,
+    "training_wall_seconds": 105.61516259994823,
+    "transformer_relative_throughput_1024": 2.01093229125463,
+    "transformer_relative_throughput_128": 2.40508323017069,
+    "valid_utf8_rate": 1.0,
+    "validation_bpb": 1.6619006979877433,
+    "word_diversity": 0.6402862311722993
+  },
+  "commands": [
+    "C:\\Python310\\python.exe -m layercake.representation_bakeoff screen --checkpoint artifacts/moonshot/representation_bakeoff/shared_tokenizer_prompt_attention_curated/seed-9824 --output results/moonshot/representation_bakeoff/token_branch/functional_screen_prompt_attention_curated_seed9824_decodecontrol640.json --output-bytes 640 --threads 1 --repetition-penalty 1.15 --no-repeat-ngram-size 4",
+    "C:\\Python310\\python.exe -m layercake.representation_bakeoff benchmark --checkpoint artifacts/moonshot/representation_bakeoff/shared_tokenizer_prompt_attention_curated/seed-9824 --output results/moonshot/representation_bakeoff/performance/token_prompt_attention_128x20.json --output-bytes 128 --repetitions 20 --threads 1 --repetition-penalty 1.15 --no-repeat-ngram-size 4",
+    "C:\\Python310\\python.exe -m layercake.representation_bakeoff benchmark --checkpoint artifacts/moonshot/representation_bakeoff/shared_tokenizer_prompt_attention_curated/seed-9824 --output results/moonshot/representation_bakeoff/performance/token_prompt_attention_1024x20.json --output-bytes 1024 --repetitions 20 --threads 1 --repetition-penalty 1.15 --no-repeat-ngram-size 4"
+  ],
+  "evidence": [
+    {
+      "bytes": 294085,
+      "path": "results/moonshot/representation_bakeoff/token_branch/functional_screen_prompt_attention_curated_seed9824_decodecontrol640.json",
+      "sha256": "2068c5e576ce7cf7b39cd73554298593798921e0454680589d3dea5e9d59b372"
+    },
+    {
+      "bytes": 142493,
+      "path": "results/moonshot/representation_bakeoff/token_branch/functional_semantic_audit_prompt_attention_curated_seed9824_decodecontrol640.json",
+      "sha256": "04d27a885d461ddad6edc660068ab6bd50ceaaa7cdc2d4893607a19a4a156bcc"
+    },
+    {
+      "bytes": 23094,
+      "path": "results/moonshot/representation_bakeoff/performance/token_prompt_attention_128x20.json",
+      "sha256": "3204a17d88bd047a8ee6f0a2c8e766a5d7f05f1283813aef55d0812a4c81cf8d"
+    },
+    {
+      "bytes": 23127,
+      "path": "results/moonshot/representation_bakeoff/performance/token_prompt_attention_1024x20.json",
+      "sha256": "c60362ebe657b4fed68626ec9fdaeb2f565a7291c68d67e554b3d70dd2dfcc44"
+    },
+    {
+      "bytes": 20019,
+      "path": "artifacts/moonshot/representation_bakeoff/shared_tokenizer_prompt_attention_curated/seed-9824/metadata.json",
+      "sha256": "31499c2814af55b9dfd286744df16ee07e53315902adb2946bb6ebf578d23435"
+    },
+    {
+      "bytes": 28711076,
+      "path": "artifacts/moonshot/representation_bakeoff/shared_tokenizer_prompt_attention_curated/seed-9824/model.safetensors",
+      "sha256": "69ff748cf521b456be257d2d50e69445098d00a82fe239e49dd454f498c32706"
+    },
+    {
+      "bytes": 98491,
+      "path": "artifacts/moonshot/representation_bakeoff/shared_tokenizer_prompt_attention_curated/seed-9824/tokenizer.json",
+      "sha256": "d1c03801fd9559b8586490733a3788439ff230bf5f09666a0abb7ddb615e9f10"
+    }
+  ],
+  "failed_seeds": [
+    9824
+  ],
+  "format": "layercake-representation-branch-decision/1",
+  "promotion_authorized": false,
+  "status": "CLOSED_NEGATIVE",
+  "test_accessed": false
+}

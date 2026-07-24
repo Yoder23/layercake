@@ -14,6 +14,19 @@ def causal_mask(length: int, device: torch.device) -> torch.Tensor:
     return torch.triu(torch.full((length, length), float("-inf"), device=device), 1)
 
 
+def sliding_causal_mask(
+    length: int, window: int, device: torch.device
+) -> torch.Tensor:
+    positions = torch.arange(length, device=device)
+    distance = positions[:, None] - positions[None, :]
+    allowed = (distance >= 0) & (distance < window)
+    return torch.where(
+        allowed,
+        torch.zeros((), device=device),
+        torch.full((), float("-inf"), device=device),
+    )
+
+
 def canonical_brick_head(d_abi: int) -> torch.Tensor:
     generator = torch.Generator().manual_seed(20260622)
     return torch.randn(d_abi, 256, generator=generator) / (d_abi ** 0.5)
@@ -219,6 +232,36 @@ class FusedModernCausalBlock(nn.Module):
         normalized = self.ffn_norm(h)
         return h + self.dropout(self._ffn(normalized))
 
+    def forward_with_attention_mask(
+        self, h: torch.Tensor, mask: torch.Tensor
+    ) -> torch.Tensor:
+        """Run the same fused block with an explicit causal band mask."""
+
+        batch, length, width = h.shape
+        normalized = self.attn_norm(h)
+        qkv = self.qkv(normalized).reshape(
+            batch, length, 3, self.heads, self.head_dim
+        )
+        query, key, value = qkv.unbind(dim=2)
+        query = query.transpose(1, 2)
+        key = key.transpose(1, 2)
+        value = value.transpose(1, 2)
+        query, key = self._normalize_qk(query, key)
+        attended = F.scaled_dot_product_attention(
+            query,
+            key,
+            value,
+            attn_mask=mask,
+            dropout_p=self.dropout_p if self.training else 0.0,
+            is_causal=False,
+        )
+        attended = attended.transpose(1, 2).reshape(
+            batch, length, width
+        )
+        h = h + self.dropout(self.attn_out(attended))
+        normalized = self.ffn_norm(h)
+        return h + self.dropout(self._ffn(normalized))
+
     def prefill_with_cache(self, h: torch.Tensor):
         batch, length, width = h.shape
         normalized = self.attn_norm(h)
@@ -311,6 +354,50 @@ class FusedModernCausalBlock(nn.Module):
         normalized = self.ffn_norm(h)
         h = h + self.dropout(self._ffn(normalized))
         return h, cache if isinstance(cache, dict) else (all_key, all_value)
+
+    def decode_many_with_cache(
+        self,
+        h: torch.Tensor,
+        cache: tuple[torch.Tensor, torch.Tensor],
+    ) -> tuple[torch.Tensor, tuple[torch.Tensor, torch.Tensor]]:
+        """Decode a short causal block against an existing immutable cache."""
+
+        batch, length, width = h.shape
+        if length < 1:
+            raise ValueError("cached block decode requires at least one token")
+        normalized = self.attn_norm(h)
+        qkv = self.qkv(normalized).reshape(
+            batch, length, 3, self.heads, self.head_dim
+        )
+        query, key, value = qkv.unbind(dim=2)
+        query = query.transpose(1, 2)
+        key = key.transpose(1, 2)
+        value = value.transpose(1, 2)
+        query, key = self._normalize_qk(query, key)
+        cached_key, cached_value = cache
+        past = cached_key.shape[2]
+        all_key = torch.cat([cached_key, key], dim=2)
+        all_value = torch.cat([cached_value, value], dim=2)
+        key_positions = torch.arange(
+            past + length, device=h.device
+        ).unsqueeze(0)
+        query_limits = past + torch.arange(
+            length, device=h.device
+        ).unsqueeze(1)
+        causal = key_positions <= query_limits
+        attended = F.scaled_dot_product_attention(
+            query,
+            all_key,
+            all_value,
+            attn_mask=causal[None, None],
+            dropout_p=self.dropout_p if self.training else 0.0,
+            is_causal=False,
+        )
+        attended = attended.transpose(1, 2).reshape(batch, length, width)
+        h = h + self.dropout(self.attn_out(attended))
+        normalized = self.ffn_norm(h)
+        h = h + self.dropout(self._ffn(normalized))
+        return h, (all_key, all_value)
 
 
 class Top1RoutedCakeBlock(nn.Module):
@@ -8776,14 +8863,62 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         routing_mode: str = "learned_top1",
         transition_context_buckets: int = 0,
         local_mixer: str = "attention",
+        higher_context_buckets: int = 0,
+        higher_context_dim: int = 32,
+        higher_context_order: int = 4,
+        future_byte_horizons: tuple[int, ...] = (),
+        conditional_future_transition: bool = False,
+        use_completed_patch_context: bool = False,
+        patch_boundary_mode: str = "paired",
+        word_context_buckets: int = 0,
+        word_context_dim: int = 16,
+        word_context_order: int = 2,
+        word_context_whitespace_only: bool = False,
+        word_recurrent_buckets: int = 0,
+        word_recurrent_embedding_dim: int = 32,
+        word_recurrent_hidden_dim: int = 64,
+        local_context_mode: str = "segmented",
+        prompt_memory_adapter_dim: int = 0,
+        prompt_cross_attention_dim: int = 0,
+        prompt_pointer_dim: int = 0,
     ):
         super().__init__()
         self.patch_size = 2
         self.max_patch_size = 4
         self.local_window = local_window
+        if patch_boundary_mode not in {"paired", "whitespace_any"}:
+            raise ValueError(
+                "patch_boundary_mode must be paired or whitespace_any"
+            )
+        self.patch_boundary_mode = patch_boundary_mode
+        if word_context_buckets < 0:
+            raise ValueError("word_context_buckets must be non-negative")
+        if word_context_buckets and word_context_order < 1:
+            raise ValueError("word_context_order must be positive")
+        self.word_context_buckets = int(word_context_buckets)
+        self.word_context_order = int(word_context_order)
+        self.word_context_whitespace_only = bool(
+            word_context_whitespace_only
+        )
+        if word_recurrent_buckets < 0:
+            raise ValueError("word_recurrent_buckets must be non-negative")
+        self.word_recurrent_buckets = int(word_recurrent_buckets)
         if local_mixer not in {"attention", "gru"}:
             raise ValueError("adaptive local_mixer must be attention or gru")
+        if local_context_mode not in {"segmented", "sliding"}:
+            raise ValueError(
+                "local_context_mode must be segmented or sliding"
+            )
+        if local_mixer != "attention" and local_context_mode == "sliding":
+            raise ValueError(
+                "sliding local context currently requires attention"
+            )
+        if higher_context_buckets < 0:
+            raise ValueError("higher_context_buckets must be non-negative")
+        if higher_context_buckets and higher_context_order < 3:
+            raise ValueError("higher_context_order must be at least three")
         self.local_mixer = local_mixer
+        self.local_context_mode = local_context_mode
         self.local_layer_count = int(local_layers)
         if transition_boundary_table is None:
             transition_boundary_table = torch.zeros(
@@ -8840,15 +8975,322 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         )
         if self.transition_context_head is not None:
             nn.init.zeros_(self.transition_context_head.weight)
+        self.higher_context_order = int(higher_context_order)
+        self.higher_context_buckets = int(higher_context_buckets)
+        self.higher_context_emb = (
+            nn.Embedding(higher_context_buckets, higher_context_dim)
+            if higher_context_buckets else None
+        )
+        self.higher_context_proj = (
+            nn.Linear(higher_context_dim, 256, bias=False)
+            if higher_context_buckets else None
+        )
+        if self.higher_context_proj is not None:
+            nn.init.zeros_(self.higher_context_proj.weight)
+        self.word_context_emb = (
+            nn.Embedding(word_context_buckets, word_context_dim)
+            if word_context_buckets else None
+        )
+        self.word_context_proj = (
+            nn.Linear(word_context_dim, 256, bias=False)
+            if word_context_buckets else None
+        )
+        if self.word_context_proj is not None:
+            nn.init.zeros_(self.word_context_proj.weight)
+        self.word_recurrent_emb = (
+            nn.Embedding(
+                word_recurrent_buckets, word_recurrent_embedding_dim
+            )
+            if word_recurrent_buckets else None
+        )
+        self.word_recurrent_cell = (
+            nn.GRUCell(
+                word_recurrent_embedding_dim,
+                word_recurrent_hidden_dim,
+            )
+            if word_recurrent_buckets else None
+        )
+        self.word_recurrent_proj = (
+            nn.Linear(word_recurrent_hidden_dim, 256, bias=False)
+            if word_recurrent_buckets else None
+        )
+        if self.word_recurrent_proj is not None:
+            nn.init.zeros_(self.word_recurrent_proj.weight)
+        if prompt_memory_adapter_dim < 0:
+            raise ValueError(
+                "prompt_memory_adapter_dim must be non-negative"
+            )
+        self.prompt_memory_adapter_dim = int(prompt_memory_adapter_dim)
+        self.prompt_memory_adapter = (
+            nn.Sequential(
+                nn.LayerNorm(d_model),
+                nn.Linear(d_model, prompt_memory_adapter_dim),
+                nn.SiLU(),
+                nn.Linear(prompt_memory_adapter_dim, 2 * d_model),
+            )
+            if prompt_memory_adapter_dim
+            else None
+        )
+        if self.prompt_memory_adapter is not None:
+            nn.init.zeros_(self.prompt_memory_adapter[-1].weight)
+            nn.init.zeros_(self.prompt_memory_adapter[-1].bias)
+        if prompt_cross_attention_dim < 0:
+            raise ValueError(
+                "prompt_cross_attention_dim must be non-negative"
+            )
+        self.prompt_cross_attention_dim = int(
+            prompt_cross_attention_dim
+        )
+        prompt_source_dim = d_byte + d_model
+        self.prompt_cross_source_norm = (
+            nn.LayerNorm(prompt_source_dim)
+            if prompt_cross_attention_dim
+            else None
+        )
+        self.prompt_cross_query_norm = (
+            nn.LayerNorm(d_model)
+            if prompt_cross_attention_dim
+            else None
+        )
+        self.prompt_cross_key = (
+            nn.Linear(
+                prompt_source_dim,
+                prompt_cross_attention_dim,
+                bias=False,
+            )
+            if prompt_cross_attention_dim
+            else None
+        )
+        self.prompt_cross_value = (
+            nn.Linear(
+                prompt_source_dim,
+                prompt_cross_attention_dim,
+                bias=False,
+            )
+            if prompt_cross_attention_dim
+            else None
+        )
+        self.prompt_cross_query = (
+            nn.Linear(
+                d_model,
+                prompt_cross_attention_dim,
+                bias=False,
+            )
+            if prompt_cross_attention_dim
+            else None
+        )
+        self.prompt_cross_out = (
+            nn.Linear(
+                prompt_cross_attention_dim,
+                d_model,
+                bias=False,
+            )
+            if prompt_cross_attention_dim
+            else None
+        )
+        if self.prompt_cross_out is not None:
+            nn.init.zeros_(self.prompt_cross_out.weight)
+        if prompt_pointer_dim < 0:
+            raise ValueError("prompt_pointer_dim must be non-negative")
+        self.prompt_pointer_dim = int(prompt_pointer_dim)
+        self.prompt_pointer_source_norm = (
+            nn.LayerNorm(prompt_source_dim)
+            if prompt_pointer_dim
+            else None
+        )
+        self.prompt_pointer_query_norm = (
+            nn.LayerNorm(d_model)
+            if prompt_pointer_dim
+            else None
+        )
+        self.prompt_pointer_key = (
+            nn.Linear(
+                prompt_source_dim, prompt_pointer_dim, bias=False
+            )
+            if prompt_pointer_dim
+            else None
+        )
+        self.prompt_pointer_query = (
+            nn.Linear(d_model, prompt_pointer_dim, bias=False)
+            if prompt_pointer_dim
+            else None
+        )
+        self.prompt_pointer_gate = (
+            nn.Linear(d_model + prompt_pointer_dim, 1)
+            if prompt_pointer_dim
+            else None
+        )
+        if self.prompt_pointer_gate is not None:
+            nn.init.zeros_(self.prompt_pointer_gate.weight)
+            nn.init.constant_(self.prompt_pointer_gate.bias, -4.0)
+        horizons = tuple(sorted({int(value) for value in future_byte_horizons}))
+        if any(value <= 1 for value in horizons):
+            raise ValueError("future_byte_horizons must contain integers greater than one")
+        self.future_byte_horizons = horizons
+        self.conditional_future_transition = bool(
+            conditional_future_transition
+        )
+        self.use_completed_patch_context = bool(use_completed_patch_context)
+        if self.conditional_future_transition and 2 not in horizons:
+            raise ValueError(
+                "conditional_future_transition requires horizon 2"
+            )
+        self.future_heads = nn.ModuleDict({
+            str(horizon): nn.Linear(d_model, 256)
+            for horizon in horizons
+        })
         self.register_buffer("canonical_head", canonical_brick_head(d_abi))
 
+    def _higher_context_ids(self, x: torch.Tensor) -> torch.Tensor:
+        if not self.higher_context_buckets:
+            raise RuntimeError("higher-order context is disabled")
+        context_ids = torch.zeros_like(x)
+        for lag in range(self.higher_context_order):
+            shifted = F.pad(x[:, : x.shape[1] - lag], (lag, 0))
+            context_ids = (
+                context_ids * 257 + shifted + 1
+            ).remainder(self.higher_context_buckets)
+        return context_ids
+
+    def _word_context_ids(self, x: torch.Tensor) -> torch.Tensor:
+        """Hash the current word prefix and recent completed words causally."""
+
+        if not self.word_context_buckets:
+            raise RuntimeError("word context is disabled")
+        batch, length = x.shape
+        current = torch.zeros(batch, dtype=torch.long, device=x.device)
+        completed = torch.zeros(
+            batch,
+            self.word_context_order,
+            dtype=torch.long,
+            device=x.device,
+        )
+        result = torch.zeros_like(x)
+        for byte_index in range(length):
+            value = x[:, byte_index]
+            whitespace = (
+                (value == 9)
+                | (value == 10)
+                | (value == 13)
+                | (value == 32)
+            )
+            has_word = current.ne(0)
+            shift = whitespace & has_word
+            if self.word_context_order > 1:
+                shifted = torch.cat(
+                    [current[:, None], completed[:, :-1]], dim=1
+                )
+            else:
+                shifted = current[:, None]
+            completed = torch.where(
+                shift[:, None], shifted, completed
+            )
+            current = torch.where(
+                whitespace,
+                torch.zeros_like(current),
+                (current * 257 + value + 1).remainder(
+                    self.word_context_buckets
+                ),
+            )
+            context = current
+            for word_index in range(self.word_context_order):
+                context = (
+                    context * 65537
+                    + completed[:, word_index]
+                    + word_index
+                    + 1
+                ).remainder(self.word_context_buckets)
+            result[:, byte_index] = context
+        return result
+
+    def _word_recurrent_states(self, x: torch.Tensor) -> torch.Tensor:
+        """Build a causal neural state over completed raw-byte words."""
+
+        if self.word_recurrent_emb is None:
+            raise RuntimeError("word recurrent state is disabled")
+        batch, length = x.shape
+        current_hash = torch.zeros(
+            batch, dtype=torch.long, device=x.device
+        )
+        hidden = self.word_recurrent_emb.weight.new_zeros(
+            batch, self.word_recurrent_cell.hidden_size
+        )
+        states = []
+        for byte_index in range(length):
+            value = x[:, byte_index]
+            whitespace = (
+                value.eq(9)
+                | value.eq(10)
+                | value.eq(13)
+                | value.eq(32)
+            )
+            update = whitespace & current_hash.ne(0)
+            proposed = self.word_recurrent_cell(
+                self.word_recurrent_emb(current_hash), hidden
+            )
+            hidden = torch.where(update[:, None], proposed, hidden)
+            states.append(hidden)
+            current_hash = torch.where(
+                whitespace,
+                torch.zeros_like(current_hash),
+                (current_hash * 257 + value + 1).remainder(
+                    self.word_recurrent_buckets
+                ),
+            )
+        return torch.stack(states, dim=1)
+
     def _layout(
-        self, x: torch.Tensor
+        self,
+        x: torch.Tensor,
+        forced_boundaries: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """Group causal two-byte units into patches of length two or four."""
         batch, length = x.shape
+        if forced_boundaries is not None and forced_boundaries.shape != x.shape:
+            raise ValueError("forced_boundaries must match the byte input")
         if length % 4:
             raise ValueError("adaptive patch input length must be divisible by 4")
+        if self.patch_boundary_mode == "whitespace_any":
+            patch_ids = torch.zeros(
+                batch, length, dtype=torch.long, device=x.device
+            )
+            patch_offsets = torch.zeros_like(patch_ids)
+            current_patch = torch.zeros(
+                batch, dtype=torch.long, device=x.device
+            )
+            current_offset = torch.zeros_like(current_patch)
+            for byte_index in range(length):
+                value = x[:, byte_index]
+                patch_ids[:, byte_index] = current_patch
+                patch_offsets[:, byte_index] = current_offset
+                close = (
+                    (value == 9)
+                    | (value == 10)
+                    | (value == 13)
+                    | (value == 32)
+                    | (current_offset + 1 >= self.max_patch_size)
+                )
+                if forced_boundaries is not None:
+                    close = close | forced_boundaries[:, byte_index]
+                if byte_index:
+                    transition_id = x[:, byte_index - 1] * 256 + value
+                    close = close | (
+                        (current_offset > 0)
+                        & self.transition_boundary_table[transition_id]
+                    )
+                current_patch = current_patch + close.long()
+                current_offset = torch.where(
+                    close,
+                    torch.zeros_like(current_offset),
+                    current_offset + 1,
+                )
+            patch_count = int(patch_ids[:, -1].max().item()) + 1
+            lengths = torch.zeros(
+                batch, patch_count, dtype=torch.long, device=x.device
+            )
+            lengths.scatter_add_(1, patch_ids, torch.ones_like(patch_ids))
+            valid = lengths > 0
+            return patch_ids, patch_offsets, lengths, valid
         blocks = x.reshape(batch, -1, 4)
         transition_ids = blocks[:, :, 0] * 256 + blocks[:, :, 1]
         boundary = self.transition_boundary_table[transition_ids]
@@ -8910,10 +9352,39 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         )
         return patch_ids, offsets.reshape(batch, length), lengths, valid
 
-    def forward(self, x: torch.Tensor, brick=None):
+    def forward(
+        self,
+        x: torch.Tensor,
+        brick=None,
+        prompt_boundary_indexes: torch.Tensor | None = None,
+    ):
         batch, length = x.shape
         byte_h = self.byte_emb(x)
-        patch_ids, patch_offsets, patch_lengths, valid = self._layout(x)
+        forced_boundaries = None
+        if prompt_boundary_indexes is not None:
+            if (
+                self.prompt_memory_adapter is None
+                and self.prompt_cross_key is None
+                and self.prompt_pointer_key is None
+            ):
+                raise ValueError(
+                    "prompt boundary supplied while prompt conditioning is disabled"
+                )
+            boundary = prompt_boundary_indexes.to(
+                device=x.device, dtype=torch.long
+            ).flatten()
+            if boundary.shape != (batch,):
+                raise ValueError(
+                    "prompt_boundary_indexes must have shape [batch]"
+                )
+            if bool(((boundary < 0) | (boundary >= length)).any()):
+                raise ValueError("prompt boundary is outside the input")
+            prompt_boundary_indexes = boundary
+            forced_boundaries = torch.zeros_like(x, dtype=torch.bool)
+            forced_boundaries.scatter_(1, boundary[:, None], True)
+        patch_ids, patch_offsets, patch_lengths, valid = self._layout(
+            x, forced_boundaries
+        )
         patch_count = patch_lengths.shape[1]
         packed = byte_h.new_zeros(
             batch, patch_count, self.max_patch_size, byte_h.shape[-1]
@@ -8922,7 +9393,9 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         packed[batch_ids, patch_ids, patch_offsets] = byte_h
         patch_h = self.patch_proj(packed.flatten(-2))
         patch_h = patch_h + self.patch_length(patch_lengths)
-        positions = torch.arange(patch_count, device=x.device)
+        positions = torch.arange(
+            patch_count, device=x.device
+        ).remainder(self.patch_pos.num_embeddings)
         patch_h = patch_h + self.patch_pos(positions)[None]
         global_h = run_modern_stack(
             self.core, patch_h, causal_mask(patch_count, x.device)
@@ -8949,6 +9422,37 @@ class CausalAdaptiveBytePatchLM(nn.Module):
             1,
             patch_ids.unsqueeze(-1).expand(-1, -1, global_h.shape[-1]),
         )
+        if self.use_completed_patch_context:
+            current_global = global_h.gather(
+                1,
+                patch_ids.unsqueeze(-1).expand(
+                    -1, -1, global_h.shape[-1]
+                ),
+            )
+            if self.patch_boundary_mode == "whitespace_any":
+                patch_complete = (
+                    (x == 9)
+                    | (x == 10)
+                    | (x == 13)
+                    | (x == 32)
+                    | (patch_offsets + 1 >= self.max_patch_size)
+                )
+                previous = F.pad(x[:, :-1], (1, 0))
+                transition_ids = previous * 256 + x
+                patch_complete = patch_complete | (
+                    (patch_offsets > 0)
+                    & self.transition_boundary_table[transition_ids]
+                )
+                if forced_boundaries is not None:
+                    patch_complete = patch_complete | forced_boundaries
+            else:
+                current_lengths = patch_lengths.gather(1, patch_ids)
+                patch_complete = patch_offsets.eq(current_lengths - 1)
+            byte_context = torch.where(
+                patch_complete.unsqueeze(-1),
+                current_global,
+                byte_context,
+            )
         local_hidden = self.local_in(
             torch.cat([byte_h, byte_context], dim=-1)
         )
@@ -8956,21 +9460,91 @@ class CausalAdaptiveBytePatchLM(nn.Module):
             raise ValueError(
                 "sequence length must be divisible by local_window"
             )
-        local_hidden = local_hidden.reshape(
-            batch * (length // self.local_window),
-            self.local_window,
-            -1,
-        )
         if self.local_mixer == "attention":
-            local_hidden = run_modern_stack(
-                self.local_core,
-                local_hidden,
-                causal_mask(self.local_window, x.device),
-            )
+            if self.local_context_mode == "sliding":
+                mask = sliding_causal_mask(
+                    length, self.local_window, x.device
+                )
+                for block in self.local_core:
+                    local_hidden = block.forward_with_attention_mask(
+                        local_hidden, mask
+                    )
+            else:
+                local_hidden = local_hidden.reshape(
+                    batch * (length // self.local_window),
+                    self.local_window,
+                    -1,
+                )
+                local_hidden = run_modern_stack(
+                    self.local_core,
+                    local_hidden,
+                    causal_mask(self.local_window, x.device),
+                )
         else:
+            local_hidden = local_hidden.reshape(
+                batch * (length // self.local_window),
+                self.local_window,
+                -1,
+            )
             local_hidden, _ = self.local_gru(local_hidden)
         local_hidden = local_hidden.reshape(batch, length, -1)
-        logits = self.head(self.local_norm(local_hidden))
+        normalized_local = self.local_norm(local_hidden)
+        if prompt_boundary_indexes is not None:
+            active = (
+                torch.arange(length, device=x.device)[None]
+                >= prompt_boundary_indexes[:, None]
+            )
+            if self.prompt_memory_adapter is not None:
+                batch_indexes = torch.arange(batch, device=x.device)
+                memory_patch_ids = patch_ids[
+                    batch_indexes, prompt_boundary_indexes
+                ]
+                prompt_memory = global_h[
+                    batch_indexes, memory_patch_ids
+                ]
+                modulation = self.prompt_memory_adapter(prompt_memory)
+                scale, bias = modulation.chunk(2, dim=-1)
+                conditioned = (
+                    normalized_local
+                    * (1.0 + 0.1 * torch.tanh(scale)[:, None])
+                    + bias[:, None]
+                )
+                normalized_local = torch.where(
+                    active[:, :, None], conditioned, normalized_local
+                )
+            if self.prompt_cross_key is not None:
+                prompt_source = self.prompt_cross_source_norm(
+                    torch.cat([byte_h, byte_context], dim=-1)
+                )
+                keys = self.prompt_cross_key(prompt_source)
+                values = self.prompt_cross_value(prompt_source)
+                queries = self.prompt_cross_query(
+                    self.prompt_cross_query_norm(normalized_local)
+                )
+                scores = torch.matmul(
+                    queries, keys.transpose(1, 2)
+                ) / math.sqrt(self.prompt_cross_attention_dim)
+                prompt_positions = torch.arange(
+                    length, device=x.device
+                )[None, None]
+                prompt_mask = (
+                    prompt_positions
+                    <= prompt_boundary_indexes[:, None, None]
+                )
+                scores = scores.masked_fill(
+                    ~prompt_mask,
+                    torch.finfo(scores.dtype).min,
+                )
+                context = torch.matmul(
+                    torch.softmax(scores, dim=-1), values
+                )
+                conditioned = (
+                    normalized_local + self.prompt_cross_out(context)
+                )
+                normalized_local = torch.where(
+                    active[:, :, None], conditioned, normalized_local
+                )
+        logits = self.head(normalized_local)
         logits = logits + self.transition_head(x)
         if self.transition_context_head is not None:
             previous = F.pad(x[:, :-1], (1, 0))
@@ -8978,6 +9552,38 @@ class CausalAdaptiveBytePatchLM(nn.Module):
                 previous * 257 + x + 1
             ).remainder(self.transition_context_head.num_embeddings)
             logits = logits + self.transition_context_head(context_ids)
+        if self.higher_context_emb is not None:
+            context_ids = self._higher_context_ids(x)
+            logits = logits + self.higher_context_proj(
+                self.higher_context_emb(context_ids)
+            )
+        if self.word_context_emb is not None:
+            word_context_ids = self._word_context_ids(x)
+            word_context_bias = self.word_context_proj(
+                self.word_context_emb(word_context_ids)
+            )
+            if self.word_context_whitespace_only:
+                whitespace = (
+                    (x == 9)
+                    | (x == 10)
+                    | (x == 13)
+                    | (x == 32)
+                )
+                word_context_bias = word_context_bias * whitespace.unsqueeze(
+                    -1
+                )
+            logits = logits + word_context_bias
+        if self.word_recurrent_emb is not None:
+            word_states = self._word_recurrent_states(x)
+            whitespace = (
+                (x == 9)
+                | (x == 10)
+                | (x == 13)
+                | (x == 32)
+            )
+            logits = logits + self.word_recurrent_proj(
+                word_states
+            ) * whitespace.unsqueeze(-1)
         if brick is not None:
             delta = brick(context_abi) - context_abi
             patch_bias = delta @ self.canonical_head
@@ -8985,12 +9591,96 @@ class CausalAdaptiveBytePatchLM(nn.Module):
                 1,
                 patch_ids.unsqueeze(-1).expand(-1, -1, 256),
             )
+        pointer_gate_values = None
+        if (
+            prompt_boundary_indexes is not None
+            and self.prompt_pointer_key is not None
+        ):
+            prompt_source = self.prompt_pointer_source_norm(
+                torch.cat([byte_h, byte_context], dim=-1)
+            )
+            keys = self.prompt_pointer_key(prompt_source)
+            queries = self.prompt_pointer_query(
+                self.prompt_pointer_query_norm(normalized_local)
+            )
+            pointer_scores = torch.matmul(
+                queries, keys.transpose(1, 2)
+            ) / math.sqrt(self.prompt_pointer_dim)
+            prompt_positions = torch.arange(
+                length, device=x.device
+            )[None, None]
+            prompt_mask = (
+                prompt_positions
+                <= prompt_boundary_indexes[:, None, None]
+            )
+            pointer_scores = pointer_scores.masked_fill(
+                ~prompt_mask,
+                torch.finfo(pointer_scores.dtype).min,
+            )
+            pointer_attention = torch.softmax(
+                pointer_scores, dim=-1
+            )
+            pointer_context = torch.matmul(
+                pointer_attention, keys
+            )
+            pointer_gate_values = torch.sigmoid(
+                self.prompt_pointer_gate(
+                    torch.cat(
+                        [normalized_local, pointer_context], dim=-1
+                    )
+                )
+            )
+            copy_probabilities = torch.zeros(
+                batch,
+                length,
+                256,
+                device=x.device,
+                dtype=pointer_attention.dtype,
+            )
+            copy_probabilities.scatter_add_(
+                2,
+                x[:, None, :].expand(batch, length, length),
+                pointer_attention,
+            )
+            base_probabilities = torch.softmax(
+                logits.float(), dim=-1
+            )
+            mixture = (
+                (1.0 - pointer_gate_values.float())
+                * base_probabilities
+                + pointer_gate_values.float()
+                * copy_probabilities.float()
+            )
+            pointer_logits = mixture.clamp_min(1e-12).log().to(
+                dtype=logits.dtype
+            )
+            logits = torch.where(
+                active[:, :, None], pointer_logits, logits
+            )
         return logits, context_abi, {
             "patch_ids": patch_ids,
             "patch_offsets": patch_offsets,
             "patch_lengths": patch_lengths,
             "valid_patches": valid,
             "routing": routing,
+            "prompt_pointer_mean_gate": (
+                pointer_gate_values[active].mean()
+                if pointer_gate_values is not None
+                else None
+            ),
+            "prompt_pointer_gate_values": pointer_gate_values,
+            "future_byte_logits": {
+                horizon: (
+                    self.future_heads[str(horizon)](normalized_local)
+                    + (
+                        self.transition_head(F.pad(x[:, 1:], (0, 1)))
+                        if horizon == 2
+                        and self.conditional_future_transition
+                        else 0
+                    )
+                )
+                for horizon in self.future_byte_horizons
+            },
         }
 
     @staticmethod
@@ -9037,14 +9727,89 @@ class CausalAdaptiveBytePatchLM(nn.Module):
                 device=target, dtype=dtype,
             ),
             "next_logits": None,
+            "next_future_logits": {},
+            "prompt_memory_active": False,
+            "prompt_memory_modulation": torch.zeros(
+                batch,
+                2 * self.head.in_features,
+                device=target,
+                dtype=dtype,
+            ),
+            "prompt_cross_features": [],
+            "prompt_cross_keys": torch.empty(
+                batch,
+                0,
+                self.prompt_cross_attention_dim,
+                device=target,
+                dtype=dtype,
+            ),
+            "prompt_cross_values": torch.empty(
+                batch,
+                0,
+                self.prompt_cross_attention_dim,
+                device=target,
+                dtype=dtype,
+            ),
+            "prompt_pointer_keys": torch.empty(
+                batch,
+                0,
+                self.prompt_pointer_dim,
+                device=target,
+                dtype=dtype,
+            ),
+            "prompt_pointer_bytes": torch.empty(
+                batch, 0, device=target, dtype=torch.long
+            ),
+            "prompt_input_bytes": [],
+            "last_normalized_local": torch.zeros(
+                batch,
+                self.head.in_features,
+                device=target,
+                dtype=dtype,
+            ),
+            "last_auxiliary_logits": torch.zeros(
+                batch, 256, device=target, dtype=dtype
+            ),
             "routed_expert_trace": [],
+            "recent_context_bytes": torch.empty(
+                batch, 0, dtype=torch.long, device=target
+            ),
+            "current_word_hash": torch.zeros(
+                batch, dtype=torch.long, device=target
+            ),
+            "completed_word_hashes": torch.zeros(
+                batch,
+                self.word_context_order,
+                dtype=torch.long,
+                device=target,
+            ),
+            "recurrent_current_word_hash": torch.zeros(
+                batch, dtype=torch.long, device=target
+            ),
+            "word_recurrent_hidden": (
+                torch.zeros(
+                    batch,
+                    self.word_recurrent_cell.hidden_size,
+                    device=target,
+                    dtype=dtype,
+                )
+                if self.word_recurrent_cell is not None
+                else torch.empty(batch, 0, device=target, dtype=dtype)
+            ),
         }
 
     def _close_incremental_patch(self, state: dict) -> None:
         pending = state["pending_bytes"]
         length = len(pending)
-        if length not in {2, 4}:
-            raise RuntimeError("adaptive incremental patches must close at length two or four")
+        allowed_lengths = (
+            {1, 2, 3, 4}
+            if self.patch_boundary_mode == "whitespace_any"
+            else {2, 4}
+        )
+        if length not in allowed_lengths:
+            raise RuntimeError(
+                "adaptive incremental patch closed at an invalid length"
+            )
         byte_ids = torch.stack(pending, dim=1)
         embedded = self.byte_emb(byte_ids)
         if length < self.max_patch_size:
@@ -9052,9 +9817,8 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         hidden = self.patch_proj(embedded.flatten(1))
         hidden = hidden + self.patch_length.weight[length]
         position = int(state["patch_count"])
-        if position >= self.patch_pos.num_embeddings:
-            raise RuntimeError("adaptive incremental state exceeded configured max_patches")
-        hidden = hidden + self.patch_pos.weight[position]
+        position_id = position % self.patch_pos.num_embeddings
+        hidden = hidden + self.patch_pos.weight[position_id]
         hidden = hidden[:, None]
         for index, block in enumerate(self.core):
             hidden, cache = block.decode_with_cache(hidden, state["global_caches"][index])
@@ -9069,14 +9833,238 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         state["patch_count"] = position + 1
         state["pending_bytes"] = []
 
+    def _incremental_patch_should_close(self, state: dict) -> bool:
+        pending = state["pending_bytes"]
+        if not pending:
+            return False
+        if self.patch_boundary_mode == "whitespace_any":
+            final = int(pending[-1].item())
+            if final in {9, 10, 13, 32} or len(pending) == 4:
+                return True
+            if len(pending) >= 2:
+                previous = int(pending[-2].item())
+                return bool(
+                    self.transition_boundary_table[
+                        previous * 256 + final
+                    ].item()
+                )
+            return False
+        if len(pending) == 4:
+            return True
+        if len(pending) == 2:
+            first, second = (int(item.item()) for item in pending)
+            return second in {9, 10, 13, 32} or bool(
+                self.transition_boundary_table[first * 256 + second].item()
+            )
+        return False
+
+    def _incremental_word_context_id(
+        self, state: dict, value: torch.Tensor
+    ) -> torch.Tensor:
+        whitespace = (
+            value.eq(9)
+            | value.eq(10)
+            | value.eq(13)
+            | value.eq(32)
+        )
+        current = state["current_word_hash"]
+        completed = state["completed_word_hashes"]
+        shift = whitespace & current.ne(0)
+        if self.word_context_order > 1:
+            shifted = torch.cat([current[:, None], completed[:, :-1]], dim=1)
+        else:
+            shifted = current[:, None]
+        completed = torch.where(shift[:, None], shifted, completed)
+        current = torch.where(
+            whitespace,
+            torch.zeros_like(current),
+            (current * 257 + value + 1).remainder(
+                self.word_context_buckets
+            ),
+        )
+        state["current_word_hash"] = current
+        state["completed_word_hashes"] = completed
+        context = current
+        for word_index in range(self.word_context_order):
+            context = (
+                context * 65537
+                + completed[:, word_index]
+                + word_index
+                + 1
+            ).remainder(self.word_context_buckets)
+        return context
+
+    def _incremental_word_recurrent_bias(
+        self, state: dict, value: torch.Tensor
+    ) -> torch.Tensor | None:
+        whitespace = int(value.item()) in {9, 10, 13, 32}
+        current_hash = state["recurrent_current_word_hash"]
+        if whitespace:
+            if bool(current_hash.ne(0).item()):
+                state["word_recurrent_hidden"] = (
+                    self.word_recurrent_cell(
+                        self.word_recurrent_emb(current_hash),
+                        state["word_recurrent_hidden"],
+                    )
+                )
+            state["recurrent_current_word_hash"].zero_()
+            return self.word_recurrent_proj(
+                state["word_recurrent_hidden"]
+            )
+        state["recurrent_current_word_hash"] = (
+            current_hash * 257 + value + 1
+        ).remainder(self.word_recurrent_buckets)
+        return None
+
+    def _apply_prompt_memory(
+        self,
+        normalized_local: torch.Tensor,
+        modulation: torch.Tensor,
+    ) -> torch.Tensor:
+        scale, bias = modulation.chunk(2, dim=-1)
+        return (
+            normalized_local * (1.0 + 0.1 * torch.tanh(scale))
+            + bias
+        )
+
+    def _apply_prompt_cross_attention(
+        self,
+        normalized_local: torch.Tensor,
+        keys: torch.Tensor,
+        values: torch.Tensor,
+    ) -> torch.Tensor:
+        query = self.prompt_cross_query(
+            self.prompt_cross_query_norm(normalized_local)
+        )
+        scores = torch.matmul(
+            query[:, None], keys.transpose(1, 2)
+        ) / math.sqrt(self.prompt_cross_attention_dim)
+        context = torch.matmul(
+            torch.softmax(scores, dim=-1), values
+        )[:, 0]
+        return normalized_local + self.prompt_cross_out(context)
+
+    def _apply_prompt_pointer(
+        self,
+        logits: torch.Tensor,
+        normalized_local: torch.Tensor,
+        keys: torch.Tensor,
+        prompt_bytes: torch.Tensor,
+    ) -> torch.Tensor:
+        query = self.prompt_pointer_query(
+            self.prompt_pointer_query_norm(normalized_local)
+        )
+        scores = torch.matmul(
+            query[:, None], keys.transpose(1, 2)
+        ) / math.sqrt(self.prompt_pointer_dim)
+        attention = torch.softmax(scores, dim=-1)
+        context = torch.matmul(attention, keys)[:, 0]
+        gate = torch.sigmoid(
+            self.prompt_pointer_gate(
+                torch.cat([normalized_local, context], dim=-1)
+            )
+        )
+        copy_probabilities = logits.new_zeros(
+            logits.shape[0], 256, dtype=torch.float
+        )
+        copy_probabilities.scatter_add_(
+            1, prompt_bytes, attention[:, 0].float()
+        )
+        mixture = (
+            (1.0 - gate.float()) * torch.softmax(logits.float(), dim=-1)
+            + gate.float() * copy_probabilities
+        )
+        return mixture.clamp_min(1e-12).log().to(dtype=logits.dtype)
+
     @torch.inference_mode()
-    def incremental_step(self, state: dict, byte: torch.Tensor) -> torch.Tensor:
+    def mark_prompt_boundary(self, state: dict) -> None:
+        """Freeze neural prompt modulation into persistent decode state."""
+
+        if (
+            self.prompt_memory_adapter is None
+            and self.prompt_cross_key is None
+            and self.prompt_pointer_key is None
+        ):
+            return
+        if state["pending_bytes"]:
+            raise RuntimeError(
+                "prompt boundary must close the current patch"
+            )
+        if self.prompt_memory_adapter is not None:
+            modulation = self.prompt_memory_adapter(
+                state["last_global"]
+            )
+            state["prompt_memory_modulation"] = modulation
+        if (
+            self.prompt_cross_key is not None
+            or self.prompt_pointer_key is not None
+        ):
+            features = torch.stack(
+                state["prompt_cross_features"], dim=1
+            )
+        if self.prompt_cross_key is not None:
+            normalized = self.prompt_cross_source_norm(features)
+            state["prompt_cross_keys"] = self.prompt_cross_key(
+                normalized
+            )
+            state["prompt_cross_values"] = self.prompt_cross_value(
+                normalized
+            )
+        if self.prompt_pointer_key is not None:
+            pointer_source = self.prompt_pointer_source_norm(
+                features
+            )
+            state["prompt_pointer_keys"] = self.prompt_pointer_key(
+                pointer_source
+            )
+            state["prompt_pointer_bytes"] = torch.stack(
+                state["prompt_input_bytes"], dim=1
+            )
+        state["prompt_memory_active"] = True
+        conditioned = state["last_normalized_local"]
+        if self.prompt_memory_adapter is not None:
+            conditioned = self._apply_prompt_memory(
+                conditioned, state["prompt_memory_modulation"]
+            )
+        if self.prompt_cross_key is not None:
+            conditioned = self._apply_prompt_cross_attention(
+                conditioned,
+                state["prompt_cross_keys"],
+                state["prompt_cross_values"],
+            )
+        next_logits = (
+            self.head(conditioned) + state["last_auxiliary_logits"]
+        )
+        if self.prompt_pointer_key is not None:
+            next_logits = self._apply_prompt_pointer(
+                next_logits,
+                conditioned,
+                state["prompt_pointer_keys"],
+                state["prompt_pointer_bytes"],
+            )
+        state["next_logits"] = next_logits
+        state["next_future_logits"] = {
+            horizon: self.future_heads[str(horizon)](conditioned)
+            for horizon in self.future_byte_horizons
+        }
+
+    @torch.inference_mode()
+    def incremental_step(
+        self,
+        state: dict,
+        byte: torch.Tensor,
+        *,
+        force_patch_close: bool = False,
+    ) -> torch.Tensor:
         """Consume one byte, return logits for the following byte, and retain caches."""
 
         value = byte.to(device=state["last_global"].device, dtype=torch.long).flatten()
         if value.numel() != 1:
             raise ValueError("adaptive incremental decoding requires one batch-one byte")
-        if int(state["byte_count"]) % self.local_window == 0:
+        if (
+            self.local_context_mode == "segmented"
+            and int(state["byte_count"]) % self.local_window == 0
+        ):
             state["local_caches"] = self._empty_attention_caches(
                 self.local_core,
                 batch=1,
@@ -9084,7 +10072,35 @@ class CausalAdaptiveBytePatchLM(nn.Module):
                 dtype=state["last_global"].dtype,
             )
             state["local_recurrent_state"].zero_()
-        local = self.local_in(torch.cat([self.byte_emb(value), state["last_global"]], dim=-1))
+        elif self.local_context_mode == "sliding":
+            state["local_caches"] = [
+                (
+                    key[:, :, -(self.local_window - 1) :],
+                    value[:, :, -(self.local_window - 1) :],
+                )
+                for key, value in state["local_caches"]
+            ]
+        if self.use_completed_patch_context:
+            state["pending_bytes"].append(value)
+            if (
+                self._incremental_patch_should_close(state)
+                or force_patch_close
+            ):
+                self._close_incremental_patch(state)
+        embedded_value = self.byte_emb(value)
+        source_feature = torch.cat(
+            [embedded_value, state["last_global"]], dim=-1
+        )
+        if (
+            (
+                self.prompt_cross_key is not None
+                or self.prompt_pointer_key is not None
+            )
+            and not state["prompt_memory_active"]
+        ):
+            state["prompt_cross_features"].append(source_feature)
+            state["prompt_input_bytes"].append(value)
+        local = self.local_in(source_feature)
         local = local[:, None]
         if self.local_mixer == "attention":
             for index, block in enumerate(self.local_core):
@@ -9093,25 +10109,216 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         else:
             local, recurrent = self.local_gru(local, state["local_recurrent_state"])
             state["local_recurrent_state"] = recurrent
-        logits = self.head(self.local_norm(local[:, 0])) + self.transition_head(value)
+        normalized_local = self.local_norm(local[:, 0])
+        conditioned_local = (
+            self._apply_prompt_memory(
+                normalized_local, state["prompt_memory_modulation"]
+            )
+            if (
+                state["prompt_memory_active"]
+                and self.prompt_memory_adapter is not None
+            )
+            else normalized_local
+        )
+        if (
+            state["prompt_memory_active"]
+            and self.prompt_cross_key is not None
+        ):
+            conditioned_local = self._apply_prompt_cross_attention(
+                conditioned_local,
+                state["prompt_cross_keys"],
+                state["prompt_cross_values"],
+            )
+        auxiliary_logits = self.transition_head(value)
         if self.transition_context_head is not None:
             context_id = (
                 state["previous_byte"] * 257 + value + 1
             ).remainder(self.transition_context_head.num_embeddings)
-            logits = logits + self.transition_context_head(context_id)
-        state["next_logits"] = logits
-        state["previous_byte"] = value
-        state["pending_bytes"].append(value)
-        pending = state["pending_bytes"]
-        close = len(pending) == 4
-        if len(pending) == 2:
-            first, second = (int(item.item()) for item in pending)
-            close = second in {9, 10, 13, 32} or bool(
-                self.transition_boundary_table[first * 256 + second].item()
+            auxiliary_logits = (
+                auxiliary_logits
+                + self.transition_context_head(context_id)
             )
-        if close:
-            self._close_incremental_patch(state)
+        if self.higher_context_emb is not None:
+            recent = torch.cat(
+                [state["recent_context_bytes"], value[:, None]], dim=1
+            )[:, -self.higher_context_order :]
+            padded = F.pad(
+                recent,
+                (self.higher_context_order - recent.shape[1], 0),
+            )
+            context_id = torch.zeros_like(value)
+            for offset in range(self.higher_context_order):
+                context_id = (
+                    context_id * 257 + padded[:, -1 - offset] + 1
+                ).remainder(self.higher_context_buckets)
+            auxiliary_logits = auxiliary_logits + self.higher_context_proj(
+                self.higher_context_emb(context_id)
+            )
+            state["recent_context_bytes"] = recent
+        if self.word_context_emb is not None:
+            word_context_id = self._incremental_word_context_id(
+                state, value
+            )
+            apply_word_context = (
+                not self.word_context_whitespace_only
+                or int(value.item()) in {9, 10, 13, 32}
+            )
+            if apply_word_context:
+                auxiliary_logits = (
+                    auxiliary_logits
+                    + self.word_context_proj(
+                    self.word_context_emb(word_context_id)
+                    )
+                )
+        if self.word_recurrent_emb is not None:
+            word_recurrent_bias = self._incremental_word_recurrent_bias(
+                state, value
+            )
+            if word_recurrent_bias is not None:
+                auxiliary_logits = (
+                    auxiliary_logits + word_recurrent_bias
+                )
+        logits = self.head(conditioned_local) + auxiliary_logits
+        if (
+            state["prompt_memory_active"]
+            and self.prompt_pointer_key is not None
+        ):
+            logits = self._apply_prompt_pointer(
+                logits,
+                conditioned_local,
+                state["prompt_pointer_keys"],
+                state["prompt_pointer_bytes"],
+            )
+        state["last_normalized_local"] = normalized_local
+        state["last_auxiliary_logits"] = auxiliary_logits
+        state["next_logits"] = logits
+        state["next_future_logits"] = {
+            horizon: self.future_heads[str(horizon)](conditioned_local)
+            for horizon in self.future_byte_horizons
+        }
+        state["previous_byte"] = value
+        if not self.use_completed_patch_context:
+            state["pending_bytes"].append(value)
+            if (
+                self._incremental_patch_should_close(state)
+                or force_patch_close
+            ):
+                self._close_incremental_patch(state)
         state["byte_count"] = int(state["byte_count"]) + 1
+        return logits
+
+    @torch.inference_mode()
+    def incremental_step_many(
+        self, state: dict, byte: torch.Tensor
+    ) -> torch.Tensor:
+        """Consume exactly two chosen bytes with one exact local block update."""
+
+        values = byte.to(
+            device=state["last_global"].device, dtype=torch.long
+        ).flatten()
+        if values.numel() != 2:
+            raise ValueError("adaptive multibyte decode requires exactly two bytes")
+        if (
+            self.use_completed_patch_context
+            or self.patch_boundary_mode == "whitespace_any"
+            or self.word_context_emb is not None
+            or self.word_recurrent_emb is not None
+            or self.prompt_memory_adapter is not None
+            or self.prompt_cross_key is not None
+            or self.prompt_pointer_key is not None
+        ):
+            logits = None
+            for value in values:
+                logits = self.incremental_step(state, value[None])
+            return logits
+        if int(state["byte_count"]) % 2 or len(state["pending_bytes"]) not in {0, 2}:
+            raise ValueError("adaptive multibyte decode requires an even patch boundary")
+        window_offset = int(state["byte_count"]) % self.local_window
+        if window_offset + 2 > self.local_window:
+            raise ValueError("adaptive multibyte decode may not cross a local window")
+        if window_offset == 0:
+            state["local_caches"] = self._empty_attention_caches(
+                self.local_core,
+                batch=1,
+                device=state["last_global"].device,
+                dtype=state["last_global"].dtype,
+            )
+            state["local_recurrent_state"].zero_()
+        embedded = self.byte_emb(values)[None]
+        global_context = state["last_global"][:, None].expand(-1, 2, -1)
+        local = self.local_in(torch.cat([embedded, global_context], dim=-1))
+        if self.local_mixer == "attention":
+            for index, block in enumerate(self.local_core):
+                local, cache = block.decode_many_with_cache(
+                    local, state["local_caches"][index]
+                )
+                state["local_caches"][index] = cache
+        else:
+            local, recurrent = self.local_gru(
+                local, state["local_recurrent_state"]
+            )
+            state["local_recurrent_state"] = recurrent
+        normalized_local = self.local_norm(local)
+        final_value = values[-1:]
+        logits = (
+            self.head(normalized_local[:, -1])
+            + self.transition_head(final_value)
+        )
+        if self.transition_context_head is not None:
+            context_id = (
+                values[-2:-1] * 257 + final_value + 1
+            ).remainder(self.transition_context_head.num_embeddings)
+            logits = logits + self.transition_context_head(context_id)
+        if self.higher_context_emb is not None:
+            recent = torch.cat(
+                [state["recent_context_bytes"], values[None]], dim=1
+            )[:, -self.higher_context_order :]
+            padded = F.pad(
+                recent,
+                (self.higher_context_order - recent.shape[1], 0),
+            )
+            context_id = torch.zeros_like(final_value)
+            for offset in range(self.higher_context_order):
+                context_id = (
+                    context_id * 257 + padded[:, -1 - offset] + 1
+                ).remainder(self.higher_context_buckets)
+            logits = logits + self.higher_context_proj(
+                self.higher_context_emb(context_id)
+            )
+            state["recent_context_bytes"] = recent
+        state["next_logits"] = logits
+        state["next_future_logits"] = {
+            horizon: self.future_heads[str(horizon)](normalized_local[:, -1])
+            for horizon in self.future_byte_horizons
+        }
+        state["previous_byte"] = final_value
+        state["pending_bytes"].extend(
+            [values[0:1], values[1:2]]
+        )
+        if self._incremental_patch_should_close(state):
+            self._close_incremental_patch(state)
+        state["byte_count"] = int(state["byte_count"]) + 2
+        return logits
+
+    @torch.inference_mode()
+    def proposed_future_logits(
+        self,
+        state: dict,
+        horizon: int,
+        first_selected_byte: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        """Return a declared neural multibyte proposal distribution."""
+
+        logits = state["next_future_logits"][int(horizon)]
+        if int(horizon) == 2 and self.conditional_future_transition:
+            if first_selected_byte is None:
+                raise ValueError(
+                    "conditional horizon-2 proposal requires the selected first byte"
+                )
+            value = first_selected_byte.to(
+                device=logits.device, dtype=torch.long
+            ).flatten()
+            logits = logits + self.transition_head(value)
         return logits
 
     @torch.inference_mode()
@@ -9119,6 +10326,24 @@ class CausalAdaptiveBytePatchLM(nn.Module):
         if byte_ids.ndim != 2 or byte_ids.shape[0] != 1 or byte_ids.shape[1] == 0:
             raise ValueError("adaptive incremental prefill requires non-empty [1, length] bytes")
         state = self.init_incremental_state(device=byte_ids.device)
-        for value in byte_ids[0]:
-            self.incremental_step(state, value[None])
+        last_index = byte_ids.shape[1] - 1
+        for index, value in enumerate(byte_ids[0]):
+            self.incremental_step(
+                state,
+                value[None],
+                force_patch_close=(
+                    (
+                        self.prompt_memory_adapter is not None
+                        or self.prompt_cross_key is not None
+                        or self.prompt_pointer_key is not None
+                    )
+                    and index == last_index
+                ),
+            )
+        if (
+            self.prompt_memory_adapter is not None
+            or self.prompt_cross_key is not None
+            or self.prompt_pointer_key is not None
+        ):
+            self.mark_prompt_boundary(state)
         return state

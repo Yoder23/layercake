@@ -1,0 +1,27 @@
+{
+  "explicitly_prohibited_restarts": [
+    "nearby byte pointer or auxiliary-loss variants",
+    "another uniform or scalar-attention prompt pooling variant",
+    "larger-data continuation of a semantically failed checkpoint",
+    "planner, template, retrieval, forced continuation, or stored answers",
+    "renaming an already failed architecture search"
+  ],
+  "falsifiable_hypothesis": "The limiting factor is not unit compression or next-unit language modeling. It is prompt-to-response conditional generalization: a single pooled prompt vector cannot preserve task, topic, and requested structure. A materially distinct multi-slot prompt-state architecture trained on compositionally disjoint instruction tasks should raise topic recall to at least 0.82 and core adherence to at least 0.55 without adding recurrent decode work; otherwise this hypothesis is rejected.",
+  "format": "layercake-representation-falsifiable-diagnosis/1",
+  "observations": {
+    "byte_native": "Language-model BPB and CPU speed can pass separately, but autonomous prompt adherence collapses; the final pointer gate also loses the 2x speed and memory gates.",
+    "hybrid": "Exact byte fallback and language-model BPB pass, but semantic adherence fails and throughput falls to 1.91x at 1024 bytes.",
+    "shared_tokenizer": "Cached prompt attention improves topic-token recall from 0.12 to 0.225 and preserves 2x long-horizon speed, but core adherence remains 0.0 and process RSS remains too high."
+  },
+  "predeclared_refutation_gates": {
+    "core_adherence_pass_rate_minimum": 0.55,
+    "cpu_ratio_10m_continuation_minimum": 1.5,
+    "cpu_ratio_promotion_minimum": 2.0,
+    "functional_surface_noninferiority_required": true,
+    "long_horizon_cpu_ratio_minimum": 2.0,
+    "median_process_resident_bytes_maximum_exclusive": 214990848,
+    "topic_token_recall_minimum": 0.82,
+    "validation_bpb_maximum": 1.7173530535092476
+  },
+  "status": "ACTIONABLE_NO_WINNER"
+}

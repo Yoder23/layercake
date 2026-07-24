@@ -1,0 +1,32 @@
+{
+  "format": "layercake-phase2-byte-instruction-finetune/1",
+  "candidate_name": "sliding16_cosine_promptmem288_step400",
+  "seed": 20260809,
+  "instruction_corpus": "data/moonshot/phase2/instruction_distillation_curated.jsonl",
+  "model_overrides": {
+    "prompt_memory_adapter_dim": 288
+  },
+  "training": {
+    "steps": 400,
+    "batch_size": 2,
+    "wiki_batch_size": 2,
+    "sequence_bytes": 1280,
+    "learning_rate": 0.001,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "instruction_weight": 1.0,
+    "wiki_weight": 0.0,
+    "prompt_separator": "none",
+    "prompt_contrastive_weight": 1.0,
+    "prompt_contrastive_margin_nats": 0.1,
+    "routing_balance_weight": 0.0,
+    "trainable_parameters": "prompt_memory_adapter"
+  },
+  "budget": {
+    "maximum_runs": 1,
+    "maximum_steps": 400,
+    "maximum_wall_seconds": 600,
+    "maximum_cuda_memory_bytes": 12884901888
+  },
+  "hypothesis": "Loss-only long-response training left same-task prompt sensitivity at 0.0035 BPB and damaged base BPB. A neural prompt-memory adapter computed once from the final prefill patch, cached in persistent state, and applied as FiLM modulation gives response logits a direct prompt-dependent path. Freezing every source parameter guarantees the locked raw-English BPB lineage while adding only a cached vector operation per decoded byte."
+}

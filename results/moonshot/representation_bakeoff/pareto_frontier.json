@@ -1,0 +1,243 @@
+{
+  "comparators": {
+    "matched_quality_product": {
+      "candidate": {
+        "active_parameters": null,
+        "architecture": "optimized Qwen2.5 0.5B Ollama CPU deployment comparator",
+        "candidate": "qwen25-05b-cpu",
+        "checkpoint_sha256": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+        "evidence": "results/moonshot/phase1/raw_runs/headline_qwen_product.json",
+        "free_generation_quality": "LOCKED_PRODUCT_REFERENCE",
+        "median_cpu_bytes_per_second": 506.2597482558446,
+        "median_process_resident_bytes": 214990848,
+        "median_time_to_first_output_seconds": 0.26304215,
+        "notes": "Product comparator quality is functional rather than BPB; null fields are not silently imputed.",
+        "repetition_rate_4gram": 0.22426637744126507,
+        "representation": "versioned deployment tokenizer",
+        "selection_bpb": null,
+        "test_bpb": null,
+        "total_parameters": null,
+        "training_wall_seconds": null,
+        "transformer_relative_throughput": 1.0,
+        "valid_output_rate": 1.0,
+        "validation_bpb": null
+      },
+      "quality_evidence": "results/moonshot/phase1/functional_quality.json",
+      "single_deployment_lineage": true,
+      "speed_evidence": "results/moonshot/phase1/raw_runs/headline_qwen_product.json"
+    },
+    "same_scale_architecture": {
+      "evidence": "results/moonshot/phase1/comparison_certificate.json",
+      "quality_and_speed_use_one_transformer": true
+    }
+  },
+  "format": "layercake-representation-pareto-frontier/1",
+  "locked_gates": {
+    "autonomous_functional_noninferiority_required": true,
+    "lower_active_memory_required": true,
+    "maximum_transformer_relative_latency": 0.6,
+    "minimum_transformer_relative_throughput": 2.0,
+    "optimized_transformer_median_bytes_per_second": 506.2597482558446,
+    "quality_ceiling_validation_bpb": 1.7173530535092476
+  },
+  "pareto_sha256": "40d340188a64be970b7fee153c360e66b5cfd446f784f47a8eb7848dae280fab",
+  "promoted_candidate": null,
+  "promotion_rule": "A row must pass held-out quality, autonomous functional quality, 2x CPU at short and long horizons, lower process memory, physical sparsity, incremental state, and portability readiness using one checkpoint.",
+  "rows": [
+    {
+      "active_parameters": null,
+      "architecture": "optimized Qwen2.5 0.5B Ollama CPU deployment comparator",
+      "branch": "PRODUCT_COMPARATOR",
+      "candidate": "qwen25-05b-cpu",
+      "checkpoint_sha256": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+      "evidence": "results/moonshot/phase1/raw_runs/headline_qwen_product.json",
+      "free_generation_quality": "LOCKED_PRODUCT_REFERENCE",
+      "median_cpu_bytes_per_second": 506.2597482558446,
+      "median_process_resident_bytes": 214990848,
+      "median_time_to_first_output_seconds": 0.26304215,
+      "notes": "Product comparator quality is functional rather than BPB; null fields are not silently imputed.",
+      "repetition_rate_4gram": 0.22426637744126507,
+      "representation": "versioned deployment tokenizer",
+      "selection_bpb": null,
+      "test_bpb": null,
+      "total_parameters": null,
+      "training_wall_seconds": null,
+      "transformer_relative_throughput": 1.0,
+      "valid_output_rate": 1.0,
+      "validation_bpb": null
+    },
+    {
+      "active_parameters": 2531664,
+      "architecture": "whitespace-complete adaptive 2/4-byte patches, sliding-16 local attention, top-1 routed experts",
+      "branch": "A_BYTE_PATCH",
+      "candidate": "whitespace_complete_sliding16_local2_core7_cosine_100m",
+      "checkpoint_sha256": "9bdbfa0d984b0185a0cb7f465acf21787a404e15b6345fabf7282e6748ccd132",
+      "evidence": [
+        "results/moonshot/phase2_recertification/architecture_search_100m_sliding_cosine.json",
+        "results/moonshot/phase2_recertification/architecture_search_100m_sliding_cosine_rescreen20.json",
+        "results/moonshot/phase2_recertification/functional_screen_100m_sliding_cosine_sampled.json",
+        "results/moonshot/phase2_recertification/functional_semantic_audit_100m_sliding_cosine_sampled_128.json"
+      ],
+      "free_generation_quality": "FAIL_SEMANTIC_ADHERENCE_AND_LONG_HORIZON_COHERENCE",
+      "median_cpu_bytes_per_second": 1273.3367458729392,
+      "median_process_resident_bytes": 364808192,
+      "median_time_to_first_output_seconds": 0.0965542,
+      "repetition_rate_4gram": 0.058480000000000004,
+      "representation": "raw UTF-8 bytes with deterministic causal patches",
+      "selection_bpb": 1.7045180856497273,
+      "test_bpb": null,
+      "total_parameters": 2969136,
+      "training_wall_seconds": 1407.1967757999664,
+      "transformer_relative_throughput": 2.5151846463397716,
+      "valid_output_rate": 1.0,
+      "validation_bpb": 1.691692952413923
+    },
+    {
+      "active_parameters": 2543265,
+      "architecture": "sliding-16 byte-patch core with neural prompt pointer and supervised pointer gate",
+      "branch": "A_BYTE_PATCH_FINAL",
+      "candidate": "sliding16_cosine_pointer_gate_step300",
+      "checkpoint_sha256": "bbbdaed2bf10e04d107147d6746101e43cb7ee5d6c2861b9ea5ecdaefde44d15",
+      "evidence": [
+        "results/moonshot/phase2_recertification/instruction_finetune_pointer_gate_step300.json",
+        "results/moonshot/phase2_recertification/functional_screen_pointer_gate_step300_greedy128.json",
+        "results/moonshot/phase2_recertification/functional_semantic_audit_pointer_gate_step300_greedy128.json",
+        "results/moonshot/phase2_recertification/instruction_finetune_pointer_gate_step300_rescreen20.json",
+        "results/moonshot/phase2_recertification/instruction_finetune_pointer_gate_step300_rescreen1024x20.json"
+      ],
+      "free_generation_quality": "FAIL_REPETITION_COLLAPSE_AND_PROMPT_ADHERENCE",
+      "median_cpu_bytes_per_second": 924.9498353154361,
+      "median_cpu_bytes_per_second_1024": 862.8539554612934,
+      "median_process_resident_bytes": 366436352,
+      "median_time_to_first_output_seconds": 0.12043435,
+      "repetition_rate_4gram": 0.526,
+      "representation": "raw UTF-8 bytes with deterministic causal patches and neural prompt pointer",
+      "selection_bpb": 1.712170211849265,
+      "test_bpb": null,
+      "total_parameters": 2980737,
+      "training_wall_seconds": null,
+      "transformer_relative_throughput": 1.8270262222150844,
+      "transformer_relative_throughput_1024_diagnostic": 1.6961431205996853,
+      "valid_output_rate": 1.0,
+      "validation_bpb": 1.6984938451085576
+    },
+    {
+      "active_fraction": 0.7567123186879999,
+      "active_parameters": 5430241,
+      "architecture_sha256": "e716314cb0e036144fbae380a89d87194df905dbb057144b54f54ca5037cf7da",
+      "branch": "B_SHARED_TOKENIZER",
+      "candidate": "shared_tokenizer_prompt_attention_curated/seed-9824",
+      "checkpoint_sha256": "69ff748cf521b456be257d2d50e69445098d00a82fe239e49dd454f498c32706",
+      "core_adherence_pass_rate": 0.0,
+      "data_hashes": {
+        "architecture_selection": {
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\architecture_selection.bin",
+          "sha256": "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93"
+        },
+        "test": {
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\test.bin",
+          "sha256": "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388"
+        },
+        "train": {
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\train_medium.bin",
+          "sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6"
+        },
+        "validation": {
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\validation.bin",
+          "sha256": "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10"
+        }
+      },
+      "functional_semantic_pass": false,
+      "functional_surface_pass": false,
+      "language_model_quality_pass": true,
+      "median_cpu_bytes_per_second_1024": 1018.0540755301179,
+      "median_cpu_bytes_per_second_128": 1217.596830640567,
+      "median_process_resident_bytes": 393781248.0,
+      "median_time_to_first_output_seconds": 0.008718050000000001,
+      "persistent_incremental_state": true,
+      "physical_top1_sparse_execution": true,
+      "planner_enabled": false,
+      "quality_ceiling_bpb": 1.7173530535092476,
+      "raw_bytes_seen_before_instruction_finetune": 120020992,
+      "rejection_reasons": [
+        "functional semantic noninferiority failed",
+        "functional surface noninferiority failed",
+        "process-resident memory exceeds the deployment transformer",
+        "shared-tokenizer training provenance is incomplete for production",
+        "canonical portable-cake ABI is not implemented by this candidate"
+      ],
+      "repetition_rate_4gram": 0.3148447324749138,
+      "representation_sha256": "814d0dc4af476b802f090460267a1a2baac57e871c9d742e54968e866ec64ad7",
+      "selection_bpb": 1.654519631618063,
+      "tokenizer_sha256": "d1c03801fd9559b8586490733a3788439ff230bf5f09666a0abb7ddb615e9f10",
+      "topic_token_recall": 0.225,
+      "total_parameters": 7176097,
+      "training_wall_seconds": 105.61516259994823,
+      "transformer_relative_throughput_1024": 2.01093229125463,
+      "transformer_relative_throughput_128": 2.40508323017069,
+      "valid_utf8_rate": 1.0,
+      "validation_bpb": 1.6619006979877433,
+      "word_diversity": 0.6402862311722993
+    },
+    {
+      "active_fraction": 0.7486316138663128,
+      "active_parameters": 5199552,
+      "architecture_sha256": "8c93a1884fcce8ed352a4cea8f079f05b0b67dd52963c8d5b5c32bd08a9a6404",
+      "branch": "C_HYBRID_TOKEN_BYTE",
+      "byte_fallback_round_trip_exact": true,
+      "candidate": "hybrid_token_byte_10m/seed-9824",
+      "checkpoint_sha256": "ce70e1cfdf805b250b67a50db247cf8edb405638c50eb7489cee513a969ac59e",
+      "core_adherence_pass_rate": 0.0,
+      "data_hashes": {
+        "architecture_selection": {
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\architecture_selection.bin",
+          "sha256": "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93"
+        },
+        "test": {
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\test.bin",
+          "sha256": "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388"
+        },
+        "train": {
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\train_medium.bin",
+          "sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6"
+        },
+        "validation": {
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\validation.bin",
+          "sha256": "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10"
+        }
+      },
+      "functional_semantic_pass": false,
+      "functional_surface_pass": false,
+      "language_model_quality_pass": true,
+      "median_cpu_bytes_per_second_1024": 965.5414270519166,
+      "median_cpu_bytes_per_second_128": 1090.6473630270266,
+      "median_process_resident_bytes": 392294400.0,
+      "median_time_to_first_output_seconds": 0.00921675,
+      "persistent_incremental_state": true,
+      "physical_top1_sparse_execution": true,
+      "planner_enabled": false,
+      "quality_ceiling_bpb": 1.7173530535092476,
+      "raw_bytes_seen": 110010368,
+      "rejection_reasons": [
+        "functional semantic noninferiority failed",
+        "functional surface noninferiority failed",
+        "1024-byte CPU throughput is below 2x",
+        "process-resident memory exceeds the deployment transformer",
+        "canonical portable-cake ABI is not implemented by this candidate"
+      ],
+      "repetition_rate_4gram": 0.23832595419569266,
+      "representation_sha256": "b8bdff2480f7d3702c98ccefae309a84dbb4419b536d5fafd144501f9d30c1dc",
+      "selection_bpb": 1.6279527386968555,
+      "tokenizer_sha256": "17817b363dadeca9bfd5bd191a109ce589d6ef6f2ef67d617df6bab00fceca85",
+      "topic_token_recall": 0.04,
+      "total_parameters": 6945408,
+      "training_wall_seconds": 62.37919220002368,
+      "transformer_relative_throughput_1024": 1.907205600244498,
+      "transformer_relative_throughput_128": 2.1543236782787925,
+      "valid_utf8_rate": 0.97,
+      "validation_bpb": 1.6347905929923652,
+      "word_diversity": 0.6056437405756394
+    }
+  ],
+  "status": "COMPLETE_NO_PROMOTION"
+}

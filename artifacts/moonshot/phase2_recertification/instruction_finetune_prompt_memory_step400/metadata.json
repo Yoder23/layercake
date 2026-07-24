@@ -1,0 +1,167 @@
+{
+  "candidate": {
+    "hypothesis": "the same-seed 10m cosine tail improved validation BPB by 0.03925 and repetition with identical inference architecture; applying the exact schedule to 100m projects 1.71728 BPB while the architecture has a measured 2.37x CPU ratio",
+    "kind": "adaptive_two_four",
+    "model": {
+      "d_abi": 64,
+      "d_byte": 48,
+      "d_model": 144,
+      "expert_expansion": 1,
+      "heads": 4,
+      "layers": 7,
+      "local_context_mode": "sliding",
+      "local_layers": 2,
+      "local_window": 16,
+      "max_patches": 256,
+      "patch_boundary_mode": "whitespace_any",
+      "prompt_memory_adapter_dim": 288,
+      "routed_experts": 8,
+      "routing_mode": "learned_top1",
+      "use_completed_patch_context": true
+    },
+    "name": "sliding16_cosine_promptmem288_step400"
+  },
+  "checkpoint": {
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2_recertification\\instruction_finetune_prompt_memory_step400\\model.safetensors",
+    "sha256": "5f585b85a80cd34a97c3096d4ebc78a57eda95490fa49d1003b203febadc9122"
+  },
+  "format": "layercake-byte-instruction-finetune/1",
+  "frozen_parameter_verification": {
+    "all_source_parameters_bitwise_equal": true,
+    "bitwise_equal_source_parameters": 153,
+    "checked_source_parameters": 153,
+    "scope": "prompt_memory_adapter"
+  },
+  "instruction_corpus_sha256": "393fb2161a0861cf1ace86a1f415f689d9479dda947b28e786e872b2c938c270",
+  "instruction_manifest_sha256": "79e342e99669ee022f0935c033e9d5b4c274fe0125c86c66ffbf793c76630ee3",
+  "quality": {
+    "selection": {
+      "bits_per_byte": 1.7045180856497273,
+      "byte_accuracy": 0.6510162353515625,
+      "evaluated_bytes": 65536,
+      "mean_bytes_per_patch": 3.1157174099077682,
+      "patches": 21034
+    },
+    "test_accessed": false,
+    "validation": {
+      "bits_per_byte": 1.691692952413923,
+      "byte_accuracy": 0.654632568359375,
+      "evaluated_bytes": 65536,
+      "mean_bytes_per_patch": 3.1255246089278903,
+      "patches": 20968
+    }
+  },
+  "seed": 20260809,
+  "source_checkpoint_sha256": "9bdbfa0d984b0185a0cb7f465acf21787a404e15b6345fabf7282e6748ccd132",
+  "status": "PASS",
+  "training": {
+    "batch_size": 2,
+    "curves": [
+      {
+        "heldout_instruction_response_bpb": 2.859313847452829,
+        "heldout_prompt_conditioning": {
+          "compared_examples": 60.0,
+          "correct_prompt_lower_loss_rate": 0.5166666666666667,
+          "correct_prompt_response_bpb": 2.8593139088844337,
+          "mismatched_minus_correct_bpb": 0.0002223436602681872,
+          "mismatched_prompt_response_bpb": 2.859536252544702,
+          "response_target_bytes_correct": 46585.0,
+          "response_target_bytes_mismatched": 46585.0
+        },
+        "instruction_loss": 2.0004961490631104,
+        "prompt_contrastive_loss": 0.04950547218322754,
+        "step": 1,
+        "validation_bpb": 1.691692952413923,
+        "wall_seconds": 29.38501540001016,
+        "wiki_loss": 0.0
+      },
+      {
+        "heldout_instruction_response_bpb": 2.723557550280971,
+        "heldout_prompt_conditioning": {
+          "compared_examples": 60.0,
+          "correct_prompt_lower_loss_rate": 0.55,
+          "correct_prompt_response_bpb": 2.7235574557708095,
+          "mismatched_minus_correct_bpb": 0.0007319235477254438,
+          "mismatched_prompt_response_bpb": 2.724289379318535,
+          "response_target_bytes_correct": 46585.0,
+          "response_target_bytes_mismatched": 46585.0
+        },
+        "instruction_loss": 1.7804186344146729,
+        "prompt_contrastive_loss": 0.07635289430618286,
+        "step": 200,
+        "validation_bpb": 1.691692952413923,
+        "wall_seconds": 228.73176759993657,
+        "wiki_loss": 0.0
+      },
+      {
+        "heldout_instruction_response_bpb": 2.7335231250892744,
+        "heldout_prompt_conditioning": {
+          "compared_examples": 60.0,
+          "correct_prompt_lower_loss_rate": 0.48333333333333334,
+          "correct_prompt_response_bpb": 2.7335231269794775,
+          "mismatched_minus_correct_bpb": -0.0004901315864742628,
+          "mismatched_prompt_response_bpb": 2.7330329953930033,
+          "response_target_bytes_correct": 46585.0,
+          "response_target_bytes_mismatched": 46585.0
+        },
+        "instruction_loss": 1.9893549680709839,
+        "prompt_contrastive_loss": 0.11431753635406494,
+        "step": 400,
+        "validation_bpb": 1.691692952413923,
+        "wall_seconds": 429.75687649997417,
+        "wiki_loss": 0.0
+      }
+    ],
+    "gradient_clip": 1.0,
+    "instruction_sequence_coverage": {
+      "train": {
+        "examples": 420,
+        "fully_covered_response_examples": 159,
+        "maximum_response_target_bytes": 1159,
+        "mean_response_target_bytes": 852.1452380952381,
+        "minimum_response_target_bytes": 109,
+        "sequence_bytes": 1280,
+        "total_response_target_bytes_per_epoch": 357901,
+        "zero_response_target_examples": 0
+      },
+      "validation": {
+        "examples": 60,
+        "fully_covered_response_examples": 25,
+        "maximum_response_target_bytes": 1161,
+        "mean_response_target_bytes": 776.4166666666666,
+        "minimum_response_target_bytes": 109,
+        "sequence_bytes": 1280,
+        "total_response_target_bytes_per_epoch": 46585,
+        "zero_response_target_examples": 0
+      }
+    },
+    "instruction_weight": 1.0,
+    "learning_rate": 0.001,
+    "peak_cuda_memory_bytes": 201613824,
+    "prompt_contrastive_margin_nats": 0.1,
+    "prompt_contrastive_weight": 1.0,
+    "prompt_separator": "none",
+    "routing_balance_weight": 0.0,
+    "sequence_bytes": 1280,
+    "steps": 400,
+    "trainable_parameters": "prompt_memory_adapter",
+    "wall_seconds": 434.8840205000015,
+    "weight_decay": 0.01,
+    "wiki_batch_size": 2,
+    "wiki_weight": 0.0
+  },
+  "weight_transfer": {
+    "architecture_overrides": {
+      "prompt_memory_adapter_dim": 288
+    },
+    "missing_parameters": [
+      "prompt_memory_adapter.0.weight",
+      "prompt_memory_adapter.0.bias",
+      "prompt_memory_adapter.1.weight",
+      "prompt_memory_adapter.1.bias",
+      "prompt_memory_adapter.3.weight",
+      "prompt_memory_adapter.3.bias"
+    ],
+    "unexpected_parameters": []
+  }
+}

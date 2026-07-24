@@ -1,0 +1,24 @@
+{
+  "format": "layercake-phase2-byte-instruction-finetune/1",
+  "candidate_name": "sliding16_cosine_instruction_mix",
+  "seed": 20260806,
+  "instruction_corpus": "data/moonshot/phase2/instruction_distillation_curated.jsonl",
+  "training": {
+    "steps": 1000,
+    "batch_size": 8,
+    "wiki_batch_size": 8,
+    "sequence_bytes": 256,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "instruction_weight": 1.0,
+    "wiki_weight": 2.0,
+    "routing_balance_weight": 0.02
+  },
+  "budget": {
+    "maximum_runs": 1,
+    "maximum_steps": 1000,
+    "maximum_wall_seconds": 1200,
+    "maximum_cuda_memory_bytes": 12884901888
+  }
+}

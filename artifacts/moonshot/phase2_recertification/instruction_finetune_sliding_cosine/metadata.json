@@ -1,0 +1,90 @@
+{
+  "candidate": {
+    "hypothesis": "the same-seed 10m cosine tail improved validation BPB by 0.03925 and repetition with identical inference architecture; applying the exact schedule to 100m projects 1.71728 BPB while the architecture has a measured 2.37x CPU ratio",
+    "kind": "adaptive_two_four",
+    "model": {
+      "d_abi": 64,
+      "d_byte": 48,
+      "d_model": 144,
+      "expert_expansion": 1,
+      "heads": 4,
+      "layers": 7,
+      "local_context_mode": "sliding",
+      "local_layers": 2,
+      "local_window": 16,
+      "max_patches": 256,
+      "patch_boundary_mode": "whitespace_any",
+      "routed_experts": 8,
+      "routing_mode": "learned_top1",
+      "use_completed_patch_context": true
+    },
+    "name": "sliding16_cosine_instruction_mix"
+  },
+  "checkpoint": {
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2_recertification\\instruction_finetune_sliding_cosine\\model.safetensors",
+    "sha256": "f8ec279e4926fbb95860cd7764269545d40a0d3dd2ec42a71a00e27d5e80c871"
+  },
+  "format": "layercake-byte-instruction-finetune/1",
+  "instruction_corpus_sha256": "393fb2161a0861cf1ace86a1f415f689d9479dda947b28e786e872b2c938c270",
+  "instruction_manifest_sha256": "79e342e99669ee022f0935c033e9d5b4c274fe0125c86c66ffbf793c76630ee3",
+  "quality": {
+    "selection": {
+      "bits_per_byte": 1.7378543159074304,
+      "byte_accuracy": 0.6441192626953125,
+      "evaluated_bytes": 65536,
+      "mean_bytes_per_patch": 3.1157174099077682,
+      "patches": 21034
+    },
+    "test_accessed": false,
+    "validation": {
+      "bits_per_byte": 1.7229193478809621,
+      "byte_accuracy": 0.648895263671875,
+      "evaluated_bytes": 65536,
+      "mean_bytes_per_patch": 3.1255246089278903,
+      "patches": 20968
+    }
+  },
+  "seed": 20260806,
+  "source_checkpoint_sha256": "9bdbfa0d984b0185a0cb7f465acf21787a404e15b6345fabf7282e6748ccd132",
+  "status": "PASS",
+  "training": {
+    "batch_size": 8,
+    "curves": [
+      {
+        "heldout_instruction_response_bpb": 2.250550812685396,
+        "instruction_loss": 1.456924319267273,
+        "step": 1,
+        "validation_bpb": 1.6916382350586596,
+        "wall_seconds": 3.3899138999404386,
+        "wiki_loss": 1.1207748651504517
+      },
+      {
+        "heldout_instruction_response_bpb": 1.6518650541150288,
+        "instruction_loss": 0.9200889468193054,
+        "step": 500,
+        "validation_bpb": 1.716846280390321,
+        "wall_seconds": 108.86949899990577,
+        "wiki_loss": 1.1000893115997314
+      },
+      {
+        "heldout_instruction_response_bpb": 1.6032301777949116,
+        "instruction_loss": 0.8414546847343445,
+        "step": 1000,
+        "validation_bpb": 1.7229193478809621,
+        "wall_seconds": 214.35778299998492,
+        "wiki_loss": 1.1881881952285767
+      }
+    ],
+    "gradient_clip": 1.0,
+    "instruction_weight": 1.0,
+    "learning_rate": 5e-05,
+    "peak_cuda_memory_bytes": 294741504,
+    "routing_balance_weight": 0.02,
+    "sequence_bytes": 256,
+    "steps": 1000,
+    "wall_seconds": 219.20606999995653,
+    "weight_decay": 0.01,
+    "wiki_batch_size": 8,
+    "wiki_weight": 2.0
+  }
+}

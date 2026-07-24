@@ -34,6 +34,26 @@ def _canonical_hash(value: dict) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def _learning_rate_multiplier(training: dict, step: int, steps: int) -> float:
+    schedule = str(training.get("learning_rate_schedule", "constant"))
+    if schedule == "constant":
+        return 1.0
+    if schedule != "cosine_tail":
+        raise ValueError(f"unsupported learning-rate schedule: {schedule}")
+    start_fraction = float(training.get("decay_start_fraction", 0.75))
+    minimum_ratio = float(training.get("minimum_learning_rate_ratio", 0.05))
+    if not 0.0 <= start_fraction < 1.0:
+        raise ValueError("decay_start_fraction must be in [0, 1)")
+    if not 0.0 <= minimum_ratio <= 1.0:
+        raise ValueError("minimum_learning_rate_ratio must be in [0, 1]")
+    progress = (step - 1) / max(1, steps - 1)
+    if progress <= start_fraction:
+        return 1.0
+    tail = (progress - start_fraction) / (1.0 - start_fraction)
+    cosine = 0.5 * (1.0 + math.cos(math.pi * tail))
+    return minimum_ratio + (1.0 - minimum_ratio) * cosine
+
+
 def _build_model(candidate: dict) -> torch.nn.Module:
     kind = str(candidate["kind"])
     arguments = copy.deepcopy(candidate.get("model", {}))
@@ -44,7 +64,12 @@ def _build_model(candidate: dict) -> torch.nn.Module:
     raise ValueError(f"unsupported patch candidate kind: {kind}")
 
 
-def _forward(model: torch.nn.Module, inputs: torch.Tensor):
+def _forward(
+    model: torch.nn.Module,
+    inputs: torch.Tensor,
+    *,
+    prompt_boundary_indexes: torch.Tensor | None = None,
+):
     original_length = inputs.shape[1]
     if isinstance(model, CausalAdaptiveBytePatchLM):
         # The adaptive implementation consumes 2/4-byte patches and fixed local
@@ -53,7 +78,17 @@ def _forward(model: torch.nn.Module, inputs: torch.Tensor):
         pad = (-original_length) % multiple
         if pad:
             inputs = F.pad(inputs, (0, pad))
-    logits, _, metadata = model(inputs)
+    if isinstance(model, CausalAdaptiveBytePatchLM):
+        logits, _, metadata = model(
+            inputs,
+            prompt_boundary_indexes=prompt_boundary_indexes,
+        )
+    else:
+        if prompt_boundary_indexes is not None:
+            raise ValueError(
+                "prompt memory requires an adaptive patch model"
+            )
+        logits, _, metadata = model(inputs)
     return logits[:, :original_length], metadata
 
 
@@ -235,11 +270,33 @@ def _train_patch_candidate(
     ), start=1):
         if step <= start_step:
             continue
+        learning_rate = float(training["learning_rate"]) * (
+            _learning_rate_multiplier(training, step, steps)
+        )
+        for parameter_group in optimizer.param_groups:
+            parameter_group["lr"] = learning_rate
         inputs, targets = row[:, :-1], row[:, 1:]
         optimizer.zero_grad(set_to_none=True)
         with autocast():
             logits, metadata = _forward(model, inputs)
             loss = F.cross_entropy(logits.flatten(0, 1), targets.flatten())
+            future_weight = float(candidate.get(
+                "future_byte_loss_weight",
+                training.get("future_byte_loss_weight", 0.0),
+            ))
+            if future_weight:
+                future_logits = metadata.get("future_byte_logits", {})
+                auxiliary_losses = []
+                for horizon, predicted in future_logits.items():
+                    offset = int(horizon) - 1
+                    if offset >= targets.shape[1]:
+                        continue
+                    auxiliary_losses.append(F.cross_entropy(
+                        predicted[:, :-offset].flatten(0, 1),
+                        targets[:, offset:].flatten(),
+                    ))
+                if auxiliary_losses:
+                    loss = loss + future_weight * torch.stack(auxiliary_losses).mean()
             routing = metadata.get("routing")
             if routing is not None:
                 loss = loss + float(training.get("routing_balance_weight", 0.02)) * routing["balance_loss"]
@@ -273,6 +330,7 @@ def _train_patch_candidate(
             )
             curves.append({
                 "step": step,
+                "learning_rate": learning_rate,
                 "training_loss": float(loss.detach()),
                 "validation": diagnostic,
                 "wall_seconds": previous_wall_seconds + time.perf_counter() - started,

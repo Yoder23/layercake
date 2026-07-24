@@ -1,0 +1,153 @@
+{
+  "active_parameters": 2263248,
+  "candidate": {
+    "hypothesis": "independent-seed control anchors capacity relocation",
+    "kind": "adaptive_two_four",
+    "model": {
+      "d_abi": 64,
+      "d_byte": 48,
+      "d_model": 144,
+      "expert_expansion": 1,
+      "heads": 4,
+      "layers": 5,
+      "local_layers": 3,
+      "local_window": 16,
+      "max_patches": 128,
+      "routed_experts": 8,
+      "routing_mode": "learned_top1"
+    },
+    "name": "local3_core5_control"
+  },
+  "checkpoint": {
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2_recertification\\search_10m_patchrate\\local3_core5_control\\seed-20260726\\model.safetensors",
+    "sha256": "f25b0ca175415e9f691dce7105c85876df36730fe10f2a558feee4e161db0dd6"
+  },
+  "format": "layercake-variable-patch-run/1",
+  "memory": {
+    "cuda_peak_allocated_bytes": 448292864
+  },
+  "parameters": 2700720,
+  "quality": {
+    "architecture_selection": {
+      "bits_per_byte": 2.2798195620677792,
+      "byte_accuracy": 0.5419921875,
+      "evaluated_bytes": 32768,
+      "mean_bytes_per_patch": 3.358753587535875,
+      "patches": 9756
+    },
+    "test_accessed": false,
+    "validation": {
+      "bits_per_byte": 2.288117488495765,
+      "byte_accuracy": 0.539093017578125,
+      "evaluated_bytes": 32768,
+      "mean_bytes_per_patch": 3.3649620045183815,
+      "patches": 9738
+    }
+  },
+  "routing": {
+    "all_experts_meaningfully_trained": true,
+    "assignment_counts": [
+      406850,
+      410954,
+      405742,
+      409489,
+      407837,
+      412783,
+      401134,
+      405627
+    ],
+    "causal_patch_routing": true,
+    "expert_gradient_steps": [
+      1221,
+      1221,
+      1221,
+      1218,
+      1221,
+      1221,
+      1221,
+      1221
+    ],
+    "experts_used": 8,
+    "maximum_load_fraction": 0.1266043964941897,
+    "mean_normalized_entropy": 0.9938044375225132,
+    "mode": "learned_top1",
+    "router_collapsed": false,
+    "utilization": [
+      0.1247846900518216,
+      0.1260434251334799,
+      0.1244448561165201,
+      0.12559409596812185,
+      0.12508741215844849,
+      0.1266043964941897,
+      0.12303153953360553,
+      0.12440958454381282
+    ]
+  },
+  "run_fingerprint": "ab5be9b402ec8742e4c2afeef7c3fa01b9688a4e07d9b5b18a7a114c3d82fad5",
+  "seed": 20260726,
+  "status": "PASS",
+  "training": {
+    "batch_size": 32,
+    "curves": [
+      {
+        "step": 1,
+        "training_loss": 5.8095879554748535,
+        "training_mean_bytes_per_patch": 3.3382233088834554,
+        "validation": {
+          "bits_per_byte": 7.147184491669748,
+          "byte_accuracy": 0.1690673828125,
+          "evaluated_bytes": 32768,
+          "mean_bytes_per_patch": 3.3649620045183815,
+          "patches": 9738
+        },
+        "wall_seconds": 0.5232153999386355
+      },
+      {
+        "step": 610,
+        "training_loss": 1.772466778755188,
+        "training_mean_bytes_per_patch": 3.3656532456861132,
+        "validation": {
+          "bits_per_byte": 2.5220697127883054,
+          "byte_accuracy": 0.49365234375,
+          "evaluated_bytes": 32768,
+          "mean_bytes_per_patch": 3.3649620045183815,
+          "patches": 9738
+        },
+        "wall_seconds": 31.109510399983265
+      },
+      {
+        "step": 1220,
+        "training_loss": 1.6349437236785889,
+        "training_mean_bytes_per_patch": 3.4005811540058115,
+        "validation": {
+          "bits_per_byte": 2.287758377971848,
+          "byte_accuracy": 0.539154052734375,
+          "evaluated_bytes": 32768,
+          "mean_bytes_per_patch": 3.3649620045183815,
+          "patches": 9738
+        },
+        "wall_seconds": 60.25110739993397
+      },
+      {
+        "step": 1221,
+        "training_loss": 1.661921501159668,
+        "training_mean_bytes_per_patch": 3.3781443298969074,
+        "validation": {
+          "bits_per_byte": 2.288117488495765,
+          "byte_accuracy": 0.539093017578125,
+          "evaluated_bytes": 32768,
+          "mean_bytes_per_patch": 3.3649620045183815,
+          "patches": 9738
+        },
+        "wall_seconds": 60.552750299917534
+      }
+    ],
+    "raw_bytes_seen": 10002432,
+    "resumable": true,
+    "resume_metadata": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2_recertification\\search_10m_patchrate\\local3_core5_control\\seed-20260726\\resume.json",
+    "resumed_from_step": 0,
+    "sequence_bytes": 256,
+    "steps": 1221,
+    "wall_seconds": 60.62171350000426
+  }
+}

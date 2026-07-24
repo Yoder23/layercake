@@ -1,0 +1,32 @@
+{
+  "format": "layercake-phase2-byte-instruction-finetune/1",
+  "candidate_name": "sliding16_cosine_promptcross48_step400",
+  "seed": 20260810,
+  "instruction_corpus": "data/moonshot/phase2/instruction_distillation_curated.jsonl",
+  "model_overrides": {
+    "prompt_cross_attention_dim": 48
+  },
+  "training": {
+    "steps": 400,
+    "batch_size": 2,
+    "wiki_batch_size": 2,
+    "sequence_bytes": 1280,
+    "learning_rate": 0.001,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "instruction_weight": 1.0,
+    "wiki_weight": 0.0,
+    "prompt_separator": "none",
+    "prompt_contrastive_weight": 1.0,
+    "prompt_contrastive_margin_nats": 0.1,
+    "routing_balance_weight": 0.0,
+    "trainable_parameters": "prompt_cross_attention"
+  },
+  "budget": {
+    "maximum_runs": 1,
+    "maximum_steps": 400,
+    "maximum_wall_seconds": 600,
+    "maximum_cuda_memory_bytes": 12884901888
+  },
+  "hypothesis": "The single-vector prompt summary preserved base BPB but ended with a negative correct-versus-mismatched prompt gap, proving that the frozen terminal patch state does not retain usable lexical detail. A 48-dimensional neural cross-attention adapter over cached raw-byte prompt features exposes the full prompt to every response query while computing prompt keys and values once, retaining only a small query-attention-output path during decode."
+}

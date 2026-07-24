@@ -1,0 +1,56 @@
+{
+  "format": "layercake-sparse-bpe-training-config/1",
+  "scale_status": "representation_bakeoff_hybrid_10m",
+  "seed": 9824,
+  "device": "cuda",
+  "precision": "fp16",
+  "initial_checkpoint": "artifacts/moonshot/phase2/sparse-bpe-288x3-full/seed-9824",
+  "model": {
+    "architecture_version": "layercake-sparse-hybrid-token-byte-core/1",
+    "width": 288,
+    "layers": 3,
+    "heads": 8,
+    "max_tokens": 1024,
+    "expansion": 4,
+    "routed_experts": 8,
+    "expert_expansion": 1,
+    "routing_mode": "learned_top1",
+    "route_after_layers": 1,
+    "prompt_conditioning": false,
+    "constrained_english_planner": false
+  },
+  "tokenizer": {
+    "path": "results/moonshot/representation_bakeoff/hybrid_branch/hybrid_token_byte_2304.json"
+  },
+  "training": {
+    "steps": 1221,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.0005,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "routing_balance_weight": 0.02,
+    "evaluation_interval": 300,
+    "resumable": true
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "sequence_bytes": 256,
+    "batches": 16,
+    "evaluate_test": false
+  },
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  },
+  "bakeoff_contract": {
+    "branch": "C_HYBRID_TOKEN_BYTE",
+    "fixed_stage_raw_byte_exposure": 10002432,
+    "shared_parent_checkpoint_sha256": "a5a6435eb89371f6fad62c1cd1e6c6c996614ec8ff9596c1e9174eb77b828b4d",
+    "shared_parent_raw_byte_exposure": 100007936,
+    "comparison_branch": "B_SHARED_TOKENIZER",
+    "test_accessed": false
+  }
+}

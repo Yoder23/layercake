@@ -1,0 +1,27 @@
+{
+  "format": "layercake-phase2-byte-instruction-finetune/1",
+  "candidate_name": "sliding16_cosine_longcontrast_step400",
+  "seed": 20260808,
+  "instruction_corpus": "data/moonshot/phase2/instruction_distillation_curated.jsonl",
+  "training": {
+    "steps": 400,
+    "batch_size": 2,
+    "wiki_batch_size": 2,
+    "sequence_bytes": 1280,
+    "learning_rate": 0.00003,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "instruction_weight": 1.0,
+    "wiki_weight": 3.0,
+    "prompt_contrastive_weight": 0.5,
+    "prompt_contrastive_margin_nats": 0.1,
+    "routing_balance_weight": 0.02
+  },
+  "budget": {
+    "maximum_runs": 1,
+    "maximum_steps": 400,
+    "maximum_wall_seconds": 600,
+    "maximum_cuda_memory_bytes": 12884901888
+  },
+  "hypothesis": "The failed instruction checkpoint trained with zero response targets for 100/420 examples, no fully covered responses, and only a 0.0071 BPB correct-versus-mismatched prompt gap. Extending response coverage to every example and adding a same-task prompt-contrastive loss should improve prompt adherence and long autonomous generation while preserving the frozen inference graph and its CPU throughput."
+}

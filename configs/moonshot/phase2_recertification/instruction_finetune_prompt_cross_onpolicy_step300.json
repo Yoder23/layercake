@@ -1,0 +1,32 @@
+{
+  "format": "layercake-phase2-byte-instruction-finetune/1",
+  "candidate_name": "sliding16_cosine_promptcross48_onpolicy_step300",
+  "seed": 20260813,
+  "instruction_corpus": "data/moonshot/phase2/instruction_distillation_curated.jsonl",
+  "training": {
+    "steps": 300,
+    "batch_size": 2,
+    "wiki_batch_size": 2,
+    "sequence_bytes": 1280,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "instruction_weight": 1.0,
+    "wiki_weight": 0.0,
+    "prompt_separator": "none",
+    "scheduled_sampling_probability": 0.35,
+    "prompt_contrastive_weight": 0.0,
+    "prompt_focus_weight": 2.0,
+    "prompt_focus_contrastive_weight": 2.0,
+    "prompt_focus_contrastive_margin_nats": 0.2,
+    "routing_balance_weight": 0.0,
+    "trainable_parameters": "prompt_cross_attention"
+  },
+  "budget": {
+    "maximum_runs": 1,
+    "maximum_steps": 300,
+    "maximum_wall_seconds": 600,
+    "maximum_cuda_memory_bytes": 12884901888
+  },
+  "hypothesis": "The focused cross-attention checkpoint has a +0.256 held-out topic-span BPB gap under teacher forcing but 0% frozen-suite topic recall and collapses on held-out autonomous instruction prompts. Replacing 35% of response inputs with the model's own teacher-forced argmax predictions attacks this measured exposure bias while continuing the exact same checkpoint and inference architecture."
+}

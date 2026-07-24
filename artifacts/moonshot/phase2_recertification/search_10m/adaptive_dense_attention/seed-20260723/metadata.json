@@ -1,0 +1,113 @@
+{
+  "active_parameters": 3199248,
+  "candidate": {
+    "hypothesis": "dense control measures whether routed capacity causes the quality gap",
+    "kind": "adaptive_two_four",
+    "model": {
+      "d_abi": 64,
+      "d_byte": 48,
+      "d_model": 144,
+      "heads": 4,
+      "layers": 6,
+      "local_layers": 6,
+      "local_window": 16,
+      "max_patches": 128,
+      "routed_experts": 0
+    },
+    "name": "adaptive_dense_attention"
+  },
+  "checkpoint": {
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2_recertification\\search_10m\\adaptive_dense_attention\\seed-20260723\\model.safetensors",
+    "sha256": "d94ede7a920ed657bd4223f6330c05ff2aa70b737ff25f2c743e7ce716cb466e"
+  },
+  "format": "layercake-variable-patch-run/1",
+  "memory": {
+    "cuda_peak_allocated_bytes": 673760768
+  },
+  "parameters": 3199248,
+  "quality": {
+    "architecture_selection": {
+      "bits_per_byte": 2.1697493863946162,
+      "byte_accuracy": 0.559967041015625,
+      "evaluated_bytes": 32768,
+      "mean_bytes_per_patch": 3.358753587535875,
+      "patches": 9756
+    },
+    "test_accessed": false,
+    "validation": {
+      "bits_per_byte": 2.1838881446155414,
+      "byte_accuracy": 0.55621337890625,
+      "evaluated_bytes": 32768,
+      "mean_bytes_per_patch": 3.3649620045183815,
+      "patches": 9738
+    }
+  },
+  "routing": null,
+  "run_fingerprint": "52f14ca084afec663a38a7c1bb4ceafb60c6720c19eb68adf4886127fbb9a15e",
+  "seed": 20260723,
+  "status": "PASS",
+  "training": {
+    "batch_size": 32,
+    "curves": [
+      {
+        "step": 1,
+        "training_loss": 5.6439714431762695,
+        "training_mean_bytes_per_patch": 3.376751854905194,
+        "validation": {
+          "bits_per_byte": 6.959219278083944,
+          "byte_accuracy": 0.1851806640625,
+          "evaluated_bytes": 32768,
+          "mean_bytes_per_patch": 3.3649620045183815,
+          "patches": 9738
+        },
+        "wall_seconds": 0.1604702000040561
+      },
+      {
+        "step": 610,
+        "training_loss": 1.6865248680114746,
+        "training_mean_bytes_per_patch": 3.3355048859934855,
+        "validation": {
+          "bits_per_byte": 2.410280581268684,
+          "byte_accuracy": 0.5146484375,
+          "evaluated_bytes": 32768,
+          "mean_bytes_per_patch": 3.3649620045183815,
+          "patches": 9738
+        },
+        "wall_seconds": 25.913784499978647
+      },
+      {
+        "step": 1220,
+        "training_loss": 1.5624364614486694,
+        "training_mean_bytes_per_patch": 3.3851239669421487,
+        "validation": {
+          "bits_per_byte": 2.1854947420464077,
+          "byte_accuracy": 0.556640625,
+          "evaluated_bytes": 32768,
+          "mean_bytes_per_patch": 3.3649620045183815,
+          "patches": 9738
+        },
+        "wall_seconds": 51.94609250000212
+      },
+      {
+        "step": 1221,
+        "training_loss": 1.5632975101470947,
+        "training_mean_bytes_per_patch": 3.396351575456053,
+        "validation": {
+          "bits_per_byte": 2.1838881446155414,
+          "byte_accuracy": 0.55621337890625,
+          "evaluated_bytes": 32768,
+          "mean_bytes_per_patch": 3.3649620045183815,
+          "patches": 9738
+        },
+        "wall_seconds": 52.17532789998222
+      }
+    ],
+    "raw_bytes_seen": 10002432,
+    "resumable": true,
+    "resume_metadata": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2_recertification\\search_10m\\adaptive_dense_attention\\seed-20260723\\resume.json",
+    "resumed_from_step": 0,
+    "sequence_bytes": 256,
+    "steps": 1221,
+    "wall_seconds": 52.23501479998231
+  }
+}

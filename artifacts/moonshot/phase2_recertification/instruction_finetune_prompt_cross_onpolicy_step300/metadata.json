@@ -1,0 +1,195 @@
+{
+  "candidate": {
+    "hypothesis": "the same-seed 10m cosine tail improved validation BPB by 0.03925 and repetition with identical inference architecture; applying the exact schedule to 100m projects 1.71728 BPB while the architecture has a measured 2.37x CPU ratio",
+    "kind": "adaptive_two_four",
+    "model": {
+      "d_abi": 64,
+      "d_byte": 48,
+      "d_model": 144,
+      "expert_expansion": 1,
+      "heads": 4,
+      "layers": 7,
+      "local_context_mode": "sliding",
+      "local_layers": 2,
+      "local_window": 16,
+      "max_patches": 256,
+      "patch_boundary_mode": "whitespace_any",
+      "prompt_cross_attention_dim": 48,
+      "routed_experts": 8,
+      "routing_mode": "learned_top1",
+      "use_completed_patch_context": true
+    },
+    "name": "sliding16_cosine_promptcross48_onpolicy_step300"
+  },
+  "checkpoint": {
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2_recertification\\instruction_finetune_prompt_cross_onpolicy_step300\\model.safetensors",
+    "sha256": "37547cea5c2e35d761c10f787b1fd574c753037745e5aae780d07471fd0ddef3"
+  },
+  "format": "layercake-byte-instruction-finetune/1",
+  "frozen_parameter_verification": {
+    "all_source_parameters_bitwise_equal": true,
+    "bitwise_equal_source_parameters": 153,
+    "checked_source_parameters": 153,
+    "excluded_trainable_source_parameters": 8,
+    "scope": "prompt_cross_attention"
+  },
+  "instruction_corpus_sha256": "393fb2161a0861cf1ace86a1f415f689d9479dda947b28e786e872b2c938c270",
+  "instruction_manifest_sha256": "79e342e99669ee022f0935c033e9d5b4c274fe0125c86c66ffbf793c76630ee3",
+  "quality": {
+    "selection": {
+      "bits_per_byte": 1.7045180856497273,
+      "byte_accuracy": 0.6510162353515625,
+      "evaluated_bytes": 65536,
+      "mean_bytes_per_patch": 3.1157174099077682,
+      "patches": 21034
+    },
+    "test_accessed": false,
+    "validation": {
+      "bits_per_byte": 1.691692952413923,
+      "byte_accuracy": 0.654632568359375,
+      "evaluated_bytes": 65536,
+      "mean_bytes_per_patch": 3.1255246089278903,
+      "patches": 20968
+    }
+  },
+  "seed": 20260813,
+  "source_checkpoint_sha256": "869884a745956c3f0e6e9fe443966ab585fae141f689ea27a681a8cb7b3ec1b4",
+  "status": "PASS",
+  "training": {
+    "batch_size": 2,
+    "curves": [
+      {
+        "heldout_instruction_response_bpb": 2.9005631173261253,
+        "heldout_prompt_conditioning": {
+          "compared_examples": 60.0,
+          "correct_prompt_lower_loss_rate": 0.6,
+          "correct_prompt_response_bpb": 2.9005631211065315,
+          "focused_compared_examples": 48.0,
+          "focused_correct_prompt_lower_loss_rate": 0.7291666666666666,
+          "focused_correct_prompt_response_bpb": 2.1124874593517244,
+          "focused_mismatched_minus_correct_bpb": 0.25518449099756735,
+          "focused_mismatched_prompt_response_bpb": 2.367671950349292,
+          "focused_target_bytes_correct": 1511.0,
+          "focused_target_bytes_mismatched": 1511.0,
+          "mismatched_minus_correct_bpb": 0.020991052722038717,
+          "mismatched_prompt_response_bpb": 2.92155417382857,
+          "response_target_bytes_correct": 46585.0,
+          "response_target_bytes_mismatched": 46585.0
+        },
+        "instruction_focus_loss": 2.573762893676758,
+        "instruction_loss": 3.4483041763305664,
+        "prompt_contrastive_loss": 1.5543968677520752,
+        "prompt_focus_contrastive_loss": 0.9339013695716858,
+        "scheduled_sampling_corrupted_fraction": 0.3471008737092931,
+        "scheduled_sampling_probability": 0.35,
+        "step": 1,
+        "validation_bpb": 1.691692952413923,
+        "wall_seconds": 30.598686299985275,
+        "wiki_loss": 0.0
+      },
+      {
+        "heldout_instruction_response_bpb": 2.9010290751035535,
+        "heldout_prompt_conditioning": {
+          "compared_examples": 60.0,
+          "correct_prompt_lower_loss_rate": 0.55,
+          "correct_prompt_response_bpb": 2.901029145041073,
+          "focused_compared_examples": 48.0,
+          "focused_correct_prompt_lower_loss_rate": 0.6875,
+          "focused_correct_prompt_response_bpb": 2.1017437188595425,
+          "focused_mismatched_minus_correct_bpb": 0.3126924590912945,
+          "focused_mismatched_prompt_response_bpb": 2.414436177950837,
+          "focused_target_bytes_correct": 1511.0,
+          "focused_target_bytes_mismatched": 1511.0,
+          "mismatched_minus_correct_bpb": 0.02457600554307149,
+          "mismatched_prompt_response_bpb": 2.9256051505841443,
+          "response_target_bytes_correct": 46585.0,
+          "response_target_bytes_mismatched": 46585.0
+        },
+        "instruction_focus_loss": 2.817753791809082,
+        "instruction_loss": 3.4063382148742676,
+        "prompt_contrastive_loss": 1.4507851600646973,
+        "prompt_focus_contrastive_loss": 0.8940011858940125,
+        "scheduled_sampling_corrupted_fraction": 0.3665874901029295,
+        "scheduled_sampling_probability": 0.35,
+        "step": 150,
+        "validation_bpb": 1.691692952413923,
+        "wall_seconds": 248.72743820003234,
+        "wiki_loss": 0.0
+      },
+      {
+        "heldout_instruction_response_bpb": 2.896301223188779,
+        "heldout_prompt_conditioning": {
+          "compared_examples": 60.0,
+          "correct_prompt_lower_loss_rate": 0.5333333333333333,
+          "correct_prompt_response_bpb": 2.89630111261189,
+          "focused_compared_examples": 48.0,
+          "focused_correct_prompt_lower_loss_rate": 0.7083333333333334,
+          "focused_correct_prompt_response_bpb": 2.081604567288929,
+          "focused_mismatched_minus_correct_bpb": 0.33037448280552795,
+          "focused_mismatched_prompt_response_bpb": 2.411979050094457,
+          "focused_target_bytes_correct": 1511.0,
+          "focused_target_bytes_mismatched": 1511.0,
+          "mismatched_minus_correct_bpb": 0.02438372840040426,
+          "mismatched_prompt_response_bpb": 2.920684841012294,
+          "response_target_bytes_correct": 46585.0,
+          "response_target_bytes_mismatched": 46585.0
+        },
+        "instruction_focus_loss": 2.968480110168457,
+        "instruction_loss": 3.2981343269348145,
+        "prompt_contrastive_loss": 1.2624475955963135,
+        "prompt_focus_contrastive_loss": 1.0840909481048584,
+        "scheduled_sampling_corrupted_fraction": 0.35987261146496813,
+        "scheduled_sampling_probability": 0.35,
+        "step": 300,
+        "validation_bpb": 1.691692952413923,
+        "wall_seconds": 469.2052345999982,
+        "wiki_loss": 0.0
+      }
+    ],
+    "gradient_clip": 1.0,
+    "instruction_sequence_coverage": {
+      "train": {
+        "examples": 420,
+        "fully_covered_response_examples": 159,
+        "maximum_response_target_bytes": 1159,
+        "mean_response_target_bytes": 852.1452380952381,
+        "minimum_response_target_bytes": 109,
+        "sequence_bytes": 1280,
+        "total_response_target_bytes_per_epoch": 357901,
+        "zero_response_target_examples": 0
+      },
+      "validation": {
+        "examples": 60,
+        "fully_covered_response_examples": 25,
+        "maximum_response_target_bytes": 1161,
+        "mean_response_target_bytes": 776.4166666666666,
+        "minimum_response_target_bytes": 109,
+        "sequence_bytes": 1280,
+        "total_response_target_bytes_per_epoch": 46585,
+        "zero_response_target_examples": 0
+      }
+    },
+    "instruction_weight": 1.0,
+    "learning_rate": 0.0003,
+    "peak_cuda_memory_bytes": 230247424,
+    "prompt_contrastive_weight": 0.0,
+    "prompt_focus_contrastive_margin_nats": 0.2,
+    "prompt_focus_contrastive_weight": 2.0,
+    "prompt_focus_weight": 2.0,
+    "prompt_separator": "none",
+    "routing_balance_weight": 0.0,
+    "scheduled_sampling_probability": 0.35,
+    "sequence_bytes": 1280,
+    "steps": 300,
+    "trainable_parameters": "prompt_cross_attention",
+    "wall_seconds": 474.4775098999962,
+    "weight_decay": 0.01,
+    "wiki_batch_size": 2,
+    "wiki_weight": 0.0
+  },
+  "weight_transfer": {
+    "architecture_overrides": {},
+    "missing_parameters": [],
+    "unexpected_parameters": []
+  }
+}

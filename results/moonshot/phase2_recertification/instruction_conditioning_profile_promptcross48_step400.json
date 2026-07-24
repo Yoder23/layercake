@@ -1,0 +1,43 @@
+{
+  "candidate": "sliding16_cosine_promptcross48_step400",
+  "checkpoint_sha256": "e19770cb39ba3d45fac9421a98b8f9be7605eaf1741644d3565e741aea0ba7ec",
+  "corpus_path": "data/moonshot/phase2/instruction_distillation_curated.jsonl",
+  "corpus_sha256": "393fb2161a0861cf1ace86a1f415f689d9479dda947b28e786e872b2c938c270",
+  "format": "layercake-phase2-instruction-conditioning-profile/1",
+  "input_path": "results/moonshot/phase2_recertification/instruction_finetune_prompt_cross_step400.json",
+  "input_sha256": "b0dedaaf3b0fb9c2b9ff89c33e5df314d228c4a0dbc0e4e4937aa256875c0af2",
+  "interpretation": {
+    "desired_direction": "mismatched-minus-correct BPB must be positive and correct-prompt lower-loss rate must exceed chance",
+    "free_generation_required": true
+  },
+  "profile": {
+    "compared_examples": 60.0,
+    "correct_prompt_lower_loss_rate": 0.5333333333333333,
+    "correct_prompt_response_bpb": 2.4245887144807554,
+    "focused_compared_examples": 48.0,
+    "focused_correct_prompt_lower_loss_rate": 0.5625,
+    "focused_correct_prompt_response_bpb": 2.6687295006074407,
+    "focused_mismatched_minus_correct_bpb": -0.0015583635960334519,
+    "focused_mismatched_prompt_response_bpb": 2.6671711370114073,
+    "focused_target_bytes_correct": 1511.0,
+    "focused_target_bytes_mismatched": 1511.0,
+    "mismatched_minus_correct_bpb": -0.00138883627066555,
+    "mismatched_prompt_response_bpb": 2.42319987821009,
+    "response_target_bytes_correct": 46585.0,
+    "response_target_bytes_mismatched": 46585.0
+  },
+  "profile_sha256": "f2e6712bbf848dbe6b9f17fab8175358ed034002fd4289183d1f27564d679c51",
+  "prompt_separator": "none",
+  "sequence_coverage": {
+    "examples": 60,
+    "fully_covered_response_examples": 25,
+    "maximum_response_target_bytes": 1161,
+    "mean_response_target_bytes": 776.4166666666666,
+    "minimum_response_target_bytes": 109,
+    "sequence_bytes": 1280,
+    "total_response_target_bytes_per_epoch": 46585,
+    "zero_response_target_examples": 0
+  },
+  "split": "instruction_validation",
+  "status": "PASS"
+}

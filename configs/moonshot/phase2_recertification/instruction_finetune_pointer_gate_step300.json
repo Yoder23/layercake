@@ -1,0 +1,32 @@
+{
+  "format": "layercake-phase2-byte-instruction-finetune/1",
+  "candidate_name": "sliding16_cosine_pointer_gate_step300",
+  "seed": 20260822,
+  "instruction_corpus": "data/moonshot/phase2/instruction_distillation_curated.jsonl",
+  "training": {
+    "steps": 300,
+    "batch_size": 2,
+    "wiki_batch_size": 2,
+    "sequence_bytes": 1280,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "instruction_weight": 1.0,
+    "wiki_weight": 0.0,
+    "prompt_separator": "none",
+    "pointer_gate_supervision_weight": 5.0,
+    "prompt_contrastive_weight": 0.0,
+    "prompt_focus_weight": 2.0,
+    "prompt_focus_contrastive_weight": 2.0,
+    "prompt_focus_contrastive_margin_nats": 0.2,
+    "routing_balance_weight": 0.0,
+    "trainable_parameters": "prompt_pointer"
+  },
+  "budget": {
+    "maximum_runs": 1,
+    "maximum_steps": 300,
+    "maximum_wall_seconds": 600,
+    "maximum_cuda_memory_bytes": 12884901888
+  },
+  "hypothesis": "The long-context checkpoint's base produces materially more coherent 640-byte continuations when the pointer is disabled, while the integrated pointer gate averages about 19% against only 3.2% topic-bearing response bytes. Balanced gate supervision on held-out-disjoint training topics should retain direct lexical emission only where needed and otherwise preserve the improved base distribution, without changing inference operations or base tensors."
+}

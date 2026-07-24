@@ -1,0 +1,61 @@
+{
+  "format": "layercake-representation-bakeoff-branch-decision/1",
+  "branch": "A_BYTE_PATCH",
+  "status": "CLOSED_NEGATIVE",
+  "decision": "NO_BYTE_CHECKPOINT_PASSES_ALL_LOCKED_GATES",
+  "final_authorized_experiment": "sliding16_cosine_pointer_gate_step300",
+  "final_checkpoint_sha256": "bbbdaed2bf10e04d107147d6746101e43cb7ee5d6c2861b9ea5ecdaefde44d15",
+  "gate_results": {
+    "held_out_validation_bpb": {
+      "value": 1.6984938451085576,
+      "ceiling": 1.7173530535092476,
+      "pass": true
+    },
+    "autonomous_functional_noninferiority": {
+      "pass": false,
+      "repetition_rate_4gram": 0.526,
+      "word_diversity": 0.5161643117059654,
+      "core_adherence_pass_rate": 0.0,
+      "topic_token_recall": 0.05
+    },
+    "cpu_throughput_128": {
+      "median_bytes_per_second": 924.9498353154361,
+      "optimized_transformer_median_bytes_per_second": 506.2597482558446,
+      "ratio": 1.8270262222150843,
+      "minimum_ratio": 2.0,
+      "pass": false
+    },
+    "cpu_throughput_1024": {
+      "median_bytes_per_second": 862.8539554612934,
+      "historical_transformer_relative_ratio_diagnostic": 1.6961431205996853,
+      "pass": false
+    },
+    "time_to_first_output": {
+      "median_seconds": 0.12043435,
+      "transformer_median_seconds": 0.26304215,
+      "pass": true
+    },
+    "active_memory": {
+      "active_parameters": 2543265,
+      "active_fp32_weight_bytes": 10173060,
+      "median_process_resident_bytes": 366436352,
+      "transformer_median_process_resident_bytes": 214990848,
+      "pass": false,
+      "notes": "Active weight storage is lower, but the locked process-resident measurement is not lower."
+    }
+  },
+  "runtime_optimization_authorized": false,
+  "runtime_optimization_reason": "The candidate fails autonomous coherence and is more than 10% below the 2x repeated-throughput gate.",
+  "nearby_byte_variants_authorized": false,
+  "artifacts_preserved": true,
+  "evidence": [
+    "results/moonshot/phase2_recertification/instruction_finetune_pointer_gate_step300.json",
+    "results/moonshot/phase2_recertification/functional_screen_pointer_gate_step300_greedy128.json",
+    "results/moonshot/phase2_recertification/functional_semantic_audit_pointer_gate_step300_greedy128.json",
+    "results/moonshot/phase2_recertification/instruction_finetune_pointer_gate_step300_rescreen20.json",
+    "results/moonshot/phase2_recertification/instruction_finetune_pointer_gate_step300_rescreen1024x20.json",
+    "results/moonshot/representation_bakeoff/byte_branch/pareto_frontier.json"
+  ],
+  "next_action": "BEGIN_CONTROLLED_SHARED_TOKENIZER_AND_HYBRID_REPRESENTATION_BAKEOFF",
+  "test_accessed": false
+}

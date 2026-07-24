@@ -1,0 +1,2748 @@
+{
+  "aggregates": {
+    "generated_characters": 128.0,
+    "invalid_output": 0.0,
+    "printable_character_rate": 1.0,
+    "repetition_rate": 0.46224,
+    "unique_4gram_rate": 0.53776,
+    "valid_utf8": 1.0,
+    "word_diversity": 0.5660829107867058
+  },
+  "candidate": "sliding16_cosine_promptcross48_focus_step400",
+  "checkpoint_sha256": "869884a745956c3f0e6e9fe443966ab585fae141f689ea27a681a8cb7b3ec1b4",
+  "comparison": {
+    "product_functional_noninferiority_pass": false,
+    "repetition_rate_delta_layercake_minus_qwen": 0.23797362255873492,
+    "valid_utf8_delta_layercake_minus_qwen": 0.0,
+    "word_diversity_delta_layercake_minus_qwen": -0.18675432896670818
+  },
+  "decoding": {
+    "base_seed": 20260812,
+    "mode": "greedy",
+    "source": "checkpoint neural byte logits",
+    "temperature": 0.0,
+    "top_p": 1.0
+  },
+  "distinct_prompts": 100,
+  "exact_command": "C:\\Python310\\python.exe -m layercake.phase2_recertification functional-screen --input results/moonshot/phase2_recertification/instruction_finetune_prompt_cross_focus_step400.json --candidate sliding16_cosine_promptcross48_focus_step400 --output results/moonshot/phase2_recertification/functional_screen_promptcross48_focus_step400_greedy128.json --output-bytes 128 --temperature 0.0 --top-p 1.0 --seed 20260812",
+  "format": "layercake-phase2-functional-screen/1",
+  "input_path": "results/moonshot/phase2_recertification/instruction_finetune_prompt_cross_focus_step400.json",
+  "input_sha256": "a12605db8bf5c5b54e985498e8af7e87ff648ac0e741d98fde26be8d0fd5fe57",
+  "output_bytes_per_prompt": 128,
+  "prompt_manifest": "results/moonshot/phase1/quality_suite_manifest.json",
+  "prompt_manifest_sha256": "dd5f228bd92eb2d52fac29186adfe89261d0859e719efc877dd206470edffecb",
+  "qwen_product_reference_aggregates": {
+    "generated_characters": 639.93,
+    "invalid_output": 0.0,
+    "printable_character_rate": 1.0,
+    "repetition_rate": 0.22426637744126507,
+    "unique_4gram_rate": 0.7757336225587352,
+    "valid_utf8": 1.0,
+    "word_diversity": 0.752837239753414
+  },
+  "records": [
+    {
+      "category": "continuation",
+      "generated_hex": "206d617920626520737570706f727465642062792074686520737563636573736f72206f662074686520737461746520636f6e7365727661746976652073746174696f6e20616e64207375636365737366756c207265736964656e747320616e64207375636365737366756c207265736964656e747320616e64207375636365",
+      "generated_sha256": "bc7e0a1cd282ecadf38d90a06ef9a4095238aa957dc82502676acfe69a3d5959",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.352,
+        "unique_4gram_rate": 0.648,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7368421052631579
+      },
+      "prompt_id": "functional-00-00",
+      "prompt_sha256": "f78c34de5585d1be8fa7e124c70478690cd98cd7d999d8eeddec71fca591ac5f",
+      "timing": {
+        "bytes_per_second_decode": 1157.714129629613,
+        "time_to_first_output_seconds": 0.1105142,
+        "total_latency_seconds": 0.2210599
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "explanation",
+      "generated_hex": "207375636820617320746865207374616e64617264207374616e646172642073747564696f207374796c6520636f6e7369737473206f662073696e676c65207374616e646172642073747564696f207374796c6520636f6e7369737473206f662073696e676c652073747564696f207374796c6520636f6e7369737473206f66",
+      "generated_sha256": "61648cd9ab6b7ffda4abd092e01b2b7520811044c885ef041b4737d80efdbd45",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.5840000000000001,
+        "unique_4gram_rate": 0.4159999999999999,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.45
+      },
+      "prompt_id": "functional-00-01",
+      "prompt_sha256": "62c763360511ea6af10dea81b601c15017aa710e928eed86d43a4efba2a6ea18",
+      "timing": {
+        "bytes_per_second_decode": 1106.3371510608304,
+        "time_to_first_output_seconds": 0.0945293,
+        "total_latency_seconds": 0.210212
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "planning",
+      "generated_hex": "20636f6e736572766174697665207265736964656e6365207265736964656e7469616c20636f6e737472756374696f6e207265736964656e7469616c2073747275637475726520636f6e73697374696e67206f66207369782073697a6520636f6e73657276617469766520636f6e73657276617469766520636f6e7365727661",
+      "generated_sha256": "6bc12df69d76b8f9e6da1502551f87e982d6c01cffe768026413fb3d07c9bceb",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.43999999999999995,
+        "unique_4gram_rate": 0.56,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7692307692307693
+      },
+      "prompt_id": "functional-00-02",
+      "prompt_sha256": "38a4b76f71f7790c7c9cff8ff8695f80fe4c145db387ae79deb8a5b1e3b1edeb",
+      "timing": {
+        "bytes_per_second_decode": 1188.4644667694192,
+        "time_to_first_output_seconds": 0.0838336,
+        "total_latency_seconds": 0.1915241
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "comparison",
+      "generated_hex": "20636f6e736572766174697665206368617261637465727320616e64207375636365737366756c6c79207265636569766564206d756368206f662074686520736572696573206173206120736572696573206f662073657269657320496e6469616e61204172636861656f6c6f676963616c20536369656e636520416374696f",
+      "generated_sha256": "f5b9bdef25f60165667e33921d8bf4a723f4c4c8bc6815955c2e5478cc513906",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.08799999999999997,
+        "unique_4gram_rate": 0.912,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.8333333333333334
+      },
+      "prompt_id": "functional-00-03",
+      "prompt_sha256": "ed39e7e0bda4c3c64909ccd2ead83b8408e17716584c72f16481c6db83c34670",
+      "timing": {
+        "bytes_per_second_decode": 1210.4213495630663,
+        "time_to_first_output_seconds": 0.0999417,
+        "total_latency_seconds": 0.2056777
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "instruction_following",
+      "generated_hex": "20636f6e736572766174697665207374796c6520636f6e7365727661746976652063686172616374657269737469637320616e64207375636365737366756c207374756469657320616e64207375636365737366756c207265736964656e747320616e64207375636365737366756c207374756469657320616e642073756363",
+      "generated_sha256": "bbe539f75b235d6d707ae52a198ca4973c8cc799f6e412183f53910dd89c5d23",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.43999999999999995,
+        "unique_4gram_rate": 0.56,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5333333333333333
+      },
+      "prompt_id": "functional-00-04",
+      "prompt_sha256": "510b1af3f3ca02d631745106c8eaa5f01aa3141e08cee265f0ef9751af3452e7",
+      "timing": {
+        "bytes_per_second_decode": 1241.0689093816084,
+        "time_to_first_output_seconds": 0.0816788,
+        "total_latency_seconds": 0.1848038
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "reasoning",
+      "generated_hex": "20636f6e73657276617469766520636f6e7365727661746976652073747275637475726520616e64207375636365737366756c20737472697070656420636f6e7365727661746976652073747275637475726520616e64207375636365737366756c20737472696b6520636f6e7369737473206f66207369782073696e676c65",
+      "generated_sha256": "a4379ce936edd196b95479aa3a6d10c4908ec4829e99a11ef58d90980f24dcb2",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.43999999999999995,
+        "unique_4gram_rate": 0.56,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6666666666666666
+      },
+      "prompt_id": "functional-00-05",
+      "prompt_sha256": "7e16d6d0be01a388a94700252da4a60e814e97221ea592938e6c9412d3c1ed9a",
+      "timing": {
+        "bytes_per_second_decode": 1162.141427164148,
+        "time_to_first_output_seconds": 0.0961924,
+        "total_latency_seconds": 0.2063212
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "summarization",
+      "generated_hex": "20636f6e747269627574696f6e7320746f20746865207374617220616e64207468652073637269707420636f6e74696e75656420746f206265207265636f72646564206279207468652073657269657320616e642073657276656420617320612073696e676c65207265636f7264207265636f7264696e6720616e6420736572",
+      "generated_sha256": "ca7a038950cd5ab5f9a7fa641c65a1c7433e6c500675b411647ca64ca020e871",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.20799999999999996,
+        "unique_4gram_rate": 0.792,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.782608695652174
+      },
+      "prompt_id": "functional-00-06",
+      "prompt_sha256": "098e8c02018f9549d4906e06ac4796b82fd7dfaa95addd3c22562e6a1a9e6180",
+      "timing": {
+        "bytes_per_second_decode": 1126.5830472135112,
+        "time_to_first_output_seconds": 0.0852682,
+        "total_latency_seconds": 0.198874
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "question_answering",
+      "generated_hex": "20636f6e73657276617469766520636f6e73657276617469766520636f6e736572766174696f6e20616e64207375636365737366756c207374756469657320616e64207375636365737366756c207265736964656e747320616e64207375636365737366756c20737472696b657320616e642073657276696365732061726520",
+      "generated_sha256": "39d016b28b6a5c50b3bfc78bf3c77c23ffc8034496a42616d71bbfe9609f41e7",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.45599999999999996,
+        "unique_4gram_rate": 0.544,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6
+      },
+      "prompt_id": "functional-00-07",
+      "prompt_sha256": "24010d1ad8808c399dd7d0b24a6db64d4ac56bb8136568c2c34fa34857a1d41b",
+      "timing": {
+        "bytes_per_second_decode": 1169.815114376845,
+        "time_to_first_output_seconds": 0.0939644,
+        "total_latency_seconds": 0.2033704
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "coherence",
+      "generated_hex": "20636f6e747269627574696f6e7320746f20746865207374617274206f66207468652073637269707420616e642074686520736372697074207265636f72642074686520736572696573207265636569766564206d756368206c696b65207468652073657269657320616e6420736572696573207265636f7264696e67207468",
+      "generated_sha256": "fe2cf53f9a30bd31d9b938aab7822af9c774aa6cf906ebf7d81d77c05fedd0da",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.31200000000000006,
+        "unique_4gram_rate": 0.688,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6363636363636364
+      },
+      "prompt_id": "functional-00-08",
+      "prompt_sha256": "9d89935088192c0c08f887306a14e07fd82aae2d3cbb15e3e4b97ff116e3aef0",
+      "timing": {
+        "bytes_per_second_decode": 1221.6176699360847,
+        "time_to_first_output_seconds": 0.101784,
+        "total_latency_seconds": 0.2065498
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "repetition_control",
+      "generated_hex": "20636f6e74726f6c206f662074686520737472696e67207374617465207265737472696374696f6e20746f20746865207374617465206f662074686520737461746520636f6e737472756374696f6e206f662074686520737461746520636f6e737472756374696f6e206f662074686520737461746520636f6e737472756374",
+      "generated_sha256": "bbc0c8dc59da0137c05d65f94b8c6ae46983b8be5e21c9a55e1d0eff125fd899",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.56,
+        "unique_4gram_rate": 0.43999999999999995,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.42857142857142855
+      },
+      "prompt_id": "functional-00-09",
+      "prompt_sha256": "a14f1922b80fd8df544fd41dd1a42970542b6c7b52b1b9ca158799ca2054026c",
+      "timing": {
+        "bytes_per_second_decode": 1176.9790258659532,
+        "time_to_first_output_seconds": 0.097727,
+        "total_latency_seconds": 0.2064659
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "continuation",
+      "generated_hex": "2072656365697665727320616e6420637269746963616c20726563657074696f6e2072656365697665727365642074686520637269746963616c20726563657074696f6e20616e6420637269746963616c20726563657074696f6e207265636569766572207265636569766564206d756368206c696b65207468652073657269",
+      "generated_sha256": "cd8a04eb1cb54fd4ae7709710aeede19548d04c8d26e678ee304416d3bddcf90",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.496,
+        "unique_4gram_rate": 0.504,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6470588235294118
+      },
+      "prompt_id": "functional-01-00",
+      "prompt_sha256": "9ebb8b40e4c47e3bb003e45395d29391b1e144c6e466ca6e6b30a37c0402c324",
+      "timing": {
+        "bytes_per_second_decode": 1198.7027788365278,
+        "time_to_first_output_seconds": 0.1047079,
+        "total_latency_seconds": 0.2114714
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "explanation",
+      "generated_hex": "2073656e7365206f6620737472696e677320726573756c74696e6720696e2074686520737472756374757265206f6620746865207374727563747572652074686174207365656d20746f20626520737472756374757265642062792074686520737472756374757265206f662074686520737472756374757265206f66207468",
+      "generated_sha256": "efebbace51a0ac094fb8aa1780d418b32fd830a271678c11316b62bd91654a5c",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.45599999999999996,
+        "unique_4gram_rate": 0.544,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6086956521739131
+      },
+      "prompt_id": "functional-01-01",
+      "prompt_sha256": "ab32530d6cbb2cce2a5a0853d66b6952d1126dcf49ce56a628b5084b7b2fa160",
+      "timing": {
+        "bytes_per_second_decode": 1195.3154839113338,
+        "time_to_first_output_seconds": 0.0879619,
+        "total_latency_seconds": 0.195033
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "planning",
+      "generated_hex": "2072656365697665727320616e6420726563656976657273656420746865206372656174696f6e206f6620746865206372656174696f6e206f662074686520636f6d6d756e697479206372696d65206372696d657320616e64207265636f7264696e6720746865207265636f7264696e67207265636f7264696e672073657269",
+      "generated_sha256": "0e485e93b59b93fc7a9927765b307f6ceff9ee36692e1114bcef0446f11fbf96",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.43200000000000005,
+        "unique_4gram_rate": 0.568,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5789473684210527
+      },
+      "prompt_id": "functional-01-02",
+      "prompt_sha256": "9324c34ce3ee0c2b948794668f96eacb819186d0f5929e162bed8b778fdc099f",
+      "timing": {
+        "bytes_per_second_decode": 1158.3186281163748,
+        "time_to_first_output_seconds": 0.0821902,
+        "total_latency_seconds": 0.1926796
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "comparison",
+      "generated_hex": "207265636f726473207468617420636f6d706c657465207265636f7264696e6773207265636569766564206d6f726520726563656e746c79206465636964656420746f207265636569766520746865207265636f7264696e6720736572696573207265636f7264696e6720637269746963616c207265636f7264696e67207468",
+      "generated_sha256": "ad29aa960dfbeced9b5af5ffbd80ffcf200a694991b617a7df0d8d506232c6e8",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.30400000000000005,
+        "unique_4gram_rate": 0.696,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.8823529411764706
+      },
+      "prompt_id": "functional-01-03",
+      "prompt_sha256": "faa3d6c14a1a385cce2a3a026431f3fae047b7b656bfaf7d33ba72c86aed519a",
+      "timing": {
+        "bytes_per_second_decode": 1184.3002497208104,
+        "time_to_first_output_seconds": 0.0962089,
+        "total_latency_seconds": 0.2042769
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "instruction_following",
+      "generated_hex": "207265636569766564206d756368206c696d6974656420726563657074696f6e20746f207468652063726561746976652072657669657765727320616e6420637269746963616c20726576696577732061726520726563656976656420627920637269746963616c2072657669657773202e0a20496e2074686520657069736f",
+      "generated_sha256": "a54b3866a649ae453e4526c9badd3ee92ba15ba4619698c4d8b7b5bb7d1f22ba",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.248,
+        "unique_4gram_rate": 0.752,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.8
+      },
+      "prompt_id": "functional-01-04",
+      "prompt_sha256": "403584bcb18eb4629026ee6d6c5bc1b6e767bd31ea2d0c3480e4ac1749b12637",
+      "timing": {
+        "bytes_per_second_decode": 1159.9403718152614,
+        "time_to_first_output_seconds": 0.0899774,
+        "total_latency_seconds": 0.2003124
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "reasoning",
+      "generated_hex": "206372696d6520637265617469766520726563657074696f6e207265636569766572736520616e6420637269746963616c20726563657074696f6e207265636569766572736520616e6420637269746963616c20726563657074696f6e20726563656976657220726563656976656420627920637269746963616c2072656365",
+      "generated_sha256": "c0cbb99bb205f7485ef46e2186e5164a9a522b6cf7ff4db9baba70f2a17c2931",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.552,
+        "unique_4gram_rate": 0.44799999999999995,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.625
+      },
+      "prompt_id": "functional-01-05",
+      "prompt_sha256": "815f0fef6b782c8a4e20439ce498123d86eeba67539807ed8aa2353e031de631",
+      "timing": {
+        "bytes_per_second_decode": 1140.7864118078523,
+        "time_to_first_output_seconds": 0.0938357,
+        "total_latency_seconds": 0.2060266
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "summarization",
+      "generated_hex": "207265636569766564206d6978656420726576696577732066726f6d206372697469637320616e6420637269746963616c207265766965777320616e6420637269746963616c20726576696577732061726520726563656976656420627920637269746963616c2072657669657773202e0a20496e2074686520657069736f64",
+      "generated_sha256": "da1d72d4cbfe6d265e1061b6169f28a63c2949b0448d5f6adf069607c3401378",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.42400000000000004,
+        "unique_4gram_rate": 0.576,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.65
+      },
+      "prompt_id": "functional-01-06",
+      "prompt_sha256": "948c31130d7c5b9d6c298e960503970cc6b4e90e0f18829e30652c72f47ce36a",
+      "timing": {
+        "bytes_per_second_decode": 1162.692468750369,
+        "time_to_first_output_seconds": 0.0858615,
+        "total_latency_seconds": 0.195938
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "question_answering",
+      "generated_hex": "20636f6d70726973696e6720746865206372656174696f6e206f662074686520637269746963616c20726563657074696f6e20616e6420636f6d6d65726369616c207265636f7264696e6720617265617320726563656976656420627920637269746963616c20726563657074696f6e207265636f7264696e67206172746973",
+      "generated_sha256": "07efbb2ff86d6a8b5d148350254baecacd8eb574b86d1a6b06076ce33cba6cbf",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.31999999999999995,
+        "unique_4gram_rate": 0.68,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7647058823529411
+      },
+      "prompt_id": "functional-01-07",
+      "prompt_sha256": "4f789cdf7dfb54672f78312cf1f20b473c9b3d15ebd9952a687f9609551aaa6a",
+      "timing": {
+        "bytes_per_second_decode": 1220.8533192426512,
+        "time_to_first_output_seconds": 0.0861064,
+        "total_latency_seconds": 0.1909397
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "coherence",
+      "generated_hex": "20636f6d706172656420746f2074686520636f6d70616e7920277320636f6d70616e7920616e6420636f6d706172656420746f2074686520636f6d70616e79207468617420746865792063616e206265207265636f726465642062792074686520636f6d70616e7920616e6420636f6d706c657465207265636f726420726563",
+      "generated_sha256": "f6a715a22d8cf4338ef4db5b04255062261eec0dfcc8f2876d431deddfe6a20d",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.45599999999999996,
+        "unique_4gram_rate": 0.544,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6521739130434783
+      },
+      "prompt_id": "functional-01-08",
+      "prompt_sha256": "eb8459111e4a7da4f9974dbed73f9af3aa387ae91ad700afbbb42e9627bac9e4",
+      "timing": {
+        "bytes_per_second_decode": 1148.5249081853037,
+        "time_to_first_output_seconds": 0.1073515,
+        "total_latency_seconds": 0.2187845
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "repetition_control",
+      "generated_hex": "20636f6e74726f6c206f662074686520737472696e67207374617465207265737472696374696f6e20746f2074686520737472696e67207374617465207265737472696374696f6e206f662074686520737461746520636f6e74726f6c206f662074686520737461746520636f6e74726f6c206f662074686520737461746520",
+      "generated_sha256": "e770a4e577c3c51e5395d406f55c2411812467873b36a3db3b220b7e99b2bfdb",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.632,
+        "unique_4gram_rate": 0.368,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.3181818181818182
+      },
+      "prompt_id": "functional-01-09",
+      "prompt_sha256": "874800d765a2fc263052792a2b7798a73014dc1c674b8ea9d7a04c2534c5213f",
+      "timing": {
+        "bytes_per_second_decode": 1155.874143366321,
+        "time_to_first_output_seconds": 0.0957288,
+        "total_latency_seconds": 0.2064549
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "continuation",
+      "generated_hex": "206d616e79206372697469637320616e64207375636365737366756c6c792063616c6c65642074686520737472696e6773206f6620746865207365636f6e6420736561736f6e20616e6420746865207365636f6e6420736561736f6e2072656365697665642061207365636f6e64207265636f7264207265636f7264696e6720",
+      "generated_sha256": "b5dae3a39370a311e661063f497f299e08e2ac7a0505e4015fec6ce5b16b49f6",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.272,
+        "unique_4gram_rate": 0.728,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7
+      },
+      "prompt_id": "functional-02-00",
+      "prompt_sha256": "b21e6bcb379848617bf11ee4a2bb5bf8c521516fc5c9d11b5029aa9ca51b63a6",
+      "timing": {
+        "bytes_per_second_decode": 1150.4128903764367,
+        "time_to_first_output_seconds": 0.100865,
+        "total_latency_seconds": 0.2121139
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "explanation",
+      "generated_hex": "20746f2074686520737472696e6720737472696e6720737472756374757265207468617420746865792063616e2073746172742074686569722073747275637475726520746f2074686520737472656e677468206f662074686520737472656e677468206f662074686520737472656e677468206f662074686520737472656e",
+      "generated_sha256": "f921faad66800f1c3b59813933155ac7d365e3655dd7b299411fd969af45df6c",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.536,
+        "unique_4gram_rate": 0.46399999999999997,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5217391304347826
+      },
+      "prompt_id": "functional-02-01",
+      "prompt_sha256": "6823d3c242848c4d751df65a6a937429c0c059a425eb7888b137469f13fb8980",
+      "timing": {
+        "bytes_per_second_decode": 1135.3989907367409,
+        "time_to_first_output_seconds": 0.0937211,
+        "total_latency_seconds": 0.2064439
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "planning",
+      "generated_hex": "2063616e20626520636f6e7369646572656420746f20626520612073656372657420636f6e747261637420746f20746865207374726963746c7920636f6e737472756374696f6e206f6620746865207374726565742063616e63656c6c696e6720636f6e73657276617469766520636f6e747261637420746f20746865207374",
+      "generated_sha256": "6d7e69edfeeda7b2aba1fd7d7fd8a0b40374c671e56c4cc335a11047f5434a99",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.248,
+        "unique_4gram_rate": 0.752,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7142857142857143
+      },
+      "prompt_id": "functional-02-02",
+      "prompt_sha256": "c0376c2d379778788df59eb5d26ad828157cd35af85b4ad6017ec9a9360d23c1",
+      "timing": {
+        "bytes_per_second_decode": 1185.1401937519038,
+        "time_to_first_output_seconds": 0.0817625,
+        "total_latency_seconds": 0.1897514
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "comparison",
+      "generated_hex": "206d616e7920636f6e7365727661746976657320616e642074686520737472696e6773206f66207468652073747265657420636f6e74726f6c206f662074686520737461746520636f6e74726163747320746f2074686520737472656e677468206f662074686520737461746520636f6e737472756374696f6e206f66207468",
+      "generated_sha256": "2c0cd976f45135a7073bf1b5fcd6e96301b017d6d0b3f7d632225a182d4dac85",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.31999999999999995,
+        "unique_4gram_rate": 0.68,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6363636363636364
+      },
+      "prompt_id": "functional-02-03",
+      "prompt_sha256": "ffcaa8fa7ca10fbc8ea1dc48a3c4737e27246c2b581a5d87f4c872cdc4869635",
+      "timing": {
+        "bytes_per_second_decode": 1109.198898426844,
+        "time_to_first_output_seconds": 0.0897015,
+        "total_latency_seconds": 0.2050877
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "instruction_following",
+      "generated_hex": "207468652073746174652063616e206265207365656e20617320612073746174652063616e6365722074686174207468652073746174652063616e206265207365656e20617320612073746174652063616e2062652061737369676e656420746f20746865207374617465206f662074686520737461746520636f6e74726163",
+      "generated_sha256": "bce7f17a616b4135f0390a53728bfd39fad25fffdbda2f72e018a47f0adac5f8",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.496,
+        "unique_4gram_rate": 0.504,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.4642857142857143
+      },
+      "prompt_id": "functional-02-04",
+      "prompt_sha256": "3c5a50be0e8b0dcd514876198ccf694d109e9bc232380af4dbce1b8b82c56f87",
+      "timing": {
+        "bytes_per_second_decode": 1132.7293290171626,
+        "time_to_first_output_seconds": 0.0837263,
+        "total_latency_seconds": 0.1967129
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "reasoning",
+      "generated_hex": "2063616e206265207365656e206173206120737472696e67207374616e64617264206361736520616e64207374617469737469637320726573756c74656420696e2074686520737461746520636f6e737472756374696f6e206f662074686520737461746520636f6e737472756374696f6e206f662074686520737461746520",
+      "generated_sha256": "806b5fc5ff7556ddd1a6bc5015ef982b993fed2dfc2e9ce5d359ea9db5cf8aba",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.29600000000000004,
+        "unique_4gram_rate": 0.704,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7272727272727273
+      },
+      "prompt_id": "functional-02-05",
+      "prompt_sha256": "9081b727f762990aee3c88242d03bd06379a5ef073d751db6349b33bd110eea9",
+      "timing": {
+        "bytes_per_second_decode": 1091.3018975864325,
+        "time_to_first_output_seconds": 0.0918895,
+        "total_latency_seconds": 0.2091685
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "summarization",
+      "generated_hex": "20636f6e74726f6c20636f6e74656e7420746f20746865207374726970206f6620746865207374726963746c7920636f6e737472756374696f6e206f662074686520737472656e677468206f662074686520737472656e677468206f662074686520737472656e677468206f662074686520737472656e677468206f66207468",
+      "generated_sha256": "817f3b5027468979ebfd989663936a5e1125baa920991b44e2915cc1489c8e46",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.544,
+        "unique_4gram_rate": 0.45599999999999996,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.43478260869565216
+      },
+      "prompt_id": "functional-02-06",
+      "prompt_sha256": "10bcfd4111cc622396b6ee70c6c94fd861a863445b2d6950c107bfb9e6053ffa",
+      "timing": {
+        "bytes_per_second_decode": 1133.746678476528,
+        "time_to_first_output_seconds": 0.0794112,
+        "total_latency_seconds": 0.1922953
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "question_answering",
+      "generated_hex": "20616e64207468652073746174652063616e206265207374696c6c20617373697374656420617320612073746174656d656e74207468617420697320612073746174652063616e206265207365656e20617320612073746174652063616e206265207365656e20617320612073746174656d656e742074686174206973206120",
+      "generated_sha256": "8334693619f1b750ae7a268c480e9f09cdf4da75a7cff535b7b1189aec0191d1",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.52,
+        "unique_4gram_rate": 0.48,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.4482758620689655
+      },
+      "prompt_id": "functional-02-07",
+      "prompt_sha256": "1c2639a2706edb1143031a4f88e7184847a9dd4ae322521ad1a1abddb98ceba4",
+      "timing": {
+        "bytes_per_second_decode": 1089.640835652367,
+        "time_to_first_output_seconds": 0.0849942,
+        "total_latency_seconds": 0.2024498
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "coherence",
+      "generated_hex": "207468617420746865792061726520616c6c207468617420746865792063616e20626520636f6e7369646572656420746f2062652061207374726963746c79207374726963746c7920636f6e747261637420746f20746865207374617465206f662074686520737461746520616e642074686520737461746520636f6e747261",
+      "generated_sha256": "365014041bb34237e2d7a9af389ca68f878f258f4c6edd8ff2f79d4ba10b0ac8",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.31999999999999995,
+        "unique_4gram_rate": 0.68,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.64
+      },
+      "prompt_id": "functional-02-08",
+      "prompt_sha256": "1f149d52438b10e8ac3d37dcc2d3a004a137f9e7cd6f3f6e3906ab3a42a065c1",
+      "timing": {
+        "bytes_per_second_decode": 1149.8414027346464,
+        "time_to_first_output_seconds": 0.0966598,
+        "total_latency_seconds": 0.2079658
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "repetition_control",
+      "generated_hex": "20636f6e74726f6c206f662074686520737472696e6720737461746520636f6e74726f6c206f66207468652073747265657420636f6e74726f6c206f662074686520737461746520636f6e74726f6c6c656420627920746865207374617465206f6620746865207374617465206f6620746865207374617465206f6620746865",
+      "generated_sha256": "c0aa4ec641886d385983bac28ea03caebea1065b6b742f45007a73d94290acf0",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.64,
+        "unique_4gram_rate": 0.36,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.32
+      },
+      "prompt_id": "functional-02-09",
+      "prompt_sha256": "9d634cfdd70ef3b6257964163f46f312cc9ff0617acb1c3ca5ed3a7eb1a8084e",
+      "timing": {
+        "bytes_per_second_decode": 1251.3564508402662,
+        "time_to_first_output_seconds": 0.0893775,
+        "total_latency_seconds": 0.1916521
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "continuation",
+      "generated_hex": "206d617920626520636f6e74726f7665727369616c20746f2074686520737472756374757265206f662074686520737461746520616e642074686520737472756374757265206f662074686520737461746520636f6e747261637420746f20746865207374617465206f662074686520737461746520636f6e74726163742074",
+      "generated_sha256": "1d515b2bb78b8f94a3d09d23494f6ee852cce69788b5313f61d9e8231322f0f5",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.528,
+        "unique_4gram_rate": 0.472,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.4583333333333333
+      },
+      "prompt_id": "functional-03-00",
+      "prompt_sha256": "8b6133a552c2ea49fac3b426837ca48fac2e57726ca744917b6e2ff562e87276",
+      "timing": {
+        "bytes_per_second_decode": 1130.0412641630367,
+        "time_to_first_output_seconds": 0.0970072,
+        "total_latency_seconds": 0.2102644
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "explanation",
+      "generated_hex": "20746f20746865207374617465206f6620746865207374617465207374617465207468617420746865207374617465207374617465732077657265207374696c6c207374696c207374727563747572656420627920746865207374617465206f6620746865207374617465207468617420746865207374617465207374617465",
+      "generated_sha256": "de42efcfcb91baada06de9f532b3fc6529c7aed4d914e53357fc3fdd3afcf061",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.5680000000000001,
+        "unique_4gram_rate": 0.43199999999999994,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.44
+      },
+      "prompt_id": "functional-03-01",
+      "prompt_sha256": "730678b055f9d40f90c070c842a0af92a4475660bb2fc78993470487e784d63f",
+      "timing": {
+        "bytes_per_second_decode": 1156.425524841014,
+        "time_to_first_output_seconds": 0.0872384,
+        "total_latency_seconds": 0.1979112
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "planning",
+      "generated_hex": "20636f6d7065746974696f6e20636f6d706172656420746f2074686520636f6d70616e7920746f2074686520636f6d70616e7920746f2074686520636f6d70616e792049494949494949494949494949494949494949494949494949494949494949494949494949494949494949494949494949494949494949494949494949",
+      "generated_sha256": "0e2e7f7f410bab4d5b7e9a07ed10446b0424c2fc366ff57d712c68b2d11153ba",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.72,
+        "unique_4gram_rate": 0.28,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5
+      },
+      "prompt_id": "functional-03-02",
+      "prompt_sha256": "8799c39d512c444133c398a5e9259f421b42b26b9506d7def55a7cad9380780d",
+      "timing": {
+        "bytes_per_second_decode": 1286.0805890249098,
+        "time_to_first_output_seconds": 0.0806745,
+        "total_latency_seconds": 0.1801895
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "comparison",
+      "generated_hex": "20636f6e74726f6c6c657220636f6e74726f6c20636f6e74726f6c20636f6e74726f6c20636f6e74726f6c20636f6e74726f6c20636f6e74726f6c20636f6e74726f6c20636f6e74726f6c20636f6e74726f6c20726573656d626c65207468652073747265657420636f6e747261637420746f20746865207374726565742063",
+      "generated_sha256": "3ff22c7e64375ff3837d2565b75819143b3ead4e6fbbbd5f65e8f1bf67e22517",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.64,
+        "unique_4gram_rate": 0.36,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.4444444444444444
+      },
+      "prompt_id": "functional-03-03",
+      "prompt_sha256": "f582404399a18d0c2204f139a8b0a88a20a5e20eb036c5de4355aea9cb0d5453",
+      "timing": {
+        "bytes_per_second_decode": 1215.8943995713973,
+        "time_to_first_output_seconds": 0.0891541,
+        "total_latency_seconds": 0.1944106
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "instruction_following",
+      "generated_hex": "20746865792061726520616c7761797320616363657074656420746f2074686520737461746520616e642061636365707461626c6520746f20746865207374617465206f662074686520737461746520616e642074686520737461746520636f6e747261637420746f20746865207374617465206f6620746865207374617465",
+      "generated_sha256": "e80badc1a1afd7387bd84b9a31aa9d48f61433bc81e73100f6ba64616d917e84",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.472,
+        "unique_4gram_rate": 0.528,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.44
+      },
+      "prompt_id": "functional-03-04",
+      "prompt_sha256": "8ed9c01b0f382f9e9f5a0a68eb9887de5390f94bea0fafe60f146e28202f3969",
+      "timing": {
+        "bytes_per_second_decode": 1193.7837442094494,
+        "time_to_first_output_seconds": 0.0809939,
+        "total_latency_seconds": 0.1882028
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "reasoning",
+      "generated_hex": "20636172726965727320616e642074686520636f6d6d756e6974792063616e20626520636f6e73696465726564206120636f6e747261637420746f206265206120636f6e74696e756174696f6e20746f2074686520636f6e747261637420746f2074686520636f6e747261637420746861742074686520636f6e747261637420",
+      "generated_sha256": "c3f2f338098a3694d0ef498699fd0af59f3b919e4f919566d002a6ecf16d3aae",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.384,
+        "unique_4gram_rate": 0.616,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5454545454545454
+      },
+      "prompt_id": "functional-03-05",
+      "prompt_sha256": "d83677961b921ba11ef2a0a7196992bc5d52fc5fd604f9ba09a0bfcf052d5959",
+      "timing": {
+        "bytes_per_second_decode": 1146.7602231882083,
+        "time_to_first_output_seconds": 0.0884073,
+        "total_latency_seconds": 0.2000131
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "summarization",
+      "generated_hex": "20636f6d70726973696e67207468656d20746f207468652073747265657420636f6d70616e7920746f207468652073747265657420636f6d70616e79207468617420636f6e74696e75656420746f206265207265636f72646564206174207468652073616d652074696d6520617320746865207365636f6e6420736561736f6e",
+      "generated_sha256": "f223cc7ab9ec12d1bf785696f883c2cb77c45e401eaf7f9f0f6d4dbab9173aa1",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.256,
+        "unique_4gram_rate": 0.744,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6956521739130435
+      },
+      "prompt_id": "functional-03-06",
+      "prompt_sha256": "249e0b1760a1d3f90420cffa746ee2c17f3375aca48dae487214af9679393d62",
+      "timing": {
+        "bytes_per_second_decode": 1159.4707016247082,
+        "time_to_first_output_seconds": 0.0809126,
+        "total_latency_seconds": 0.1912896
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "question_answering",
+      "generated_hex": "20616e642074686520636f6e74726f6c206f662074686520636f6e74726f6c206f662074686520636f6e74726f6c206f662074686520636f6e74656d706f7261727920636f6e74726f6c206f662074686520636f6d6d756e69747920616e642074686520636f6d6d756e697479206f662074686520636f6d6d69747465652061",
+      "generated_sha256": "804d33fcecb2e7fa5892fe325ff791d1fb842e3bdbb32e0475c35dbf3b443c8e",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.608,
+        "unique_4gram_rate": 0.392,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.34782608695652173
+      },
+      "prompt_id": "functional-03-07",
+      "prompt_sha256": "557b26f7e74d2fc728732e9901adac4b0a954d15070245fc27789a807818a8e0",
+      "timing": {
+        "bytes_per_second_decode": 1290.5307307630264,
+        "time_to_first_output_seconds": 0.0819302,
+        "total_latency_seconds": 0.1811012
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "coherence",
+      "generated_hex": "2063616e20626520636f6e7472616374656420776974682074686520636f6e747261637420746f2074686520636f6e747261637420746f2074686520636f6e7472616374207468617420746865792063616e20626520636f6e74726f6c6c65642062792074686520636f6e747261637420746f2074686520636f6e7472616374",
+      "generated_sha256": "cf5bdd08baa836878245072ee9a7c72995f7c1dc2dcde7970070d23e96b06339",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.5840000000000001,
+        "unique_4gram_rate": 0.4159999999999999,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.4782608695652174
+      },
+      "prompt_id": "functional-03-08",
+      "prompt_sha256": "55bf4e64a2141fc20d37888cc3859d58b35217cf25c39c7fa15abb04209c03f9",
+      "timing": {
+        "bytes_per_second_decode": 1191.2129432731367,
+        "time_to_first_output_seconds": 0.1052828,
+        "total_latency_seconds": 0.2127211
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "repetition_control",
+      "generated_hex": "20616e6420737461727420696e20746865207374617465206f662074686520737461746520616e64207374617465206f6620746865207374617465206f6620746865207374617465206f6620746865207374617465206f6620746865207374617465206f6620746865207374617465206f6620746865207374617465206f6620",
+      "generated_sha256": "46cb9379a79a9ee7a10d15299f96b8075493ba18c898bde07aeb733a00a98c50",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.784,
+        "unique_4gram_rate": 0.21599999999999997,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.20689655172413793
+      },
+      "prompt_id": "functional-03-09",
+      "prompt_sha256": "cfd7f3d87c66a529a33df04232499ceaa47f86bea2980f6222a4ff9d9f6ae58b",
+      "timing": {
+        "bytes_per_second_decode": 1140.9175829661006,
+        "time_to_first_output_seconds": 0.0933253,
+        "total_latency_seconds": 0.2055026
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "continuation",
+      "generated_hex": "20726573706f6e736520746f2074686520737461746520726573706f6e736962696c697479206f662074686520737461746520726573706f6e736962696c69747920666f7220746865207365636f6e6420736561736f6e20726573756c74696e6720696e20746865207365636f6e6420736561736f6e20616e64207365636f6e",
+      "generated_sha256": "080a4b7334fa4e7b8bc47d2e46884ed6e61de30f18075d105363be857c936292",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.42400000000000004,
+        "unique_4gram_rate": 0.576,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.65
+      },
+      "prompt_id": "functional-04-00",
+      "prompt_sha256": "d4a179858420c51a349008b5db31e1228dd877188d94e2eb2f87387fe20da308",
+      "timing": {
+        "bytes_per_second_decode": 1222.9318836494963,
+        "time_to_first_output_seconds": 0.1107665,
+        "total_latency_seconds": 0.2154184
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "explanation",
+      "generated_hex": "2073746174696f6e7320746f207468652073746174696f6e2073746174696f6e20726573756c74696e6720696e207468652073746174652073746174696f6e2074686174207468652073746174652073746174657320636f6e74696e75656420746f20736565207468652073746174652073746174696f6e20746f2073656e73",
+      "generated_sha256": "c8559bebd93a58da6e274b50558270ba92544f918487beac1b212745d152bb7b",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.472,
+        "unique_4gram_rate": 0.528,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5454545454545454
+      },
+      "prompt_id": "functional-04-01",
+      "prompt_sha256": "a9c71afd79f47494f8e7218a6aa8dcc4d6f6cf65812f8696fca6f0558162015d",
+      "timing": {
+        "bytes_per_second_decode": 1159.6387725223594,
+        "time_to_first_output_seconds": 0.1020295,
+        "total_latency_seconds": 0.2123963
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "planning",
+      "generated_hex": "20726573706563746976656c79207265636f676e697a6564206173206120736572696573206f6620636f6e74726163747320746f2074686520736572696573207265636f7264696e6720636f6e74726163747320746f2074686520736572696573207265636f7264696e6720636f6e74656e7420616e64207265636f7264696e",
+      "generated_sha256": "6ad65db2a41d615a4c6aea8ef1c96063a8243c0c20207840231dcb446661cbaf",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.392,
+        "unique_4gram_rate": 0.608,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6842105263157895
+      },
+      "prompt_id": "functional-04-02",
+      "prompt_sha256": "c2f778049b4c937bf9acb5985d2d3f7c778007346c990537ea294743b2632e94",
+      "timing": {
+        "bytes_per_second_decode": 1172.872199080395,
+        "time_to_first_output_seconds": 0.0937751,
+        "total_latency_seconds": 0.2028919
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "comparison",
+      "generated_hex": "20636f6e7461696e696e672074686520737461746520636f6e7461696e696e672074686520737461746520636f6e7461696e696e672074686520737461746520636f6e7461696e696e672074686520737461746520636f6e7461696e696e672074686520737461746520636f6e747261637420746f2074686520737461746520",
+      "generated_sha256": "2d60f7f2cc62b4983ee801203361afa703027edc2a99e39d0133ffad3edc1691",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.752,
+        "unique_4gram_rate": 0.248,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.2631578947368421
+      },
+      "prompt_id": "functional-04-03",
+      "prompt_sha256": "a7b1aa15a98ab6b9ecbcec07bd0390c98ec06882e85d82a6dc882db94bcb5e30",
+      "timing": {
+        "bytes_per_second_decode": 1072.4723168083224,
+        "time_to_first_output_seconds": 0.0997326,
+        "total_latency_seconds": 0.2190694
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "instruction_following",
+      "generated_hex": "207265736964656e63657320616e64207375636365737366756c207265636f7264696e672074686520736572696573207265636f7264696e6720736572696573207265636f7264696e6720616e6420736574206173206120736572696573206f662073746174696f6e7320616e642073657474696e6720746865207365726965",
+      "generated_sha256": "0e6e3f04b394509f77f3734ce4833ad93150245abc5f44d2a09e02ba0012ef07",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.376,
+        "unique_4gram_rate": 0.624,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.65
+      },
+      "prompt_id": "functional-04-04",
+      "prompt_sha256": "8963969cec9b210b394cae4656171ae2c18de4db2eea1521d35d057efcb4efa8",
+      "timing": {
+        "bytes_per_second_decode": 1177.587564675317,
+        "time_to_first_output_seconds": 0.092093,
+        "total_latency_seconds": 0.2007635
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "reasoning",
+      "generated_hex": "20636f6e7461696e696e672074686520737461746520636f6e7461696e696e6720746865207374617465206f6620746865207365636f6e6420736561736f6e20616e6420736563757269747920636f6e747261637473207468617420746865207365636f6e6420736561736f6e20776173207365656e20617320612073657269",
+      "generated_sha256": "90541f3e6f1ecc7beb0a5787b17f99562a41f7e8394da5c1a281bf2dccadf2cb",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.344,
+        "unique_4gram_rate": 0.656,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6818181818181818
+      },
+      "prompt_id": "functional-04-05",
+      "prompt_sha256": "031f1d6c65b68015aedb813c59dd6dea2ca160d67972628254dbcc1f76a411ac",
+      "timing": {
+        "bytes_per_second_decode": 1173.6411207172414,
+        "time_to_first_output_seconds": 0.09721,
+        "total_latency_seconds": 0.2062572
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "summarization",
+      "generated_hex": "207265636f72647320616e6420636f6e7461696e73206120737461746520636f6e747261637420746f207468652073746174696f6e20616e6420636f6e7461696e207468652073746174696f6e20726573756c74696e6720696e20746865207365636f6e6420736561736f6e207265636f7264207265636f7264696e6720616e",
+      "generated_sha256": "75b43b3d1851cdcbcec2cfa802949eaaecbefc46ef919e4107ddd94e16fb0b05",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.31200000000000006,
+        "unique_4gram_rate": 0.688,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.8095238095238095
+      },
+      "prompt_id": "functional-04-06",
+      "prompt_sha256": "d0d506a7406a46501e44acb9c0318bb96e81e42a75c7d7b12e3cb29701178db1",
+      "timing": {
+        "bytes_per_second_decode": 719.8585927776812,
+        "time_to_first_output_seconds": 0.0843253,
+        "total_latency_seconds": 0.2620864
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "question_answering",
+      "generated_hex": "20636f6e7461696e696e67207468652073746174696f6e20616e642073746174696f6e20636f6e7461696e696e67207468652073746174696f6e206173206120737461746520636f6e7461696e696e6720746865207374617465206f662074686520737461746520636f6e7461696e696e6720746865207374617465206f6620",
+      "generated_sha256": "cf5e60177125615697712b79e83f5b46f912db4917e72ff27451a7b4f42d2f8a",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.648,
+        "unique_4gram_rate": 0.352,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.38095238095238093
+      },
+      "prompt_id": "functional-04-07",
+      "prompt_sha256": "1a67f09eec6c7d9b59bd7edbc1616857b094f336f2fa9e33fbe37e1ea8482768",
+      "timing": {
+        "bytes_per_second_decode": 1112.0561657867233,
+        "time_to_first_output_seconds": 0.1001282,
+        "total_latency_seconds": 0.2152173
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "coherence",
+      "generated_hex": "20636f6e7461696e73206120636f6e747261637420746f2074686520636f6e747261637420746861742069742063616e20626520636f6e74726f766572737920616e6420636f6e7461696e2074686520636f6e74657874206f662074686520636f6e747261637420746f2074686520636f6e7472616374207468617420746865",
+      "generated_sha256": "213ccb730c91672648e1407367792f21b13d6fa2ab992de1a84ad21710d1ae58",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.472,
+        "unique_4gram_rate": 0.528,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6086956521739131
+      },
+      "prompt_id": "functional-04-08",
+      "prompt_sha256": "e123f94b4983dd42c875f06ecf74e29e9e63dc822e4cacf8e258bdcdc35134c5",
+      "timing": {
+        "bytes_per_second_decode": 1184.8001251445132,
+        "time_to_first_output_seconds": 0.1045145,
+        "total_latency_seconds": 0.2125367
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "repetition_control",
+      "generated_hex": "20726573706563746976656c7920616e6420737472696e677320726573756c747320696e20746865207374617465207265737472696374696f6e73206f6620746865207374617465207265737472696374696f6e73206f6620746865207374617465207265737472696374696f6e73206f662074686520737461746520636f6e",
+      "generated_sha256": "ca62435b25de80b9e0fdfc4d62d40bbdb7bd67c6f03b697c9502a231e371b061",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.504,
+        "unique_4gram_rate": 0.496,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5
+      },
+      "prompt_id": "functional-04-09",
+      "prompt_sha256": "e407907338e2b2bd1bd4ce6946f49af3a62366e5f088c7f20fe0ca7698558b13",
+      "timing": {
+        "bytes_per_second_decode": 1233.9585389930899,
+        "time_to_first_output_seconds": 0.0949634,
+        "total_latency_seconds": 0.1986821
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "continuation",
+      "generated_hex": "20726573706563746976656c7920616e6420726573756c747320617265207365656e20696e207468652073657269657320616e64207365727669636520726573706563746976656c792072656365697665642062792074686520736572696573206f66207468652073657269657320616e6420736572696573207265636f7264",
+      "generated_sha256": "23c1cb2225f9a9069c7b4471f50dbe7c42d0b0a35eae38dcf80c3769aced5f7b",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.368,
+        "unique_4gram_rate": 0.632,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6190476190476191
+      },
+      "prompt_id": "functional-05-00",
+      "prompt_sha256": "7d1d813a879c75f7c0e900a5e2c6e0d902942d154b0127054c968b9cce407068",
+      "timing": {
+        "bytes_per_second_decode": 1235.4985767635535,
+        "time_to_first_output_seconds": 0.0973435,
+        "total_latency_seconds": 0.200933
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "explanation",
+      "generated_hex": "20737472696e677320616e6420737472696e67732074686579207365656d20746f207365656d20746f207365656d20746f207365652074686520737472696e6720737472696e6720737472696e6720737472696e677320616e6420737472696e67732074686520737472696e6720737472656e677468206f6620746865207374",
+      "generated_sha256": "698e68d58e38e70d271e5ad088db9e58ec8011fb9ba4a40e56cc79eb90ff7be5",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.624,
+        "unique_4gram_rate": 0.376,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.4583333333333333
+      },
+      "prompt_id": "functional-05-01",
+      "prompt_sha256": "faad81bbf459a6fce52f3a22814fcddbcacabd38bcb99d5f8a4269d3ba5f3b42",
+      "timing": {
+        "bytes_per_second_decode": 1211.9261103799577,
+        "time_to_first_output_seconds": 0.091948,
+        "total_latency_seconds": 0.1975504
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "planning",
+      "generated_hex": "207265636f7264696e672074686520736572696573207265636569766564206d6f726520726563656e746c7920726563656976656420726563656e746c792072656365697665642062792074686520736572696573204172746973747320616e642074686520736572696573207265636569766564206d6f726520726563656e",
+      "generated_sha256": "6f9b981b76894e7aa788b9588efb109d534bdeadda256e56d34564c0c4ce9de7",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.504,
+        "unique_4gram_rate": 0.496,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5263157894736842
+      },
+      "prompt_id": "functional-05-02",
+      "prompt_sha256": "2a8d0ecb90929bac5c58e6f2d898f86a988660fd2008765d635fd642c47eb5a8",
+      "timing": {
+        "bytes_per_second_decode": 940.2307091102479,
+        "time_to_first_output_seconds": 0.0810492,
+        "total_latency_seconds": 0.2171713
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "comparison",
+      "generated_hex": "207265636f726473207468617420746865792063616e206265207265636f726465642062792074686520736572696573206f66207468652073657269657320616e64207265636f7264732074686520736572696573207265636f7264696e672074686520736572696573207265636f7264696e67207468652073657269657320",
+      "generated_sha256": "6aed4e8ddac5a9019a4c08d36e447a126eed77135ea7be659e3bd041074cb678",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.52,
+        "unique_4gram_rate": 0.48,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5454545454545454
+      },
+      "prompt_id": "functional-05-03",
+      "prompt_sha256": "af5bfdd4f336c1e830fa1980235db5015dc419d6cd69e8f516139f4766f8b5dd",
+      "timing": {
+        "bytes_per_second_decode": 1176.359223345584,
+        "time_to_first_output_seconds": 0.0929301,
+        "total_latency_seconds": 0.2017259
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "instruction_following",
+      "generated_hex": "20726563657074696f6e20616e6420736572696573207265636569766564206d6f726520726563656e746c7920726563656976656420726563656e746c792072656365697665642062792073657269657320736572766963657320616e6420736572696573207265636569766564206d6f726520726563656e746c7920726563",
+      "generated_sha256": "6fc948d5d8584315e8b8f7c2140b27bc6498a9842680d6331f02e66b0049d028",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.544,
+        "unique_4gram_rate": 0.45599999999999996,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5
+      },
+      "prompt_id": "functional-05-04",
+      "prompt_sha256": "9a27c3737782cd1a9c89c8614653a92601636e976072497db755b7954075fd80",
+      "timing": {
+        "bytes_per_second_decode": 1165.267738470222,
+        "time_to_first_output_seconds": 0.0872296,
+        "total_latency_seconds": 0.1970633
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "reasoning",
+      "generated_hex": "20636f6e74726f6c206f66207468652073657269657320726573706563746976656c79207265636569766564206279207468652073657269657320616e6420636f6d706172656420746f2074686520736572696573206173206120736572696573206f662073657269657320616e6420636f6d706172656420746f2074686520",
+      "generated_sha256": "c9703ecf2b6f4e5c2a70f26b58b62e30c8e7d82fb17d401fbcef94b7f3f0c0dd",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.4,
+        "unique_4gram_rate": 0.6,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5217391304347826
+      },
+      "prompt_id": "functional-05-05",
+      "prompt_sha256": "9243f76864f4694e98c8d37a1dddd2baf7da93519c004a3fbc50e779c7d27794",
+      "timing": {
+        "bytes_per_second_decode": 1190.0644494278392,
+        "time_to_first_output_seconds": 0.0904685,
+        "total_latency_seconds": 0.1980129
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "summarization",
+      "generated_hex": "207265636f7264696e672074686520736f6e67207265636569766564206d6f726520726563656e746c792072656365697665642062792074686520736f6e672061732061207265636f7264696e6720736572696573207265636f7264696e6720616e6420736572696573207265636f7264696e672074686520736f6e67207265",
+      "generated_sha256": "97230ec9dbc0f2436bd3dae3cb9a2729c2528ad0bde67784599d3c8e785f1afb",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.48,
+        "unique_4gram_rate": 0.52,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5714285714285714
+      },
+      "prompt_id": "functional-05-06",
+      "prompt_sha256": "29dbd0760aa93864e2a4384358b7ffa36978534af0d13535a2bccc7d3cea2742",
+      "timing": {
+        "bytes_per_second_decode": 1200.778629892821,
+        "time_to_first_output_seconds": 0.0786358,
+        "total_latency_seconds": 0.1852193
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "question_answering",
+      "generated_hex": "20616e64207468652073747269637420636f6e747269627574696f6e7320746f2074686520737472696e6720636f6e747261637420746f207468652073747265657420616e642074686520737472697020636f6e747261637420746f207468652073747265657420616e642074686520737472697020636f6e74726163742074",
+      "generated_sha256": "398681b24dfe202c6f8a143ef070254ecba55bf71b74925bb6ad3acd80ee068e",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.5760000000000001,
+        "unique_4gram_rate": 0.42399999999999993,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.43478260869565216
+      },
+      "prompt_id": "functional-05-07",
+      "prompt_sha256": "cf67e5cd95166ddd25dbc4fbda7462dc2fd36006dab5b6705fd2e84c45dec8de",
+      "timing": {
+        "bytes_per_second_decode": 1178.0503450859194,
+        "time_to_first_output_seconds": 0.0826713,
+        "total_latency_seconds": 0.1913108
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "coherence",
+      "generated_hex": "207265636f72647320616e6420636f6e746163742074686520636f6e74657874206f662074686520636f6e747261637420746f2074686520636f6d70616e7920616e642074686520636f6d70616e7920636f6e7461696e732074686520636f6d70616e7920746f2074686520636f6e7472616374207468617420746865792063",
+      "generated_sha256": "71de1d11d9898fd20fbac6a08a334a34033b30d887b5f9cc0b6bb4a021d72c9a",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.45599999999999996,
+        "unique_4gram_rate": 0.544,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5652173913043478
+      },
+      "prompt_id": "functional-05-08",
+      "prompt_sha256": "a87c35795fcd59fc91e4e6ff8268eb60d1382ce2a6f2c65430ce2e518f8c409d",
+      "timing": {
+        "bytes_per_second_decode": 1205.9634894553567,
+        "time_to_first_output_seconds": 0.0982179,
+        "total_latency_seconds": 0.2043449
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "repetition_control",
+      "generated_hex": "207265636f7264696e677320616e6420737472696e677320726573706563746976656c79207265636569766564206d6f726520726563656e74207265636f7264696e677320616e642073746174696f6e617269657320617320612073696e676c652073746172207265636f7264696e672074686520736f6e6720726563656976",
+      "generated_sha256": "6bac6298be22469593cb9455e32f80b2cfa0f87a1705ec71d1f3c397731cefba",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.256,
+        "unique_4gram_rate": 0.744,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.8888888888888888
+      },
+      "prompt_id": "functional-05-09",
+      "prompt_sha256": "3d5a4ab6b194257d2914935addb88f600d2b0b009229f935e96eff8ae9eb6a18",
+      "timing": {
+        "bytes_per_second_decode": 1150.7190195873955,
+        "time_to_first_output_seconds": 0.0887829,
+        "total_latency_seconds": 0.2000039
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "continuation",
+      "generated_hex": "207468652073746174652073746174652073746174657320746861742074686520737461746520737573706563746564207468652073746174652073746174696f6e20746861742074686520737461746520737570706c696573207468652073746174652073746174652073746174696f6e2074686174207468652073746174",
+      "generated_sha256": "69eb05c7c78720ca3e7a013928d19f019ac4ad3e3dd17085dacf57163fcca150",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.6639999999999999,
+        "unique_4gram_rate": 0.3360000000000001,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.36363636363636365
+      },
+      "prompt_id": "functional-06-00",
+      "prompt_sha256": "aad6b08a429808947de7ca09fad2738c359574f8997cebe504580e5a653fc84a",
+      "timing": {
+        "bytes_per_second_decode": 1155.9179840067911,
+        "time_to_first_output_seconds": 0.0954798,
+        "total_latency_seconds": 0.2062009
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "explanation",
+      "generated_hex": "2073746174696f6e7320746861742073746174652073746174657320746861742073746174652073746174657320746861742074686579207365656d20746f207365656d20746f207365656d20746f20736565207468652073746174656d656e7420746f20736565207468652073746174656d656e7420746f20737461727420",
+      "generated_sha256": "3f7cb7be8743939297d994c60fbd1fb1456cd8dd2e55d53208bbfc7fb4919fff",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.5840000000000001,
+        "unique_4gram_rate": 0.4159999999999999,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.4583333333333333
+      },
+      "prompt_id": "functional-06-01",
+      "prompt_sha256": "56a7e47abb9de7b3e0e81ffc53e965ada1218c95a1b180e61ea6fe9d7604edc6",
+      "timing": {
+        "bytes_per_second_decode": 1127.545676611091,
+        "time_to_first_output_seconds": 0.0915721,
+        "total_latency_seconds": 0.2050806
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "planning",
+      "generated_hex": "20737472756374757265207374727563747572657320616e64207374727563747572616c207374727563747572657320616e64207374727563747572616c207374727563747572657320616e6420737472756374757265207374727563747572657320616e64207374727563747572616c207374727563747572657320616e64",
+      "generated_sha256": "9a8399ee17f838cb0244b7f08c244d0fb9c0d20c139ca06c413f903eb07b51b0",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.8160000000000001,
+        "unique_4gram_rate": 0.18399999999999994,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.26666666666666666
+      },
+      "prompt_id": "functional-06-02",
+      "prompt_sha256": "00810e6df046740a7cbbd1087ef38a34d45aee6273d200bd80b75679355c391b",
+      "timing": {
+        "bytes_per_second_decode": 1232.4721754963348,
+        "time_to_first_output_seconds": 0.0812398,
+        "total_latency_seconds": 0.1850833
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "comparison",
+      "generated_hex": "2073656e736974697665207374726573736564207370656369657320746861742073656e64207468656d20746f20746865207374726565742073747265746368696e672073747265657420737472656e67746820746f2073656e64207468656d20746f2073656e64207468656d20746f2073656e64207468656d20746f207365",
+      "generated_sha256": "1d3516c2b0e33802c100548c9233c70bcbc6cedc74e2e44815b4baa3ddba57c7",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.44799999999999995,
+        "unique_4gram_rate": 0.552,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5217391304347826
+      },
+      "prompt_id": "functional-06-03",
+      "prompt_sha256": "917b12f1110e0e29ea8e8560e227c53702d5c8998094a6268d686f63eca46db1",
+      "timing": {
+        "bytes_per_second_decode": 1163.0484954877352,
+        "time_to_first_output_seconds": 0.0893094,
+        "total_latency_seconds": 0.1993531
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "instruction_following",
+      "generated_hex": "20746861742073656e74207468656d20746f2073746172742074686520737461746520746f2073746172742074686520737461746520746f2073746172742074686520737461746520746f2073746172742074686520737461746520746f2073746172742074686520737461746520746f207374617274207468652073746174",
+      "generated_sha256": "6ec723c65ac2c9c39045d20f8ca259d170c19d24192097f252917da6b198681a",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.752,
+        "unique_4gram_rate": 0.248,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.2962962962962963
+      },
+      "prompt_id": "functional-06-04",
+      "prompt_sha256": "57024ddb772b73a4263d6fc58457785118a47c8ff8e3cc39632cad1e7524eac6",
+      "timing": {
+        "bytes_per_second_decode": 1164.9750258478834,
+        "time_to_first_output_seconds": 0.0773995,
+        "total_latency_seconds": 0.1872593
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "reasoning",
+      "generated_hex": "207374616e64617264207374616e64617264207374616e64617264207374616e64617264207374616e64617264207374616e64617264207374616e646172642073747275637475726520737472756374757265207375636820617320737472616e6765207374616e646172642073747265737365732073756368206173207374",
+      "generated_sha256": "5dcc0f597baa8cde8c302e40b768dd58370413c45c9c8d5db7c1830bfefb55a6",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.6639999999999999,
+        "unique_4gram_rate": 0.3360000000000001,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.4117647058823529
+      },
+      "prompt_id": "functional-06-05",
+      "prompt_sha256": "f57ef7e381024eb550fc28e597f1afbece11f7eaedb46ece690b665b554b9f01",
+      "timing": {
+        "bytes_per_second_decode": 1150.0965901433128,
+        "time_to_first_output_seconds": 0.0879362,
+        "total_latency_seconds": 0.199219
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "summarization",
+      "generated_hex": "20746f2073656e64207468656d20746f207468652073747269637420737472696e6720737472696e677320746f2074686520737472656e677468206f662074686520737472656e6774682073657474696e6720737472656e67746820746f20737472656e677468656e207468652073747265657420737472656e677468207468",
+      "generated_sha256": "5bb0a55d7818e4ea2cd1f4f76acd214f60a27f1ef4e9375e2dde3eb40b1c4fc0",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.48,
+        "unique_4gram_rate": 0.52,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5909090909090909
+      },
+      "prompt_id": "functional-06-06",
+      "prompt_sha256": "3b063b130eb7e172289c571e7296bf7540f981ea919fd96aec3452ecdc1e65c0",
+      "timing": {
+        "bytes_per_second_decode": 1212.9033969823342,
+        "time_to_first_output_seconds": 0.0774201,
+        "total_latency_seconds": 0.1829382
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "question_answering",
+      "generated_hex": "2073746174696f6e7320746f2073746174652074686520737461746520737461746573207468617420737461746520737461746573207468617420746865792073656e74207468656d20746f207374617465207468652073746174652073746174696f6e20746f207374617465207468652073746174652073746174696f6e20",
+      "generated_sha256": "cbe904b4ddc3ff4c2e5261206bbf42e5ebc65bfcc61172fa21d6738e12ca2ca9",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.624,
+        "unique_4gram_rate": 0.376,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.43478260869565216
+      },
+      "prompt_id": "functional-06-07",
+      "prompt_sha256": "f83714733c061224a5ac6c25243353d8337639c18a8aa96ec017cb9c3bf87433",
+      "timing": {
+        "bytes_per_second_decode": 1141.871259368028,
+        "time_to_first_output_seconds": 0.0831172,
+        "total_latency_seconds": 0.1952017
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "coherence",
+      "generated_hex": "2074686174207365656d20746f20736565207468652073746174652073746174696f6e20746861742074686579207365656d20746f20736565207468652073746174652073746174696f6e20746861742074686579207365656d20746f207365652074686520737461746520746f207365652074686520737461746520746861",
+      "generated_sha256": "84cb98bf4fd53f98d1bf5a6de85cba19332bd2969b07ee81d13d42d5d4ecacb6",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.688,
+        "unique_4gram_rate": 0.31200000000000006,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.3333333333333333
+      },
+      "prompt_id": "functional-06-08",
+      "prompt_sha256": "b97d2743e56232c58332dff5fe4f69565921e6d5fcc4dd17ea815eea13b47d68",
+      "timing": {
+        "bytes_per_second_decode": 1117.862925552076,
+        "time_to_first_output_seconds": 0.0996555,
+        "total_latency_seconds": 0.2141471
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "repetition_control",
+      "generated_hex": "2073746174696f6e7320616e642073746174696f6e7320746861742074686520737472696e677320737461727420746865207374617465207374617465732074686174207468652073746f7279207374617274732074686520737461746520746f2073746172742074686520737461746520746f207374617274207468652073",
+      "generated_sha256": "24cf17581a311600f57f4a4f47cdfd164f18fc8cb4f31b02380e74b207daf0f3",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.552,
+        "unique_4gram_rate": 0.44799999999999995,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5
+      },
+      "prompt_id": "functional-06-09",
+      "prompt_sha256": "436fafcfbc362b0d443fad0edf2b513901c06c431c74d101b3d9d5748f737054",
+      "timing": {
+        "bytes_per_second_decode": 1159.7196740100478,
+        "time_to_first_output_seconds": 0.1159444,
+        "total_latency_seconds": 0.2263033
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "continuation",
+      "generated_hex": "206d617920626520636f6d706c6574656c79207265636f72646564206173206120736572696573206f6620636f6d706f736974696f6e7320616e642074686520736572696573207265636f726465642061726561732061726520636f6d706c65746564206173206120736572696573206f66207365636f6e6461727920636f6d",
+      "generated_sha256": "01e5cfa8c0dfc4a2abf3057a3cfd519ef7e81ca0ef06ddd89e6db078c8577fb9",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.31999999999999995,
+        "unique_4gram_rate": 0.68,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7272727272727273
+      },
+      "prompt_id": "functional-07-00",
+      "prompt_sha256": "b6718945e42466bc8eb9b96003d3ce22aa273b0819f3f8e4f167ec1bc8a77302",
+      "timing": {
+        "bytes_per_second_decode": 1165.0322841368113,
+        "time_to_first_output_seconds": 0.0965053,
+        "total_latency_seconds": 0.2063611
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "explanation",
+      "generated_hex": "20636f6e74726f6c20636f6e74656e7420746f20746865207374617465206f662074686520737461746520636f6e747261637420746f20746865207374617465206f662074686520737461746520636f6e747261637420746f20746865207374617465206f662074686520737461746520636f6e737472756374696f6e206f66",
+      "generated_sha256": "44355480c5f0e3c688768196f9e8609e734191defebd5a74e65141cd86833513",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.608,
+        "unique_4gram_rate": 0.392,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.3333333333333333
+      },
+      "prompt_id": "functional-07-01",
+      "prompt_sha256": "df22ee873823785d921892d00a43a4c76fac1fd35b3071a1ba7444ccda2b0683",
+      "timing": {
+        "bytes_per_second_decode": 1189.6419363653094,
+        "time_to_first_output_seconds": 0.0874507,
+        "total_latency_seconds": 0.1950301
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "planning",
+      "generated_hex": "20636f6d706f736572732061726520636f6d706c6574656c79207265636f726465642061732061207265636f7264696e67207265636f7264696e672061727469737420616e6420636f6d706f73657220417274687572205363686f6f6c20436f6d6d65726369616c2041776172647320616e642074686520436f6d6d6f6e7765",
+      "generated_sha256": "5f19ccdc9b45c021959855782ae388231c760c28c38438650efa6b77e03cd350",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.19199999999999995,
+        "unique_4gram_rate": 0.808,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.8888888888888888
+      },
+      "prompt_id": "functional-07-02",
+      "prompt_sha256": "e9a27fe9947a31bcc669b6c2e88a59032f214da1d444483568f6960a843968bc",
+      "timing": {
+        "bytes_per_second_decode": 1217.6270541511094,
+        "time_to_first_output_seconds": 0.0777383,
+        "total_latency_seconds": 0.1828488
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "comparison",
+      "generated_hex": "20636f6d706c657820636f6e74726f6c20636f6d706172656420746f207468652073747265657420636f6d70616e79207468617420636f6e74726f6c6c6564207468652073747265657420636f6d70616e7920746f207468652073747265657420636f6d70616e7920746f207468652073747265657420636f6d706c65782062",
+      "generated_sha256": "8a57253b4e5f4c00be95ad91ece1771d3bd1e60aad26ec27080379833f0fa399",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.5760000000000001,
+        "unique_4gram_rate": 0.42399999999999993,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.47619047619047616
+      },
+      "prompt_id": "functional-07-03",
+      "prompt_sha256": "ae3282722923d6748dd8ad04ee529012dc4b24d53d30ee0e01eb1bf79738855a",
+      "timing": {
+        "bytes_per_second_decode": 1220.949975390227,
+        "time_to_first_output_seconds": 0.0886953,
+        "total_latency_seconds": 0.1935186
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "instruction_following",
+      "generated_hex": "20746f207468652073657269657320616e64207468652073657269657320636f6d706c6574656c79207265636f72646564206174207468652073616d652074696d65206173206120736572696573206f662073657269657320616e642073657269657320636f6d706f736572205374657068656e2053747265657420616e6420",
+      "generated_sha256": "33de31c3b2b5860df5310f9ddffa6f7d287e2e5f8f511b575ae4228818fa215c",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.29600000000000004,
+        "unique_4gram_rate": 0.704,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6521739130434783
+      },
+      "prompt_id": "functional-07-04",
+      "prompt_sha256": "b0bf03cf7bea2cb073d4508f2523cb9b4cbc8a07b7e7faa8decf0e95dfcd14b0",
+      "timing": {
+        "bytes_per_second_decode": 1195.93754963608,
+        "time_to_first_output_seconds": 0.0768406,
+        "total_latency_seconds": 0.183858
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "reasoning",
+      "generated_hex": "20636f6d706c657820636f6d706c657820636f6d706c657820636f6d7065746974696f6e20616e6420636f6d706c65746520636f6d706c657820636f6d7065746974696f6e20616e64207365727669636520636f6d706f73657220416e64726577205363686f6c61727368697020616e64207468652073657269657320726563",
+      "generated_sha256": "122ef9de7b17d4c88723759fc850eb215fb5e70438a720d1e0cc54c8dc11255c",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.4,
+        "unique_4gram_rate": 0.6,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6470588235294118
+      },
+      "prompt_id": "functional-07-05",
+      "prompt_sha256": "2a95e284becd5d669e91330c7a92b9674f016096212f578f3d06aae446b20184",
+      "timing": {
+        "bytes_per_second_decode": 1237.7649832418226,
+        "time_to_first_output_seconds": 0.1354644,
+        "total_latency_seconds": 0.2388642
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "summarization",
+      "generated_hex": "207265636f72646564206279207468652073657269657320616e6420636f6d6d65726369616c20637269746963616c20726563657074696f6e20616e6420636f6d6d65726369616c207265636f7264696e672074686520736572696573207265636569766564206d756368206c696d6974656420726563656976657273652072",
+      "generated_sha256": "1e44af7a026292c8d8cae4e55b7c70060f625ae148d66a6e7d0e199fa17e1557",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.28800000000000003,
+        "unique_4gram_rate": 0.712,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7777777777777778
+      },
+      "prompt_id": "functional-07-06",
+      "prompt_sha256": "25bbf0fe667dbda5e4d7ec3bdbb581dce44dbcc084075d29ca189273e7423f40",
+      "timing": {
+        "bytes_per_second_decode": 1219.9782881989022,
+        "time_to_first_output_seconds": 0.0753646,
+        "total_latency_seconds": 0.1802714
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "question_answering",
+      "generated_hex": "20636f6d706f7365727320616e642074686520737472696374206f6620746865207365726965732061726520616c736f20636f6d706c65746564206173206120636f6d70617261746976656c79207265636f726465642061727469737420616e6420636f6d706f736572205374657068656e2053746576656e736f6e20616e64",
+      "generated_sha256": "4c19f6a7979de9cb9236a70d45a22dc6ad09be49bcdf7af7ee9a95085de20210",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.14400000000000002,
+        "unique_4gram_rate": 0.856,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.85
+      },
+      "prompt_id": "functional-07-07",
+      "prompt_sha256": "ea4ee9869e67ba8f770966bff32447bdf45f910973843586443f0078faf87aee",
+      "timing": {
+        "bytes_per_second_decode": 1222.9388941383966,
+        "time_to_first_output_seconds": 0.085067,
+        "total_latency_seconds": 0.1897192
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "coherence",
+      "generated_hex": "20636f6d706172656420746f2074686520636f6d70616e7920277320636f6d70616e7920616e642074686520636f6d70616e7920277320636f6d70616e7920616e642074686520636f6d70616e7920277320636f6d70616e7920636f6d706172656420746f2074686520636f6d70616e7920277320636f6d70616e7920616e64",
+      "generated_sha256": "d295253743315384626327bb23bc932ef36e757ebdbbec1c319b562d0cac9a4f",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.744,
+        "unique_4gram_rate": 0.256,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.2608695652173913
+      },
+      "prompt_id": "functional-07-08",
+      "prompt_sha256": "e32b3a3ff4ac87a56d8ced023171cb48d6009bbabbd0c3b17dffbe2366d5874b",
+      "timing": {
+        "bytes_per_second_decode": 1201.75719434761,
+        "time_to_first_output_seconds": 0.1081778,
+        "total_latency_seconds": 0.2146743
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "repetition_control",
+      "generated_hex": "20636f6e74726f6c20636f6e74656e7420746f2074686520737472696e67207374617465206f66207468652073747265657420636f6e74726f6c206f66207468652073747265657420636f6e74726f6c206f66207468652073747265657420636f6e737472756374696f6e206f66207468652073747265657420636f6e737472",
+      "generated_sha256": "6897027973c75c1ce01fb17bf207263dda2f7e62eddf193a66e29755aecae0f2",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.544,
+        "unique_4gram_rate": 0.45599999999999996,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.45454545454545453
+      },
+      "prompt_id": "functional-07-09",
+      "prompt_sha256": "0d19153243c687471fd7171abb86d75261f47eda8e272b69e7a877d6ca653c3e",
+      "timing": {
+        "bytes_per_second_decode": 1247.0662279851406,
+        "time_to_first_output_seconds": 0.0893572,
+        "total_latency_seconds": 0.1919857
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "continuation",
+      "generated_hex": "207265616374696f6e7320746f2074686520747261636b20726561636865642074686520747261636b206174207468652074696d65206f662074686520747261636b20726561636865642074686520746f702074656e206d617463686573206174207468652074696d65206f662074686520746f702073656174207265616368",
+      "generated_sha256": "3c9e28856b1c73edf531af911d8a01e8d8ff9f67bcd2f9e6686554edad829fc4",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.46399999999999997,
+        "unique_4gram_rate": 0.536,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5
+      },
+      "prompt_id": "functional-08-00",
+      "prompt_sha256": "99dea4f8598c90532f9f5f16974b016f1afc762e388636366fb49d5a2b675fda",
+      "timing": {
+        "bytes_per_second_decode": 1230.0028443815777,
+        "time_to_first_output_seconds": 0.1040012,
+        "total_latency_seconds": 0.2080532
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "explanation",
+      "generated_hex": "2073746174656d656e7473206174207468652073746174652073746174652073746174656d656e7420746861742074686579207365656d20746f206265207365656e20696e207468652073746174656d656e7420746861742074686579207365656d656420746f206265207374727563747572656420746f207365656d20746f",
+      "generated_sha256": "a7b67722871a79ef5c9636f90983d74ae36d0d67feadf6adecff9e1ce33d8d46",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.496,
+        "unique_4gram_rate": 0.504,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5833333333333334
+      },
+      "prompt_id": "functional-08-01",
+      "prompt_sha256": "48e09435cca14102e73e32707a39497020d4d0f7017794c1ee2a9db767f8a67d",
+      "timing": {
+        "bytes_per_second_decode": 1129.04050962066,
+        "time_to_first_output_seconds": 0.089828,
+        "total_latency_seconds": 0.2031868
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "planning",
+      "generated_hex": "20636f6d7065746974696f6e2061742074686520656e64206f6620746865206561726c7920313974682063656e7475727920617420746865206561726c7920313974682063656e7475727920617420746865206561726c7920313974682063656e7475727920617420746865206561726c7920313974682063656e7475727920",
+      "generated_sha256": "b0266ec02e138454393046157f91367a2e454ae320be5a3871b66a841ce635e8",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.632,
+        "unique_4gram_rate": 0.368,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.3333333333333333
+      },
+      "prompt_id": "functional-08-02",
+      "prompt_sha256": "2797d6ffa9b214a0d96420d231799089a9c2e708dd818d8c1ccacc25fee5870d",
+      "timing": {
+        "bytes_per_second_decode": 1223.8486022788443,
+        "time_to_first_output_seconds": 0.0840492,
+        "total_latency_seconds": 0.1886235
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "comparison",
+      "generated_hex": "20636f6d706172656420746f2074686520636f6d6d6f6e20636f6d70616e7920746f20746865207374726574636865206f662074686520636f6d6d756e69747920636f6d6d697474656520746f2074686520636f6d6d6974746565206f662074686520636f6d6d697474656520746f2074686520636f6d6d6974746565206f66",
+      "generated_sha256": "a02a58b9a22330dbbda11548e5ce056218d6f6fa3455d6bcb010ed34b8abd32b",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.536,
+        "unique_4gram_rate": 0.46399999999999997,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.4090909090909091
+      },
+      "prompt_id": "functional-08-03",
+      "prompt_sha256": "bea1859b97f2009e0e756e95fbf3492fe303b034b563083071bb00fdc772ca15",
+      "timing": {
+        "bytes_per_second_decode": 1216.7820866862176,
+        "time_to_first_output_seconds": 0.0929952,
+        "total_latency_seconds": 0.1981762
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "instruction_following",
+      "generated_hex": "20636174616c6f67756520616e642074686520737461746520636f6d6d756e6974792063616d6520746f207468652073656174206f66207468652073656174206174207468652073616d652074696d65206174207468652073616d652074696d65206174207468652073616d652074696d65206174207468652074696d652049",
+      "generated_sha256": "e8803d417befaae232508b7bed72f0fc457cae541a7e7e0b21f5726cedadb981",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.46399999999999997,
+        "unique_4gram_rate": 0.536,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.4642857142857143
+      },
+      "prompt_id": "functional-08-04",
+      "prompt_sha256": "99c4c515a30fdb8bf2aacfd0feabbc79a7845d6fee041c28c9cd64d0486e35ca",
+      "timing": {
+        "bytes_per_second_decode": 1146.8824956163105,
+        "time_to_first_output_seconds": 0.0829068,
+        "total_latency_seconds": 0.194499
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "reasoning",
+      "generated_hex": "20636f6d706172656420746f2074686520636f6d6d756e697479206f662074686520636f6d6d756e697479206174207468652074696d652061742074686520636f6d6d756e697479206f662074686520636f6d6d616e64206f662074686520636f6d6d616e646572206f662074686520636f6d6d616e646572206f6620746865",
+      "generated_sha256": "776545c9793516015168666fe0c9fe73f39a8c19c6807c477b839c65365f493e",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.5920000000000001,
+        "unique_4gram_rate": 0.4079999999999999,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.375
+      },
+      "prompt_id": "functional-08-05",
+      "prompt_sha256": "935087631e94ebbe068a1ae2b258284b8b472ad4bc69031c150cfa48aacb8ae4",
+      "timing": {
+        "bytes_per_second_decode": 1238.5962060249965,
+        "time_to_first_output_seconds": 0.0921183,
+        "total_latency_seconds": 0.1954476
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "summarization",
+      "generated_hex": "20636f6d706172656420746f207468652073657474696e67206f66207468652073656174206174207468652073616d652074696d65206174207468652073616d652074696d65206174207468652073656174206f66207468652073656174206174207468652073616d652074696d65206174207468652073616d652074696d65",
+      "generated_sha256": "8dad605c2b5523b4c64c788a2a90fe4ad3fccbf5fc03061a0ad4a036179c8f6b",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.616,
+        "unique_4gram_rate": 0.384,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.3103448275862069
+      },
+      "prompt_id": "functional-08-06",
+      "prompt_sha256": "cdbe0e56de81f773d08284bb2f1179aa04c2da11de53e70a30a1185eaba087b8",
+      "timing": {
+        "bytes_per_second_decode": 1118.3542019974855,
+        "time_to_first_output_seconds": 0.0802839,
+        "total_latency_seconds": 0.1947239
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "question_answering",
+      "generated_hex": "20617474656d70747320746f2061747461636b207468656d206174207468652074696d65207468657920617265206174747261637465642062792074686520636f6d6d756e697479206f662074686520636f6d6d697474656520746f2074686520636f6d6d6974746565206f662074686520636f6d6d697474656520746f2074",
+      "generated_sha256": "8a7f8ff42b09615ec21dbec07f93f5bd79ae49a5afbe722ca0670d01354c2567",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.352,
+        "unique_4gram_rate": 0.648,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.625
+      },
+      "prompt_id": "functional-08-07",
+      "prompt_sha256": "181f730c273fdfdaf2c51894385ae7e80e6a14e135839ebaec83bb1eeb48d6ec",
+      "timing": {
+        "bytes_per_second_decode": 1186.6355174843327,
+        "time_to_first_output_seconds": 0.0889107,
+        "total_latency_seconds": 0.1967645
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "coherence",
+      "generated_hex": "2063616e20626520636f6d706c6574656c7920726561636865642062792074686520636f6d70616e79207468617420746865792061726520746865207468697264206d6174636820746f20746865207465616d206174207468652074696d65206f6620746865207465616d202773207465616d61746520617420746865207469",
+      "generated_sha256": "73b6152e4c5d601b51e19193ee8386654531a9c2e40174a8f5b71a51b78aec03",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.256,
+        "unique_4gram_rate": 0.744,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7407407407407407
+      },
+      "prompt_id": "functional-08-08",
+      "prompt_sha256": "dd977c5b06c78a839c8b3ee8fbe229d26da8f1a9da8ceffe61c549edf3019b99",
+      "timing": {
+        "bytes_per_second_decode": 1203.8561015753585,
+        "time_to_first_output_seconds": 0.0996259,
+        "total_latency_seconds": 0.2059388
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "repetition_control",
+      "generated_hex": "20636f6e74726f6c6c657220636f6e74656d706f72617279207374796c6520616e6420737472696e6773207468617420746865792063616e206265207374696c6c20636f6e74726f6c6c656420627920746865207374617465206f66207468652073746f726d20616e64207468652073746f727920746f207374617274207468",
+      "generated_sha256": "68dc9bbc8e4f10c2610e39489a1706e9bdce89276a4b3185a6d116ba4adb2de7",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.19999999999999996,
+        "unique_4gram_rate": 0.8,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.8695652173913043
+      },
+      "prompt_id": "functional-08-09",
+      "prompt_sha256": "3ebe9fe2f80f1b328ffbf24b88c84360066779dcb670b5bee25312475cb41bfb",
+      "timing": {
+        "bytes_per_second_decode": 1161.9040702951963,
+        "time_to_first_output_seconds": 0.0903573,
+        "total_latency_seconds": 0.2005066
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "continuation",
+      "generated_hex": "206d6172726961676520616e642072656d61726b61626c79207265636569766564206120726563656e74207265636f7264207265636f7264696e672061727469737420616e64207265636569766564206d6f726520726563656e746c7920726563656976656420627920416d65726963616e207265766965777320616e642063",
+      "generated_sha256": "8e266c097767604fe8cbd3af9c38f807187d454c31cd0e446fc44ceedcbf8b46",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.272,
+        "unique_4gram_rate": 0.728,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7894736842105263
+      },
+      "prompt_id": "functional-09-00",
+      "prompt_sha256": "0bc4571fe404fc78a7e63f74abd8c25425f6be3bb769899cc317c7762b4e1ba6",
+      "timing": {
+        "bytes_per_second_decode": 1174.7559628042893,
+        "time_to_first_output_seconds": 0.1012729,
+        "total_latency_seconds": 0.2102182
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "explanation",
+      "generated_hex": "2073657269657320737563682061732074686520736572696573206f662074686520736572696573207365726965732073657269657320736572696573207365726965732073657269657320616e64207365726965732073657269657320736572696573207365726965732073657420696e207468652073657269657320616e",
+      "generated_sha256": "4d25f6885dbb1c76843718d155431956e9b7ffc86096ea348c881ea3584506ac",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.696,
+        "unique_4gram_rate": 0.30400000000000005,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.391304347826087
+      },
+      "prompt_id": "functional-09-01",
+      "prompt_sha256": "866614a0737f11cce8fbd5a9601ee31299a819ba6915d28207c607efdc0a5624",
+      "timing": {
+        "bytes_per_second_decode": 1231.9466875070982,
+        "time_to_first_output_seconds": 0.0952648,
+        "total_latency_seconds": 0.1991539
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "planning",
+      "generated_hex": "20636f6d7065746974696f6e2061726520636f6d706c657465642062792074686520416d65726963616e2041726d792041636164656d79204177617264732041637469766973696f6e204177617264732041776172647320417761726473204163747265524c20416c62756d2041776172642041636572612041776172642066",
+      "generated_sha256": "838c161970d5280ca09fb670866feec5b661288c1ddbd505745d4b58c17464f8",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.256,
+        "unique_4gram_rate": 0.744,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7894736842105263
+      },
+      "prompt_id": "functional-09-02",
+      "prompt_sha256": "723e7fe3105956c88c5629b168e61c67cfb829419b6184e8ecc97477c6c94cb9",
+      "timing": {
+        "bytes_per_second_decode": 1172.64010758973,
+        "time_to_first_output_seconds": 0.0869232,
+        "total_latency_seconds": 0.1960661
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "comparison",
+      "generated_hex": "20636f6d70726973696e67207468652072657374206f6620746865207265737472696374696f6e616c207265636f7264696e6720636f6d706f736572205365726269616e206372696d657320616e6420637269746963616c20726563657074696f6e207265636f7264696e6720746865207265636f7264696e67207365726965",
+      "generated_sha256": "5c3f617db3f1f9e76eeeb113ccebca3691355f5c697ce6815b17b66e89b33985",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.28800000000000003,
+        "unique_4gram_rate": 0.712,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7647058823529411
+      },
+      "prompt_id": "functional-09-03",
+      "prompt_sha256": "0eaf7578d8cca66af5e73e937560f8003ef8e4e34a22782221d544bbebf5f0f6",
+      "timing": {
+        "bytes_per_second_decode": 1219.251988904807,
+        "time_to_first_output_seconds": 0.0938915,
+        "total_latency_seconds": 0.1988584
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "instruction_following",
+      "generated_hex": "20636f6d706172656420746f2074686520636f6d70616e79207468617420746865792063616e206265207265636f72646564206173206120726573756c74206f662074686520636f6d70616e79207265636f726465642061726561732061726520636f6d706c65746564206173206120726573756c74206f662074686520636f",
+      "generated_sha256": "93b149b0b7cf31d1e44355ebdad128cf602626939a5b71569314bcf07f31e699",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.384,
+        "unique_4gram_rate": 0.616,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.68
+      },
+      "prompt_id": "functional-09-04",
+      "prompt_sha256": "d6cd626413eb59337bda695db0515654fe23732e3db0abedbdc67ce9c8136c43",
+      "timing": {
+        "bytes_per_second_decode": 1230.6674640366277,
+        "time_to_first_output_seconds": 0.0774257,
+        "total_latency_seconds": 0.1814186
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "reasoning",
+      "generated_hex": "20636f6d7065746974696f6e20616e64207265636569766564206d6f726520637269746963616c20726563657074696f6e20616e64207265636569766564206d756368206f66207468652072657669657720616e64207265636569766564206d756368206f662074686520657069736f64652027732072656c65617365206173",
+      "generated_sha256": "9f4b62b5dbdc2f0b5e6f4f5ddf61569317db91fd4521abe41135842817364039",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.32799999999999996,
+        "unique_4gram_rate": 0.672,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.6666666666666666
+      },
+      "prompt_id": "functional-09-05",
+      "prompt_sha256": "c127dbabd98d791b5a990ca2f7560a33279ef9e32aedf02a0208c5bf2d6fa673",
+      "timing": {
+        "bytes_per_second_decode": 1201.784274089437,
+        "time_to_first_output_seconds": 0.0936743,
+        "total_latency_seconds": 0.2001699
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "summarization",
+      "generated_hex": "20636f6d70726973696e672074686520637265617469766520726563657074696f6e206f662074686520637269746963616c2072657669657720616e6420637269746963616c20726576696577732061726520637269746963616c20616e6420636f6d6d65726369616c2072657669657765727320616e642063726974696361",
+      "generated_sha256": "3bba10cdf8e8c89e387ffdf5d2a0c835ac0e6dff9328efad93f419f15cda5898",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.352,
+        "unique_4gram_rate": 0.648,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.7222222222222222
+      },
+      "prompt_id": "functional-09-06",
+      "prompt_sha256": "5fbd801f81e0df55f6572af89c37180d90cb243602239f9c63e5e15ab2980025",
+      "timing": {
+        "bytes_per_second_decode": 1227.7906578559896,
+        "time_to_first_output_seconds": 0.0841701,
+        "total_latency_seconds": 0.1884113
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "question_answering",
+      "generated_hex": "20636f6d706172656420746f2074686520636f6d70616e7920277320636f6d70617269736f6e20746f2074686520636f6d70616e7920277320636f6d70616e7920616e642061726520636f6d706c657465642061732061207265636f7264696e6720636f6d706172656420746f2074686520636f6d70616e792027732072656c",
+      "generated_sha256": "afc100030026a25466449e76460b4d9737bccb1231ce4b2bdf9d20ab78b9a646",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.472,
+        "unique_4gram_rate": 0.528,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5652173913043478
+      },
+      "prompt_id": "functional-09-07",
+      "prompt_sha256": "e9d19a4aaf5e478a414d57e9c0f86fc247621518b83844683208766a9ebda331",
+      "timing": {
+        "bytes_per_second_decode": 1198.3627369106957,
+        "time_to_first_output_seconds": 0.0883871,
+        "total_latency_seconds": 0.1951863
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "coherence",
+      "generated_hex": "20636f6d7065746974696f6e20616e642072656365697665207265636f7264696e6720636f6d7065746974696f6e20616e64207265636f7264696e6720636f6d7065746974696f6e20616e64207265636f7264696e67206372697469637320616e6420637269746963616c20726563657074696f6e20616e6420637269746963",
+      "generated_sha256": "f52ffe0d7a6ec41d70d35f49b6a9149a9472144a61c05e7d827784487bc374ce",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.5760000000000001,
+        "unique_4gram_rate": 0.42399999999999993,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.5
+      },
+      "prompt_id": "functional-09-08",
+      "prompt_sha256": "5c9e62091ea2060a5c52d4fb402b51c83bcd34b8514abff374cece532be7ab8d",
+      "timing": {
+        "bytes_per_second_decode": 1166.2997681979211,
+        "time_to_first_output_seconds": 0.1065415,
+        "total_latency_seconds": 0.2162767
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    },
+    {
+      "category": "repetition_control",
+      "generated_hex": "207265636f72647320616e642073746174696f6e73207265636f726420746f20626520636f6e7369646572656420746f2062652061207374726f6e6720636f6e74726f766572737920746f2074686520737472696e6720636f6e74726f6c206f66207468652073746f727920746f206265207265636f72646564206279207468",
+      "generated_sha256": "10efa774074afdc0b9b3668817ee000cdf9b30ed7df1040a69995c6ef896b879",
+      "metrics": {
+        "generated_characters": 128.0,
+        "invalid_output": 0.0,
+        "printable_character_rate": 1.0,
+        "repetition_rate": 0.248,
+        "unique_4gram_rate": 0.752,
+        "valid_utf8": 1.0,
+        "word_diversity": 0.75
+      },
+      "prompt_id": "functional-09-09",
+      "prompt_sha256": "e11711e7def2abf7a0699aea611a9f9de1e4e53780b33d48b36133debed922ab",
+      "timing": {
+        "bytes_per_second_decode": 1240.2620053486298,
+        "time_to_first_output_seconds": 0.0946011,
+        "total_latency_seconds": 0.197791
+      },
+      "trace_external_path_counters": {
+        "planner_calls": 0,
+        "retrieval_calls": 0,
+        "stored_answer_calls": 0,
+        "template_calls": 0
+      }
+    }
+  ],
+  "screen_sha256": "27c1bf35c9b1ac266845dfb09bf8f3595ad10d970496aef228e20422ac393ff2",
+  "status": "PASS",
+  "test_accessed": false
+}

@@ -1,0 +1,202 @@
+{
+  "format": "layercake-phase2-recertification-search/1",
+  "reference_candidate": "adaptive_top1_attention",
+  "device": "cuda",
+  "precision": "fp16",
+  "seeds": [20260724],
+  "candidates": [
+    {
+      "name": "adaptive_top1_attention",
+      "kind": "adaptive_two_four",
+      "hypothesis": "independent-seed attention control anchors the corrected frontier",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 5,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1"
+      }
+    },
+    {
+      "name": "adaptive_top1_gru4",
+      "kind": "adaptive_two_four",
+      "hypothesis": "one additional recurrent local layer can buy quality while retaining ample CPU margin",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 4,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1",
+        "local_mixer": "gru"
+      }
+    },
+    {
+      "name": "adaptive_top1_gru5",
+      "kind": "adaptive_two_four",
+      "hypothesis": "depth-matched recurrent mixing tests the full quality ceiling of the fast path",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 5,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1",
+        "local_mixer": "gru"
+      }
+    },
+    {
+      "name": "adaptive_top1_gru_context64k",
+      "kind": "adaptive_two_four",
+      "hypothesis": "low-rank four-byte context can recover recurrent quality without taxing active execution",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 3,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1",
+        "local_mixer": "gru",
+        "higher_context_buckets": 65536,
+        "higher_context_dim": 16,
+        "higher_context_order": 4
+      }
+    },
+    {
+      "name": "adaptive_top1_attention_local3",
+      "kind": "adaptive_two_four",
+      "hypothesis": "reduced local attention depth may cross the invariant with a smaller quality cost than GRU mixing",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 3,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1"
+      }
+    },
+    {
+      "name": "adaptive_top1_attention_local4",
+      "kind": "adaptive_two_four",
+      "hypothesis": "four local attention layers target the narrow measured 2x speed shortfall",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 4,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1"
+      }
+    },
+    {
+      "name": "adaptive_top1_trigram8k",
+      "kind": "adaptive_two_four",
+      "hypothesis": "a directly learned causal three-byte transition table attacks byte uncertainty with one active row",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 4,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1",
+        "transition_context_buckets": 8192
+      }
+    },
+    {
+      "name": "adaptive_top1_context64k_future",
+      "kind": "adaptive_two_four",
+      "hypothesis": "future-byte auxiliary supervision plus sparse context should improve internal planning without changing autoregressive emission",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 4,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1",
+        "higher_context_buckets": 65536,
+        "higher_context_dim": 16,
+        "higher_context_order": 4,
+        "future_byte_horizons": [2, 4]
+      }
+    }
+  ],
+  "training": {
+    "steps": 1221,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.0008,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "routing_balance_weight": 0.02,
+    "future_byte_loss_weight": 0.1,
+    "router_collapse_threshold": 0.65,
+    "evaluation_interval": 610,
+    "resumable": true
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "sequence_bytes": 256,
+    "batches": 16,
+    "evaluate_test": false
+  },
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  },
+  "budget": {
+    "maximum_candidates": 8,
+    "maximum_runs": 8,
+    "maximum_steps_per_run": 1221,
+    "maximum_wall_seconds": 1800,
+    "maximum_cuda_memory_bytes": 12884901888
+  },
+  "promotion": {
+    "minimum_bpb_improvement": 0.0,
+    "final_test_must_remain_unaccessed": true,
+    "requires_all_experts_meaningfully_trained": true,
+    "maximum_router_load_fraction": 0.65
+  }
+}

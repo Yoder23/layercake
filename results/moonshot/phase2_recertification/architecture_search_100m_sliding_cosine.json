@@ -1,0 +1,3218 @@
+{
+  "batch_sha256": "2a908fe7e6c87b848bc40bd18dd2f0a42a94bb75df110d8335b8460e1b218dc3",
+  "campaign": {
+    "data": {
+      "architecture_selection": {
+        "bytes": 572418,
+        "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\architecture_selection.bin",
+        "sha256": "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93"
+      },
+      "test": {
+        "bytes": 1282697,
+        "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\test.bin",
+        "sha256": "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388"
+      },
+      "train": {
+        "bytes": 100000000,
+        "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\train_medium.bin",
+        "sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6"
+      },
+      "validation": {
+        "bytes": 567414,
+        "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\validation.bin",
+        "sha256": "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10"
+      }
+    },
+    "failed_runs": [],
+    "final_test_accessed": false,
+    "format": "layercake-final-variable-patch-campaign/1",
+    "minimum_predeclared_improvement": 0.0,
+    "reference_candidate": "whitespace_complete_sliding16_local2_core7_cosine_100m",
+    "reference_selection_bpb": 1.7045180856497273,
+    "runs": [
+      {
+        "active_parameters": 2531664,
+        "artifact": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2_recertification\\search_100m_sliding_cosine\\whitespace_complete_sliding16_local2_core7_cosine_100m\\seed-20260803",
+        "candidate": "whitespace_complete_sliding16_local2_core7_cosine_100m",
+        "eligible": false,
+        "kind": "adaptive_two_four",
+        "mean_bytes_per_patch": 3.1157174099077682,
+        "parameters": 2969136,
+        "raw_bytes_seen": 99999744,
+        "routing": {
+          "all_experts_meaningfully_trained": true,
+          "assignment_counts": [
+            4299429,
+            4343372,
+            4304950,
+            4292507,
+            4309901,
+            4311575,
+            4296285,
+            4292861
+          ],
+          "causal_patch_routing": true,
+          "expert_gradient_steps": [
+            12207,
+            12207,
+            12207,
+            12207,
+            12207,
+            12207,
+            12207,
+            12207
+          ],
+          "experts_used": 8,
+          "maximum_load_fraction": 0.126074341206959,
+          "mean_normalized_entropy": 0.9368239208913078,
+          "mode": "learned_top1",
+          "router_collapsed": false,
+          "utilization": [
+            0.12479881500849906,
+            0.126074341206959,
+            0.12495907216303329,
+            0.12459789125851067,
+            0.12510278402177244,
+            0.1251513749431074,
+            0.1247075546401137,
+            0.12460816675800444
+          ]
+        },
+        "seed": 20260803,
+        "selection_bpb": 1.7045180856497273,
+        "status": "PASS",
+        "test_accessed": false,
+        "validation_bpb": 1.691692952413923,
+        "wall_seconds": 1407.1967757999664
+      }
+    ],
+    "scientific_conclusion": "variable_patch_representation_does_not_close_measured_gap",
+    "selected_candidate": null,
+    "selection_split_only": true,
+    "source_config": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\configs\\moonshot\\phase2_recertification\\architecture_search_100m_sliding_cosine.json",
+    "source_config_sha256": "c19747ce4d9d3109caf419e754d5079077d822d8e1d92a70715a1bb00dc51164",
+    "status": "PASS",
+    "wall_seconds": 1413.3977486001095
+  },
+  "config_path": "configs/moonshot/phase2_recertification/architecture_search_100m_sliding_cosine.json",
+  "config_sha256": "c19747ce4d9d3109caf419e754d5079077d822d8e1d92a70715a1bb00dc51164",
+  "cpu_screens": {
+    "whitespace_complete_sliding16_local2_core7_cosine_100m": {
+      "bytes_per_second_decode": 1298.599845588362,
+      "bytes_per_second_total": 669.7128135420116,
+      "checkpoint_sha256": "9bdbfa0d984b0185a0cb7f465acf21787a404e15b6345fabf7282e6748ccd132",
+      "decode_seconds": 0.0985677,
+      "generated_bytes": 128,
+      "generated_text": "cean . The storm was reported to the south and west of the south , and the southern side of the southern coast of the southern c",
+      "physically_executed_experts": 80,
+      "prefill_seconds": 0.092559,
+      "prompt_bytes": 128,
+      "repetition_rate_4gram": 0.392,
+      "resident_memory_bytes_after": 1012203520,
+      "resident_memory_bytes_before": 1009655808,
+      "state_byte_count": 256,
+      "state_patch_count": 80,
+      "status": "PASS",
+      "time_to_first_output_seconds": 0.0925692,
+      "total_latency_seconds": 0.1911267,
+      "trace": {
+        "byte_events": [
+          {
+            "chosen_byte": 99,
+            "distribution_summary": {
+              "entropy_bits": 1.8441696166992188,
+              "top_bytes": [
+                99,
+                114,
+                112,
+                108,
+                102
+              ],
+              "top_probabilities": [
+                0.7230175137519836,
+                0.06925152242183685,
+                0.03543933108448982,
+                0.03425213694572449,
+                0.02728521078824997
+              ]
+            },
+            "external_override": false,
+            "index": 0,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 0.18858429789543152,
+              "top_bytes": [
+                101,
+                116,
+                99,
+                104,
+                114
+              ],
+              "top_probabilities": [
+                0.9795212149620056,
+                0.010246348567306995,
+                0.004365519154816866,
+                0.0028460354078561068,
+                0.001368650235235691
+              ]
+            },
+            "external_override": false,
+            "index": 1,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 97,
+            "distribution_summary": {
+              "entropy_bits": 0.06301850825548172,
+              "top_bytes": [
+                97,
+                114,
+                108,
+                115,
+                110
+              ],
+              "top_probabilities": [
+                0.9947878122329712,
+                0.0014274361310526729,
+                0.0013948219129815698,
+                0.0008074912475422025,
+                0.000555439677555114
+              ]
+            },
+            "external_override": false,
+            "index": 2,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 110,
+            "distribution_summary": {
+              "entropy_bits": 0.0793682262301445,
+              "top_bytes": [
+                110,
+                32,
+                10,
+                202,
+                103
+              ],
+              "top_probabilities": [
+                0.9938651919364929,
+                0.0028825439512729645,
+                0.00042397246579639614,
+                0.0002357690391363576,
+                0.00016951547877397388
+              ]
+            },
+            "external_override": false,
+            "index": 3,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.5593323111534119,
+              "top_bytes": [
+                32,
+                105,
+                115,
+                10,
+                110
+              ],
+              "top_probabilities": [
+                0.9146543741226196,
+                0.056118354201316833,
+                0.018843917176127434,
+                0.0033138622529804707,
+                0.0015167966485023499
+              ]
+            },
+            "external_override": false,
+            "index": 4,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 46,
+            "distribution_summary": {
+              "entropy_bits": 3.6753036975860596,
+              "top_bytes": [
+                46,
+                44,
+                97,
+                111,
+                105
+              ],
+              "top_probabilities": [
+                0.3402095139026642,
+                0.15673242509365082,
+                0.08373268693685532,
+                0.0727875679731369,
+                0.05559859052300453
+              ]
+            },
+            "external_override": false,
+            "index": 5,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.6142038702964783,
+              "top_bytes": [
+                32,
+                10,
+                46,
+                50,
+                45
+              ],
+              "top_probabilities": [
+                0.8523964285850525,
+                0.1465625911951065,
+                0.0008836523629724979,
+                1.555552262288984e-05,
+                1.4017745343153365e-05
+              ]
+            },
+            "external_override": false,
+            "index": 6,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 84,
+            "distribution_summary": {
+              "entropy_bits": 3.225179672241211,
+              "top_bytes": [
+                84,
+                73,
+                65,
+                83,
+                79
+              ],
+              "top_probabilities": [
+                0.3985074460506439,
+                0.16356833279132843,
+                0.10485509037971497,
+                0.036079756915569305,
+                0.035047341138124466
+              ]
+            },
+            "external_override": false,
+            "index": 7,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 104,
+            "distribution_summary": {
+              "entropy_bits": 0.3642958998680115,
+              "top_bytes": [
+                104,
+                111,
+                119,
+                114,
+                101
+              ],
+              "top_probabilities": [
+                0.958714485168457,
+                0.01407030038535595,
+                0.008651113137602806,
+                0.005991308018565178,
+                0.003639155998826027
+              ]
+            },
+            "external_override": false,
+            "index": 8,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 0.5546787977218628,
+              "top_bytes": [
+                101,
+                105,
+                114,
+                97,
+                111
+              ],
+              "top_probabilities": [
+                0.9080072641372681,
+                0.07084415853023529,
+                0.008821723982691765,
+                0.005352340638637543,
+                0.005181416403502226
+              ]
+            },
+            "external_override": false,
+            "index": 9,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.830744206905365,
+              "top_bytes": [
+                32,
+                114,
+                115,
+                121,
+                105
+              ],
+              "top_probabilities": [
+                0.8665541410446167,
+                0.05101314187049866,
+                0.04345673322677612,
+                0.028909001499414444,
+                0.005754200275987387
+              ]
+            },
+            "external_override": false,
+            "index": 10,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 115,
+            "distribution_summary": {
+              "entropy_bits": 4.91526460647583,
+              "top_bytes": [
+                115,
+                99,
+                102,
+                112,
+                114
+              ],
+              "top_probabilities": [
+                0.11635631322860718,
+                0.07435697317123413,
+                0.06416574120521545,
+                0.06249064952135086,
+                0.06227513402700424
+              ]
+            },
+            "external_override": false,
+            "index": 11,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 3.158583402633667,
+              "top_bytes": [
+                116,
+                111,
+                121,
+                101,
+                104
+              ],
+              "top_probabilities": [
+                0.3426327705383301,
+                0.11644519865512848,
+                0.09650631994009018,
+                0.09606119990348816,
+                0.06450173258781433
+              ]
+            },
+            "external_override": false,
+            "index": 12,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 111,
+            "distribution_summary": {
+              "entropy_bits": 1.8431429862976074,
+              "top_bytes": [
+                111,
+                97,
+                114,
+                101,
+                117
+              ],
+              "top_probabilities": [
+                0.46440720558166504,
+                0.33285796642303467,
+                0.1187376007437706,
+                0.04324416443705559,
+                0.030122067779302597
+              ]
+            },
+            "external_override": false,
+            "index": 13,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 114,
+            "distribution_summary": {
+              "entropy_bits": 0.5486933588981628,
+              "top_bytes": [
+                114,
+                110,
+                112,
+                99,
+                111
+              ],
+              "top_probabilities": [
+                0.9204594492912292,
+                0.04266798868775368,
+                0.020291080698370934,
+                0.011385493911802769,
+                0.0012354275677353144
+              ]
+            },
+            "external_override": false,
+            "index": 14,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 109,
+            "distribution_summary": {
+              "entropy_bits": 0.19804657995700836,
+              "top_bytes": [
+                109,
+                97,
+                101,
+                121,
+                112
+              ],
+              "top_probabilities": [
+                0.9779142141342163,
+                0.011105811223387718,
+                0.006710716988891363,
+                0.0016032285057008266,
+                0.0008562644943594933
+              ]
+            },
+            "external_override": false,
+            "index": 15,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.07006512582302094,
+              "top_bytes": [
+                32,
+                115,
+                121,
+                101,
+                97
+              ],
+              "top_probabilities": [
+                0.9935280680656433,
+                0.003972081001847982,
+                0.0007291154470294714,
+                0.0005510135088115931,
+                0.0005368367419578135
+              ]
+            },
+            "external_override": false,
+            "index": 16,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 119,
+            "distribution_summary": {
+              "entropy_bits": 4.201211929321289,
+              "top_bytes": [
+                119,
+                105,
+                104,
+                99,
+                39
+              ],
+              "top_probabilities": [
+                0.1375177502632141,
+                0.10303095728158951,
+                0.09555646777153015,
+                0.08234427869319916,
+                0.07825414091348648
+              ]
+            },
+            "external_override": false,
+            "index": 17,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 97,
+            "distribution_summary": {
+              "entropy_bits": 1.0002808570861816,
+              "top_bytes": [
+                97,
+                101,
+                105,
+                111,
+                104
+              ],
+              "top_probabilities": [
+                0.823923647403717,
+                0.07971987873315811,
+                0.04473061114549637,
+                0.038271836936473846,
+                0.007325692567974329
+              ]
+            },
+            "external_override": false,
+            "index": 18,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 115,
+            "distribution_summary": {
+              "entropy_bits": 0.415731281042099,
+              "top_bytes": [
+                115,
+                116,
+                110,
+                114,
+                108
+              ],
+              "top_probabilities": [
+                0.9502592086791992,
+                0.019829340279102325,
+                0.007745818234980106,
+                0.006302162539213896,
+                0.00571427633985877
+              ]
+            },
+            "external_override": false,
+            "index": 19,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.031017905101180077,
+              "top_bytes": [
+                32,
+                110,
+                104,
+                116,
+                99
+              ],
+              "top_probabilities": [
+                0.9975141286849976,
+                0.0009139023022726178,
+                0.0007230144692584872,
+                0.0005290229455567896,
+                8.598747808719054e-05
+              ]
+            },
+            "external_override": false,
+            "index": 20,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 114,
+            "distribution_summary": {
+              "entropy_bits": 4.247430801391602,
+              "top_bytes": [
+                114,
+                99,
+                97,
+                116,
+                115
+              ],
+              "top_probabilities": [
+                0.10243700444698334,
+                0.09294315427541733,
+                0.08887480944395065,
+                0.08459068089723587,
+                0.08434655517339706
+              ]
+            },
+            "external_override": false,
+            "index": 21,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 0.676154375076294,
+              "top_bytes": [
+                101,
+                97,
+                117,
+                111,
+                105
+              ],
+              "top_probabilities": [
+                0.8814628720283508,
+                0.0858253538608551,
+                0.017530683428049088,
+                0.008514855988323689,
+                0.006371784955263138
+              ]
+            },
+            "external_override": false,
+            "index": 22,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 112,
+            "distribution_summary": {
+              "entropy_bits": 3.6962971687316895,
+              "top_bytes": [
+                112,
+                99,
+                108,
+                109,
+                115
+              ],
+              "top_probabilities": [
+                0.2373621165752411,
+                0.12837868928909302,
+                0.11498964577913284,
+                0.08922930806875229,
+                0.06344880163669586
+              ]
+            },
+            "external_override": false,
+            "index": 23,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 111,
+            "distribution_summary": {
+              "entropy_bits": 1.6661889553070068,
+              "top_bytes": [
+                111,
+                108,
+                101,
+                114,
+                97
+              ],
+              "top_probabilities": [
+                0.5370806455612183,
+                0.32229769229888916,
+                0.06504110246896744,
+                0.04610772430896759,
+                0.018716096878051758
+              ]
+            },
+            "external_override": false,
+            "index": 24,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 114,
+            "distribution_summary": {
+              "entropy_bits": 0.04989912733435631,
+              "top_bytes": [
+                114,
+                115,
+                108,
+                99,
+                116
+              ],
+              "top_probabilities": [
+                0.9954053163528442,
+                0.0032622660510241985,
+                0.000546707771718502,
+                0.00020836878684349358,
+                0.00017946382286027074
+              ]
+            },
+            "external_override": false,
+            "index": 25,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 0.00374797685071826,
+              "top_bytes": [
+                116,
+                114,
+                97,
+                98,
+                99
+              ],
+              "top_probabilities": [
+                0.9997754693031311,
+                0.00010242361895507202,
+                3.058640140807256e-05,
+                1.6868698367034085e-05,
+                1.5274068573489785e-05
+              ]
+            },
+            "external_override": false,
+            "index": 26,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 0.04910838603973389,
+              "top_bytes": [
+                101,
+                105,
+                115,
+                32,
+                97
+              ],
+              "top_probabilities": [
+                0.9956329464912415,
+                0.0016613134648650885,
+                0.0015253338497132063,
+                0.0009435182437300682,
+                6.413109076675028e-05
+              ]
+            },
+            "external_override": false,
+            "index": 27,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 100,
+            "distribution_summary": {
+              "entropy_bits": 0.06334908306598663,
+              "top_bytes": [
+                100,
+                114,
+                110,
+                97,
+                32
+              ],
+              "top_probabilities": [
+                0.9930269122123718,
+                0.006533168256282806,
+                0.0002942378632724285,
+                3.882108649122529e-05,
+                1.7970394765143283e-05
+              ]
+            },
+            "external_override": false,
+            "index": 28,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.47447723150253296,
+              "top_bytes": [
+                32,
+                108,
+                115,
+                10,
+                101
+              ],
+              "top_probabilities": [
+                0.9002071022987366,
+                0.09932074695825577,
+                0.0001094113540602848,
+                8.580942812841386e-05,
+                5.7426026614848524e-05
+              ]
+            },
+            "external_override": false,
+            "index": 29,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 3.181145191192627,
+              "top_bytes": [
+                116,
+                105,
+                102,
+                97,
+                98
+              ],
+              "top_probabilities": [
+                0.31298115849494934,
+                0.16465257108211517,
+                0.11251010745763779,
+                0.09537897258996964,
+                0.09165453910827637
+              ]
+            },
+            "external_override": false,
+            "index": 30,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 111,
+            "distribution_summary": {
+              "entropy_bits": 0.8031247854232788,
+              "top_bytes": [
+                111,
+                104,
+                114,
+                117,
+                119
+              ],
+              "top_probabilities": [
+                0.80201655626297,
+                0.18746769428253174,
+                0.004059271886944771,
+                0.0019039618782699108,
+                0.0016934130107983947
+              ]
+            },
+            "external_override": false,
+            "index": 31,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.0774504542350769,
+              "top_bytes": [
+                32,
+                119,
+                103,
+                111,
+                100
+              ],
+              "top_probabilities": [
+                0.9932183623313904,
+                0.0026837182231247425,
+                0.0012625788804143667,
+                0.00106572057120502,
+                0.00043279302190057933
+              ]
+            },
+            "external_override": false,
+            "index": 32,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 3.8685832023620605,
+              "top_bytes": [
+                116,
+                98,
+                97,
+                104,
+                115
+              ],
+              "top_probabilities": [
+                0.2263432890176773,
+                0.21905027329921722,
+                0.09960980713367462,
+                0.07344616204500198,
+                0.04481538385152817
+              ]
+            },
+            "external_override": false,
+            "index": 33,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 104,
+            "distribution_summary": {
+              "entropy_bits": 0.4199192523956299,
+              "top_bytes": [
+                104,
+                114,
+                97,
+                119,
+                101
+              ],
+              "top_probabilities": [
+                0.9473806023597717,
+                0.02473897859454155,
+                0.007934310473501682,
+                0.006535750348120928,
+                0.0047376458533108234
+              ]
+            },
+            "external_override": false,
+            "index": 34,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 0.2331608086824417,
+              "top_bytes": [
+                101,
+                97,
+                114,
+                105,
+                111
+              ],
+              "top_probabilities": [
+                0.9728527665138245,
+                0.011009839363396168,
+                0.006858262233436108,
+                0.005828986410051584,
+                0.003188618691638112
+              ]
+            },
+            "external_override": false,
+            "index": 35,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.10349994897842407,
+              "top_bytes": [
+                32,
+                105,
+                115,
+                114,
+                109
+              ],
+              "top_probabilities": [
+                0.9895597696304321,
+                0.006510715000331402,
+                0.0014266874641180038,
+                0.0008889147429727018,
+                0.0006920656305737793
+              ]
+            },
+            "external_override": false,
+            "index": 36,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 115,
+            "distribution_summary": {
+              "entropy_bits": 4.852193832397461,
+              "top_bytes": [
+                115,
+                110,
+                101,
+                99,
+                114
+              ],
+              "top_probabilities": [
+                0.1317923218011856,
+                0.09804042428731918,
+                0.0714191421866417,
+                0.06707730144262314,
+                0.05543557181954384
+              ]
+            },
+            "external_override": false,
+            "index": 37,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 111,
+            "distribution_summary": {
+              "entropy_bits": 2.5300912857055664,
+              "top_bytes": [
+                111,
+                116,
+                101,
+                117,
+                97
+              ],
+              "top_probabilities": [
+                0.40711620450019836,
+                0.28001347184181213,
+                0.07810308039188385,
+                0.060603298246860504,
+                0.04654072970151901
+              ]
+            },
+            "external_override": false,
+            "index": 38,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 117,
+            "distribution_summary": {
+              "entropy_bits": 0.1947690099477768,
+              "top_bytes": [
+                117,
+                105,
+                108,
+                99,
+                110
+              ],
+              "top_probabilities": [
+                0.9810963273048401,
+                0.0055212704464793205,
+                0.003176448866724968,
+                0.002943920437246561,
+                0.001357975066639483
+              ]
+            },
+            "external_override": false,
+            "index": 39,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 0.031113093718886375,
+              "top_bytes": [
+                116,
+                114,
+                110,
+                103,
+                108
+              ],
+              "top_probabilities": [
+                0.997367799282074,
+                0.0018410183256492019,
+                0.00034064476494677365,
+                0.00011034686031052843,
+                9.110872633755207e-05
+              ]
+            },
+            "external_override": false,
+            "index": 40,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 104,
+            "distribution_summary": {
+              "entropy_bits": 0.009246793575584888,
+              "top_bytes": [
+                104,
+                101,
+                119,
+                114,
+                97
+              ],
+              "top_probabilities": [
+                0.9994294047355652,
+                0.0001809525565477088,
+                9.335752110928297e-05,
+                5.4076601372798905e-05,
+                3.417373227421194e-05
+              ]
+            },
+            "external_override": false,
+            "index": 41,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 1.5827045440673828,
+              "top_bytes": [
+                32,
+                101,
+                119,
+                98,
+                112
+              ],
+              "top_probabilities": [
+                0.440650075674057,
+                0.4070643186569214,
+                0.13438811898231506,
+                0.01203980017453432,
+                0.0009276919299736619
+              ]
+            },
+            "external_override": false,
+            "index": 42,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 97,
+            "distribution_summary": {
+              "entropy_bits": 3.930795431137085,
+              "top_bytes": [
+                97,
+                44,
+                111,
+                115,
+                64
+              ],
+              "top_probabilities": [
+                0.18985864520072937,
+                0.13409195840358734,
+                0.11539171636104584,
+                0.09905724972486496,
+                0.07596322894096375
+              ]
+            },
+            "external_override": false,
+            "index": 43,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 110,
+            "distribution_summary": {
+              "entropy_bits": 1.6492071151733398,
+              "top_bytes": [
+                110,
+                115,
+                108,
+                114,
+                116
+              ],
+              "top_probabilities": [
+                0.7158280611038208,
+                0.09344963729381561,
+                0.07811252772808075,
+                0.04084675386548042,
+                0.021516229957342148
+              ]
+            },
+            "external_override": false,
+            "index": 44,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 100,
+            "distribution_summary": {
+              "entropy_bits": 0.08129644393920898,
+              "top_bytes": [
+                100,
+                110,
+                116,
+                105,
+                121
+              ],
+              "top_probabilities": [
+                0.9926500916481018,
+                0.0032574415672570467,
+                0.001242313883267343,
+                0.001151328906416893,
+                0.000389902968890965
+              ]
+            },
+            "external_override": false,
+            "index": 45,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.004756803624331951,
+              "top_bytes": [
+                32,
+                114,
+                105,
+                101,
+                119
+              ],
+              "top_probabilities": [
+                0.9997033476829529,
+                0.00012418700498528779,
+                5.6527580454712734e-05,
+                3.499362719594501e-05,
+                1.4481697689916473e-05
+              ]
+            },
+            "external_override": false,
+            "index": 46,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 119,
+            "distribution_summary": {
+              "entropy_bits": 4.252732276916504,
+              "top_bytes": [
+                119,
+                115,
+                101,
+                114,
+                116
+              ],
+              "top_probabilities": [
+                0.13160376250743866,
+                0.11387108266353607,
+                0.10560238361358643,
+                0.08469001948833466,
+                0.0742621198296547
+              ]
+            },
+            "external_override": false,
+            "index": 47,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 1.3764511346817017,
+              "top_bytes": [
+                101,
+                97,
+                105,
+                111,
+                104
+              ],
+              "top_probabilities": [
+                0.613459587097168,
+                0.2877407968044281,
+                0.07948821038007736,
+                0.011095697060227394,
+                0.006707074120640755
+              ]
+            },
+            "external_override": false,
+            "index": 48,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 115,
+            "distribution_summary": {
+              "entropy_bits": 0.874630868434906,
+              "top_bytes": [
+                115,
+                97,
+                105,
+                114,
+                116
+              ],
+              "top_probabilities": [
+                0.849325954914093,
+                0.10243561118841171,
+                0.014432117342948914,
+                0.009285404346883297,
+                0.00878150761127472
+              ]
+            },
+            "external_override": false,
+            "index": 49,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 0.012871511280536652,
+              "top_bytes": [
+                116,
+                99,
+                112,
+                108,
+                100
+              ],
+              "top_probabilities": [
+                0.999119222164154,
+                0.0004554531769827008,
+                0.00015115078713279217,
+                4.3864773033419624e-05,
+                3.022390228579752e-05
+              ]
+            },
+            "external_override": false,
+            "index": 50,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 1.1207690238952637,
+              "top_bytes": [
+                32,
+                101,
+                119,
+                98,
+                99
+              ],
+              "top_probabilities": [
+                0.7743943929672241,
+                0.14868386089801788,
+                0.05437926575541496,
+                0.00974622555077076,
+                0.0015072484966367483
+              ]
+            },
+            "external_override": false,
+            "index": 51,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 111,
+            "distribution_summary": {
+              "entropy_bits": 2.50864315032959,
+              "top_bytes": [
+                111,
+                64,
+                44,
+                116,
+                97
+              ],
+              "top_probabilities": [
+                0.6183670163154602,
+                0.0858512595295906,
+                0.04294018819928169,
+                0.038770996034145355,
+                0.038313549011945724
+              ]
+            },
+            "external_override": false,
+            "index": 52,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 102,
+            "distribution_summary": {
+              "entropy_bits": 0.14495860040187836,
+              "top_bytes": [
+                102,
+                110,
+                118,
+                117,
+                114
+              ],
+              "top_probabilities": [
+                0.9832216501235962,
+                0.013183234259486198,
+                0.0017886433051899076,
+                0.00044186587911099195,
+                0.00042680022306740284
+              ]
+            },
+            "external_override": false,
+            "index": 53,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.013963890261948109,
+              "top_bytes": [
+                32,
+                102,
+                116,
+                10,
+                115
+              ],
+              "top_probabilities": [
+                0.9989533424377441,
+                0.0006382950232364237,
+                0.0002170371444663033,
+                7.210481271613389e-05,
+                5.1481518312357366e-05
+              ]
+            },
+            "external_override": false,
+            "index": 54,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 3.694014072418213,
+              "top_bytes": [
+                116,
+                67,
+                77,
+                83,
+                66
+              ],
+              "top_probabilities": [
+                0.4171437919139862,
+                0.06256413459777832,
+                0.050020985305309296,
+                0.049150656908750534,
+                0.0374860018491745
+              ]
+            },
+            "external_override": false,
+            "index": 55,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 104,
+            "distribution_summary": {
+              "entropy_bits": 0.04839900881052017,
+              "top_bytes": [
+                104,
+                111,
+                119,
+                114,
+                101
+              ],
+              "top_probabilities": [
+                0.9959558248519897,
+                0.001309152808971703,
+                0.0009729414596222341,
+                0.0006788379978388548,
+                0.0004677636316046119
+              ]
+            },
+            "external_override": false,
+            "index": 56,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 0.11505551636219025,
+              "top_bytes": [
+                101,
+                105,
+                97,
+                114,
+                111
+              ],
+              "top_probabilities": [
+                0.9883443117141724,
+                0.005069349892437458,
+                0.0025777791161090136,
+                0.001968342810869217,
+                0.0018314936896786094
+              ]
+            },
+            "external_override": false,
+            "index": 57,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.07509745657444,
+              "top_bytes": [
+                32,
+                115,
+                105,
+                114,
+                109
+              ],
+              "top_probabilities": [
+                0.9928178787231445,
+                0.003833602648228407,
+                0.002018275670707226,
+                0.0005494155921041965,
+                0.00040775848901830614
+              ]
+            },
+            "external_override": false,
+            "index": 58,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 115,
+            "distribution_summary": {
+              "entropy_bits": 5.153346538543701,
+              "top_bytes": [
+                115,
+                99,
+                110,
+                119,
+                116
+              ],
+              "top_probabilities": [
+                0.10451769083738327,
+                0.07597590237855911,
+                0.05210845172405243,
+                0.0408041812479496,
+                0.03881782293319702
+              ]
+            },
+            "external_override": false,
+            "index": 59,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 111,
+            "distribution_summary": {
+              "entropy_bits": 2.313048839569092,
+              "top_bytes": [
+                111,
+                116,
+                97,
+                101,
+                105
+              ],
+              "top_probabilities": [
+                0.47134244441986084,
+                0.2557285726070404,
+                0.06842130422592163,
+                0.06659992039203644,
+                0.036287494003772736
+              ]
+            },
+            "external_override": false,
+            "index": 60,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 117,
+            "distribution_summary": {
+              "entropy_bits": 0.09464236348867416,
+              "top_bytes": [
+                117,
+                105,
+                108,
+                99,
+                110
+              ],
+              "top_probabilities": [
+                0.9918739199638367,
+                0.002030657371506095,
+                0.0016768787754699588,
+                0.0008679332677274942,
+                0.0007248912006616592
+              ]
+            },
+            "external_override": false,
+            "index": 61,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 0.014677803963422775,
+              "top_bytes": [
+                116,
+                114,
+                110,
+                103,
+                108
+              ],
+              "top_probabilities": [
+                0.9989150762557983,
+                0.0006623024819418788,
+                0.00016803908511064947,
+                6.27181216259487e-05,
+                4.420027835294604e-05
+              ]
+            },
+            "external_override": false,
+            "index": 62,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 104,
+            "distribution_summary": {
+              "entropy_bits": 0.011910872533917427,
+              "top_bytes": [
+                104,
+                101,
+                119,
+                114,
+                32
+              ],
+              "top_probabilities": [
+                0.9992560744285583,
+                0.00024445902090519667,
+                0.00011378856288501993,
+                6.274042971199378e-05,
+                4.726430051960051e-05
+              ]
+            },
+            "external_override": false,
+            "index": 63,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 1.676105260848999,
+              "top_bytes": [
+                32,
+                101,
+                119,
+                98,
+                112
+              ],
+              "top_probabilities": [
+                0.44627249240875244,
+                0.31324508786201477,
+                0.22235631942749023,
+                0.01173973549157381,
+                0.0007734254468232393
+              ]
+            },
+            "external_override": false,
+            "index": 64,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 44,
+            "distribution_summary": {
+              "entropy_bits": 3.8008573055267334,
+              "top_bytes": [
+                44,
+                97,
+                64,
+                46,
+                115
+              ],
+              "top_probabilities": [
+                0.21103297173976898,
+                0.15156304836273193,
+                0.10757242143154144,
+                0.1016639694571495,
+                0.08526149392127991
+              ]
+            },
+            "external_override": false,
+            "index": 65,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.009872794151306152,
+              "top_bytes": [
+                32,
+                10,
+                48,
+                116,
+                115
+              ],
+              "top_probabilities": [
+                0.9992871880531311,
+                0.0005221180617809296,
+                7.117390487110242e-05,
+                1.3501508874469437e-05,
+                1.0661368833098095e-05
+              ]
+            },
+            "external_override": false,
+            "index": 66,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 97,
+            "distribution_summary": {
+              "entropy_bits": 3.818920373916626,
+              "top_bytes": [
+                97,
+                119,
+                98,
+                116,
+                105
+              ],
+              "top_probabilities": [
+                0.23131628334522247,
+                0.15960793197155,
+                0.12142498046159744,
+                0.05989217385649681,
+                0.058434899896383286
+              ]
+            },
+            "external_override": false,
+            "index": 67,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 110,
+            "distribution_summary": {
+              "entropy_bits": 1.7060678005218506,
+              "top_bytes": [
+                110,
+                108,
+                115,
+                32,
+                116
+              ],
+              "top_probabilities": [
+                0.6960919499397278,
+                0.11228634417057037,
+                0.07915633171796799,
+                0.0404878593981266,
+                0.017834581434726715
+              ]
+            },
+            "external_override": false,
+            "index": 68,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 100,
+            "distribution_summary": {
+              "entropy_bits": 0.28883096575737,
+              "top_bytes": [
+                100,
+                32,
+                111,
+                116,
+                99
+              ],
+              "top_probabilities": [
+                0.9644758701324463,
+                0.02317163720726967,
+                0.005015568807721138,
+                0.0016116048209369183,
+                0.001450871815904975
+              ]
+            },
+            "external_override": false,
+            "index": 69,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.002828339347615838,
+              "top_bytes": [
+                32,
+                10,
+                105,
+                100,
+                115
+              ],
+              "top_probabilities": [
+                0.9998407363891602,
+                3.760342224268243e-05,
+                2.231363032478839e-05,
+                2.1638024918502197e-05,
+                1.931380211317446e-05
+              ]
+            },
+            "external_override": false,
+            "index": 70,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 3.7223188877105713,
+              "top_bytes": [
+                116,
+                105,
+                119,
+                97,
+                115
+              ],
+              "top_probabilities": [
+                0.3579435646533966,
+                0.11833024024963379,
+                0.06579534709453583,
+                0.06028563529253006,
+                0.039131201803684235
+              ]
+            },
+            "external_override": false,
+            "index": 71,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 104,
+            "distribution_summary": {
+              "entropy_bits": 0.3806607723236084,
+              "top_bytes": [
+                104,
+                111,
+                114,
+                117,
+                119
+              ],
+              "top_probabilities": [
+                0.9505571722984314,
+                0.02933475561439991,
+                0.005839804653078318,
+                0.005480942316353321,
+                0.004714996553957462
+              ]
+            },
+            "external_override": false,
+            "index": 72,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 0.34211841225624084,
+              "top_bytes": [
+                101,
+                97,
+                111,
+                105,
+                114
+              ],
+              "top_probabilities": [
+                0.9577422738075256,
+                0.018980467692017555,
+                0.006999378092586994,
+                0.006572122219949961,
+                0.006485177669674158
+              ]
+            },
+            "external_override": false,
+            "index": 73,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.6302152872085571,
+              "top_bytes": [
+                32,
+                114,
+                110,
+                121,
+                115
+              ],
+              "top_probabilities": [
+                0.9007700085639954,
+                0.059584151953458786,
+                0.024000976234674454,
+                0.008888818323612213,
+                0.003249037079513073
+              ]
+            },
+            "external_override": false,
+            "index": 74,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 115,
+            "distribution_summary": {
+              "entropy_bits": 4.526628494262695,
+              "top_bytes": [
+                115,
+                110,
+                114,
+                102,
+                116
+              ],
+              "top_probabilities": [
+                0.16750690340995789,
+                0.09585412591695786,
+                0.08039817214012146,
+                0.061701700091362,
+                0.0547405369579792
+              ]
+            },
+            "external_override": false,
+            "index": 75,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 111,
+            "distribution_summary": {
+              "entropy_bits": 2.548018217086792,
+              "top_bytes": [
+                111,
+                116,
+                121,
+                101,
+                104
+              ],
+              "top_probabilities": [
+                0.4089840352535248,
+                0.27654802799224854,
+                0.06921802461147308,
+                0.06625759601593018,
+                0.03751944378018379
+              ]
+            },
+            "external_override": false,
+            "index": 76,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 117,
+            "distribution_summary": {
+              "entropy_bits": 0.16266177594661713,
+              "top_bytes": [
+                117,
+                105,
+                110,
+                114,
+                108
+              ],
+              "top_probabilities": [
+                0.9849254488945007,
+                0.003254391485825181,
+                0.0019595660269260406,
+                0.0018783446867018938,
+                0.001771582872606814
+              ]
+            },
+            "external_override": false,
+            "index": 77,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 0.036640770733356476,
+              "top_bytes": [
+                116,
+                114,
+                110,
+                103,
+                102
+              ],
+              "top_probabilities": [
+                0.9967924952507019,
+                0.0023390892893075943,
+                0.0003250836452934891,
+                0.00012853057705797255,
+                8.779329800745472e-05
+              ]
+            },
+            "external_override": false,
+            "index": 78,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 104,
+            "distribution_summary": {
+              "entropy_bits": 0.02159823849797249,
+              "top_bytes": [
+                104,
+                101,
+                114,
+                119,
+                112
+              ],
+              "top_probabilities": [
+                0.9984184503555298,
+                0.0008592285448685288,
+                0.0002073198847938329,
+                0.00015563507622573525,
+                4.857296880800277e-05
+              ]
+            },
+            "external_override": false,
+            "index": 79,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 1.3199950456619263,
+              "top_bytes": [
+                101,
+                32,
+                119,
+                98,
+                105
+              ],
+              "top_probabilities": [
+                0.6821692585945129,
+                0.2020203322172165,
+                0.09703928232192993,
+                0.012384200468659401,
+                0.001150798867456615
+              ]
+            },
+            "external_override": false,
+            "index": 80,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 114,
+            "distribution_summary": {
+              "entropy_bits": 0.6760321259498596,
+              "top_bytes": [
+                114,
+                97,
+                115,
+                116,
+                105
+              ],
+              "top_probabilities": [
+                0.8421953320503235,
+                0.15293173491954803,
+                0.0022153430618345737,
+                0.00038442591903731227,
+                0.00031297345412895083
+              ]
+            },
+            "external_override": false,
+            "index": 81,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 110,
+            "distribution_summary": {
+              "entropy_bits": 0.1926441788673401,
+              "top_bytes": [
+                110,
+                108,
+                101,
+                112,
+                32
+              ],
+              "top_probabilities": [
+                0.9752389788627625,
+                0.02110360749065876,
+                0.0014699450694024563,
+                0.0009940494783222675,
+                0.00022232846822589636
+              ]
+            },
+            "external_override": false,
+            "index": 82,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.3012773096561432,
+              "top_bytes": [
+                32,
+                109,
+                115,
+                101,
+                97
+              ],
+              "top_probabilities": [
+                0.9569194912910461,
+                0.036633580923080444,
+                0.001970485784113407,
+                0.0014608056517317891,
+                0.0013652521884068847
+              ]
+            },
+            "external_override": false,
+            "index": 83,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 115,
+            "distribution_summary": {
+              "entropy_bits": 4.503599643707275,
+              "top_bytes": [
+                115,
+                99,
+                101,
+                116,
+                112
+              ],
+              "top_probabilities": [
+                0.11846272647380829,
+                0.11621638387441635,
+                0.1127484142780304,
+                0.08286784589290619,
+                0.08090692013502121
+              ]
+            },
+            "external_override": false,
+            "index": 84,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 105,
+            "distribution_summary": {
+              "entropy_bits": 2.5654661655426025,
+              "top_bytes": [
+                105,
+                116,
+                101,
+                104,
+                111
+              ],
+              "top_probabilities": [
+                0.3810598850250244,
+                0.2761269211769104,
+                0.10132811963558197,
+                0.05794225260615349,
+                0.056495215743780136
+              ]
+            },
+            "external_override": false,
+            "index": 85,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 100,
+            "distribution_summary": {
+              "entropy_bits": 2.510857582092285,
+              "top_bytes": [
+                100,
+                116,
+                122,
+                110,
+                101
+              ],
+              "top_probabilities": [
+                0.3828236162662506,
+                0.23016461730003357,
+                0.13524411618709564,
+                0.11652389913797379,
+                0.05360620841383934
+              ]
+            },
+            "external_override": false,
+            "index": 86,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 0.2586303949356079,
+              "top_bytes": [
+                101,
+                105,
+                117,
+                111,
+                121
+              ],
+              "top_probabilities": [
+                0.9622942805290222,
+                0.03397667407989502,
+                0.002011770149692893,
+                0.00038481157389469445,
+                0.0003389112534932792
+              ]
+            },
+            "external_override": false,
+            "index": 87,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.9608683586120605,
+              "top_bytes": [
+                32,
+                115,
+                119,
+                98,
+                108
+              ],
+              "top_probabilities": [
+                0.8158839344978333,
+                0.14495046436786652,
+                0.01290484331548214,
+                0.005774337332695723,
+                0.0032070614397525787
+              ]
+            },
+            "external_override": false,
+            "index": 88,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 111,
+            "distribution_summary": {
+              "entropy_bits": 1.3714295625686646,
+              "top_bytes": [
+                111,
+                119,
+                105,
+                64,
+                99
+              ],
+              "top_probabilities": [
+                0.8291680216789246,
+                0.03274622559547424,
+                0.018647341057658195,
+                0.014248845167458057,
+                0.012117532081902027
+              ]
+            },
+            "external_override": false,
+            "index": 89,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 102,
+            "distribution_summary": {
+              "entropy_bits": 0.05984395742416382,
+              "top_bytes": [
+                102,
+                99,
+                110,
+                118,
+                114
+              ],
+              "top_probabilities": [
+                0.9947689771652222,
+                0.0022257596720010042,
+                0.0013004029169678688,
+                0.000788494769949466,
+                0.0002783368690870702
+              ]
+            },
+            "external_override": false,
+            "index": 90,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.005120359361171722,
+              "top_bytes": [
+                32,
+                102,
+                116,
+                10,
+                115
+              ],
+              "top_probabilities": [
+                0.9996548891067505,
+                0.00019980677461717278,
+                7.749244832666591e-05,
+                4.3260723032290116e-05,
+                8.877247637428809e-06
+              ]
+            },
+            "external_override": false,
+            "index": 91,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 2.994398355484009,
+              "top_bytes": [
+                116,
+                77,
+                83,
+                67,
+                78
+              ],
+              "top_probabilities": [
+                0.5696033835411072,
+                0.03987283632159233,
+                0.03873038291931152,
+                0.0370098352432251,
+                0.027371510863304138
+              ]
+            },
+            "external_override": false,
+            "index": 92,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 104,
+            "distribution_summary": {
+              "entropy_bits": 0.04379909113049507,
+              "top_bytes": [
+                104,
+                111,
+                119,
+                114,
+                101
+              ],
+              "top_probabilities": [
+                0.9963604807853699,
+                0.00154846569057554,
+                0.0006769360043108463,
+                0.0004074325261171907,
+                0.00038020790088921785
+              ]
+            },
+            "external_override": false,
+            "index": 93,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 0.10976705700159073,
+              "top_bytes": [
+                101,
+                105,
+                97,
+                111,
+                114
+              ],
+              "top_probabilities": [
+                0.9886709451675415,
+                0.006190332118421793,
+                0.002292781136929989,
+                0.0017963065765798092,
+                0.0008728838292881846
+              ]
+            },
+            "external_override": false,
+            "index": 94,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.08949101716279984,
+              "top_bytes": [
+                32,
+                115,
+                105,
+                114,
+                109
+              ],
+              "top_probabilities": [
+                0.9908310770988464,
+                0.006369486916810274,
+                0.001391465193592012,
+                0.0006048562354408205,
+                0.0004411953268572688
+              ]
+            },
+            "external_override": false,
+            "index": 95,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 115,
+            "distribution_summary": {
+              "entropy_bits": 5.0310211181640625,
+              "top_bytes": [
+                115,
+                99,
+                110,
+                119,
+                101
+              ],
+              "top_probabilities": [
+                0.14086532592773438,
+                0.07697927951812744,
+                0.04837825149297714,
+                0.04661255702376366,
+                0.04276119917631149
+              ]
+            },
+            "external_override": false,
+            "index": 96,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 111,
+            "distribution_summary": {
+              "entropy_bits": 2.2115261554718018,
+              "top_bytes": [
+                111,
+                116,
+                101,
+                97,
+                105
+              ],
+              "top_probabilities": [
+                0.49313947558403015,
+                0.2658188045024872,
+                0.06379842758178711,
+                0.0497225746512413,
+                0.033179979771375656
+              ]
+            },
+            "external_override": false,
+            "index": 97,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 117,
+            "distribution_summary": {
+              "entropy_bits": 0.14416059851646423,
+              "top_bytes": [
+                117,
+                110,
+                108,
+                105,
+                99
+              ],
+              "top_probabilities": [
+                0.9867527484893799,
+                0.0029219791758805513,
+                0.0028517707251012325,
+                0.00249057961627841,
+                0.0008528087637387216
+              ]
+            },
+            "external_override": false,
+            "index": 98,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 0.013564827851951122,
+              "top_bytes": [
+                116,
+                114,
+                110,
+                103,
+                108
+              ],
+              "top_probabilities": [
+                0.9990178346633911,
+                0.0005747749237343669,
+                0.00011999330308753997,
+                9.497159044258296e-05,
+                4.3595766328508034e-05
+              ]
+            },
+            "external_override": false,
+            "index": 99,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 104,
+            "distribution_summary": {
+              "entropy_bits": 0.018422575667500496,
+              "top_bytes": [
+                104,
+                101,
+                114,
+                119,
+                97
+              ],
+              "top_probabilities": [
+                0.9987354874610901,
+                0.0005395679036155343,
+                0.00019438211165834218,
+                0.00014463422121480107,
+                4.7001416533021256e-05
+              ]
+            },
+            "external_override": false,
+            "index": 100,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 1.5507420301437378,
+              "top_bytes": [
+                101,
+                32,
+                119,
+                98,
+                112
+              ],
+              "top_probabilities": [
+                0.4821494221687317,
+                0.3684108257293701,
+                0.135127454996109,
+                0.009306777268648148,
+                0.0006494870176538825
+              ]
+            },
+            "external_override": false,
+            "index": 101,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 114,
+            "distribution_summary": {
+              "entropy_bits": 0.6825592517852783,
+              "top_bytes": [
+                114,
+                97,
+                115,
+                110,
+                116
+              ],
+              "top_probabilities": [
+                0.8328027725219727,
+                0.1643170267343521,
+                0.0008321866043843329,
+                0.0004827438679058105,
+                0.000321141560561955
+              ]
+            },
+            "external_override": false,
+            "index": 102,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 110,
+            "distribution_summary": {
+              "entropy_bits": 0.08285337686538696,
+              "top_bytes": [
+                110,
+                108,
+                101,
+                32,
+                112
+              ],
+              "top_probabilities": [
+                0.9912768602371216,
+                0.00720911705866456,
+                0.00043860444566234946,
+                0.0004360251477919519,
+                0.00019569601863622665
+              ]
+            },
+            "external_override": false,
+            "index": 103,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.07884560525417328,
+              "top_bytes": [
+                32,
+                109,
+                101,
+                10,
+                97
+              ],
+              "top_probabilities": [
+                0.9918184280395508,
+                0.006663572043180466,
+                0.0004279468848835677,
+                0.00039151584496721625,
+                0.00022542518854606897
+              ]
+            },
+            "external_override": false,
+            "index": 104,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 99,
+            "distribution_summary": {
+              "entropy_bits": 4.835999488830566,
+              "top_bytes": [
+                99,
+                115,
+                112,
+                101,
+                97
+              ],
+              "top_probabilities": [
+                0.1189952865242958,
+                0.09660119563341141,
+                0.09201585501432419,
+                0.08412345498800278,
+                0.049734167754650116
+              ]
+            },
+            "external_override": false,
+            "index": 105,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 111,
+            "distribution_summary": {
+              "entropy_bits": 2.5969412326812744,
+              "top_bytes": [
+                111,
+                105,
+                101,
+                97,
+                114
+              ],
+              "top_probabilities": [
+                0.3839549720287323,
+                0.1839936077594757,
+                0.1558717042207718,
+                0.07976171374320984,
+                0.05593185871839523
+              ]
+            },
+            "external_override": false,
+            "index": 106,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 97,
+            "distribution_summary": {
+              "entropy_bits": 2.2122576236724854,
+              "top_bytes": [
+                97,
+                117,
+                110,
+                109,
+                114
+              ],
+              "top_probabilities": [
+                0.459143728017807,
+                0.23912492394447327,
+                0.13427402079105377,
+                0.07925374805927277,
+                0.04452068731188774
+              ]
+            },
+            "external_override": false,
+            "index": 107,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 115,
+            "distribution_summary": {
+              "entropy_bits": 0.39142507314682007,
+              "top_bytes": [
+                115,
+                116,
+                108,
+                100,
+                99
+              ],
+              "top_probabilities": [
+                0.9507625102996826,
+                0.022354481741786003,
+                0.013835729099810123,
+                0.0048902896232903,
+                0.0031747757457196712
+              ]
+            },
+            "external_override": false,
+            "index": 108,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 0.01456733699887991,
+              "top_bytes": [
+                116,
+                110,
+                108,
+                115,
+                112
+              ],
+              "top_probabilities": [
+                0.9989616870880127,
+                0.00028726074378937483,
+                0.0002643928164616227,
+                0.00024357148504350334,
+                6.181575736263767e-05
+              ]
+            },
+            "external_override": false,
+            "index": 109,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 1.3157083988189697,
+              "top_bytes": [
+                32,
+                97,
+                108,
+                101,
+                115
+              ],
+              "top_probabilities": [
+                0.7208513021469116,
+                0.16653043031692505,
+                0.0675724595785141,
+                0.024725526571273804,
+                0.013823682442307472
+              ]
+            },
+            "external_override": false,
+            "index": 110,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 111,
+            "distribution_summary": {
+              "entropy_bits": 2.311877727508545,
+              "top_bytes": [
+                111,
+                44,
+                46,
+                119,
+                97
+              ],
+              "top_probabilities": [
+                0.6549615263938904,
+                0.06611108779907227,
+                0.045343417674303055,
+                0.03646301478147507,
+                0.03232721611857414
+              ]
+            },
+            "external_override": false,
+            "index": 111,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 102,
+            "distribution_summary": {
+              "entropy_bits": 0.13245558738708496,
+              "top_bytes": [
+                102,
+                110,
+                118,
+                114,
+                99
+              ],
+              "top_probabilities": [
+                0.9861078858375549,
+                0.008373886346817017,
+                0.001991614466533065,
+                0.0016186810098588467,
+                0.0010404686909168959
+              ]
+            },
+            "external_override": false,
+            "index": 112,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.015318452380597591,
+              "top_bytes": [
+                32,
+                102,
+                116,
+                10,
+                115
+              ],
+              "top_probabilities": [
+                0.9987292885780334,
+                0.0010766821214929223,
+                0.00010601629765005782,
+                3.67129614460282e-05,
+                2.1907868358539417e-05
+              ]
+            },
+            "external_override": false,
+            "index": 113,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 4.277615070343018,
+              "top_bytes": [
+                116,
+                77,
+                67,
+                83,
+                78
+              ],
+              "top_probabilities": [
+                0.19628958404064178,
+                0.09061505645513535,
+                0.07875332981348038,
+                0.07400635629892349,
+                0.05679849162697792
+              ]
+            },
+            "external_override": false,
+            "index": 114,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 104,
+            "distribution_summary": {
+              "entropy_bits": 0.04352495074272156,
+              "top_bytes": [
+                104,
+                111,
+                119,
+                114,
+                101
+              ],
+              "top_probabilities": [
+                0.9963896870613098,
+                0.0013425915967673063,
+                0.0008514102664776146,
+                0.0005720509798265994,
+                0.00032894391915760934
+              ]
+            },
+            "external_override": false,
+            "index": 115,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 0.05879469960927963,
+              "top_bytes": [
+                101,
+                105,
+                97,
+                111,
+                114
+              ],
+              "top_probabilities": [
+                0.9947327375411987,
+                0.001702536130324006,
+                0.0015223966911435127,
+                0.0012424959568306804,
+                0.0006403483566828072
+              ]
+            },
+            "external_override": false,
+            "index": 116,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.053903352469205856,
+              "top_bytes": [
+                32,
+                115,
+                105,
+                114,
+                109
+              ],
+              "top_probabilities": [
+                0.9953281879425049,
+                0.0020658441353589296,
+                0.0009860530262812972,
+                0.0007845357176847756,
+                0.0003185441601090133
+              ]
+            },
+            "external_override": false,
+            "index": 117,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 115,
+            "distribution_summary": {
+              "entropy_bits": 5.191768646240234,
+              "top_bytes": [
+                115,
+                66,
+                77,
+                67,
+                83
+              ],
+              "top_probabilities": [
+                0.06972814351320267,
+                0.055949728935956955,
+                0.05289310961961746,
+                0.05277512967586517,
+                0.05156043544411659
+              ]
+            },
+            "external_override": false,
+            "index": 118,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 111,
+            "distribution_summary": {
+              "entropy_bits": 1.989922046661377,
+              "top_bytes": [
+                111,
+                116,
+                97,
+                101,
+                105
+              ],
+              "top_probabilities": [
+                0.5940036177635193,
+                0.18625617027282715,
+                0.06096921116113663,
+                0.05077590048313141,
+                0.04205258935689926
+              ]
+            },
+            "external_override": false,
+            "index": 119,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 117,
+            "distribution_summary": {
+              "entropy_bits": 0.1617749035358429,
+              "top_bytes": [
+                117,
+                105,
+                108,
+                110,
+                114
+              ],
+              "top_probabilities": [
+                0.9849241971969604,
+                0.003555683884769678,
+                0.003314549569040537,
+                0.0020854631438851357,
+                0.0013215914368629456
+              ]
+            },
+            "external_override": false,
+            "index": 120,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 116,
+            "distribution_summary": {
+              "entropy_bits": 0.011553199961781502,
+              "top_bytes": [
+                116,
+                114,
+                110,
+                103,
+                108
+              ],
+              "top_probabilities": [
+                0.9992005228996277,
+                0.00037557739415206015,
+                0.0001165795256383717,
+                0.00011240313324378803,
+                4.985728446627036e-05
+              ]
+            },
+            "external_override": false,
+            "index": 121,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 104,
+            "distribution_summary": {
+              "entropy_bits": 0.01750117540359497,
+              "top_bytes": [
+                104,
+                101,
+                114,
+                119,
+                32
+              ],
+              "top_probabilities": [
+                0.9987725615501404,
+                0.0006482790922746062,
+                0.00011437983630457893,
+                0.0001094363396987319,
+                5.416494605015032e-05
+              ]
+            },
+            "external_override": false,
+            "index": 122,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 101,
+            "distribution_summary": {
+              "entropy_bits": 1.5147044658660889,
+              "top_bytes": [
+                101,
+                32,
+                119,
+                98,
+                105
+              ],
+              "top_probabilities": [
+                0.47658228874206543,
+                0.3988325595855713,
+                0.10966557264328003,
+                0.00973479263484478,
+                0.0007117160130292177
+              ]
+            },
+            "external_override": false,
+            "index": 123,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 114,
+            "distribution_summary": {
+              "entropy_bits": 0.6816201210021973,
+              "top_bytes": [
+                114,
+                97,
+                115,
+                110,
+                118
+              ],
+              "top_probabilities": [
+                0.834394633769989,
+                0.16236169636249542,
+                0.0012061985908076167,
+                0.0004936611512675881,
+                0.00024753151228651404
+              ]
+            },
+            "external_override": false,
+            "index": 124,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 110,
+            "distribution_summary": {
+              "entropy_bits": 0.06733864545822144,
+              "top_bytes": [
+                110,
+                108,
+                32,
+                101,
+                112
+              ],
+              "top_probabilities": [
+                0.9930180311203003,
+                0.006000217981636524,
+                0.00027529982617124915,
+                0.000252860743785277,
+                0.0001581731194164604
+              ]
+            },
+            "external_override": false,
+            "index": 125,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 32,
+            "distribution_summary": {
+              "entropy_bits": 0.08413130044937134,
+              "top_bytes": [
+                32,
+                109,
+                101,
+                10,
+                97
+              ],
+              "top_probabilities": [
+                0.9914827346801758,
+                0.006418582517653704,
+                0.0007085935212671757,
+                0.0005086957826279104,
+                0.0002049392060143873
+              ]
+            },
+            "external_override": false,
+            "index": 126,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          },
+          {
+            "chosen_byte": 99,
+            "distribution_summary": {
+              "entropy_bits": 4.930663108825684,
+              "top_bytes": [
+                99,
+                101,
+                115,
+                112,
+                97
+              ],
+              "top_probabilities": [
+                0.10893836617469788,
+                0.09097766876220703,
+                0.07992997020483017,
+                0.07601592689752579,
+                0.041677288711071014
+              ]
+            },
+            "external_override": false,
+            "index": 127,
+            "logit_horizon": 1,
+            "source": "model_logits"
+          }
+        ],
+        "external_path_counters": {
+          "planner_calls": 0,
+          "retrieval_calls": 0,
+          "stored_answer_calls": 0,
+          "template_calls": 0
+        },
+        "format": "layercake-free-neural-byte-trace/1",
+        "generated_bytes_hex": "6365616e202e205468652073746f726d20776173207265706f7274656420746f2074686520736f75746820616e642077657374206f662074686520736f757468202c20616e642074686520736f75746865726e2073696465206f662074686520736f75746865726e20636f617374206f662074686520736f75746865726e2063",
+        "generated_sha256": "157652a62dd756893c02c6908537f5ab6621ba8dc535bb9b4452afc0b3a90f75",
+        "prompt_bytes_hex": "20486f6d617275732067616d6d61727573202c206b6e6f776e20617320746865204575726f7065616e206c6f6273746572206f7220636f6d6d6f6e206c6f6273746572202c20697320612073706563696573206f6620636c61776564206c6f62737465722066726f6d20746865206561737465726e2041746c616e746963204f",
+        "prompt_sha256": "d1a61867caddb47d9f538286f3fe0b6e4a28a523408f595a8d82d2f29628ae1b"
+      },
+      "unique_byte_fraction": 0.15625,
+      "valid_utf8": true
+    }
+  },
+  "exact_command": "C:\\Python310\\python.exe -m layercake.phase2_recertification search --config configs/moonshot/phase2_recertification/architecture_search_100m_sliding_cosine.json --output results/moonshot/phase2_recertification/architecture_search_100m_sliding_cosine.json --artifacts artifacts/moonshot/phase2_recertification/search_100m_sliding_cosine",
+  "format": "layercake-phase2-recertification-architecture-search/1",
+  "output_path": "results/moonshot/phase2_recertification/architecture_search_100m_sliding_cosine.json",
+  "quality_promising_speed_blocked": [],
+  "selected_candidate": "whitespace_complete_sliding16_local2_core7_cosine_100m",
+  "selection_policy": "lowest selection BPB among incrementally executable candidates above the provisional 2x optimized-CPU sentinel",
+  "selection_split_only": true,
+  "status": "PASS",
+  "test_accessed": false
+}

@@ -1,0 +1,35 @@
+{
+  "candidate": "sliding16_cosine_instruction_mix_step500",
+  "checkpoint_sha256": "25779273a5a90fc722118a3112955837d1ca95a8b95a4a91eb47c42f584b93bb",
+  "corpus_path": "data/moonshot/phase2/instruction_distillation_curated.jsonl",
+  "corpus_sha256": "393fb2161a0861cf1ace86a1f415f689d9479dda947b28e786e872b2c938c270",
+  "format": "layercake-phase2-instruction-conditioning-profile/1",
+  "input_path": "results/moonshot/phase2_recertification/instruction_finetune_sliding_cosine_500.json",
+  "input_sha256": "2891a9b3e46e2ee86b543cce7c0a055c48a119d1b97e1771d84e0c625b35ca37",
+  "interpretation": {
+    "desired_direction": "mismatched-minus-correct BPB must be positive and correct-prompt lower-loss rate must exceed chance",
+    "free_generation_required": true
+  },
+  "profile": {
+    "compared_examples": 40.0,
+    "correct_prompt_lower_loss_rate": 0.55,
+    "correct_prompt_response_bpb": 1.651864946817973,
+    "mismatched_minus_correct_bpb": 0.0070855175638981915,
+    "mismatched_prompt_response_bpb": 1.658950464381871,
+    "response_target_bytes_correct": 4924.0,
+    "response_target_bytes_mismatched": 4924.0
+  },
+  "profile_sha256": "20c9fcb3ac27b55674632133585ed4074c777982fb8d72df632c16b151c33d3d",
+  "sequence_coverage": {
+    "examples": 60,
+    "fully_covered_response_examples": 0,
+    "maximum_response_target_bytes": 136,
+    "mean_response_target_bytes": 82.06666666666666,
+    "minimum_response_target_bytes": 0,
+    "sequence_bytes": 256,
+    "total_response_target_bytes_per_epoch": 4924,
+    "zero_response_target_examples": 20
+  },
+  "split": "instruction_validation",
+  "status": "PASS"
+}

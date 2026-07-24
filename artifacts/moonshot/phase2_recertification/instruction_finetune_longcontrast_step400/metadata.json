@@ -1,0 +1,144 @@
+{
+  "candidate": {
+    "hypothesis": "the same-seed 10m cosine tail improved validation BPB by 0.03925 and repetition with identical inference architecture; applying the exact schedule to 100m projects 1.71728 BPB while the architecture has a measured 2.37x CPU ratio",
+    "kind": "adaptive_two_four",
+    "model": {
+      "d_abi": 64,
+      "d_byte": 48,
+      "d_model": 144,
+      "expert_expansion": 1,
+      "heads": 4,
+      "layers": 7,
+      "local_context_mode": "sliding",
+      "local_layers": 2,
+      "local_window": 16,
+      "max_patches": 256,
+      "patch_boundary_mode": "whitespace_any",
+      "routed_experts": 8,
+      "routing_mode": "learned_top1",
+      "use_completed_patch_context": true
+    },
+    "name": "sliding16_cosine_longcontrast_step400"
+  },
+  "checkpoint": {
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2_recertification\\instruction_finetune_longcontrast_step400\\model.safetensors",
+    "sha256": "cdad61d02130be234606e4dee065147add76ce26aa08ab09d7cab0442ec6fbb8"
+  },
+  "format": "layercake-byte-instruction-finetune/1",
+  "instruction_corpus_sha256": "393fb2161a0861cf1ace86a1f415f689d9479dda947b28e786e872b2c938c270",
+  "instruction_manifest_sha256": "79e342e99669ee022f0935c033e9d5b4c274fe0125c86c66ffbf793c76630ee3",
+  "quality": {
+    "selection": {
+      "bits_per_byte": 1.7418612644474734,
+      "byte_accuracy": 0.64447021484375,
+      "evaluated_bytes": 65536,
+      "mean_bytes_per_patch": 3.1157174099077682,
+      "patches": 21034
+    },
+    "test_accessed": false,
+    "validation": {
+      "bits_per_byte": 1.7309190886390986,
+      "byte_accuracy": 0.6453704833984375,
+      "evaluated_bytes": 65536,
+      "mean_bytes_per_patch": 3.1255246089278903,
+      "patches": 20968
+    }
+  },
+  "seed": 20260808,
+  "source_checkpoint_sha256": "9bdbfa0d984b0185a0cb7f465acf21787a404e15b6345fabf7282e6748ccd132",
+  "status": "PASS",
+  "training": {
+    "batch_size": 2,
+    "curves": [
+      {
+        "heldout_instruction_response_bpb": 2.8616329341016886,
+        "heldout_prompt_conditioning": {
+          "compared_examples": 60.0,
+          "correct_prompt_lower_loss_rate": 0.55,
+          "correct_prompt_response_bpb": 2.8616328905943265,
+          "mismatched_minus_correct_bpb": 0.001186387118723431,
+          "mismatched_prompt_response_bpb": 2.86281927771305,
+          "response_target_bytes_correct": 46550.0,
+          "response_target_bytes_mismatched": 46550.0
+        },
+        "instruction_loss": 2.0339043140411377,
+        "prompt_contrastive_loss": 0.09774470329284668,
+        "step": 1,
+        "validation_bpb": 1.691560251675409,
+        "wall_seconds": 27.46640010003466,
+        "wiki_loss": 1.53850519657135
+      },
+      {
+        "heldout_instruction_response_bpb": 2.263268169152547,
+        "heldout_prompt_conditioning": {
+          "compared_examples": 60.0,
+          "correct_prompt_lower_loss_rate": 0.55,
+          "correct_prompt_response_bpb": 2.2632681341574954,
+          "mismatched_minus_correct_bpb": 0.002800217043518405,
+          "mismatched_prompt_response_bpb": 2.266068351201014,
+          "response_target_bytes_correct": 46550.0,
+          "response_target_bytes_mismatched": 46550.0
+        },
+        "instruction_loss": 1.8294682502746582,
+        "prompt_contrastive_loss": 0.15957111120224,
+        "step": 200,
+        "validation_bpb": 1.7228758577681251,
+        "wall_seconds": 300.8389026999939,
+        "wiki_loss": 1.4565107822418213
+      },
+      {
+        "heldout_instruction_response_bpb": 2.1034857075322573,
+        "heldout_prompt_conditioning": {
+          "compared_examples": 60.0,
+          "correct_prompt_lower_loss_rate": 0.6,
+          "correct_prompt_response_bpb": 2.1034856157884723,
+          "mismatched_minus_correct_bpb": 0.0034611879791324185,
+          "mismatched_prompt_response_bpb": 2.1069468037676047,
+          "response_target_bytes_correct": 46550.0,
+          "response_target_bytes_mismatched": 46550.0
+        },
+        "instruction_loss": 1.79207444190979,
+        "prompt_contrastive_loss": 0.106883704662323,
+        "step": 400,
+        "validation_bpb": 1.7309190886390986,
+        "wall_seconds": 579.9983880000655,
+        "wiki_loss": 1.2328141927719116
+      }
+    ],
+    "gradient_clip": 1.0,
+    "instruction_sequence_coverage": {
+      "train": {
+        "examples": 420,
+        "fully_covered_response_examples": 159,
+        "maximum_response_target_bytes": 1158,
+        "mean_response_target_bytes": 851.5238095238095,
+        "minimum_response_target_bytes": 109,
+        "sequence_bytes": 1280,
+        "total_response_target_bytes_per_epoch": 357640,
+        "zero_response_target_examples": 0
+      },
+      "validation": {
+        "examples": 60,
+        "fully_covered_response_examples": 25,
+        "maximum_response_target_bytes": 1160,
+        "mean_response_target_bytes": 775.8333333333334,
+        "minimum_response_target_bytes": 109,
+        "sequence_bytes": 1280,
+        "total_response_target_bytes_per_epoch": 46550,
+        "zero_response_target_examples": 0
+      }
+    },
+    "instruction_weight": 1.0,
+    "learning_rate": 3e-05,
+    "peak_cuda_memory_bytes": 696765440,
+    "prompt_contrastive_margin_nats": 0.1,
+    "prompt_contrastive_weight": 0.5,
+    "routing_balance_weight": 0.02,
+    "sequence_bytes": 1280,
+    "steps": 400,
+    "wall_seconds": 585.7710487000877,
+    "weight_decay": 0.01,
+    "wiki_batch_size": 2,
+    "wiki_weight": 3.0
+  }
+}

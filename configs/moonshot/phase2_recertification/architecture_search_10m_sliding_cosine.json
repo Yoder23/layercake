@@ -1,0 +1,70 @@
+{
+  "format": "layercake-phase2-recertification-search/1",
+  "reference_candidate": "whitespace_complete_sliding16_local2_core7_cosine",
+  "device": "cuda",
+  "precision": "fp16",
+  "seeds": [20260803],
+  "candidates": [
+    {
+      "name": "whitespace_complete_sliding16_local2_core7_cosine",
+      "kind": "adaptive_two_four",
+      "hypothesis": "the 100m constant-rate endpoint remains on a descending validation curve only 0.039 BPB above gate; retaining 8e-4 for 75 percent of the same updates then cosine-decaying to 5 percent should lower the optimization floor without changing data exposure or any inference property",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 7,
+        "local_layers": 2,
+        "heads": 4,
+        "max_patches": 256,
+        "local_window": 16,
+        "local_context_mode": "sliding",
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1",
+        "patch_boundary_mode": "whitespace_any",
+        "use_completed_patch_context": true
+      }
+    }
+  ],
+  "training": {
+    "steps": 1221,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.0008,
+    "learning_rate_schedule": "cosine_tail",
+    "decay_start_fraction": 0.75,
+    "minimum_learning_rate_ratio": 0.05,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "routing_balance_weight": 0.02,
+    "router_collapse_threshold": 0.65,
+    "evaluation_interval": 610,
+    "resumable": true
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "sequence_bytes": 256,
+    "batches": 32,
+    "evaluate_test": false
+  },
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  },
+  "budget": {
+    "maximum_candidates": 1,
+    "maximum_runs": 1,
+    "maximum_steps_per_run": 1221,
+    "maximum_wall_seconds": 1200,
+    "maximum_cuda_memory_bytes": 12884901888
+  },
+  "promotion": {
+    "minimum_bpb_improvement": 0.0,
+    "final_test_must_remain_unaccessed": true,
+    "requires_all_experts_meaningfully_trained": true,
+    "maximum_router_load_fraction": 0.65
+  }
+}

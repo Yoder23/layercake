@@ -583,7 +583,24 @@ def finetune(
             "test": None,
             "test_accessed": False,
         },
+        "fine_tune_provenance": {
+            "parent_checkpoint_sha256": parent["checkpoint"]["sha256"],
+            "training_performed": True,
+            "neural_tensors_changed_from_parent": True,
+            "note": (
+                "Any inherited conversion record describes only the earlier "
+                "conversion step; this instruction fine-tune supersedes its "
+                "no-neural-change property for the resulting checkpoint."
+            ),
+        },
     }
+    for conversion_key in ("architecture_conversion", "safety_conversion"):
+        if conversion_key in metadata:
+            metadata[conversion_key] = {
+                **metadata[conversion_key],
+                "subsequent_fine_tune_performed": True,
+                "neural_tensors_changed_after_conversion": True,
+            }
     (output / "metadata.json").write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return metadata
 

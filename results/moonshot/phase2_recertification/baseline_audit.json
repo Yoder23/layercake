@@ -1,0 +1,134 @@
+{
+  "format": "layercake-phase2-recertification-baseline-audit/1",
+  "status": "COMPLETE",
+  "historical_claim_policy": "diagnostic_only_until_remeasured_under_recertification_protocol",
+  "frozen_data": {
+    "train_path": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "train_sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6",
+    "validation_path": "data/moonshot/v2/wikitext103/validation.bin",
+    "validation_sha256": "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10",
+    "architecture_selection_path": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "architecture_selection_sha256": "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93",
+    "test_path": "data/moonshot/v2/wikitext103/test.bin",
+    "test_sha256": "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388",
+    "test_accessed_for_recertification_selection": false
+  },
+  "branches": [
+    {
+      "id": "fastest_selective_incremental_layercake",
+      "architecture": "FoundationV2 raw-byte recurrent multirate patches with learned top-2 experts",
+      "source": "layercake/models/foundation_v2.py",
+      "source_sha256": "5a1b29ddc808a3e8082921235ce7522a3222cf2b07a6e304c803673010f04895",
+      "checkpoint": "artifacts/final/medium-cores/seed-9801/model.safetensors",
+      "checkpoint_sha256": "582dc3881e4d02d777478fa541839339b839f4958ca3bb40355b97da87cd57cd",
+      "parameters_total": 3181920,
+      "parameters_active": 1336160,
+      "validation_bpb": 2.011486318288002,
+      "historical_one_thread_bytes_per_second_mean": 998.7262761492153,
+      "historical_one_thread_median_latency_seconds": 0.1282704,
+      "persistent_incremental_state": true,
+      "tokenizer_free": true,
+      "free_generation_quality": "FAIL_REPETITION_AND_QUALITY_GAP",
+      "decision": "RETAIN_INCREMENTAL_STATE_AND_LOW_ACTIVE_COMPUTE_NOT_CHECKPOINT"
+    },
+    {
+      "id": "highest_quality_tokenizer_free_layercake",
+      "architecture": "causal adaptive 2/4-byte patch model with top-1 routed experts",
+      "source": "layercake/causal_byte_models.py",
+      "source_sha256": "132a117b5d405e47671b225cd964f137aa158768adfcb80fc55eca7d731143d5",
+      "checkpoint": "artifacts/final/adaptive-medium-pilot/routed_adaptive_5x5_top1_8e/seed-9811/model.safetensors",
+      "checkpoint_sha256": "e0dccb3ded1b7b9072f455c3d021dd32acb0d5ba2f54105450ce74a7520bb531",
+      "parameters_total": 3200688,
+      "parameters_active": 2763216,
+      "validation_bpb": 1.8312242828767538,
+      "training_seconds_100m_bytes": 511.07373089995235,
+      "persistent_incremental_state": "IMPLEMENTED_AFTER_HISTORICAL_MANIFEST_REQUIRES_REMEASUREMENT",
+      "tokenizer_free": true,
+      "free_generation_quality": "UNPROVEN",
+      "decision": "PRIMARY_STARTING_POINT_FOR_INCREMENTAL_PATCH_RESEARCH"
+    },
+    {
+      "id": "current_incremental_byte_foundation",
+      "architecture": "FoundationV2 exact byte-at-a-time recurrent decode",
+      "checkpoint_sha256": "582dc3881e4d02d777478fa541839339b839f4958ca3bb40355b97da87cd57cd",
+      "same_as_fastest_branch": true,
+      "decision": "INCREMENTAL_RUNTIME_CONTROL"
+    },
+    {
+      "id": "invalid_sparse_bpe_planner",
+      "architecture": "sparse BPE transformer with deterministic English planner",
+      "source": "layercake/models/sparse_bpe_layercake.py",
+      "source_sha256": "8796687f1ba37d8ef6275f13111fe6f6261b90b97c05dd2b4b8ebca5390f9c91",
+      "historical_tag": "layercake-moonshot-phase2",
+      "status": "INVALID_EVIDENCE_DETERMINISTIC_PLANNER_AND_NOT_TOKENIZER_FREE",
+      "permitted_future_role": "BPE_ABLATION_ONLY",
+      "decision": "PROHIBITED_FROM_PROMOTION"
+    },
+    {
+      "id": "dense_byte_transformer_control",
+      "architecture": "CausalByteLM absolute-position transformer",
+      "checkpoint": "runs_experiment/scale5m_seed4242_continued.pt",
+      "checkpoint_sha256": "e3174d0817d8f92947699e81982893c90f469be72334079a38aa4053fce29e3b",
+      "parameters_total": 14566048,
+      "tokenizer_free": true,
+      "persistent_incremental_state": false,
+      "decision": "QUALITY_AND_DENSE_COMPUTE_CONTROL_ONLY"
+    },
+    {
+      "id": "same_scale_bpe_transformer_control",
+      "architecture": "modern BPE transformer, width 96, 22 layers",
+      "source": "layercake/models/baseline_transformer.py",
+      "source_sha256": "56751046c6d51230d09705c4acc897a1af74fe69d79cd4ab74f0a7f6f2d0fd59",
+      "checkpoint": "artifacts/final/medium-transformers/seed-9801/model.safetensors",
+      "checkpoint_sha256": "32a60dd4ec6597823f4ea99743239433f73b450353006fbf92a7952983ee453c",
+      "parameters_total": 3347136,
+      "validation_bpb": 1.6873530535092476,
+      "historical_one_thread_bytes_per_second_mean": 619.13000375262,
+      "historical_one_thread_median_latency_seconds": 0.2066791,
+      "training_seconds_100m_bytes": 1599.5862712999806,
+      "decision": "SAME_SCALE_ARCHITECTURE_COMPARATOR_REQUIRES_FRESH_COHERENT_RUN"
+    },
+    {
+      "id": "optimized_deployment_transformer",
+      "architecture": "Qwen2.5 0.5B through optimized Ollama CPU runtime",
+      "checkpoint_sha256": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+      "historical_one_thread_bytes_per_second_mean": 508.71529942368556,
+      "historical_one_thread_median_latency_seconds": 1.2646046,
+      "historical_time_to_first_output_seconds_median": 0.26304215,
+      "historical_raw_evidence": "results/moonshot/phase1/raw_runs/headline_qwen_product.json",
+      "historical_raw_evidence_sha256": "f59848e1840104df99996ddf166fd2fa13b5dc84057f349a4a8ffe17c54e7359",
+      "decision": "PRODUCT_COMPARATOR_REQUIRES_SOURCE_CONVERSION_PROVENANCE_AND_FRESH_RUN"
+    }
+  ],
+  "why_fastest_and_highest_quality_differ": {
+    "fastest_branch": "uses compact recurrent global state, two active experts, and exact byte-at-a-time state updates",
+    "quality_branch": "uses substantially denser global and within-window attention plus adaptive 2/4-byte summaries",
+    "measured_quality_gap_bpb": 0.18026203541124815,
+    "measured_active_parameter_ratio_quality_over_fastest": 2.0680289829032174,
+    "research_problem": "retain adaptive deterministic patch summaries and quality while replacing dense sequential local decoding with fused incremental state and top-1 physical dispatch"
+  },
+  "selected_research_line": {
+    "working_name": "LayerCakeByteCoreV3",
+    "input_contract": "raw UTF-8 bytes with deterministic causal 2/4-byte patches",
+    "starting_architecture": "incremental adaptive patch core",
+    "required_changes": [
+      "trace every generated byte selected from logits",
+      "measure exact incremental caches",
+      "retain learned top-1 physical expert dispatch",
+      "add versioned inactive extension interface",
+      "ablate dense, fixed-patch, adaptive-patch, multibyte, and fused runtime variants",
+      "reject any quality change below the 2x CPU gate"
+    ]
+  },
+  "machine": {
+    "torch": "2.7.1+cu118",
+    "cuda_available": true,
+    "cuda_device_count": 1,
+    "cpu_logical": 20,
+    "cpu_physical": 14,
+    "memory_total_bytes": 68473409536,
+    "memory_available_bytes_at_audit": 41331228672,
+    "disk_total_bytes": 1023249739776,
+    "disk_free_bytes_at_audit": 55690571776
+  }
+}

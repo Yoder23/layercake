@@ -1,0 +1,33 @@
+{
+  "format": "layercake-phase2-byte-instruction-finetune/1",
+  "candidate_name": "sliding16_cosine_pointer_longcontext_step200",
+  "seed": 20260819,
+  "instruction_corpus": "data/moonshot/phase2/instruction_distillation_curated.jsonl",
+  "training": {
+    "steps": 200,
+    "batch_size": 2,
+    "wiki_batch_size": 2,
+    "sequence_bytes": 1280,
+    "learning_rate": 0.00001,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "instruction_weight": 1.0,
+    "wiki_weight": 3.0,
+    "prompt_separator": "none",
+    "scheduled_sampling_probability": 0.0,
+    "wiki_scheduled_sampling_probability": 0.0,
+    "prompt_contrastive_weight": 0.0,
+    "prompt_focus_weight": 2.0,
+    "prompt_focus_contrastive_weight": 2.0,
+    "prompt_focus_contrastive_margin_nats": 0.2,
+    "routing_balance_weight": 0.02,
+    "trainable_parameters": "all"
+  },
+  "budget": {
+    "maximum_runs": 1,
+    "maximum_steps": 200,
+    "maximum_wall_seconds": 600,
+    "maximum_cuda_memory_bytes": 12884901888
+  },
+  "hypothesis": "The 100M base trained exclusively on 256-byte sequences, approximately 82 patches at its measured 3.12 bytes per patch, while functional and sustained generation exercise roughly 760 and 1,150 total bytes. Clean 1,280-byte WikiText and instruction continuation trains the previously unexposed positional horizon (including the declared wrap) without adding inference operations, while avoiding the corrupted-prefix target misalignment that produced the failed robustness run."
+}

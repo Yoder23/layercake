@@ -1,0 +1,118 @@
+{
+  "best_prior_tokenizer_free_pareto": {
+    "active_parameters": 2763216,
+    "candidate": "adaptive_top1_attention_local5",
+    "checkpoint_sha256": "47e7a6d286f8530e47c863db632ae2ba99e05ce4ca89022b7a0bf6001629fbed",
+    "median_cpu_bytes_per_second": 724.376085621544,
+    "validation_bpb": 1.8521446556120438
+  },
+  "branch_expansion_authorized": false,
+  "candidates": {
+    "local3_conditional_h2_w25": {
+      "autonomous_generation": {
+        "collapse_pass": true,
+        "generated_text": "re and the storm was a stopp @-@ store than the second series . The second series of the series of the series , the second serie",
+        "repetition_rate_4gram": 0.45599999999999996,
+        "valid_utf8": true
+      },
+      "checkpoint_sha256": "b10bf0ed79f92aae5a5997fd38dcf03784f3261993a5fe927abc788eaebdaf83",
+      "cpu": {
+        "median_bytes_per_second": 1461.5634258508737,
+        "median_time_to_first_output_seconds": 0.094596,
+        "observations": 20,
+        "optimized_transformer_median_bytes_per_second": 506.2597482558446,
+        "speed_pass": true,
+        "transformer_relative_ratio": 2.8869832746652704
+      },
+      "memory": {
+        "active_fp32_weight_bytes": 9201472,
+        "active_parameters": 2300368,
+        "median_process_resident_bytes": 362858496.0
+      },
+      "promotion_pass": false,
+      "quality_gate_ceiling_bpb": 1.7173530535092476,
+      "quality_pass": false,
+      "runtime_fusion_eligible": false,
+      "validation_bpb": 1.9247167337402384
+    },
+    "local4_conditional_h2_w10": {
+      "autonomous_generation": {
+        "collapse_pass": true,
+        "generated_text": "ce of the Armane in the 1990s . The second season of the season was the fourth and the first season of the season , and the seco",
+        "repetition_rate_4gram": 0.384,
+        "valid_utf8": true
+      },
+      "checkpoint_sha256": "0aaab19343123e42c79ba7d16c4d19127094582356be30be449f7455271fb32d",
+      "cpu": {
+        "median_bytes_per_second": 1220.7137704733007,
+        "median_time_to_first_output_seconds": 0.11591145,
+        "observations": 20,
+        "optimized_transformer_median_bytes_per_second": 506.2597482558446,
+        "speed_pass": true,
+        "transformer_relative_ratio": 2.411240029804617
+      },
+      "memory": {
+        "active_fp32_weight_bytes": 10201408,
+        "active_parameters": 2550352,
+        "median_process_resident_bytes": 374661120.0
+      },
+      "promotion_pass": false,
+      "quality_gate_ceiling_bpb": 1.7173530535092476,
+      "quality_pass": false,
+      "runtime_fusion_eligible": false,
+      "validation_bpb": 1.889346926874155
+    },
+    "local5_conditional_h2_w10": {
+      "autonomous_generation": {
+        "collapse_pass": true,
+        "generated_text": "ction . The series of the season , the storm was are unexteas and 's a content of of the state . The storm and thead of the site",
+        "repetition_rate_4gram": 0.264,
+        "valid_utf8": true
+      },
+      "checkpoint_sha256": "86b2182866581737244df50fbdfe681835ec54e682cfae5f5fbc90a7e4746d92",
+      "cpu": {
+        "median_bytes_per_second": 1082.0980485205673,
+        "median_time_to_first_output_seconds": 0.13099945000000002,
+        "observations": 20,
+        "optimized_transformer_median_bytes_per_second": 506.2597482558446,
+        "speed_pass": true,
+        "transformer_relative_ratio": 2.1374364686281866
+      },
+      "memory": {
+        "active_fp32_weight_bytes": 11201344,
+        "active_parameters": 2800336,
+        "median_process_resident_bytes": 376446976.0
+      },
+      "promotion_pass": false,
+      "quality_gate_ceiling_bpb": 1.7173530535092476,
+      "quality_pass": false,
+      "runtime_fusion_eligible": false,
+      "validation_bpb": 1.8605861929279577
+    }
+  },
+  "decision": "FAILED_BRANCH_RETURN_TO_PRIOR_PARETO",
+  "decision_rule": {
+    "fusion_floor_ratio": 1.8,
+    "fusion_requires_quality_pass": true,
+    "minimum_cpu_ratio": 2.0,
+    "optimized_transformer_median_bytes_per_second": 506.2597482558446,
+    "quality_ceiling_bpb": 1.7173530535092476,
+    "quality_delta_maximum": 0.03,
+    "quality_reference_bpb": 1.6873530535092476
+  },
+  "decision_sha256": "d7093bafb103bc70a3d461b181a937ab70bedb47f2286b5a36a6c24cc39541e4",
+  "format": "layercake-conditional-horizon2-branch-decision/1",
+  "fusion_attempts_authorized": 0,
+  "fusion_attempts_performed": 0,
+  "fusion_eligible_candidates": [],
+  "inputs": {
+    "results/moonshot/phase2_recertification/architecture_search_100m.json": "01e77580e19afca11c0f962e92304912c3e8c54d1685613cc1df4a5450e674ff",
+    "results/moonshot/phase2_recertification/architecture_search_100m_conditional_multibyte.json": "6a0e3fde6a1e32af28e698fa846622f83ab0402e781715b0586e647d42e231a7",
+    "results/moonshot/phase2_recertification/architecture_search_100m_conditional_multibyte_rescreen20.json": "910aa160afb69a8ecf71747523a1af8d13e4fb7057e38a7c2640f38f1ad24555",
+    "results/moonshot/phase2_recertification/architecture_search_100m_rescreen20.json": "0198bc54940c7a4040a4218707482669a1a7cb1189351837cd7252b63e58796e"
+  },
+  "next_action": "profile the returned prior candidate's main-head validation loss and attack the measured quality limiter",
+  "promoted_candidates": [],
+  "status": "PASS",
+  "test_accessed": false
+}

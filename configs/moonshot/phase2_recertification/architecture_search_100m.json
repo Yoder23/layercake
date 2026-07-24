@@ -1,0 +1,101 @@
+{
+  "format": "layercake-phase2-recertification-search/1",
+  "reference_candidate": "adaptive_top1_attention_local3",
+  "device": "cuda",
+  "precision": "fp16",
+  "seeds": [20260725],
+  "candidates": [
+    {
+      "name": "adaptive_top1_attention_local3",
+      "kind": "adaptive_two_four",
+      "hypothesis": "the only 10m attention checkpoint above the repeated provisional 2x CPU sentinel tests the quality ceiling at mandatory scale",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 3,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1"
+      }
+    },
+    {
+      "name": "adaptive_top1_attention_local5",
+      "kind": "adaptive_two_four",
+      "hypothesis": "quality-leading control is retained only to quantify the removable local-attention runtime bottleneck at scale",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 5,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1"
+      }
+    },
+    {
+      "name": "adaptive_top1_trigram8k_local4",
+      "kind": "adaptive_two_four",
+      "hypothesis": "one active learned causal transition row may recover local5 quality while preserving a fusable local4 runtime",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 4,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1",
+        "transition_context_buckets": 8192
+      }
+    }
+  ],
+  "training": {
+    "steps": 12207,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.0008,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "routing_balance_weight": 0.02,
+    "router_collapse_threshold": 0.65,
+    "evaluation_interval": 6103,
+    "resumable": true
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "sequence_bytes": 256,
+    "batches": 32,
+    "evaluate_test": false
+  },
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  },
+  "budget": {
+    "maximum_candidates": 3,
+    "maximum_runs": 3,
+    "maximum_steps_per_run": 12207,
+    "maximum_wall_seconds": 2400,
+    "maximum_cuda_memory_bytes": 12884901888
+  },
+  "promotion": {
+    "minimum_bpb_improvement": 0.0,
+    "final_test_must_remain_unaccessed": true,
+    "requires_all_experts_meaningfully_trained": true,
+    "maximum_router_load_fraction": 0.65
+  }
+}

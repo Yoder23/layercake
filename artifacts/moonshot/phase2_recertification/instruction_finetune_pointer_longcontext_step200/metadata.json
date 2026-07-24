@@ -1,0 +1,205 @@
+{
+  "candidate": {
+    "hypothesis": "the same-seed 10m cosine tail improved validation BPB by 0.03925 and repetition with identical inference architecture; applying the exact schedule to 100m projects 1.71728 BPB while the architecture has a measured 2.37x CPU ratio",
+    "kind": "adaptive_two_four",
+    "model": {
+      "d_abi": 64,
+      "d_byte": 48,
+      "d_model": 144,
+      "expert_expansion": 1,
+      "heads": 4,
+      "layers": 7,
+      "local_context_mode": "sliding",
+      "local_layers": 2,
+      "local_window": 16,
+      "max_patches": 256,
+      "patch_boundary_mode": "whitespace_any",
+      "prompt_pointer_dim": 32,
+      "routed_experts": 8,
+      "routing_mode": "learned_top1",
+      "use_completed_patch_context": true
+    },
+    "name": "sliding16_cosine_pointer_longcontext_step200"
+  },
+  "checkpoint": {
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2_recertification\\instruction_finetune_pointer_longcontext_step200\\model.safetensors",
+    "sha256": "a4d25cead8d65030f2c7b9e0d8939e2ab047942c2599f32d3835a6c2fd029e35"
+  },
+  "format": "layercake-byte-instruction-finetune/1",
+  "frozen_parameter_verification": {
+    "all_source_parameters_bitwise_equal": null,
+    "bitwise_equal_source_parameters": 0,
+    "checked_source_parameters": 0,
+    "excluded_trainable_source_parameters": 0,
+    "scope": "all"
+  },
+  "instruction_corpus_sha256": "393fb2161a0861cf1ace86a1f415f689d9479dda947b28e786e872b2c938c270",
+  "instruction_manifest_sha256": "79e342e99669ee022f0935c033e9d5b4c274fe0125c86c66ffbf793c76630ee3",
+  "quality": {
+    "selection": {
+      "bits_per_byte": 1.712170211849265,
+      "byte_accuracy": 0.649505615234375,
+      "evaluated_bytes": 65536,
+      "mean_bytes_per_patch": 3.1157174099077682,
+      "patches": 21034
+    },
+    "test_accessed": false,
+    "validation": {
+      "bits_per_byte": 1.6984938451085576,
+      "byte_accuracy": 0.65203857421875,
+      "evaluated_bytes": 65536,
+      "mean_bytes_per_patch": 3.1255246089278903,
+      "patches": 20968
+    }
+  },
+  "seed": 20260819,
+  "source_checkpoint_sha256": "358784c826eabbc4a4b342e07e4924959bb2772c87a282d582fa72db05e1e560",
+  "status": "PASS",
+  "training": {
+    "batch_size": 2,
+    "curves": [
+      {
+        "heldout_instruction_response_bpb": 2.8668107563626353,
+        "heldout_prompt_conditioning": {
+          "compared_examples": 60.0,
+          "correct_prompt_lower_loss_rate": 0.6333333333333333,
+          "correct_prompt_response_bpb": 2.8668107034369448,
+          "focused_compared_examples": 48.0,
+          "focused_correct_prompt_lower_loss_rate": 0.9791666666666666,
+          "focused_correct_prompt_response_bpb": 1.7565989771873707,
+          "focused_mismatched_minus_correct_bpb": 0.587107323023514,
+          "focused_mismatched_prompt_response_bpb": 2.3437063002108847,
+          "focused_target_bytes_correct": 1511.0,
+          "focused_target_bytes_mismatched": 1511.0,
+          "mismatched_minus_correct_bpb": 0.026822472381847096,
+          "mismatched_prompt_response_bpb": 2.893633175818792,
+          "response_target_bytes_correct": 46585.0,
+          "response_target_bytes_mismatched": 46585.0
+        },
+        "instruction_focus_loss": 1.4784722328186035,
+        "instruction_loss": 1.9000658988952637,
+        "prompt_contrastive_loss": 0.0774301290512085,
+        "prompt_focus_contrastive_loss": 0.0,
+        "prompt_pointer_mean_gate": 0.2032313197851181,
+        "scheduled_sampling_corrupted_fraction": 0.0,
+        "scheduled_sampling_probability": 0.0,
+        "step": 1,
+        "validation_bpb": 1.691609164616206,
+        "wall_seconds": 28.97971859993413,
+        "wiki_loss": 1.6798791885375977,
+        "wiki_scheduled_sampling_corrupted_fraction": 0.0,
+        "wiki_scheduled_sampling_probability": 0.0
+      },
+      {
+        "heldout_instruction_response_bpb": 2.7476929579581837,
+        "heldout_prompt_conditioning": {
+          "compared_examples": 60.0,
+          "correct_prompt_lower_loss_rate": 0.6833333333333333,
+          "correct_prompt_response_bpb": 2.7476930420722274,
+          "focused_compared_examples": 48.0,
+          "focused_correct_prompt_lower_loss_rate": 1.0,
+          "focused_correct_prompt_response_bpb": 1.5993569996224413,
+          "focused_mismatched_minus_correct_bpb": 0.6173208904788676,
+          "focused_mismatched_prompt_response_bpb": 2.216677890101309,
+          "focused_target_bytes_correct": 1511.0,
+          "focused_target_bytes_mismatched": 1511.0,
+          "mismatched_minus_correct_bpb": 0.03407374938255048,
+          "mismatched_prompt_response_bpb": 2.781766791454778,
+          "response_target_bytes_correct": 46585.0,
+          "response_target_bytes_mismatched": 46585.0
+        },
+        "instruction_focus_loss": 0.0,
+        "instruction_loss": 1.894419550895691,
+        "prompt_contrastive_loss": 0.10840630531311035,
+        "prompt_focus_contrastive_loss": 0.0,
+        "prompt_pointer_mean_gate": 0.1852162629365921,
+        "scheduled_sampling_corrupted_fraction": 0.0,
+        "scheduled_sampling_probability": 0.0,
+        "step": 100,
+        "validation_bpb": 1.6934140365456856,
+        "wall_seconds": 186.35049209999852,
+        "wiki_loss": 1.477629542350769,
+        "wiki_scheduled_sampling_corrupted_fraction": 0.0,
+        "wiki_scheduled_sampling_probability": 0.0
+      },
+      {
+        "heldout_instruction_response_bpb": 2.6532530631173645,
+        "heldout_prompt_conditioning": {
+          "compared_examples": 60.0,
+          "correct_prompt_lower_loss_rate": 0.7,
+          "correct_prompt_response_bpb": 2.653253081074295,
+          "focused_compared_examples": 48.0,
+          "focused_correct_prompt_lower_loss_rate": 1.0,
+          "focused_correct_prompt_response_bpb": 1.5093663975953022,
+          "focused_mismatched_minus_correct_bpb": 0.6080251255337166,
+          "focused_mismatched_prompt_response_bpb": 2.117391523129019,
+          "focused_target_bytes_correct": 1511.0,
+          "focused_target_bytes_mismatched": 1511.0,
+          "mismatched_minus_correct_bpb": 0.036185951305840014,
+          "mismatched_prompt_response_bpb": 2.689439032380135,
+          "response_target_bytes_correct": 46585.0,
+          "response_target_bytes_mismatched": 46585.0
+        },
+        "instruction_focus_loss": 1.153144359588623,
+        "instruction_loss": 1.9011597633361816,
+        "prompt_contrastive_loss": 0.0554235577583313,
+        "prompt_focus_contrastive_loss": 0.0,
+        "prompt_pointer_mean_gate": 0.19380244612693787,
+        "scheduled_sampling_corrupted_fraction": 0.0,
+        "scheduled_sampling_probability": 0.0,
+        "step": 200,
+        "validation_bpb": 1.6984938451085576,
+        "wall_seconds": 345.58192449994385,
+        "wiki_loss": 1.3835318088531494,
+        "wiki_scheduled_sampling_corrupted_fraction": 0.0,
+        "wiki_scheduled_sampling_probability": 0.0
+      }
+    ],
+    "gradient_clip": 1.0,
+    "instruction_sequence_coverage": {
+      "train": {
+        "examples": 420,
+        "fully_covered_response_examples": 159,
+        "maximum_response_target_bytes": 1159,
+        "mean_response_target_bytes": 852.1452380952381,
+        "minimum_response_target_bytes": 109,
+        "sequence_bytes": 1280,
+        "total_response_target_bytes_per_epoch": 357901,
+        "zero_response_target_examples": 0
+      },
+      "validation": {
+        "examples": 60,
+        "fully_covered_response_examples": 25,
+        "maximum_response_target_bytes": 1161,
+        "mean_response_target_bytes": 776.4166666666666,
+        "minimum_response_target_bytes": 109,
+        "sequence_bytes": 1280,
+        "total_response_target_bytes_per_epoch": 46585,
+        "zero_response_target_examples": 0
+      }
+    },
+    "instruction_weight": 1.0,
+    "learning_rate": 1e-05,
+    "peak_cuda_memory_bytes": 741760512,
+    "prompt_contrastive_weight": 0.0,
+    "prompt_focus_contrastive_margin_nats": 0.2,
+    "prompt_focus_contrastive_weight": 2.0,
+    "prompt_focus_weight": 2.0,
+    "prompt_separator": "none",
+    "routing_balance_weight": 0.02,
+    "scheduled_sampling_probability": 0.0,
+    "sequence_bytes": 1280,
+    "steps": 200,
+    "trainable_parameters": "all",
+    "wall_seconds": 350.62036319996696,
+    "weight_decay": 0.01,
+    "wiki_batch_size": 2,
+    "wiki_scheduled_sampling_probability": 0.0,
+    "wiki_weight": 3.0
+  },
+  "weight_transfer": {
+    "architecture_overrides": {},
+    "missing_parameters": [],
+    "unexpected_parameters": []
+  }
+}

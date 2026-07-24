@@ -1,0 +1,179 @@
+{
+  "format": "layercake-phase2-recertification-search/1",
+  "reference_candidate": "adaptive_top1_attention",
+  "device": "cuda",
+  "precision": "fp16",
+  "seeds": [20260723],
+  "candidates": [
+    {
+      "name": "adaptive_top1_attention",
+      "kind": "adaptive_two_four",
+      "hypothesis": "highest-quality historical tokenizer-free shape is the honest starting control",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 5,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1"
+      }
+    },
+    {
+      "name": "adaptive_dense_attention",
+      "kind": "adaptive_two_four",
+      "hypothesis": "dense control measures whether routed capacity causes the quality gap",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 6,
+        "local_layers": 6,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 0
+      }
+    },
+    {
+      "name": "adaptive_top1_gru",
+      "kind": "adaptive_two_four",
+      "hypothesis": "recurrent within-window mixing preserves quality while reducing incremental CPU work",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 3,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1",
+        "local_mixer": "gru"
+      }
+    },
+    {
+      "name": "adaptive_top1_context4k",
+      "kind": "adaptive_two_four",
+      "hypothesis": "a low-rank learned four-byte context residual closes local byte uncertainty without learned segmentation",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 5,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1",
+        "higher_context_buckets": 4096,
+        "higher_context_dim": 32,
+        "higher_context_order": 4
+      }
+    },
+    {
+      "name": "adaptive_top1_context16k",
+      "kind": "adaptive_two_four",
+      "hypothesis": "more deterministic byte-context capacity reduces destructive hash collisions while keeping active row reads small",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 5,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1",
+        "higher_context_buckets": 16384,
+        "higher_context_dim": 32,
+        "higher_context_order": 4
+      }
+    },
+    {
+      "name": "adaptive_top1_context64k_lowrank",
+      "kind": "adaptive_two_four",
+      "hypothesis": "near-exact four-byte context IDs with a 16-wide residual improve quality at modest installed scale",
+      "model": {
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 5,
+        "local_layers": 5,
+        "heads": 4,
+        "max_patches": 128,
+        "local_window": 16,
+        "routed_experts": 8,
+        "expert_expansion": 1,
+        "routing_mode": "learned_top1",
+        "higher_context_buckets": 65536,
+        "higher_context_dim": 16,
+        "higher_context_order": 4
+      }
+    },
+    {
+      "name": "whitespace_patch4_dense",
+      "kind": "variable",
+      "hypothesis": "deterministic whitespace/fixed-cap patches test whether adaptive 2/4 boundaries add value",
+      "model": {
+        "max_patch_size": 4,
+        "d_byte": 48,
+        "d_model": 144,
+        "d_abi": 64,
+        "layers": 6,
+        "heads": 4,
+        "max_patches": 256,
+        "continuous_local": true,
+        "ordered_patch_encoder": true,
+        "reset_local_decoder": true
+      }
+    }
+  ],
+  "training": {
+    "steps": 1221,
+    "batch_size": 32,
+    "sequence_bytes": 256,
+    "learning_rate": 0.0008,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "routing_balance_weight": 0.02,
+    "router_collapse_threshold": 0.65,
+    "evaluation_interval": 610,
+    "resumable": true
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "sequence_bytes": 256,
+    "batches": 16,
+    "evaluate_test": false
+  },
+  "data": {
+    "train": "data/moonshot/v2/wikitext103/train_medium.bin",
+    "validation": "data/moonshot/v2/wikitext103/validation.bin",
+    "architecture_selection": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+    "test": "data/moonshot/v2/wikitext103/test.bin"
+  },
+  "budget": {
+    "maximum_candidates": 7,
+    "maximum_runs": 7,
+    "maximum_steps_per_run": 1221,
+    "maximum_wall_seconds": 1800,
+    "maximum_cuda_memory_bytes": 12884901888
+  },
+  "promotion": {
+    "minimum_bpb_improvement": 0.0,
+    "final_test_must_remain_unaccessed": true,
+    "requires_all_experts_meaningfully_trained": true,
+    "maximum_router_load_fraction": 0.65
+  }
+}

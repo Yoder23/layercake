@@ -18,6 +18,10 @@ from layercake.models.sparse_bpe_layercake import (
     LayerCakeSparseBPECore,
     SparseBPELayerCakeConfig,
 )
+from layercake.models.representation_tokenizer import (
+    HybridTokenByteTokenizer,
+    tokenizer_from_document,
+)
 from .baseline import _token_batch, evaluate_transformer
 from .data import ByteCorpus, sha256_file
 
@@ -28,7 +32,7 @@ def _read(path: str | Path) -> dict:
 
 def _tokenizer(path: str | Path) -> BytePairTokenizer:
     data = _read(path)
-    return BytePairTokenizer([tuple(pair) for pair in data["merges"]])
+    return tokenizer_from_document(data)
 
 
 def _cumulative_raw_bytes(metadata: dict, *, visited: set[Path] | None = None) -> int:
@@ -241,6 +245,16 @@ def train_sparse_bpe_layercake(config_path: str | Path, output_dir: str | Path) 
         },
         "checkpoint": {"path": str(checkpoint.resolve()), "sha256": sha256_file(checkpoint)},
         "tokenizer": {"path": str(saved_tokenizer.resolve()), "sha256": sha256_file(saved_tokenizer)},
+        "representation": {
+            "class": (
+                "hybrid_token_byte"
+                if isinstance(tokenizer, HybridTokenByteTokenizer)
+                else "shared_tokenizer"
+            ),
+            "external_input": "UTF-8 bytes",
+            "external_output": "UTF-8 bytes",
+            "canonical_specification": tokenizer.canonical_dict(),
+        },
         "config": {"path": str(config_path.resolve()), "sha256": config_sha},
         "data": {
             name: {"path": str(Path(path).resolve()), "sha256": sha256_file(path)}

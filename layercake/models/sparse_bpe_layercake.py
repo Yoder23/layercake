@@ -26,6 +26,7 @@ class SparseBPELayerCakeConfig:
     routing_mode: str = "learned_top1"
     route_after_layers: int = 4
     prompt_conditioning: bool = False
+    prompt_attention_pooling: bool = False
     constrained_english_planner: bool = False
     architecture_version: str = "layercake-sparse-bpe-core/1"
 
@@ -124,13 +125,24 @@ class LayerCakeSparseBPECore(nn.Module):
         positions = torch.arange(token_ids.shape[1], device=token_ids.device)[None]
         mask = positions < prompt_lengths[:, None]
         embedded = self.embedding(token_ids)
-        context = (embedded * mask[:, :, None]).sum(dim=1) / prompt_lengths.clamp_min(1)[:, None]
-        context = self.prompt_projection(context)
+        if self.config.prompt_attention_pooling:
+            projected = self.prompt_projection(embedded)
+            scores = projected.square().mean(dim=-1)
+            scores = scores.masked_fill(~mask, -torch.inf)
+            weights = torch.softmax(scores, dim=-1)
+            context = (projected * weights[:, :, None]).sum(dim=1)
+            copy_weights = weights * prompt_lengths[:, None].to(weights.dtype)
+        else:
+            context = (
+                embedded * mask[:, :, None]
+            ).sum(dim=1) / prompt_lengths.clamp_min(1)[:, None]
+            context = self.prompt_projection(context)
+            copy_weights = mask.to(embedded.dtype)
         copy_bias = torch.zeros(
             token_ids.shape[0], self.config.vocab_size,
             dtype=embedded.dtype, device=token_ids.device,
         )
-        copy_bias.scatter_add_(1, token_ids, mask.to(embedded.dtype))
+        copy_bias.scatter_add_(1, token_ids, copy_weights.to(embedded.dtype))
         copy_bias.clamp_max_(1.0)
         return context, copy_bias
 

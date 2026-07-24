@@ -1,0 +1,391 @@
+{
+  "architecture": {
+    "architecture_version": "layercake-sparse-bpe-core/4-neural-only",
+    "constrained_english_planner": false,
+    "expansion": 4,
+    "expert_expansion": 1,
+    "heads": 8,
+    "layers": 3,
+    "max_tokens": 1024,
+    "prompt_conditioning": true,
+    "route_after_layers": 1,
+    "routed_experts": 8,
+    "routing_mode": "learned_top1",
+    "vocab_size": 2816,
+    "width": 288
+  },
+  "checkpoint": {
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\representation_bakeoff\\shared_tokenizer_curated_neural_only\\seed-9824\\model.safetensors",
+    "sha256": "5398c331f5db10a5b572a23b690ff1289f5a142a42327622947df95f432b6e4e"
+  },
+  "config": {
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\configs\\moonshot\\phase2\\sparse_bpe_planner2816_transfer_pilot_seed_9824.json",
+    "sha256": "0b6917882502a41036fa2660a6f84b4e2d2eb886af0b9c6639e6469f2ca5137d"
+  },
+  "data": {
+    "architecture_selection": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\architecture_selection.bin",
+      "sha256": "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93"
+    },
+    "test": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\test.bin",
+      "sha256": "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388"
+    },
+    "train": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\train_medium.bin",
+      "sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6"
+    },
+    "validation": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\validation.bin",
+      "sha256": "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10"
+    }
+  },
+  "english_planner": {
+    "enabled": false,
+    "runtime_planner_available": false,
+    "source_checkpoint_buffer_sha256": "f9204be9e4a6db242213c306fb40ab965516099f1d8ea62fcd08f427a614fd2b",
+    "stripped": true
+  },
+  "fine_tune_provenance": {
+    "checkpoint_sha256": "5398c331f5db10a5b572a23b690ff1289f5a142a42327622947df95f432b6e4e",
+    "format": "layercake-finetune-provenance-correction/1",
+    "instruction_corpus_sha256": "393fb2161a0861cf1ace86a1f415f689d9479dda947b28e786e872b2c938c270",
+    "instruction_steps": 1200,
+    "neural_tensors_changed_from_parent": true,
+    "parent_checkpoint_path": "artifacts/moonshot/representation_bakeoff/shared_tokenizer_neural_only/seed-9824/model.safetensors",
+    "parent_checkpoint_sha256": "d185882d498df657dbd50e23a5de1593860e0dda6c4eb6929e475a522a237359",
+    "prior_metadata_sha256": "2338a35fdc2b7d7ddaaf79bc3581c250db111ff0f28418e0f1beda80aa236c56",
+    "reason": "Inherited no-neural-change flags apply only to the preceding planner-removal or architecture-contract conversion.",
+    "training_performed": true
+  },
+  "format": "layercake-sparse-bpe-instruction-core/1",
+  "incremental_state": {
+    "implemented": true,
+    "mechanism": "per-layer KV cache"
+  },
+  "initialization": {
+    "method": "exact architecture transfer with prefix-preserved embedding expansion",
+    "new_embedding_rows": 512,
+    "parent_checkpoint_path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\phase2\\sparse-bpe-constrained-english-pilot\\seed-9824\\model.safetensors",
+    "parent_checkpoint_sha256": "dc0241ef5fae04b24ffdea30a1228e9914961b031163e8cffaa7c4dee3d22d30",
+    "parent_tokenizer_sha256": "0ad26479c9d6ecb98d554b3e4d3d594183d93cb5806e46b835f65a14a93fa0c3",
+    "transferred_embedding_rows": 2304
+  },
+  "instruction_distillation": {
+    "batch_size": 8,
+    "corpus_path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\phase2\\instruction_distillation_curated.jsonl",
+    "corpus_sha256": "393fb2161a0861cf1ace86a1f415f689d9479dda947b28e786e872b2c938c270",
+    "curves": [
+      {
+        "heldout_instruction_loss": 5.040809243917465,
+        "instruction_loss": 6.865337371826172,
+        "step": 1,
+        "total_loss": 8.353172302246094,
+        "wall_seconds": 0.9018056000350043,
+        "wiki_loss": 2.8931071758270264
+      },
+      {
+        "heldout_instruction_loss": 2.189760845154524,
+        "instruction_loss": 3.2133710384368896,
+        "step": 300,
+        "total_loss": 4.699182987213135,
+        "wall_seconds": 53.248153700027615,
+        "wiki_loss": 2.8910958766937256
+      },
+      {
+        "heldout_instruction_loss": 2.1575459353625774,
+        "instruction_loss": 3.0049760341644287,
+        "step": 600,
+        "total_loss": 4.451393127441406,
+        "wall_seconds": 105.72102050005924,
+        "wiki_loss": 2.8130273818969727
+      },
+      {
+        "heldout_instruction_loss": 2.1742147598415613,
+        "instruction_loss": 2.7807459831237793,
+        "step": 900,
+        "total_loss": 4.2885894775390625,
+        "wall_seconds": 157.08788230002392,
+        "wiki_loss": 2.9332425594329834
+      },
+      {
+        "heldout_instruction_loss": 2.215605760924518,
+        "instruction_loss": 2.5523064136505127,
+        "step": 1200,
+        "total_loss": 4.043615818023682,
+        "wall_seconds": 208.86980360001326,
+        "wiki_loss": 2.9022109508514404
+      }
+    ],
+    "learning_rate": 0.0001,
+    "response_tokens_seen": 6383053,
+    "router_frozen": false,
+    "routing_balance_weight_per_objective": 0.02,
+    "steps": 1200,
+    "wall_seconds": 209.43670670001302,
+    "wiki_regularization_weight": 0.5
+  },
+  "memory": {
+    "cuda_peak_allocated_bytes": 550988288
+  },
+  "metadata_correction_history": [
+    {
+      "checkpoint_sha256": "5398c331f5db10a5b572a23b690ff1289f5a142a42327622947df95f432b6e4e",
+      "format": "layercake-finetune-provenance-correction/1",
+      "instruction_corpus_sha256": "393fb2161a0861cf1ace86a1f415f689d9479dda947b28e786e872b2c938c270",
+      "instruction_steps": 1200,
+      "neural_tensors_changed_from_parent": true,
+      "parent_checkpoint_path": "artifacts/moonshot/representation_bakeoff/shared_tokenizer_neural_only/seed-9824/model.safetensors",
+      "parent_checkpoint_sha256": "d185882d498df657dbd50e23a5de1593860e0dda6c4eb6929e475a522a237359",
+      "prior_metadata_sha256": "2338a35fdc2b7d7ddaaf79bc3581c250db111ff0f28418e0f1beda80aa236c56",
+      "reason": "Inherited no-neural-change flags apply only to the preceding planner-removal or architecture-contract conversion.",
+      "training_performed": true
+    }
+  ],
+  "parameters": {
+    "active": 5430241,
+    "active_fraction": 0.7567123186879999,
+    "total": 7176097
+  },
+  "parent_checkpoint": {
+    "path": "artifacts/moonshot/representation_bakeoff/shared_tokenizer_neural_only/seed-9824/model.safetensors",
+    "sha256": "d185882d498df657dbd50e23a5de1593860e0dda6c4eb6929e475a522a237359"
+  },
+  "quality": {
+    "architecture_selection": {
+      "bits_per_byte": 1.6643695934282596,
+      "covered_raw_bytes": 30185,
+      "evaluated_tokens": 14952,
+      "token_accuracy": 0.4508426966292135
+    },
+    "test": null,
+    "test_accessed": false,
+    "validation": {
+      "bits_per_byte": 1.6710886475806253,
+      "covered_raw_bytes": 30108,
+      "evaluated_tokens": 14960,
+      "token_accuracy": 0.452072192513369
+    }
+  },
+  "representation": {
+    "class": "shared_tokenizer",
+    "external_input": "UTF-8 bytes",
+    "external_output": "UTF-8 bytes"
+  },
+  "routing": {
+    "assignment_counts": [
+      506934,
+      528668,
+      567657,
+      510013,
+      525719,
+      596144,
+      520790,
+      519819
+    ],
+    "experts_used": 8,
+    "maximum_active_experts_per_token": 1,
+    "maximum_load_fraction": 0.1394246241122013,
+    "mode": "learned_top1",
+    "physically_dispatched": true,
+    "utilization": [
+      0.11856041895866544,
+      0.12364351093049537,
+      0.13276215788410156,
+      0.11928052755263177,
+      0.12295380640188,
+      0.1394246241122013,
+      0.12180102457022685,
+      0.12157392958979771
+    ]
+  },
+  "safety_conversion": {
+    "neural_tensor_count": 72,
+    "neural_tensor_hashes": {
+      "blocks.0.attn_norm.bias": "e21534977a870ead71d087547dccac5f591c4020af7d1f78ee0138df1f340e49",
+      "blocks.0.attn_norm.weight": "15c6f38e128199d4f90bc4cef0878f0612d306888603b4840cf7a10e1caee80c",
+      "blocks.0.attn_out.bias": "a2151ef0e8f97cbbaf11570d7371e0f3ccbce390e69764a7c2a41857760ef838",
+      "blocks.0.attn_out.weight": "3371782be03cbefaaf2fd3bc284b1343a9251bca534f7f1c636d94fa590aea3b",
+      "blocks.0.down.weight": "d6ecfc8bfc0903e169b30eb63c9c79b0863be22183393e2efd33077e717a01de",
+      "blocks.0.ffn_norm.bias": "d03d8e9fe4fd2f29bca198cc76c504ef6604bcbd1b7c6341fc329343166747cd",
+      "blocks.0.ffn_norm.weight": "93310f6c14c2580d661b7a8dd63aa97eae38a008c2563d76d0718e49079ab573",
+      "blocks.0.gate_up.weight": "89e481714cdfab580f51a246bde0db622b549174dcec1bad4b7f0cd4d19eb38d",
+      "blocks.0.qkv.bias": "a0638fb16ae762eab285de9819aa51141c6d0c502fc59590087a1e081e755e06",
+      "blocks.0.qkv.weight": "bb7c4a44e0426cddc0a9203cd4fe7b00c95dffc38c1098a4ffb36637b9a990eb",
+      "blocks.1.attn_norm.bias": "e6e2d992f04c91b1aca700f2a350eefc0ca78d026684d53de99f35fb7f5b236c",
+      "blocks.1.attn_norm.weight": "44ded5a52ae70c07aa3bb55cf7d84c748341daf16d65c304084c75730638cde7",
+      "blocks.1.attn_out.bias": "a2d659d90db8908961313720ff973b6fff7d7c7366bf4a49d8683fad1cebc7ab",
+      "blocks.1.attn_out.weight": "adb6031649fa3798a15a56f71c51f1a497a5732560f17afbe50c2b6660c52d64",
+      "blocks.1.down.weight": "c13b61168e35e6f29fe2edf412c8fbf8d631871a3be0438e7f475868690211d7",
+      "blocks.1.ffn_norm.bias": "2c2511fef3d0e84114dd213a29732340957c39246e5e961eedcce1de819afda8",
+      "blocks.1.ffn_norm.weight": "5c832c53449c8a27216e77172299ac39407fe40e4c017903b4f1e1db31a65310",
+      "blocks.1.gate_up.weight": "a655bdde2ccf827ec48bd02afdf4ba288ec32c2a6a3ee40ad7d09c7c9b6cb6ee",
+      "blocks.1.qkv.bias": "d025966d3e13316d09b771811824b45fba45f2a136df3425f653fe0542b03e22",
+      "blocks.1.qkv.weight": "81aa7cd44bdab93ea01e6c9f0c65b3685f57265260b4c136d6fdab4979324263",
+      "blocks.2.attn_norm.bias": "5adc118c69abf8841973bdc00c935010082f210405d510888c2d8da941831501",
+      "blocks.2.attn_norm.weight": "b1d229601e04a526a7ab7ff9c59da6fba6ab10ac4f5bfe784345b24908d2436b",
+      "blocks.2.attn_out.bias": "7a87c5b0108cd04f42b8e051ad9e36dfec9724a0abb644fec00216657df7e633",
+      "blocks.2.attn_out.weight": "a40cd6b3b2262fd3709fed9d8dd5c16c0a3a668ba863701cfa3551b860e5d987",
+      "blocks.2.down.weight": "d3290366e2f4bea6b34aed0f10a9554ba90f1521045d45463c507d56dfb8c82b",
+      "blocks.2.ffn_norm.bias": "0a6e27509db9ec66a36ea6ce19fa3979e3d7092f022a2079e4a9e1609e48fa33",
+      "blocks.2.ffn_norm.weight": "9b6ceb65bb7a5c8705be683e192cf03b0efbb77e4207f1a70fe2cbe7c5660e7c",
+      "blocks.2.gate_up.weight": "881df0450c872405a915d514c1fdf0bd564c78d556a22a4564c3a5c45548275a",
+      "blocks.2.qkv.bias": "1f04d26bb8f360f2166654dcbad5311bc4eadaf8e885e4ac09466608af08f118",
+      "blocks.2.qkv.weight": "390aef1a267a2cf6439b90d862f4479b9e22b56dc75fb94ac222c652fbf84c62",
+      "cakes.experts.0.down.weight": "4d4de2f383d2b48e60ffede9a2aced44cefc34df97c95c698f181558e0b76806",
+      "cakes.experts.0.gate_up.weight": "6d514151c945623e582b7ce1cfa19738632146b0bfdd46e8f741ab771996c0ed",
+      "cakes.experts.0.norm.bias": "9c2af0ad8a8975378ee70080c77a047eab622a620e9f3fa2dbaebb1b8f3fadc6",
+      "cakes.experts.0.norm.weight": "16e385f0213cf2852eb5b02ca5f77c76b71806aa95f053d050c5d885856c2a12",
+      "cakes.experts.1.down.weight": "97689fdc88e49d46e895d3be06e69b76bb89a337389f0a7b754e445b5dfd7179",
+      "cakes.experts.1.gate_up.weight": "1e0fe3b5b18377e5cf796395b921c030d390f60e526a43392df4f56d5e3e3bd5",
+      "cakes.experts.1.norm.bias": "3349ca1ec335b23cb8efc8ce3c97f3520439e878eba50f46ab1ba6dca296b443",
+      "cakes.experts.1.norm.weight": "e39361299f2efb13978bbdc628717bae6385f85909304b35ac1a9c18da32cdfe",
+      "cakes.experts.2.down.weight": "b67579ea425590d7e39abf37a6caa1e34045304f0876117d1ae0e8d18c723899",
+      "cakes.experts.2.gate_up.weight": "c5e1d2abb21e1014c7b0af8210181593af475022941232e8b6589c16fc536b26",
+      "cakes.experts.2.norm.bias": "bc180d89b0092e9a5579cb30a856c288b795b5e5b90ba37c391de5ec0a7a312a",
+      "cakes.experts.2.norm.weight": "49ef8953c348b03cc80fbc79b3e28460bcaaa044af70ccb58425377c7fdf1e1b",
+      "cakes.experts.3.down.weight": "e942510f52ae88a70475dc0a8514dc09c5f58828f8430ad48190204a577dd0fe",
+      "cakes.experts.3.gate_up.weight": "d95c0dddf826c3debdae46c9d5f0162ebd760e276c1ba37dbf70767311f22ce3",
+      "cakes.experts.3.norm.bias": "056e2d51601477649488414e76d64bbe439d624a3f8a091f0bcde30f7f862972",
+      "cakes.experts.3.norm.weight": "61b41030e1cfd7d47242ff40601c3017e2460c931e7577cae3fec2e4385dacc7",
+      "cakes.experts.4.down.weight": "c701288427938f97a06f502b5b2c4e338e168d63ae0ab25aea9af05a32a4f887",
+      "cakes.experts.4.gate_up.weight": "2ee79a4536eebc2dad327bc2ba7b62366da6bfb9bc6df293435ded2777e4ea07",
+      "cakes.experts.4.norm.bias": "9b2ce2e0d090e8a12cddaa031fb1378c7891f8d0d71c7dc8aaaa7f51811a9500",
+      "cakes.experts.4.norm.weight": "dd59200b130cfba9ae2ef7fba2ca9f0a00223ca5d9eecabe6393a703fc8a158a",
+      "cakes.experts.5.down.weight": "00a7ef7158298e156f017ff92ce5761a1e3877bfa7ccc20c2965f8bd6fbd53e8",
+      "cakes.experts.5.gate_up.weight": "9c3fe41e44c9436790a35c1fa0870bc6af839058795bc348da5042b90ccc8084",
+      "cakes.experts.5.norm.bias": "91fcbd52fd9e5601919fd25df77b6474969cacb186783b6ec2f48ea5fc298ffb",
+      "cakes.experts.5.norm.weight": "4a44a80d82451c97b6b11a3c41bfad5b008f63d3f0478429984e0dfc5a75a6b1",
+      "cakes.experts.6.down.weight": "15b7d472dbcfa9e96a51aa03a6145088ae40cb273d4f2ee48e15725cf0a92447",
+      "cakes.experts.6.gate_up.weight": "35b717c69c64745edf1dc714149d70cbd6397e06e88dc1d024b93da05c6d0da3",
+      "cakes.experts.6.norm.bias": "c249c1b47154618da76b3606bad9ac1dfc8144ded2e4cb1e093c981f87f3a390",
+      "cakes.experts.6.norm.weight": "0596c9a6968e8a63ecffe54831a93e31ee2b98ad797fd810cf504aaa9f38050f",
+      "cakes.experts.7.down.weight": "c9e3430de3547ba5751e4795c6871e029c4d7659e310f3a4c167032024a255c8",
+      "cakes.experts.7.gate_up.weight": "c07ad90fbf04952d60f85716df665fb3a0fcbe9f45cbce958bda44c3de087331",
+      "cakes.experts.7.norm.bias": "299071adc6468cdb16a1d3694c3f0dda14516c4f546095fc684c70c55f5d07f3",
+      "cakes.experts.7.norm.weight": "84fcc1edd4f2b377088446af0f677d44c6efc926709c48755e8e2f33d996edb1",
+      "cakes.router.0.bias": "81b9ae8cc183a65bbc3424ebe3bf650ede224c473066763baba60adfa5564356",
+      "cakes.router.0.weight": "36f7500b5f5daa16554993301f10d34cc797124f8d6dfd44024f5b48742f139e",
+      "cakes.router.1.weight": "bc6b46cc393dc3e27e4e310e936acd26174f63b10146ad0c348f89b8d2b1dc23",
+      "embedding.weight": "e57469230898687a326ff9614800cf98b25eed953411c4c0c653e5151f67cef8",
+      "norm.bias": "706223fd76c3e15f9e4fe73d2520720f570ebc242113df51769c7486bbe1e387",
+      "norm.weight": "fb5688a136c5d1f4a45d6eddd2745167b66c2faf739cfbbca62b12e762250f45",
+      "position.weight": "0ce853eed84c75995782804497d5ee094e052be686c8d61e8eb6dd6883f4e628",
+      "prompt_copy_strength": "4408f8a4c3979cebb85436fb95e0799d37cee6e60cbee54947ac7173e647a2c9",
+      "prompt_projection.0.bias": "d9b3fd050633277923138ed64a79366a1cec5c05a25808977b3d86d50e796b38",
+      "prompt_projection.0.weight": "27ed2f7547598a6b3093946584791d39a730cbc6dc7b6467891598a3f9d2942e"
+    },
+    "neural_tensors_changed": false,
+    "neural_tensors_changed_after_conversion": true,
+    "removed_tensors": [
+      "english_planner_spec"
+    ],
+    "source_checkpoint_path": "artifacts/moonshot/phase2/final_core/seed-9824/model.safetensors",
+    "source_checkpoint_sha256": "fc8d32c77bfa9d39152a6d32436c4dbbf767f9d1c88f3de17fec84a24bd3f781",
+    "subsequent_fine_tune_performed": true,
+    "training_performed": false
+  },
+  "seed": 9824,
+  "source_metadata_sha256": "7f22565a7c335d8b300f91a87f210ffd165303883f9f9efc958e9beaefde8239",
+  "status": "PASS",
+  "tokenizer": {
+    "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\moonshot\\representation_bakeoff\\shared_tokenizer_curated_neural_only\\seed-9824\\tokenizer.json",
+    "sha256": "d1c03801fd9559b8586490733a3788439ff230bf5f09666a0abb7ddb615e9f10"
+  },
+  "training": {
+    "batch_size": 32,
+    "cumulative_raw_bytes_seen": 120020992,
+    "curves": [
+      {
+        "covered_bytes_in_batch": 7288,
+        "language_loss": 3.449594497680664,
+        "raw_bytes_seen": 8192,
+        "step": 1,
+        "training_loss": 3.469799280166626,
+        "validation": {
+          "bits_per_byte": 2.2809580327907337,
+          "covered_raw_bytes": 30108,
+          "evaluated_tokens": 14960,
+          "token_accuracy": 0.36831550802139035
+        },
+        "wall_seconds": 0.4584965000394732
+      },
+      {
+        "covered_bytes_in_batch": 7085,
+        "language_loss": 2.5093729496002197,
+        "raw_bytes_seen": 2457600,
+        "step": 300,
+        "training_loss": 2.5293171405792236,
+        "validation": {
+          "bits_per_byte": 1.7890264685464665,
+          "covered_raw_bytes": 30108,
+          "evaluated_tokens": 14960,
+          "token_accuracy": 0.43663101604278076
+        },
+        "wall_seconds": 12.84530360007193
+      },
+      {
+        "covered_bytes_in_batch": 6903,
+        "language_loss": 2.412677764892578,
+        "raw_bytes_seen": 4915200,
+        "step": 600,
+        "training_loss": 2.432915687561035,
+        "validation": {
+          "bits_per_byte": 1.7221921490694228,
+          "covered_raw_bytes": 30108,
+          "evaluated_tokens": 14960,
+          "token_accuracy": 0.4461898395721925
+        },
+        "wall_seconds": 25.114376200013794
+      },
+      {
+        "covered_bytes_in_batch": 7278,
+        "language_loss": 2.4028384685516357,
+        "raw_bytes_seen": 7372800,
+        "step": 900,
+        "training_loss": 2.4228034019470215,
+        "validation": {
+          "bits_per_byte": 1.6926741891307684,
+          "covered_raw_bytes": 30108,
+          "evaluated_tokens": 14960,
+          "token_accuracy": 0.45267379679144387
+        },
+        "wall_seconds": 37.39759890001733
+      },
+      {
+        "covered_bytes_in_batch": 6884,
+        "language_loss": 2.4332594871520996,
+        "raw_bytes_seen": 9830400,
+        "step": 1200,
+        "training_loss": 2.4532532691955566,
+        "validation": {
+          "bits_per_byte": 1.6746380631381983,
+          "covered_raw_bytes": 30108,
+          "evaluated_tokens": 14960,
+          "token_accuracy": 0.45254010695187163
+        },
+        "wall_seconds": 49.646171800093725
+      },
+      {
+        "covered_bytes_in_batch": 7069,
+        "language_loss": 2.3563859462738037,
+        "raw_bytes_seen": 10002432,
+        "step": 1221,
+        "training_loss": 2.3765640258789062,
+        "validation": {
+          "bits_per_byte": 1.6707778809854388,
+          "covered_raw_bytes": 30108,
+          "evaluated_tokens": 14960,
+          "token_accuracy": 0.45447860962566844
+        },
+        "wall_seconds": 50.73158730007708
+      }
+    ],
+    "raw_bytes_seen": 10002432,
+    "resumed_from_step": 0,
+    "sequence_bytes": 256,
+    "stage_raw_bytes_seen": 10002432,
+    "steps": 1221,
+    "wall_seconds": 50.810803000000305
+  }
+}
