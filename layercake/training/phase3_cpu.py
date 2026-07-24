@@ -551,6 +551,8 @@ def profile_training(
     threads: int,
     evaluation_samples: int = 0,
     checkpoint_directory: Path | None = None,
+    target_units: int | None = None,
+    progress_every: int = 0,
 ) -> dict[str, Any]:
     protocol = _validate_lock()
     if system not in {"layercake_complete", "dense_transformer"}:
@@ -602,13 +604,14 @@ def profile_training(
     training_started = time.perf_counter()
     with _peak_rss_monitor() as memory:
         for step in range(1, warmup_steps + steps + 1):
-            # The complete LayerCake schedule reserves every fourth batch for
-            # the currently weakest instruction route.  Paired transformer
-            # runs see the exact same schedule and examples.
+            # The first frozen 5M-unit interval uses a deterministic shared
+            # trace.  Later intervals may adapt the *shared* trace from paired
+            # validation deficits, but may never let each model choose its own
+            # examples because that would break paired data order.
             instruction = step % 4 == 0
             prompt_lengths = None
             if instruction:
-                route = max(route_losses, key=route_losses.get)
+                route = ((step // 4) - 1) % len(TASK_TAXONOMY)
                 (
                     inputs,
                     targets,
@@ -691,6 +694,30 @@ def profile_training(
                     }
                 )
                 vocabulary_rows_updated.add(sparse_rows)
+                if (
+                    progress_every
+                    and len(step_records) % progress_every == 0
+                ):
+                    print(
+                        json.dumps(
+                            {
+                                "system": system,
+                                "step": len(step_records),
+                                "model_visible_nonpadding_units": (
+                                    model_visible_units
+                                ),
+                                "latest_loss": float(loss.detach()),
+                                "elapsed_seconds": (
+                                    time.perf_counter() - training_started
+                                ),
+                                "peak_rss": memory["peak"],
+                            },
+                            sort_keys=True,
+                        ),
+                        flush=True,
+                    )
+                if target_units is not None and model_visible_units >= target_units:
+                    break
     training_seconds = time.perf_counter() - training_started
     evaluation_started = time.perf_counter()
     quality = (
@@ -747,6 +774,7 @@ def profile_training(
         },
         "configuration": {
             "steps": steps,
+            "target_model_visible_nonpadding_units": target_units,
             "warmup_steps": warmup_steps,
             "batch_size": batch_size,
             "sequence_units": sequence,
@@ -765,7 +793,7 @@ def profile_training(
             "raw_utf8_training_bytes_exposed": raw_bytes,
             "model_visible_nonpadding_units": model_visible_units,
             "forward_backward_supervised_target_units": supervised_units,
-            "optimizer_steps": steps,
+            "optimizer_steps": len(step_records),
             "estimated_executed_cpu_multiply_accumulates": operation_count,
             "dense_trainable_parameters": dense_parameters,
             "total_model_parameters": total_parameters,
@@ -842,6 +870,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--threads", type=int, default=14)
     parser.add_argument("--evaluation-samples", type=int, default=0)
     parser.add_argument("--checkpoint-directory", type=Path)
+    parser.add_argument("--target-units", type=int)
+    parser.add_argument("--progress-every", type=int, default=0)
     args = parser.parse_args(argv)
     output = args.output if args.output.is_absolute() else ROOT / args.output
     checkpoint_directory = args.checkpoint_directory
@@ -860,6 +890,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         threads=args.threads,
         evaluation_samples=args.evaluation_samples,
         checkpoint_directory=checkpoint_directory,
+        target_units=args.target_units,
+        progress_every=args.progress_every,
     )
     print(json.dumps(result["accounting"], indent=2, sort_keys=True))
     return 0
