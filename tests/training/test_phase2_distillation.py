@@ -11,7 +11,10 @@ from layercake.models.sparse_bpe_layercake import (
     SparseBPELayerCakeConfig,
 )
 from layercake.training.phase2_distillation import (
+    FACTOR_TASK_INDEX,
     TOPICS,
+    _factor_task_targets,
+    _factor_topic_targets,
     _instruction_batch,
     _instruction_focus_mask,
     _negative_prompt_rows,
@@ -121,6 +124,42 @@ def test_recovery_batch_uses_generated_prefix_but_retains_gold_targets() -> None
     assert observed == len(gold)
     assert torch.equal(labels[0, start:start + len(gold)], gold)
     assert tokens.shape[1] == labels.shape[1] + 1
+
+
+def test_factor_supervision_maps_task_and_topic_without_eval_content() -> None:
+    tokenizer = BytePairTokenizer()
+    rows = [{
+        "prompt": "Explain river ecology with one example.",
+        "response": "river ecology links water and life.",
+        "topic": "river ecology",
+        "task": "explanation",
+    }, {
+        "prompt": "Use these supplied facts about a trial.",
+        "response": "The trial is ready.",
+        "topic": "trial",
+        "task": "grounded_qa",
+    }]
+    task_targets = _factor_task_targets(rows, device=torch.device("cpu"))
+    assert task_targets.tolist() == [
+        FACTOR_TASK_INDEX["explanation"],
+        FACTOR_TASK_INDEX["question_answering"],
+    ]
+    topic_targets, valid = _factor_topic_targets(
+        tokenizer,
+        rows,
+        capacity=64,
+        device=torch.device("cpu"),
+    )
+    assert valid.tolist() == [True, True]
+    assert torch.allclose(topic_targets.sum(dim=-1), torch.ones(2))
+    river_positions = torch.nonzero(topic_targets[0]).flatten().tolist()
+    recovered = b"".join(
+        tokenizer.pieces[
+            tokenizer.encode(rows[0]["prompt"] + "\n")[position]
+        ]
+        for position in river_positions
+    )
+    assert recovered == b"river ecology"
 
 
 def test_curated_distillation_artifact_preserves_frozen_suite_separation() -> None:

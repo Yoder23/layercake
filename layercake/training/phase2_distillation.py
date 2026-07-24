@@ -50,6 +50,22 @@ TOPICS = (
     "statistical literacy", "wildfire prevention", "food microbiology", "industrial design",
 )
 
+FACTOR_TASK_TAXONOMY = (
+    "continuation",
+    "explanation",
+    "planning",
+    "comparison",
+    "instruction_following",
+    "reasoning",
+    "summarization",
+    "question_answering",
+    "repetition_control",
+    "coherence_or_supplied_context",
+)
+FACTOR_TASK_INDEX = {
+    name: index for index, name in enumerate(FACTOR_TASK_TAXONOMY)
+}
+
 TASKS = (
     "Teach a new learner about {topic}. Include two concrete examples and one practical implication in at least 90 words.",
     "Propose four numbered actions that would improve {topic}, explaining briefly why each action helps. Use at least 90 words.",
@@ -856,6 +872,70 @@ def _instruction_focus_mask(
     return mask
 
 
+def _factor_task_targets(rows, *, device) -> torch.Tensor:
+    values = []
+    for row in rows:
+        task = str(row.get("task", ""))
+        if task == "grounded_qa":
+            task = "question_answering"
+        values.append(FACTOR_TASK_INDEX.get(
+            task,
+            FACTOR_TASK_INDEX["coherence_or_supplied_context"],
+        ))
+    return torch.tensor(values, dtype=torch.long, device=device)
+
+
+def _factor_topic_targets(
+    tokenizer,
+    rows,
+    *,
+    capacity: int,
+    device,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Map knowledge-light topic annotations onto bounded prompt-token slots."""
+
+    targets = torch.zeros(
+        len(rows), capacity, dtype=torch.float32, device=device
+    )
+    valid = torch.zeros(len(rows), dtype=torch.bool, device=device)
+    for row_index, row in enumerate(rows):
+        prompt_bytes = (str(row["prompt"]) + "\n").encode("utf-8")
+        topic_bytes = str(row.get("topic", "")).encode("utf-8")
+        if not topic_bytes:
+            continue
+        start = prompt_bytes.lower().find(topic_bytes.lower())
+        if start < 0:
+            continue
+        end = start + len(topic_bytes)
+        prompt_ids = tokenizer.encode(prompt_bytes)
+        spans = []
+        offset = 0
+        for token_id in prompt_ids:
+            piece = tokenizer.pieces[token_id]
+            spans.append((offset, offset + len(piece)))
+            offset += len(piece)
+        if len(prompt_ids) <= capacity:
+            indexes = list(range(len(prompt_ids)))
+        else:
+            indexes = [
+                position * len(prompt_ids) // capacity
+                for position in range(capacity)
+            ]
+        selected = [
+            position
+            for position, token_index in enumerate(indexes)
+            if (
+                spans[token_index][1] > start
+                and spans[token_index][0] < end
+            )
+        ]
+        if not selected:
+            continue
+        targets[row_index, selected] = 1.0 / len(selected)
+        valid[row_index] = True
+    return targets, valid
+
+
 def _negative_prompt_rows(rows, train_rows):
     """Pair each response with a same-task, different-topic prompt."""
 
@@ -923,13 +1003,19 @@ def finetune(
     prompt_memory_only: bool = False,
     recovery_probability: float = 0.0,
     recovery_prefix_tokens: int = 0,
+    recovery_prefix_schedule: Sequence[int] = (),
     recovery_warmup_steps: int = 300,
+    factor_task_weight: float = 0.0,
+    factor_topic_weight: float = 0.0,
 ) -> dict[str, Any]:
     base_checkpoint = (root / base_checkpoint).resolve()
     corpus_path = (root / corpus_path).resolve()
     output = (root / output).resolve()
     if output.exists():
         raise RuntimeError(f"instruction checkpoint is immutable: {output}")
+    recovery_schedule = tuple(int(value) for value in recovery_prefix_schedule)
+    if any(value <= 0 for value in recovery_schedule):
+        raise ValueError("recovery prefix schedule values must be positive")
     output.mkdir(parents=True)
     model, tokenizer, parent = load_sparse_bpe_checkpoint(base_checkpoint, device="cuda" if torch.cuda.is_available() else "cpu")
     device = next(model.parameters()).device
@@ -944,6 +1030,7 @@ def finetune(
             "structured_",
             "semantic_",
             "contextual_",
+            "factor_",
         )
         for name, parameter in model.named_parameters():
             parameter.requires_grad_(
@@ -976,6 +1063,7 @@ def finetune(
         and not prompt_memory_only
         and not model.config.semantic_prompt_encoder
         and not model.config.contextual_token_memory
+        and not model.config.factorized_prompt_control
     )
     scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
     autocast = (
@@ -994,6 +1082,9 @@ def finetune(
     contrastive_model_units = 0
     recovery_batches = 0
     recovery_generated_units = 0
+    recovery_horizon_batches = {
+        str(value): 0 for value in recovery_schedule
+    }
     successful_optimizer_steps = 0
     skipped_amp_optimizer_steps = 0
     process = psutil.Process()
@@ -1004,11 +1095,18 @@ def finetune(
         selected = [train_rows[generator.randrange(len(train_rows))] for _ in range(8)]
         use_recovery = (
             recovery_probability > 0.0
-            and recovery_prefix_tokens > 0
+            and (recovery_prefix_tokens > 0 or bool(recovery_schedule))
             and step > recovery_warmup_steps
             and generator.random() < recovery_probability
         )
         if use_recovery:
+            recovery_horizon = (
+                recovery_schedule[
+                    recovery_batches % len(recovery_schedule)
+                ]
+                if recovery_schedule
+                else recovery_prefix_tokens
+            )
             (
                 instruction_tokens,
                 labels,
@@ -1021,10 +1119,12 @@ def finetune(
                 selected,
                 device=device,
                 max_tokens=model.config.max_tokens,
-                prefix_tokens=recovery_prefix_tokens,
+                prefix_tokens=recovery_horizon,
             )
             recovery_batches += 1
             recovery_generated_units += generated_units
+            if recovery_schedule:
+                recovery_horizon_batches[str(recovery_horizon)] += 1
         else:
             (
                 instruction_tokens,
@@ -1054,6 +1154,10 @@ def finetune(
             )
             instruction_memory_aux = model.last_prompt_memory_aux
             instruction_routing_loss = model.last_routing_aux["balance_loss"]
+            instruction_factor_task_logits = model.last_factor_task_logits
+            instruction_factor_topic_weights = (
+                model.last_factor_topic_weights
+            )
             instruction_loss = F.cross_entropy(
                 instruction_logits.flatten(0, 1), labels.flatten(), ignore_index=-100
             )
@@ -1127,6 +1231,49 @@ def finetune(
                     pointer_alignment_loss = -torch.log(
                         pointer_probability[pointer_focus].clamp_min(1e-9)
                     ).mean()
+            elif (
+                pointer_alignment_weight > 0.0
+                and model.last_factor_pointer_weights is not None
+                and model.last_factor_pointer_ids is not None
+            ):
+                factor_weights = model.last_factor_pointer_weights.float()
+                factor_ids = model.last_factor_pointer_ids
+                matches = labels[:, :, None] == factor_ids[:, None, :]
+                pointer_probability = (
+                    factor_weights * matches.to(factor_weights.dtype)
+                ).sum(dim=-1)
+                pointer_focus = focus_mask & matches.any(dim=-1)
+                if bool(pointer_focus.any()):
+                    pointer_alignment_loss = -torch.log(
+                        pointer_probability[pointer_focus].clamp_min(1e-9)
+                    ).mean()
+            factor_task_loss = instruction_loss.new_zeros(())
+            if (
+                factor_task_weight > 0.0
+                and instruction_factor_task_logits is not None
+            ):
+                factor_task_loss = F.cross_entropy(
+                    instruction_factor_task_logits,
+                    _factor_task_targets(selected, device=device),
+                )
+            factor_topic_loss = instruction_loss.new_zeros(())
+            if (
+                factor_topic_weight > 0.0
+                and instruction_factor_topic_weights is not None
+            ):
+                topic_targets, valid_topic = _factor_topic_targets(
+                    tokenizer,
+                    selected,
+                    capacity=model.config.prompt_memory_capacity,
+                    device=device,
+                )
+                if bool(valid_topic.any()):
+                    factor_topic_loss = -(
+                        topic_targets
+                        * instruction_factor_topic_weights.clamp_min(
+                            1e-9
+                        ).log()
+                    ).sum(dim=-1)[valid_topic].mean()
             prompt_contrastive_loss = instruction_loss.new_zeros(())
             if contrastive_weight > 0.0:
                 negative_prompts = _negative_prompt_rows(selected, train_rows)
@@ -1186,6 +1333,8 @@ def finetune(
                 + focus_weight * focus_loss
                 + pointer_alignment_weight * pointer_alignment_loss
                 + contrastive_weight * prompt_contrastive_loss
+                + factor_task_weight * factor_task_loss
+                + factor_topic_weight * factor_topic_loss
                 + 0.50 * wiki_loss
                 + 0.02 * (instruction_routing_loss + wiki_routing_loss)
             )
@@ -1222,6 +1371,8 @@ def finetune(
                 "prompt_pointer_alignment_loss": float(
                     pointer_alignment_loss.detach()
                 ),
+                "factor_task_loss": float(factor_task_loss.detach()),
+                "factor_topic_loss": float(factor_topic_loss.detach()),
                 "wiki_loss": float(wiki_loss.detach()),
                 "prompt_memory_mean_gate": (
                     float(instruction_memory_aux["mean_gate"])
@@ -1294,11 +1445,18 @@ def finetune(
                 recovery_probability
             ),
             "self_generated_prefix_tokens": recovery_prefix_tokens,
+            "self_generated_prefix_schedule": list(recovery_schedule),
             "self_generated_prefix_recovery_warmup_steps": (
                 recovery_warmup_steps
             ),
             "self_generated_prefix_recovery_batches": recovery_batches,
             "self_generated_prefix_units": recovery_generated_units,
+            "self_generated_prefix_horizon_batches": (
+                recovery_horizon_batches
+            ),
+            "factor_task_taxonomy": list(FACTOR_TASK_TAXONOMY),
+            "factor_task_auxiliary_weight": factor_task_weight,
+            "factor_topic_auxiliary_weight": factor_topic_weight,
             "automatic_mixed_precision": use_amp,
             "successful_optimizer_steps": successful_optimizer_steps,
             "skipped_amp_optimizer_steps": skipped_amp_optimizer_steps,
@@ -1348,7 +1506,13 @@ def finetune(
             ),
         },
     }
-    for conversion_key in ("architecture_conversion", "safety_conversion"):
+    for conversion_key in (
+        "architecture_conversion",
+        "safety_conversion",
+        "semantic_prompt_encoder_conversion",
+        "contextual_token_memory_conversion",
+        "factorized_prompt_control_conversion",
+    ):
         if conversion_key in metadata:
             metadata[conversion_key] = {
                 **metadata[conversion_key],
@@ -1380,7 +1544,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     train.add_argument("--prompt-memory-only", action="store_true")
     train.add_argument("--recovery-probability", type=float, default=0.0)
     train.add_argument("--recovery-prefix-tokens", type=int, default=0)
+    train.add_argument("--recovery-prefix-schedule", default="")
     train.add_argument("--recovery-warmup-steps", type=int, default=300)
+    train.add_argument("--factor-task-weight", type=float, default=0.0)
+    train.add_argument("--factor-topic-weight", type=float, default=0.0)
     verify = sub.add_parser("verify-corpus")
     verify.add_argument("--corpus", type=Path, default=Path("data/moonshot/phase2/instruction_distillation.jsonl"))
     curate = sub.add_parser("build-curated-corpus")
@@ -1414,7 +1581,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             prompt_memory_only=args.prompt_memory_only,
             recovery_probability=args.recovery_probability,
             recovery_prefix_tokens=args.recovery_prefix_tokens,
+            recovery_prefix_schedule=tuple(
+                int(value)
+                for value in args.recovery_prefix_schedule.split(",")
+                if value.strip()
+            ),
             recovery_warmup_steps=args.recovery_warmup_steps,
+            factor_task_weight=args.factor_task_weight,
+            factor_topic_weight=args.factor_topic_weight,
         )
     elif args.command == "verify-corpus":
         result = verify_corpus(root, corpus_path=args.corpus)

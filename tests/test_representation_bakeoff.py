@@ -378,3 +378,67 @@ def test_contextual_token_memory_rejects_semantic_slot_combination():
             semantic_prompt_encoder=True,
             contextual_token_memory=True,
         )
+
+
+def test_factorized_prompt_control_has_three_distinct_bounded_records():
+    torch.manual_seed(29)
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(
+        vocab_size=320,
+        width=32,
+        layers=2,
+        heads=4,
+        max_tokens=96,
+        expansion=1,
+        routed_experts=3,
+        expert_expansion=1,
+        route_after_layers=1,
+        prompt_conditioning=True,
+        factorized_prompt_control=True,
+        factorized_task_count=10,
+        prompt_memory_key_width=8,
+        prompt_memory_capacity=16,
+    )).eval()
+    prompt = torch.tensor([[65, 66, 67, 68, 69]], dtype=torch.long)
+    state = model.prefill(prompt)
+    control = state.factorized_prompt_control
+    assert [tuple(value.shape) for value in control] == [
+        (1, 32),
+        (1, 16),
+        (1, 16),
+        (1, 3, 32),
+        (1, 10),
+        (1, 16),
+    ]
+    assert control[2].sum().item() == 5
+    assert control[5].sum().item() == pytest.approx(1.0, abs=1e-6)
+    assert not torch.equal(control[3][:, 0], control[3][:, 1])
+    assert not torch.equal(control[3][:, 1], control[3][:, 2])
+    frozen = [value.clone() for value in control]
+    _, state = model.decode_step(
+        state, next_token=torch.tensor([70], dtype=torch.long)
+    )
+    assert all(
+        torch.equal(before, after)
+        for before, after in zip(
+            frozen, state.factorized_prompt_control
+        )
+    )
+    assert model.last_factor_pointer_weights.shape == (1, 1, 16)
+    assert model.last_factor_pointer_weights.sum().item() == pytest.approx(
+        1.0, abs=1e-6
+    )
+    assert torch.isfinite(state.next_logits).all()
+
+
+def test_factorized_prompt_control_rejects_direct_memory_combination():
+    with pytest.raises(ValueError, match="exclusive"):
+        SparseBPELayerCakeConfig(
+            vocab_size=320,
+            width=32,
+            layers=2,
+            heads=4,
+            route_after_layers=1,
+            prompt_conditioning=True,
+            contextual_token_memory=True,
+            factorized_prompt_control=True,
+        )

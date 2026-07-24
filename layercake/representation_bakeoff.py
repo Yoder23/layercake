@@ -1224,6 +1224,157 @@ def enable_contextual_token_memory_checkpoint(
     return result
 
 
+def enable_factorized_prompt_control_checkpoint(
+    root: Path,
+    source_path: Path,
+    output_path: Path,
+    key_width: int,
+    capacity: int,
+    task_count: int,
+) -> dict[str, Any]:
+    """Add supervised global/task/topic records to the fast shared-BPE core."""
+
+    source_path = _resolve(root, source_path)
+    output_path = _resolve(root, output_path)
+    if output_path.exists():
+        raise RuntimeError(
+            f"factorized-control artifact is immutable: {output_path}"
+        )
+    metadata = _read(source_path / "metadata.json")
+    architecture = dict(metadata["architecture"])
+    if metadata["representation"]["class"] != "shared_tokenizer":
+        raise ValueError("factorized control requires the locked shared BPE")
+    if any(bool(architecture.get(name)) for name in (
+        "recurrent_prompt_memory",
+        "hierarchical_prompt_memory",
+        "structured_prompt_memory",
+        "semantic_prompt_encoder",
+        "contextual_token_memory",
+        "factorized_prompt_control",
+    )):
+        raise ValueError("factorized control requires the fast shared-BPE core")
+    if bool(architecture.get("constrained_english_planner")):
+        raise ValueError("planner-enabled source checkpoints are prohibited")
+    architecture.update({
+        "prompt_attention_pooling": False,
+        "prompt_state_slots": 0,
+        "factorized_prompt_control": True,
+        "factorized_task_count": int(task_count),
+        "prompt_memory_key_width": int(key_width),
+        "prompt_memory_capacity": int(capacity),
+        "architecture_version": (
+            "layercake-sparse-bpe-core/13-supervised-factor-control"
+        ),
+    })
+    torch.manual_seed(20260802)
+    model = LayerCakeSparseBPECore(SparseBPELayerCakeConfig(**architecture))
+    source_state = load_file(
+        str(source_path / "model.safetensors"), device="cpu"
+    )
+    converted_state = model.state_dict()
+    for name, value in source_state.items():
+        if name not in converted_state:
+            raise ValueError(f"source tensor absent from factor model: {name}")
+        if converted_state[name].shape != value.shape:
+            raise ValueError(f"source tensor shape changed: {name}")
+        converted_state[name].copy_(value)
+    added_tensors = sorted(set(converted_state).difference(source_state))
+    if not added_tensors or not all(
+        name.startswith("factor_") for name in added_tensors
+    ):
+        raise RuntimeError(
+            f"unexpected factor-control tensors: {added_tensors}"
+        )
+    model.load_state_dict(converted_state, strict=True)
+    output_path.mkdir(parents=True, exist_ok=False)
+    checkpoint_output = output_path / "model.safetensors"
+    tokenizer_output = output_path / "tokenizer.json"
+    save_file(
+        {
+            name: value.detach().cpu().contiguous()
+            for name, value in model.state_dict().items()
+        },
+        str(checkpoint_output),
+    )
+    shutil.copyfile(source_path / "tokenizer.json", tokenizer_output)
+    converted = dict(metadata)
+    converted.update({
+        "format": "layercake-supervised-factor-control/1",
+        "architecture": architecture,
+        "parameters": {
+            "total": model.parameter_count(),
+            "active": model.active_parameter_count(),
+            "active_fraction": (
+                model.active_parameter_count() / model.parameter_count()
+            ),
+        },
+        "checkpoint": {
+            "path": checkpoint_output.relative_to(root).as_posix(),
+            "sha256": sha256_file(checkpoint_output),
+        },
+        "tokenizer": {
+            "path": tokenizer_output.relative_to(root).as_posix(),
+            "sha256": sha256_file(tokenizer_output),
+        },
+        "factorized_prompt_control_conversion": {
+            "source_checkpoint_path": (
+                source_path / "model.safetensors"
+            ).relative_to(root).as_posix(),
+            "source_checkpoint_sha256": sha256_file(
+                source_path / "model.safetensors"
+            ),
+            "source_neural_tensors_changed": False,
+            "new_neural_tensors_added": added_tensors,
+            "new_tensor_initialization_seed": 20260802,
+            "training_performed": False,
+            "prompt_encoding_runs_once": True,
+            "control_records": ["global", "task", "topic"],
+            "task_count": task_count,
+            "decode_state_bound": {
+                "factor_records": 3,
+                "record_width": architecture["width"],
+                "source_prompt_tokens_max": capacity,
+                "dense_vocabulary_pointer_state": False,
+                "independent_of_generated_length": True,
+            },
+            "generation_authority": (
+                "neural decoder logits mixed with neural topic-locator "
+                "attention scattered only onto source token IDs"
+            ),
+        },
+    })
+    _write(output_path / "metadata.json", converted)
+    loaded, _, _ = _load_candidate(output_path)
+    prompt = torch.tensor([[65, 66, 67, 68]], dtype=torch.long)
+    state = loaded.prefill(prompt)
+    memory = state.factorized_prompt_control
+    shapes_before = [list(value.shape) for value in memory]
+    _, state = loaded.decode_step(state)
+    shapes_after = [
+        list(value.shape) for value in state.factorized_prompt_control
+    ]
+    if shapes_before != shapes_after:
+        raise RuntimeError("factorized prompt control grew during decode")
+    result = {
+        "status": "PASS",
+        "output": output_path.relative_to(root).as_posix(),
+        "checkpoint_sha256": sha256_file(checkpoint_output),
+        "tokenizer_sha256": sha256_file(tokenizer_output),
+        "new_neural_tensors_added": added_tensors,
+        "prompt_memory_capacity": capacity,
+        "task_count": task_count,
+        "state_shapes_before_and_after_decode": shapes_before,
+        "prompt_encoding_runs_once": True,
+        "fixed_control_records": 3,
+        "dense_vocabulary_pointer_state": False,
+    }
+    _append_ledger(root, {
+        "event": "supervised_factor_prompt_control_enabled",
+        **result,
+    })
+    return result
+
+
 def convert_word_byte_hybrid_checkpoint(
     root: Path,
     source_path: Path,
@@ -3176,6 +3327,12 @@ def build_parser() -> argparse.ArgumentParser:
     command.add_argument("--output", type=Path, required=True)
     command.add_argument("--key-width", type=int, default=32)
     command.add_argument("--capacity", type=int, default=128)
+    command = sub.add_parser("enable-factorized-prompt-control")
+    command.add_argument("--source", type=Path, required=True)
+    command.add_argument("--output", type=Path, required=True)
+    command.add_argument("--key-width", type=int, default=32)
+    command.add_argument("--capacity", type=int, default=128)
+    command.add_argument("--task-count", type=int, default=10)
     command = sub.add_parser("convert-word-byte-hybrid")
     command.add_argument("--source", type=Path, required=True)
     command.add_argument("--tokenizer", type=Path, required=True)
@@ -3283,6 +3440,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.output,
             args.key_width,
             args.capacity,
+        )
+    elif args.command == "enable-factorized-prompt-control":
+        result = enable_factorized_prompt_control_checkpoint(
+            root,
+            args.source,
+            args.output,
+            args.key_width,
+            args.capacity,
+            args.task_count,
         )
     elif args.command == "convert-word-byte-hybrid":
         result = convert_word_byte_hybrid_checkpoint(

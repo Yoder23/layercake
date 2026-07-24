@@ -36,6 +36,8 @@ class SparseBPELayerCakeConfig:
     semantic_prompt_encoder: bool = False
     semantic_prompt_slots: int = 12
     contextual_token_memory: bool = False
+    factorized_prompt_control: bool = False
+    factorized_task_count: int = 10
     prompt_memory_capacity: int = 128
     prompt_memory_chunk_size: int = 8
     constrained_english_planner: bool = False
@@ -72,11 +74,14 @@ class SparseBPELayerCakeConfig:
             raise ValueError("semantic prompt encoder requires prompt conditioning")
         if self.contextual_token_memory and not self.prompt_conditioning:
             raise ValueError("contextual token memory requires prompt conditioning")
+        if self.factorized_prompt_control and not self.prompt_conditioning:
+            raise ValueError("factorized prompt control requires prompt conditioning")
         if self.semantic_prompt_encoder and any((
             self.recurrent_prompt_memory,
             self.hierarchical_prompt_memory,
             self.structured_prompt_memory,
             self.contextual_token_memory,
+            self.factorized_prompt_control,
         )):
             raise ValueError(
                 "semantic prompt encoder is exclusive with legacy prompt memories"
@@ -90,6 +95,7 @@ class SparseBPELayerCakeConfig:
             self.hierarchical_prompt_memory,
             self.structured_prompt_memory,
             self.semantic_prompt_encoder,
+            self.factorized_prompt_control,
         )):
             raise ValueError(
                 "contextual token memory is exclusive with other prompt memories"
@@ -98,10 +104,28 @@ class SparseBPELayerCakeConfig:
             raise ValueError(
                 "contextual token memory replaces uncontextualized prompt slots"
             )
+        if self.factorized_prompt_control and any((
+            self.recurrent_prompt_memory,
+            self.hierarchical_prompt_memory,
+            self.structured_prompt_memory,
+            self.semantic_prompt_encoder,
+            self.contextual_token_memory,
+        )):
+            raise ValueError(
+                "factorized prompt control is exclusive with prompt memories"
+            )
+        if self.factorized_prompt_control and self.prompt_state_slots:
+            raise ValueError(
+                "factorized prompt control replaces uncontextualized slots"
+            )
         if (
-            self.semantic_prompt_encoder or self.contextual_token_memory
+            self.semantic_prompt_encoder
+            or self.contextual_token_memory
+            or self.factorized_prompt_control
         ) and self.width % 2:
             raise ValueError("bidirectional semantic encoder requires even width")
+        if self.factorized_task_count < 2:
+            raise ValueError("factorized prompt control requires task classes")
         if self.semantic_prompt_slots < 2:
             raise ValueError("semantic prompt encoder requires multiple slots")
         if self.structured_prompt_roles < 2:
@@ -252,6 +276,39 @@ class LayerCakeSparseBPECore(nn.Module):
                 )
                 self.contextual_memory_gate = nn.Linear(cfg.width, 1)
                 self.contextual_pointer_gate = nn.Linear(cfg.width, 1)
+            if cfg.factorized_prompt_control:
+                self.factor_prompt_encoder = nn.GRU(
+                    cfg.width,
+                    cfg.width // 2,
+                    batch_first=True,
+                    bidirectional=True,
+                )
+                self.factor_encoder_norm = nn.LayerNorm(cfg.width)
+                self.factor_global_projection = nn.Linear(
+                    cfg.width, cfg.width, bias=False
+                )
+                self.factor_task_classifier = nn.Linear(
+                    cfg.width, cfg.factorized_task_count
+                )
+                self.factor_task_embeddings = nn.Parameter(
+                    torch.empty(cfg.factorized_task_count, cfg.width)
+                )
+                self.factor_topic_score = nn.Linear(cfg.width, 1)
+                self.factor_context_projection = nn.Linear(
+                    3 * cfg.width, cfg.width, bias=False
+                )
+                self.factor_memory_norm = nn.LayerNorm(cfg.width)
+                self.factor_memory_query = nn.Linear(
+                    cfg.width, cfg.prompt_memory_key_width, bias=False
+                )
+                self.factor_record_key = nn.Linear(
+                    cfg.width, cfg.prompt_memory_key_width, bias=False
+                )
+                self.factor_memory_gate = nn.Linear(cfg.width, 1)
+                self.factor_pointer_gate = nn.Linear(cfg.width, 1)
+                self.factor_successor_strength = nn.Parameter(
+                    torch.tensor(1.0)
+                )
         if cfg.constrained_english_planner:
             self.register_buffer(
                 "english_planner_spec",
@@ -289,6 +346,13 @@ class LayerCakeSparseBPECore(nn.Module):
             with torch.no_grad():
                 self.contextual_memory_gate.bias.fill_(-1.5)
                 self.contextual_pointer_gate.bias.fill_(-1.5)
+        if cfg.factorized_prompt_control:
+            nn.init.normal_(
+                self.factor_task_embeddings, mean=0.0, std=0.02
+            )
+            with torch.no_grad():
+                self.factor_memory_gate.bias.fill_(-1.5)
+                self.factor_pointer_gate.bias.fill_(-1.5)
         self.last_routing_aux: dict | None = None
         self.last_prompt_memory_aux: dict | None = None
         self.last_structured_pointer_weights: torch.Tensor | None = None
@@ -297,6 +361,10 @@ class LayerCakeSparseBPECore(nn.Module):
         self.last_semantic_pointer_distribution: torch.Tensor | None = None
         self.last_contextual_pointer_weights: torch.Tensor | None = None
         self.last_contextual_pointer_ids: torch.Tensor | None = None
+        self.last_factor_task_logits: torch.Tensor | None = None
+        self.last_factor_topic_weights: torch.Tensor | None = None
+        self.last_factor_pointer_weights: torch.Tensor | None = None
+        self.last_factor_pointer_ids: torch.Tensor | None = None
 
     @staticmethod
     def _initialize(module: nn.Module) -> None:
@@ -786,6 +854,121 @@ class LayerCakeSparseBPECore(nn.Module):
         }
         return hidden, weights
 
+    def _factorized_prompt_features(
+        self,
+        token_ids: torch.Tensor,
+        prompt_lengths: torch.Tensor,
+    ) -> tuple[
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor,
+    ]:
+        """Encode supervised global, task, and topic records exactly once."""
+
+        batch = token_ids.shape[0]
+        capacity = self.config.prompt_memory_capacity
+        positions = torch.arange(capacity, device=token_ids.device)[None]
+        retained = prompt_lengths.clamp(min=1, max=capacity)
+        indexes = torch.div(
+            positions * prompt_lengths[:, None],
+            capacity,
+            rounding_mode="floor",
+        )
+        indexes = torch.where(
+            prompt_lengths[:, None] <= capacity,
+            positions,
+            indexes,
+        )
+        indexes = indexes.clamp_max(token_ids.shape[1] - 1)
+        memory_ids = token_ids.gather(1, indexes.expand(batch, -1))
+        token_mask = positions < retained[:, None]
+        embedded = self.prompt_projection(self.embedding(memory_ids))
+        packed = nn.utils.rnn.pack_padded_sequence(
+            embedded,
+            retained.detach().cpu(),
+            batch_first=True,
+            enforce_sorted=False,
+        )
+        contextual_packed, _ = self.factor_prompt_encoder(packed)
+        contextual, _ = nn.utils.rnn.pad_packed_sequence(
+            contextual_packed,
+            batch_first=True,
+            total_length=capacity,
+        )
+        contextual = self.factor_encoder_norm(contextual)
+        contextual = contextual * token_mask[:, :, None]
+        global_record = contextual.sum(dim=1) / retained[:, None]
+        global_record = self.factor_global_projection(global_record)
+        task_logits = self.factor_task_classifier(global_record)
+        task_record = torch.matmul(
+            torch.softmax(task_logits, dim=-1),
+            self.factor_task_embeddings,
+        )
+        topic_scores = self.factor_topic_score(contextual).squeeze(-1)
+        topic_scores = topic_scores.masked_fill(~token_mask, -torch.inf)
+        topic_weights = torch.softmax(topic_scores, dim=-1)
+        topic_record = torch.matmul(
+            topic_weights[:, None], contextual
+        ).squeeze(1)
+        records = torch.stack(
+            (global_record, task_record, topic_record), dim=1
+        )
+        context = self.factor_context_projection(records.flatten(1))
+        self.last_factor_task_logits = task_logits
+        self.last_factor_topic_weights = topic_weights
+        return (
+            context,
+            memory_ids,
+            token_mask,
+            records,
+            task_logits,
+            topic_weights,
+        )
+
+    def _apply_factorized_prompt_control(
+        self,
+        hidden: torch.Tensor,
+        input_token_ids: torch.Tensor,
+        memory_ids: torch.Tensor,
+        token_mask: torch.Tensor,
+        records: torch.Tensor,
+        topic_weights: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Read fixed factor records and form a neural topic-sequence pointer."""
+
+        normalized = self.factor_memory_norm(hidden)
+        query = self.factor_memory_query(normalized)
+        keys = self.factor_record_key(records)
+        scores = torch.matmul(query, keys.transpose(-1, -2))
+        scores = scores / self.config.prompt_memory_key_width ** 0.5
+        record_weights = torch.softmax(scores, dim=-1)
+        recalled = torch.matmul(record_weights, records)
+        gate = torch.sigmoid(self.factor_memory_gate(normalized))
+        hidden = hidden + gate * recalled
+        matches = input_token_ids[:, :, None] == memory_ids[:, None, :]
+        successor = torch.zeros_like(matches)
+        successor[:, :, 1:] = matches[:, :, :-1]
+        pointer_scores = topic_weights[:, None].clamp_min(1e-9).log()
+        pointer_scores = pointer_scores + F.softplus(
+            self.factor_successor_strength
+        ) * successor.to(pointer_scores.dtype)
+        pointer_scores = pointer_scores.masked_fill(
+            ~token_mask[:, None], -torch.inf
+        )
+        pointer_weights = torch.softmax(pointer_scores, dim=-1)
+        self.last_factor_pointer_weights = pointer_weights
+        self.last_factor_pointer_ids = memory_ids
+        self.last_prompt_memory_aux = {
+            "mean_gate": gate.detach().mean(),
+            "maximum_gate": gate.detach().amax(),
+            "slot_activation": record_weights.detach().mean(dim=(0, 1)),
+            "pointer_mass": pointer_weights.detach().sum(dim=-1).mean(),
+        }
+        return hidden, pointer_weights
+
     def _output_logits(
         self,
         hidden: torch.Tensor,
@@ -797,6 +980,8 @@ class LayerCakeSparseBPECore(nn.Module):
         structured_token_weights: torch.Tensor | None = None,
         contextual_token_ids: torch.Tensor | None = None,
         contextual_token_weights: torch.Tensor | None = None,
+        factor_token_ids: torch.Tensor | None = None,
+        factor_token_weights: torch.Tensor | None = None,
     ) -> torch.Tensor:
         normalized = self.norm(hidden)
         logits = F.linear(normalized, self.embedding.weight)
@@ -882,6 +1067,33 @@ class LayerCakeSparseBPECore(nn.Module):
                 + pointer_gate * pointer_distribution
             )
             logits = probabilities.clamp_min(1e-12).log()
+        if factor_token_ids is not None and factor_token_weights is not None:
+            pointer_distribution = torch.zeros_like(
+                logits, dtype=torch.float32
+            )
+            if logits.ndim == 3:
+                indexes = factor_token_ids[:, None].expand(
+                    -1, logits.shape[1], -1
+                )
+            else:
+                indexes = factor_token_ids
+            pointer_distribution.scatter_add_(
+                -1, indexes, factor_token_weights.float()
+            )
+            pointer_distribution = pointer_distribution / (
+                pointer_distribution.sum(
+                    dim=-1, keepdim=True
+                ).clamp_min(1e-9)
+            )
+            pointer_gate = torch.sigmoid(
+                self.factor_pointer_gate(normalized).float()
+            )
+            probabilities = (
+                (1.0 - pointer_gate)
+                * torch.softmax(logits.float(), dim=-1)
+                + pointer_gate * pointer_distribution
+            )
+            logits = probabilities.clamp_min(1e-12).log()
         return logits
 
     def forward(
@@ -902,6 +1114,8 @@ class LayerCakeSparseBPECore(nn.Module):
         semantic = None
         contextual = None
         contextual_weights = None
+        factorized = None
+        factorized_weights = None
         if self.config.prompt_conditioning and prompt_lengths is not None:
             if self.config.semantic_prompt_encoder:
                 context, semantic_slots, semantic_copy = (
@@ -916,6 +1130,11 @@ class LayerCakeSparseBPECore(nn.Module):
                     token_ids, prompt_lengths
                 )
                 context = contextual[0]
+            elif self.config.factorized_prompt_control:
+                factorized = self._factorized_prompt_features(
+                    token_ids, prompt_lengths
+                )
+                context = factorized[0]
             else:
                 (
                     context,
@@ -1003,6 +1222,20 @@ class LayerCakeSparseBPECore(nn.Module):
                             contextual[3],
                         )
                     )
+                if (
+                    self.config.factorized_prompt_control
+                    and factorized is not None
+                ):
+                    hidden, factorized_weights = (
+                        self._apply_factorized_prompt_control(
+                            hidden,
+                            token_ids,
+                            factorized[1],
+                            factorized[2],
+                            factorized[3],
+                            factorized[5],
+                        )
+                    )
         return self._output_logits(
             hidden,
             copy_bias,
@@ -1017,6 +1250,8 @@ class LayerCakeSparseBPECore(nn.Module):
             structured_weights,
             contextual[1] if contextual is not None else None,
             contextual_weights,
+            factorized[1] if factorized is not None else None,
+            factorized_weights,
         )
 
     @torch.inference_mode()
@@ -1037,6 +1272,8 @@ class LayerCakeSparseBPECore(nn.Module):
         semantic = None
         contextual = None
         contextual_weights = None
+        factorized = None
+        factorized_weights = None
         if self.config.prompt_conditioning:
             lengths = torch.full(
                 (token_ids.shape[0],), token_ids.shape[1], dtype=torch.long,
@@ -1052,6 +1289,11 @@ class LayerCakeSparseBPECore(nn.Module):
                     token_ids, lengths
                 )
                 prompt_context = contextual[0]
+            elif self.config.factorized_prompt_control:
+                factorized = self._factorized_prompt_features(
+                    token_ids, lengths
+                )
+                prompt_context = factorized[0]
             else:
                 (
                     prompt_context,
@@ -1136,6 +1378,20 @@ class LayerCakeSparseBPECore(nn.Module):
                             contextual[3],
                         )
                     )
+                if (
+                    self.config.factorized_prompt_control
+                    and factorized is not None
+                ):
+                    hidden, factorized_weights = (
+                        self._apply_factorized_prompt_control(
+                            hidden,
+                            token_ids,
+                            factorized[1],
+                            factorized[2],
+                            factorized[3],
+                            factorized[5],
+                        )
+                    )
         logits = self._output_logits(
             hidden[:, -1],
             prompt_copy_bias,
@@ -1162,6 +1418,12 @@ class LayerCakeSparseBPECore(nn.Module):
                 if contextual_weights is not None
                 else None
             ),
+            factorized[1] if factorized is not None else None,
+            (
+                factorized_weights[:, -1]
+                if factorized_weights is not None
+                else None
+            ),
         )
         state = TransformerGenerationState(
             keys_values=keys_values,
@@ -1179,6 +1441,7 @@ class LayerCakeSparseBPECore(nn.Module):
         state.structured_prompt_memory = structured
         state.semantic_prompt_memory = semantic
         state.contextual_token_memory = contextual
+        state.factorized_prompt_control = factorized
         return state
 
     @torch.inference_mode()
@@ -1200,6 +1463,7 @@ class LayerCakeSparseBPECore(nn.Module):
         hierarchical_weights = None
         structured_weights = None
         contextual_weights = None
+        factorized_weights = None
         new_cache = []
         for index, (block, past) in enumerate(zip(self.blocks, state.keys_values), start=1):
             hidden, cache = block.forward_cached(hidden, past)
@@ -1280,6 +1544,23 @@ class LayerCakeSparseBPECore(nn.Module):
                             contextual[3],
                         )
                     )
+                factorized = getattr(
+                    state, "factorized_prompt_control", None
+                )
+                if (
+                    self.config.factorized_prompt_control
+                    and factorized is not None
+                ):
+                    hidden, factorized_weights = (
+                        self._apply_factorized_prompt_control(
+                            hidden,
+                            selected[:, None],
+                            factorized[1],
+                            factorized[2],
+                            factorized[3],
+                            factorized[5],
+                        )
+                    )
         state.keys_values = new_cache
         state.next_logits = self._output_logits(
             hidden[:, 0],
@@ -1317,6 +1598,16 @@ class LayerCakeSparseBPECore(nn.Module):
             (
                 contextual_weights[:, 0]
                 if contextual_weights is not None
+                else None
+            ),
+            (
+                state.factorized_prompt_control[1]
+                if self.config.factorized_prompt_control
+                else None
+            ),
+            (
+                factorized_weights[:, 0]
+                if factorized_weights is not None
                 else None
             ),
         )
