@@ -1,5 +1,5 @@
 {
-  "active_candidate": null,
+  "active_candidate": "ENCODE_ONCE_BIDIRECTIONAL_SEMANTIC_CONTROL",
   "completed_batches": [
     "verifier-controlled invalidation",
     "baseline architecture and comparator audit",
@@ -47,9 +47,9 @@
     "two-hypothesis grounding campaign closed 8bd988b8f6d8",
     "two-hypothesis grounding campaign closed 5ebfc2416c5a"
   ],
-  "continuation_command": "C:\\Python310\\python.exe scripts\\verify_phase2_grounding_campaign.py",
-  "continuation_prompt": "results/moonshot/phase2_grounding_campaign/branch_decision.json",
-  "current_stage": "PHASE2_GROUNDING_TWO_HYPOTHESES_REFUTED",
+  "continuation_command": "C:\\Python310\\python.exe -m pytest tests/test_representation_bakeoff.py tests/training/test_phase2_distillation.py -q",
+  "continuation_prompt": "moonshot/phase2_semantic_encoder_preregistration.json",
+  "current_stage": "PHASE2_SEMANTIC_ENCODER_PREREGISTERED",
   "format": "layercake-phase2-recertification-task-state/1",
   "invalidation_path": "results/moonshot/phase2_recertification/invalidation.json",
   "invalidation_sha256": "7fe0f757a88d1b46ef95c6fe3be9b3c9a0fee90c5c27be803f70ed4228dc1241",
@@ -57,11 +57,11 @@
   "latest_batch_sha256": "70b90269544f330553d247ba25454f977d679fe4050abf7921ba955cccd0ec4e",
   "mission_status": "ACTIVE",
   "phase2_r3_tag_created": false,
-  "phase2_status": "OPEN_RESEARCH_DIRECTION_REQUIRED",
+  "phase2_status": "OPEN_ACTIVE_EXPERIMENT",
   "phase3_status": "LOCKED",
   "phase3_training_efficiency_lock": "moonshot/phase3_training_efficiency_lock.json",
   "remaining_gates": [
-    "authorize one new materially distinct falsifiable Phase 2 architecture",
+    "implement and screen preregistered encode-once bidirectional semantic control",
     "one checkpoint passes BPB and autonomous semantic behavior",
     "one checkpoint passes 128-byte and 1024-byte CPU throughput >=2x",
     "one checkpoint passes absolute RSS in a minimal native runtime",
@@ -74,6 +74,7 @@
     "coadapted_token_efficient_core": "CLOSED_NEGATIVE",
     "dynamic_latent_patch": "NOT_AUTHORIZED",
     "encode_once_structured_prompt_memory": "CLOSED_NEGATIVE",
+    "encode_once_bidirectional_semantic_control": "ACTIVE_PREREGISTERED",
     "fixed_semantic_memory": "CLOSED_NEGATIVE",
     "hierarchical_prompt_memory": "CLOSED_NEGATIVE",
     "hybrid_token_byte": "CLOSED_NEGATIVE",
@@ -83,5 +84,5 @@
   },
   "representation_policy": "REPRESENTATION_AGNOSTIC",
   "representation_winner": null,
-  "updated_at_utc": "2026-07-24T13:31:57.124893+00:00"
+  "updated_at_utc": "2026-07-24T13:45:20.7756214+00:00"
 }

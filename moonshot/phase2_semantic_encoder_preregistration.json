@@ -1,0 +1,68 @@
+{
+  "format": "layercake-phase2-semantic-encoder-preregistration/1",
+  "status": "PREREGISTERED",
+  "parent_source_commit": "772212cd37a8bd6821466bfabfb5208f2adbdabd",
+  "parent_speed_control_checkpoint_sha256": "8b15cc67295e60d8a77f080f97ce5518f117a0307daa1b3f9b4c1f6ee770d269",
+  "parent_hybrid_checkpoint_sha256": "d91e3803871d00ad72a07ea69d5babb1176ee055003584f317d0f695c5f37324",
+  "falsified_prior_mechanism": {
+    "prompt_state_overwrite_detected": false,
+    "topic_phrase_retention": 0.0,
+    "entity_retention": 0.0,
+    "mean_combined_prompt_ablation_js_nats": 0.01304088,
+    "training_defect": "teacher-forced curriculum responses share a dominant generic continuation, permitting low held-out instruction loss without autonomous prompt dependence",
+    "evidence": "results/moonshot/phase2_grounding_campaign/branch_decision.json",
+    "evidence_sha256": "70b90269544f330553d247ba25454f977d679fe4050abf7921ba955cccd0ec4e"
+  },
+  "hypothesis": {
+    "id": "ENCODE_ONCE_BIDIRECTIONAL_SEMANTIC_CONTROL",
+    "claim": "A compact bidirectional prompt encoder, learned semantic control slots, low-rank cross-attention reads, and neural pointer generation trained with self-generated-prefix recovery will make autonomous output causally prompt-dependent without surrendering the fast sparse decoder.",
+    "material_difference_from_closed_branches": "Closed prompt memories pooled uncontextualized or locally convolved prompt embeddings. This branch contextualizes the complete prompt bidirectionally before bounded compression, separates latent task/control records from lexical records, and trains recovery from model-generated rather than exclusively gold prefixes.",
+    "prompt_encoder": "one encode-once bidirectional recurrent layer",
+    "bounded_semantic_slots": 12,
+    "slot_key_width": 32,
+    "token_memory_capacity": 128,
+    "decoder": "existing incremental sparse word-byte-hybrid LayerCake decoder",
+    "decode_read": "one low-rank semantic-slot read plus one contextual lexical pointer read per generated unit",
+    "prompt_recomputation_during_decode": false,
+    "unbounded_prompt_kv_cache": false,
+    "inference_templates_or_planner": false
+  },
+  "training_contract": {
+    "curriculum": "knowledge-light diverse supplied-context and English-control tasks",
+    "exact_frozen_prompt_training_allowed": false,
+    "frozen_topic_training_allowed": false,
+    "specialist_domain_training_allowed": false,
+    "teacher_forced_only_training_allowed": false,
+    "self_generated_prefix_recovery_required": true,
+    "initial_instruction_steps": 1500,
+    "same_lineage_curve_extension_steps_max": 3000,
+    "nearby_architecture_sweeps_allowed": false,
+    "random_seed": 9824
+  },
+  "development_gates": {
+    "validation_bpb_max": 1.75,
+    "topic_recall_min": 0.65,
+    "core_adherence_min": 0.4,
+    "transformer_relative_cpu_throughput_min": 1.75,
+    "ttft_no_worse_than_transformer": true,
+    "repetition_collapse_allowed": false,
+    "absolute_rss_final_gate_plausible": true
+  },
+  "final_gates": {
+    "validation_bpb_max": 1.7174,
+    "topic_recall_min": 0.82,
+    "core_adherence_min": 0.55,
+    "transformer_relative_cpu_throughput_128_min": 2.0,
+    "transformer_relative_cpu_throughput_1024_min": 2.0,
+    "ttft_no_worse_than_transformer": true,
+    "process_resident_memory_bytes_max_exclusive": 214990848,
+    "independent_seeds_min": 3,
+    "autonomous_neural_generation": true,
+    "persistent_incremental_state": true,
+    "physical_sparse_execution": true,
+    "canonical_cake_abi": true
+  },
+  "systems_optimization_rule": "At most one profiler-directed runtime optimization, only after behavioral quality passes and speed or RSS is within 10 percent of its gate.",
+  "early_stop_rule": "Reject the branch if the initial run and the predeclared same-lineage curve extension fail the development behavior gates. Do not rescue it with nearby slot, width, pointer, auxiliary-weight, or decoder sweeps.",
+  "promotion_rule": "Only one integrated checkpoint lineage may supply quality, behavior, speed, TTFT, RSS, sparsity, incremental-state, and ABI evidence."
+}

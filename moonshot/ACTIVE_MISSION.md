@@ -104,6 +104,24 @@ faster than the optimized CPU-transformer baseline.
 The machine-readable version of this lock is
 `moonshot/phase3_training_efficiency_lock.json`.
 
+## English-core and domain-cake boundary
+
+The English core owns fluent realization, prompt grounding, instruction
+following, supplied-context reasoning, editing, summarization, conversation,
+clarification, abstention, and domain-independent reasoning. Broad factual and
+specialist knowledge belongs in independently trainable cakes. Phase 2 cannot
+be passed by adding closed-book Python, medical, legal, mathematical, or
+encyclopedic recall to the core.
+
+Adding a cake must not require core retraining. The core must operate alone,
+with one directly selected cake and no router, or with routed installed cakes.
+Inactive cakes receive no neural compute. All cakes attach through the
+versioned canonical semantic ABI while the external boundary remains UTF-8
+bytes.
+
+The machine-readable boundary is
+`moonshot/phase2_core_cake_boundary.json`.
+
 ## Phase 4 and later CPU cake-training lock
 
 Phase 4 cannot pass unless the Python cake is trained entirely on the declared
