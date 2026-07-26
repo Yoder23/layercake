@@ -252,15 +252,21 @@
     "phase3": {
       "active_artifact_dir": "artifacts/moonshot/phase3_cpu_training",
       "active_evidence_dir": "results/moonshot/phase3",
+      "candidate": "results/moonshot/phase3/candidate.json",
+      "candidate_verification": "results/moonshot/phase3/candidate_verification.json",
       "completion_tag": "layercake-moonshot-phase3",
       "continuation_status": "results/moonshot/phase3/continuation_status.json",
       "continuation_status_sha256": "38d077433fb540c1b9a98c99fc21562f83f4379f1ccb3e7038ab7cafc43d21e2",
+      "governance_commit": "9ac3de986157ffb88ce4e96458cc735b4ce4d217",
+      "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
       "legacy_control_protocol": "moonshot/phase3_training_efficiency_lock.json",
       "legacy_control_protocol_sha256": "b58c71ed824f4d6c0da9a3835a6622a0ff47825f8381732549f104e7f93b2654",
       "objective": "Retired training-efficiency controls and lineage handoff",
       "parent_phase2_tag": "layercake-moonshot-phase2-r3",
+      "phase_implementation_commit": "a0e969e1ea6f6d4aa5456dca6de8c53aabed2b8d",
       "protocol": "moonshot/phase3_retirement_lock.json",
       "protocol_sha256": "cf2b7fb47579f475c36b71bb0d8a60ab71036a80a77a9d9382b1fd2fa82f5d68",
+      "raw_evidence_manifest_sha256": "a9e80c48cac223bde5e150e55ea7e19cea8cc7907f95c7798e09ea42251349aa",
       "retirement_governance_commit": "9ac3de986157ffb88ce4e96458cc735b4ce4d217",
       "scientific_training_efficiency_passed": false,
       "status": "OPEN_RETIREMENT_EVIDENCE_REQUIRED"
@@ -270,7 +276,7 @@
     "phase0_governance": "SEALED",
     "phase1_benchmark_truth": "SEALED",
     "phase2_cpu_quality_speed": "SEALED",
-    "phase3_training_speed": "OPEN",
+    "phase3_training_speed": "CANDIDATE",
     "phase4_portable_domain": "LOCKED",
     "phase5_multi_domain": "LOCKED",
     "phase6_orchestration": "LOCKED",
@@ -288,14 +294,14 @@
   ],
   "retirement_history": [
     {
-      "phase": 3,
-      "retirement_id": "phase3-training-gate-retirement/1",
       "disposition": "RETIRED_BY_GOVERNANCE_PENDING_SEAL",
-      "scientific_training_efficiency_passed": false,
+      "governance_commit": "9ac3de986157ffb88ce4e96458cc735b4ce4d217",
       "legacy_contract": "moonshot/phase3_training_efficiency_lock.json",
       "legacy_contract_sha256": "b58c71ed824f4d6c0da9a3835a6622a0ff47825f8381732549f104e7f93b2654",
-      "governance_commit": "9ac3de986157ffb88ce4e96458cc735b4ce4d217",
-      "reason": "Faster training is no longer a LayerCake product gate; ABI research is handled separately."
+      "phase": 3,
+      "reason": "Faster training is no longer a LayerCake product gate; ABI research is handled separately.",
+      "retirement_id": "phase3-training-gate-retirement/1",
+      "scientific_training_efficiency_passed": false
     }
   ]
 }
