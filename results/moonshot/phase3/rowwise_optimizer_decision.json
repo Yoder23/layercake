@@ -1,0 +1,107 @@
+{
+  "branch_decision": {
+    "nearby_optimizer_or_learning_rate_sweeps": false,
+    "reason": "The scale-matched adaptive row state increased validation BPB by 0.03537 at identical trace, units, bytes, and evaluation coverage.",
+    "rowwise_adaptive_sparse_vocabulary_state": "CLOSED_NEGATIVE"
+  },
+  "candidate": {
+    "accounting": {
+      "active_model_parameters": 60756490,
+      "active_parameter_seconds": 14600425242.428299,
+      "checkpointing_wall_time_seconds": 0.5570054999989225,
+      "dense_trainable_parameters": 24237322,
+      "end_to_end_wall_time_seconds": 253.06158370000776,
+      "estimated_executed_cpu_multiply_accumulates": 50902909664256,
+      "evaluation_wall_time_seconds": 3.6752810000034515,
+      "forward_backward_supervised_target_units": 1501551,
+      "measured_step_wall_time_seconds": 240.3105453002354,
+      "median_step_wall_time_seconds": 0.45630890130996704,
+      "model_initialization_wall_time_seconds": 0.6985146999941207,
+      "model_visible_nonpadding_units": 500868,
+      "optimizer_steps": 504,
+      "peak_process_resident_memory_bytes": 2020810752,
+      "process_system_cpu_seconds": 25.890625,
+      "process_user_cpu_seconds": 1901.140625,
+      "raw_utf8_training_bytes_exposed": 2313407,
+      "tokenization_wall_time_seconds": 5.155697499998496,
+      "tokenizer_training_wall_time_seconds": 0.0,
+      "total_model_parameters": 61655050,
+      "training_loop_wall_time_seconds_including_warmup": 242.97504580000532,
+      "units_per_wall_second": 2084.253104141699,
+      "vocabulary_optimizer_logical_state_bytes": 603084,
+      "vocabulary_optimizer_state_rows": 50257
+    },
+    "checkpoint_sha256": "9a76c2c16eb1726f2a781598a7cc1d8bc9087dff79fe8ae6e8b66656d2f029bf",
+    "path": "results/moonshot/phase3/learning_curves/layercake_seed9824_units0p5m_rowwise_from15p5m.json",
+    "sha256": "9fbdd87c04bd132fb311e3eb9a8ce1ae21be2cc0efb9c903a5cf2cc6cb310005",
+    "validation_bpb": 2.0913358122015144
+  },
+  "checks": {
+    "authorized_by_prior_decision": true,
+    "candidate_worse_than_control": true,
+    "cpu_only": true,
+    "inference_unchanged": true,
+    "measured_learning_rate_used": true,
+    "rowwise_state_physically_executed": true,
+    "same_evaluation_coverage": true,
+    "same_parent": true,
+    "same_raw_bytes": true,
+    "same_seed": true,
+    "same_trace": true,
+    "same_units": true
+  },
+  "control": {
+    "accounting": {
+      "active_model_parameters": 60756490,
+      "active_parameter_seconds": 14477712139.469805,
+      "checkpointing_wall_time_seconds": 0.41813469999760855,
+      "dense_trainable_parameters": 24237322,
+      "end_to_end_wall_time_seconds": 250.890092799993,
+      "estimated_executed_cpu_multiply_accumulates": 50902909664256,
+      "evaluation_wall_time_seconds": 3.6673305000003893,
+      "forward_backward_supervised_target_units": 1501551,
+      "measured_step_wall_time_seconds": 238.29079230004572,
+      "median_step_wall_time_seconds": 0.4521887004375458,
+      "model_initialization_wall_time_seconds": 0.7018529000051785,
+      "model_visible_nonpadding_units": 500868,
+      "optimizer_steps": 504,
+      "peak_process_resident_memory_bytes": 2013331456,
+      "process_system_cpu_seconds": 26.703125,
+      "process_user_cpu_seconds": 1890.375,
+      "raw_utf8_training_bytes_exposed": 2313407,
+      "tokenization_wall_time_seconds": 5.1417476999922656,
+      "tokenizer_training_wall_time_seconds": 0.0,
+      "total_model_parameters": 61655050,
+      "training_loop_wall_time_seconds_including_warmup": 240.96098760000314,
+      "units_per_wall_second": 2101.9192355923183,
+      "vocabulary_optimizer_logical_state_bytes": 0,
+      "vocabulary_optimizer_state_rows": 0
+    },
+    "checkpoint_sha256": "b3d192bed4c6fed38da3e1f0aadd7e3e47b33c6c5dc6cc1091efc2043cd019bf",
+    "path": "results/moonshot/phase3/learning_curves/layercake_seed9824_units0p5m_stateless_from15p5m.json",
+    "sha256": "4b0e69e007b8bdd88c8b6beb51b1c88751b85c76998130515555e0354e2bc71c",
+    "validation_bpb": 2.0559667774588757
+  },
+  "decision_sha256": "e1ec56ecc94d2da19d5c7827149aa1c5a1753e6a9fc290dd3788aebb443c5fd5",
+  "format": "layercake-phase3-rowwise-optimizer-decision/1",
+  "gradient_profile": {
+    "path": "results/moonshot/phase3/profiles/vocabulary_gradient_profile.json",
+    "sha256": "e693c3da70ed9d5f936ed721f2d055e76d9c7bf19d36708ad9d254c197c84af9"
+  },
+  "negative_evidence_preserved": true,
+  "new_measured_limiting_factor": "Both resumed forks regressed from the 15.5M parent BPB. The diagnostic checkpoint format resets dense AdamW state and restarts the full 3e-4 learning rate on every continuation, creating a measured late-training stability discontinuity.",
+  "next_bounded_experiment": {
+    "change": "Use one cumulative-unit learning-rate schedule derived from a frozen 30M-unit feasibility horizon; keep architecture, data trace, exact-softmax schedule, and stateless vocabulary optimizer unchanged.",
+    "inference_architecture_change": false,
+    "learning_rate_sweeps_authorized": false,
+    "name": "cumulative_unit_cosine_schedule",
+    "profile": "one 0.5M-unit candidate from the same 15.5M parent compared with the already completed stateless constant-rate control"
+  },
+  "paired_deltas": {
+    "candidate_minus_control_bpb": 0.03536903474263875,
+    "candidate_over_control_rss": 1.0037148855831517,
+    "candidate_over_control_wall_time": 1.0086551480601742
+  },
+  "promotion_eligible": false,
+  "status": "CLOSED_NEGATIVE"
+}
