@@ -694,6 +694,7 @@ def _save_diagnostic_checkpoint(
     directory: Path,
     metadata: dict[str, Any],
     vocabulary_optimizer_state: dict[str, torch.Tensor] | None = None,
+    dense_optimizer_state: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if directory.exists():
         raise RuntimeError(f"diagnostic checkpoint is immutable: {directory}")
@@ -747,6 +748,17 @@ def _save_diagnostic_checkpoint(
             "bytes": optimizer_path.stat().st_size,
             "included_in_final_inference": False,
         }
+    if dense_optimizer_state is not None:
+        dense_optimizer_path = directory / "dense_optimizer_state.pt"
+        torch.save(dense_optimizer_state, dense_optimizer_path)
+        metadata["training_only_dense_optimizer_state"] = {
+            "path": dense_optimizer_path.relative_to(ROOT).as_posix(),
+            "sha256": _sha(dense_optimizer_path),
+            "bytes": dense_optimizer_path.stat().st_size,
+            "serialization": "torch.save optimizer state_dict",
+            "load_contract": "torch.load weights_only=True",
+            "included_in_final_inference": False,
+        }
     _write(directory / "metadata.json", metadata)
     return metadata
 
@@ -795,6 +807,8 @@ def profile_training(
     schedule_total_units: int = 0,
     schedule_warmup_units: int = 0,
     schedule_minimum_ratio: float = 0.1,
+    evaluation_interval_units: int = 0,
+    milestone_checkpoint_root: Path | None = None,
 ) -> dict[str, Any]:
     protocol = _validate_lock()
     if system not in {"layercake_complete", "dense_transformer"}:
@@ -833,6 +847,12 @@ def profile_training(
             warmup_units=schedule_warmup_units,
             total_units=schedule_total_units,
             minimum_ratio=schedule_minimum_ratio,
+        )
+    if evaluation_interval_units < 0:
+        raise ValueError("evaluation_interval_units cannot be negative")
+    if evaluation_interval_units and evaluation_samples <= 0:
+        raise ValueError(
+            "milestone evaluation requires positive evaluation_samples"
         )
     torch.set_num_threads(threads)
     try:
@@ -889,12 +909,23 @@ def profile_training(
             "path": resume_directory.relative_to(ROOT).as_posix(),
             "metadata_sha256": _sha(parent_metadata_path),
             "model_sha256": _sha(model_path),
-            "optimizer_state_reset": True,
         }
     dense = _dense_parameters(model, heads)
     optimizer = torch.optim.AdamW(
         dense, lr=3.0e-4, betas=(0.9, 0.95), weight_decay=0.1
     )
+    dense_optimizer_state_loaded = False
+    if resume_directory is not None:
+        dense_state_path = resume_directory / "dense_optimizer_state.pt"
+        if dense_state_path.is_file():
+            optimizer.load_state_dict(
+                torch.load(
+                    dense_state_path,
+                    map_location="cpu",
+                    weights_only=True,
+                )
+            )
+            dense_optimizer_state_loaded = True
     vocabulary_optimizer = (
         RowWiseAdagradVocabulary(
             _weight(model),
@@ -914,6 +945,20 @@ def profile_training(
                 load_file(str(state_path))
             )
             vocabulary_optimizer_state_loaded = True
+    if parent_checkpoint is not None:
+        parent_checkpoint.update(
+            {
+                "dense_optimizer_state_loaded": (
+                    dense_optimizer_state_loaded
+                ),
+                "dense_optimizer_state_reset": (
+                    not dense_optimizer_state_loaded
+                ),
+                "vocabulary_optimizer_state_loaded": (
+                    vocabulary_optimizer_state_loaded
+                ),
+            }
+        )
     initialization_seconds = time.perf_counter() - initialization_started
     rng = random.Random(seed)
     negative_generator = torch.Generator().manual_seed(seed ^ 0xBAD5EED)
@@ -924,6 +969,12 @@ def profile_training(
     supervised_units = 0
     operation_count = 0
     vocabulary_rows_updated = set()
+    quality_milestones: list[dict[str, Any]] = []
+    milestone_evaluation_seconds = 0.0
+    milestone_checkpoint_seconds = 0.0
+    next_evaluation_units = (
+        evaluation_interval_units if evaluation_interval_units else None
+    )
     training_started = time.perf_counter()
     with _peak_rss_monitor() as memory:
         for step in range(1, warmup_steps + steps + 1):
@@ -1125,17 +1176,165 @@ def profile_training(
                         ),
                         flush=True,
                     )
+                if (
+                    next_evaluation_units is not None
+                    and model_visible_units >= next_evaluation_units
+                ):
+                    milestone_evaluation_started = time.perf_counter()
+                    milestone_quality = _evaluate_bpb(
+                        model,
+                        tokenizer,
+                        samples=evaluation_samples,
+                    )
+                    milestone_evaluation_seconds += (
+                        time.perf_counter() - milestone_evaluation_started
+                    )
+                    milestone = {
+                        "format": (
+                            "layercake-phase3-continuous-quality-milestone/1"
+                        ),
+                        "status": "EVALUATED",
+                        "promotion_eligible": False,
+                        "system": system,
+                        "seed": seed,
+                        "scheduled_units": next_evaluation_units,
+                        "observed_model_visible_nonpadding_units": (
+                            model_visible_units
+                        ),
+                        "raw_utf8_training_bytes_exposed": raw_bytes,
+                        "optimizer_steps": len(step_records),
+                        "measured_step_wall_time_seconds": sum(
+                            row["wall_seconds"] for row in step_records
+                        ),
+                        "quality": milestone_quality,
+                        "learning_rate_schedule": step_records[-1][
+                            "learning_rate_schedule"
+                        ],
+                        "random_initialization": True,
+                        "pretrained_weights_loaded": False,
+                        "cpu_only": True,
+                        "inference_architecture_unchanged": (
+                            system == "layercake_complete"
+                        ),
+                    }
+                    if milestone_checkpoint_root is not None:
+                        milestone_checkpoint_started = time.perf_counter()
+                        milestone_directory = (
+                            milestone_checkpoint_root
+                            / f"units-{next_evaluation_units}"
+                        )
+                        milestone_checkpoint = _save_diagnostic_checkpoint(
+                            model,
+                            heads,
+                            milestone_directory,
+                            {
+                                **milestone,
+                                "format": (
+                                    "layercake-phase3-continuous-"
+                                    "milestone-checkpoint/1"
+                                ),
+                                "training_parent": parent_checkpoint,
+                                "configuration": {
+                                    "instruction_period_steps": (
+                                        instruction_period
+                                    ),
+                                    "exact_softmax_period_steps": (
+                                        exact_softmax_period
+                                    ),
+                                    "exact_softmax_positions": (
+                                        exact_softmax_positions
+                                    ),
+                                    "exact_softmax_chunk_rows": (
+                                        exact_softmax_chunk_rows
+                                    ),
+                                    "exact_softmax_weight": (
+                                        exact_softmax_weight
+                                    ),
+                                    "cumulative_units_before": (
+                                        cumulative_units_before
+                                    ),
+                                    "schedule_total_units": (
+                                        schedule_total_units
+                                    ),
+                                    "schedule_warmup_units": (
+                                        schedule_warmup_units
+                                    ),
+                                    "schedule_minimum_ratio": (
+                                        schedule_minimum_ratio
+                                    ),
+                                },
+                            },
+                            (
+                                vocabulary_optimizer.state_tensors()
+                                if vocabulary_optimizer is not None
+                                else None
+                            ),
+                            optimizer.state_dict(),
+                        )
+                        milestone_checkpoint_seconds += (
+                            time.perf_counter()
+                            - milestone_checkpoint_started
+                        )
+                        milestone["checkpoint"] = {
+                            "path": milestone_directory.relative_to(
+                                ROOT
+                            ).as_posix(),
+                            "metadata_sha256": _sha(
+                                milestone_directory / "metadata.json"
+                            ),
+                            "model_sha256": milestone_checkpoint[
+                                "model"
+                            ]["sha256"],
+                            "dense_optimizer_state_sha256": (
+                                milestone_checkpoint[
+                                    "training_only_dense_optimizer_state"
+                                ]["sha256"]
+                            ),
+                        }
+                    milestone["evidence_sha256"] = _canonical_sha(milestone)
+                    milestone_path = (
+                        output.parent
+                        / "milestones"
+                        / (
+                            f"{output.stem}_units"
+                            f"{next_evaluation_units}.json"
+                        )
+                    )
+                    if milestone_path.exists():
+                        raise RuntimeError(
+                            f"milestone evidence is immutable: {milestone_path}"
+                        )
+                    _write(milestone_path, milestone)
+                    milestone["evidence"] = {
+                        "path": milestone_path.relative_to(ROOT).as_posix(),
+                        "sha256": _sha(milestone_path),
+                    }
+                    quality_milestones.append(milestone)
+                    next_evaluation_units += evaluation_interval_units
                 if target_units is not None and model_visible_units >= target_units:
                     break
     training_seconds = time.perf_counter() - training_started
     evaluation_started = time.perf_counter()
-    quality = (
-        _evaluate_bpb(model, tokenizer, samples=evaluation_samples)
-        if evaluation_samples
-        else None
+    if (
+        quality_milestones
+        and quality_milestones[-1][
+            "observed_model_visible_nonpadding_units"
+        ]
+        == model_visible_units
+    ):
+        quality = quality_milestones[-1]["quality"]
+    else:
+        quality = (
+            _evaluate_bpb(model, tokenizer, samples=evaluation_samples)
+            if evaluation_samples
+            else None
+        )
+    evaluation_seconds = (
+        milestone_evaluation_seconds
+        + time.perf_counter()
+        - evaluation_started
     )
-    evaluation_seconds = time.perf_counter() - evaluation_started
-    checkpoint_seconds = 0.0
+    checkpoint_seconds = milestone_checkpoint_seconds
     checkpoint = None
     if checkpoint_directory is not None:
         checkpoint_started = time.perf_counter()
@@ -1153,6 +1352,7 @@ def profile_training(
                 "training_parent": parent_checkpoint,
                 "optimizer_state_reset_at_resume": (
                     resume_directory is not None
+                    and not dense_optimizer_state_loaded
                 ),
                 "instruction_period_steps": instruction_period,
                 "exact_softmax_period_steps": exact_softmax_period,
@@ -1165,6 +1365,9 @@ def profile_training(
                 ),
                 "vocabulary_optimizer_state_loaded": (
                     vocabulary_optimizer_state_loaded
+                ),
+                "dense_optimizer_state_loaded": (
+                    dense_optimizer_state_loaded
                 ),
                 "cumulative_units_before": cumulative_units_before,
                 "schedule_total_units": schedule_total_units,
@@ -1179,6 +1382,7 @@ def profile_training(
                 if vocabulary_optimizer is not None
                 else None
             ),
+            optimizer.state_dict(),
         )
         checkpoint_seconds = time.perf_counter() - checkpoint_started
     end_to_end_seconds = time.perf_counter() - end_to_end_started
@@ -1220,6 +1424,7 @@ def profile_training(
             "resume_parent": parent_checkpoint,
             "optimizer_state_reset_at_resume": (
                 resume_directory is not None
+                and not dense_optimizer_state_loaded
             ),
             "instruction_period_steps": instruction_period,
             "exact_softmax_period_steps": exact_softmax_period,
@@ -1233,10 +1438,17 @@ def profile_training(
             "vocabulary_optimizer_state_loaded": (
                 vocabulary_optimizer_state_loaded
             ),
+            "dense_optimizer_state_loaded": dense_optimizer_state_loaded,
             "cumulative_units_before": cumulative_units_before,
             "schedule_total_units": schedule_total_units,
             "schedule_warmup_units": schedule_warmup_units,
             "schedule_minimum_ratio": schedule_minimum_ratio,
+            "evaluation_interval_units": evaluation_interval_units,
+            "milestone_checkpoint_root": (
+                milestone_checkpoint_root.relative_to(ROOT).as_posix()
+                if milestone_checkpoint_root is not None
+                else None
+            ),
             "tokenizer_only_reused": True,
             "route_homogeneous_batches": True,
             "sparse_vocabulary_gradient": exact_softmax_period == 0,
@@ -1306,6 +1518,7 @@ def profile_training(
             "process_system_cpu_seconds": cpu_end.system - cpu_start.system,
         },
         "step_records": step_records,
+        "quality_milestones": quality_milestones,
         "quality": quality,
         "checkpoint": (
             {
@@ -1379,6 +1592,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--schedule-total-units", type=int, default=0)
     parser.add_argument("--schedule-warmup-units", type=int, default=0)
     parser.add_argument("--schedule-minimum-ratio", type=float, default=0.1)
+    parser.add_argument("--evaluation-interval-units", type=int, default=0)
+    parser.add_argument("--milestone-checkpoint-root", type=Path)
     args = parser.parse_args(argv)
     output = args.output if args.output.is_absolute() else ROOT / args.output
     checkpoint_directory = args.checkpoint_directory
@@ -1387,6 +1602,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     resume_directory = args.resume_directory
     if resume_directory is not None and not resume_directory.is_absolute():
         resume_directory = ROOT / resume_directory
+    milestone_checkpoint_root = args.milestone_checkpoint_root
+    if (
+        milestone_checkpoint_root is not None
+        and not milestone_checkpoint_root.is_absolute()
+    ):
+        milestone_checkpoint_root = ROOT / milestone_checkpoint_root
     result = profile_training(
         system=args.system,
         output=output,
@@ -1414,6 +1635,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         schedule_total_units=args.schedule_total_units,
         schedule_warmup_units=args.schedule_warmup_units,
         schedule_minimum_ratio=args.schedule_minimum_ratio,
+        evaluation_interval_units=args.evaluation_interval_units,
+        milestone_checkpoint_root=milestone_checkpoint_root,
     )
     print(json.dumps(result["accounting"], indent=2, sort_keys=True))
     return 0

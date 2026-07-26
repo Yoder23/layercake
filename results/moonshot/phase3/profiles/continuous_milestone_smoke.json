@@ -1,0 +1,229 @@
+{
+  "accelerator_hours": 0.0,
+  "accounting": {
+    "active_model_parameters": 60756490,
+    "active_parameter_seconds": 28831998.40601856,
+    "checkpointing_wall_time_seconds": 0.0,
+    "cumulative_model_visible_nonpadding_units_at_end": 128,
+    "cumulative_model_visible_nonpadding_units_at_start": 0,
+    "dense_trainable_parameters": 24237322,
+    "end_to_end_wall_time_seconds": 6.470708599998034,
+    "estimated_executed_cpu_multiply_accumulates": 9840199680,
+    "evaluation_wall_time_seconds": 0.13892979999945965,
+    "forward_backward_supervised_target_units": 384,
+    "measured_step_wall_time_seconds": 0.4745501000143122,
+    "median_step_wall_time_seconds": 0.1374076008796692,
+    "model_initialization_wall_time_seconds": 0.4742995999986306,
+    "model_visible_nonpadding_units": 128,
+    "optimizer_steps": 2,
+    "peak_process_resident_memory_bytes": 1592057856,
+    "process_system_cpu_seconds": 1.484375,
+    "process_user_cpu_seconds": 9.078125,
+    "raw_utf8_training_bytes_exposed": 599,
+    "tokenization_wall_time_seconds": 5.3398691000038525,
+    "tokenizer_training_wall_time_seconds": 0.0,
+    "total_model_parameters": 61655050,
+    "training_loop_wall_time_seconds_including_warmup": 0.6565086000045994,
+    "units_per_wall_second": 269.7291603060237,
+    "vocabulary_optimizer_logical_state_bytes": 0,
+    "vocabulary_optimizer_state_rows": 0
+  },
+  "checkpoint": null,
+  "configuration": {
+    "batch_size": 1,
+    "cumulative_units_before": 0,
+    "dense_optimizer": "AdamW",
+    "dense_optimizer_state_loaded": false,
+    "evaluation_interval_units": 64,
+    "exact_softmax_chunk_rows": 4096,
+    "exact_softmax_period_steps": 2,
+    "exact_softmax_positions": 8,
+    "exact_softmax_weight": 1.0,
+    "instruction_period_steps": 32,
+    "milestone_checkpoint_root": null,
+    "negative_vocabulary_rows": 128,
+    "optimizer_state_reset_at_resume": false,
+    "prediction_horizons": [
+      1,
+      2,
+      4
+    ],
+    "pretrained_weights_loaded": false,
+    "random_initialization": true,
+    "resume_parent": null,
+    "route_homogeneous_batches": true,
+    "rowwise_adagrad_learning_rate": 0.0,
+    "schedule_minimum_ratio": 0.1,
+    "schedule_total_units": 192,
+    "schedule_warmup_units": 64,
+    "sequence_units": 64,
+    "sparse_vocabulary_gradient": false,
+    "steps": 3,
+    "target_model_visible_nonpadding_units": 128,
+    "threads": 14,
+    "tokenizer_only_reused": true,
+    "vocabulary_gradient_mode": "row-sparse sampled steps plus infrequent dense exact steps",
+    "vocabulary_optimizer": "stateless hybrid sparse/dense SGD",
+    "vocabulary_optimizer_mode": "stateless_sgd",
+    "vocabulary_optimizer_state_loaded": false,
+    "warmup_steps": 0
+  },
+  "cuda_memory_allocated_before_and_after": [
+    0,
+    0
+  ],
+  "device": "cpu",
+  "evidence_sha256": "e01cea4d85d29c00f818a23e232e867062e56b9af27b6b6f4697833dd17c1ff6",
+  "final_inference_auxiliaries": [],
+  "format": "layercake-phase3-cpu-training-profile/1",
+  "hardware": {
+    "instruction_set_observed_by_pytorch": "AVX2",
+    "logical_processors": 20,
+    "physical_cores": 14,
+    "processor_identifier": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "promoted_accelerator_hours": 0.0,
+    "system_memory_bytes": 68473409536
+  },
+  "phase2_inference_architecture_unchanged": true,
+  "profile_role": "pre-promoted systems and feasibility measurement",
+  "promotion_eligible": false,
+  "protocol": {
+    "path": "moonshot/phase3_training_efficiency_lock.json",
+    "phase2_architecture_sha256": "b8020040300df16d627895685b584a1b615492275bda59ed42fca52762e12ad0",
+    "sha256": "b58c71ed824f4d6c0da9a3835a6622a0ff47825f8381732549f104e7f93b2654"
+  },
+  "quality": {
+    "bits_per_byte": 3.768686441268579,
+    "covered_raw_bytes": 512,
+    "evaluated_tokens": 126,
+    "samples": 2,
+    "token_accuracy": 0.007936507936507936
+  },
+  "quality_milestones": [
+    {
+      "cpu_only": true,
+      "evidence": {
+        "path": "results/moonshot/phase3/profiles/milestones/continuous_milestone_smoke_units64.json",
+        "sha256": "f717a300678f86df4944f0e3f262ea57d8a4bb39751081018b5e79fc8f3f5680"
+      },
+      "evidence_sha256": "9c1a88b056eac173f213c0333316766051b9eaf4059dba5d28b6ca37980d0f42",
+      "format": "layercake-phase3-continuous-quality-milestone/1",
+      "inference_architecture_unchanged": true,
+      "learning_rate_schedule": {
+        "cumulative_units_before_step": 0,
+        "dense_adamw_learning_rate": 2.9999999999999997e-05,
+        "factor": 0.1,
+        "vocabulary_learning_rate": 0.001
+      },
+      "measured_step_wall_time_seconds": 0.13740760000655428,
+      "observed_model_visible_nonpadding_units": 64,
+      "optimizer_steps": 1,
+      "pretrained_weights_loaded": false,
+      "promotion_eligible": false,
+      "quality": {
+        "bits_per_byte": 3.892703990719005,
+        "covered_raw_bytes": 512,
+        "evaluated_tokens": 126,
+        "samples": 2,
+        "token_accuracy": 0.0
+      },
+      "random_initialization": true,
+      "raw_utf8_training_bytes_exposed": 299,
+      "scheduled_units": 64,
+      "seed": 9824,
+      "status": "EVALUATED",
+      "system": "layercake_complete"
+    },
+    {
+      "cpu_only": true,
+      "evidence": {
+        "path": "results/moonshot/phase3/profiles/milestones/continuous_milestone_smoke_units128.json",
+        "sha256": "ae996b1ae5138214645a7f3e9e3b1b5745df4db073965d7bbd6ab4c85b1c9d91"
+      },
+      "evidence_sha256": "ec28b3ee21f4111f3e249e4ac1bce691aacec466d45c951d0cf12a3d7f045abc",
+      "format": "layercake-phase3-continuous-quality-milestone/1",
+      "inference_architecture_unchanged": true,
+      "learning_rate_schedule": {
+        "cumulative_units_before_step": 64,
+        "dense_adamw_learning_rate": 0.0003,
+        "factor": 1.0,
+        "vocabulary_learning_rate": 0.01
+      },
+      "measured_step_wall_time_seconds": 0.4745501000143122,
+      "observed_model_visible_nonpadding_units": 128,
+      "optimizer_steps": 2,
+      "pretrained_weights_loaded": false,
+      "promotion_eligible": false,
+      "quality": {
+        "bits_per_byte": 3.768686441268579,
+        "covered_raw_bytes": 512,
+        "evaluated_tokens": 126,
+        "samples": 2,
+        "token_accuracy": 0.007936507936507936
+      },
+      "random_initialization": true,
+      "raw_utf8_training_bytes_exposed": 599,
+      "scheduled_units": 128,
+      "seed": 9824,
+      "status": "EVALUATED",
+      "system": "layercake_complete"
+    }
+  ],
+  "seed": 9824,
+  "status": "PASS",
+  "step_records": [
+    {
+      "candidate_vocabulary_rows": 176,
+      "exact_softmax": null,
+      "instruction_batch": false,
+      "learning_rate_schedule": {
+        "cumulative_units_before_step": 0,
+        "dense_adamw_learning_rate": 2.9999999999999997e-05,
+        "factor": 0.1,
+        "vocabulary_learning_rate": 0.001
+      },
+      "loss": 9.242143630981445,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 177,
+      "step": 1,
+      "vocabulary_gradient_kind": "row_sparse_sampled",
+      "vocabulary_optimizer_step": {
+        "kind": "stateless_row_sparse_sgd",
+        "learning_rate": 0.001,
+        "logical_state_bytes": 0,
+        "state_rows": 0
+      },
+      "wall_seconds": 0.13740760000655428
+    },
+    {
+      "candidate_vocabulary_rows": 177,
+      "exact_softmax": {
+        "exact_softmax_chunks": 13,
+        "exact_softmax_loss": 11.167766571044922,
+        "exact_softmax_positions": 8,
+        "exact_softmax_vocabulary_rows": 50257
+      },
+      "instruction_batch": false,
+      "learning_rate_schedule": {
+        "cumulative_units_before_step": 64,
+        "dense_adamw_learning_rate": 0.0003,
+        "factor": 1.0,
+        "vocabulary_learning_rate": 0.01
+      },
+      "loss": 20.31787872314453,
+      "route": 0,
+      "sparse_vocabulary_rows_updated": 50257,
+      "step": 2,
+      "vocabulary_gradient_kind": "dense_exact_full_vocabulary",
+      "vocabulary_optimizer_step": {
+        "kind": "stateless_dense_exact_sgd",
+        "learning_rate": 0.01,
+        "logical_state_bytes": 0,
+        "state_rows": 0
+      },
+      "wall_seconds": 0.3371425000077579
+    }
+  ],
+  "system": "layercake_complete",
+  "training_parent": null
+}
