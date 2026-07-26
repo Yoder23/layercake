@@ -1,29 +1,46 @@
 {
-  "format": "layercake-phase4-cpu-cake-training-lock/1",
-  "status": "LOCKED_PENDING_PHASE3",
-  "scope": "Phase 4 and every later independently trained cake",
+  "format": "layercake-phase4-portable-python-cake-lock/4",
+  "status": "LOCKED_PENDING_PHASE3_SEAL",
+  "scope": "One useful, lossless, portable Python cake attached to the sealed Phase 2 r3 English core",
+  "supersedes": {
+    "format": "layercake-phase4-cpu-cake-training-lock/1",
+    "sha256": "2cdbe292fc0126aed898495dda4481a216211e111b6e24d0ba6a3098059410d2",
+    "reason": "Faster training is retired as a product gate; all training costs remain measured.",
+    "history_policy": "preserved in git history; no prior evidence is silently relabeled"
+  },
+  "current_acquisition_path": {
+    "id": "direct_layercake_python_cake_training",
+    "device": "declared commodity CPU",
+    "external_abi_required": false,
+    "future_independently_certified_abi_artifact_allowed": true,
+    "future_abi_artifact_changes_current_evidence": false
+  },
   "execution_contract": {
-    "training_device": "declared commodity CPU only",
-    "gpu_training_allowed_for_promoted_evidence": false,
     "english_core_weights_must_remain_byte_identical": true,
+    "canonical_semantic_abi_must_remain_byte_identical": true,
     "receiver_training_allowed_during_transfer": false,
     "receiver_domain_data_allowed_during_transfer": false,
     "receiver_specific_calibration_allowed": false,
-    "cake_mutation_during_transfer_allowed": false
+    "cake_mutation_during_transfer_allowed": false,
+    "teacher_or_source_model_required_at_inference": false,
+    "inactive_cake_neural_compute_allowed": false
   },
   "promotion_gates": {
     "functional_error_reduction_over_frozen_core_min": 5.0,
-    "time_to_matched_functional_quality_advantage_min": 5.0,
-    "baseline_policy": "beat every applicable strong baseline among LoRA, PEFT, full adaptation, and a specialist transformer on the same CPU and frozen task suite",
-    "trainable_parameter_count_less_than_each_adaptation_baseline": true,
-    "peak_process_resident_memory_less_than_each_adaptation_baseline": true,
-    "core_cpu_inference_advantage_preserved": true,
+    "core_plus_cake_phase2_throughput_retention_min": 0.9,
+    "core_plus_cake_optimized_cpu_transformer_ratio_min": 2.0,
+    "english_core_parameters_changed": 0,
+    "source_success_retention_rate": 1.0,
+    "receiver_training_examples": 0,
+    "receiver_calibration_runs": 0,
     "identical_package_bytes_across_compatible_hosts": true,
     "identical_tensor_hashes_across_compatible_hosts": true,
     "mathematical_transfer_equivalence": true,
-    "source_success_retention_rate": 1.0,
     "aggregate_semantic_quality_significant_loss_allowed": false,
-    "minimum_independent_seeds": 3
+    "core_only_operation_preserved": true,
+    "direct_one_cake_operation_without_router": true,
+    "inactive_installed_cake_neural_compute": 0,
+    "minimum_independent_training_seeds_and_receiver_hosts": 3
   },
   "required_accounting": [
     "raw_utf8_training_bytes_exposed",
@@ -40,14 +57,19 @@
     "package_and_tensor_hashes_on_every_host",
     "locked_source_success_set_and_receiver_retention"
   ],
-  "target_not_automatic_pass_gate": {
-    "substantial_new_cake_cpu_training_wall_hours_max": 24
+  "reported_not_promoted": {
+    "time_to_matched_functional_quality_ratio": true,
+    "training_speedup": true,
+    "training_unit_ratio": true,
+    "training_memory_ratio": true,
+    "reason": "Training efficiency remains valuable scientific evidence but is not a LayerCake product gate."
   },
   "anti_gaming": {
-    "gpu_trained_checkpoint_substitution_allowed": false,
     "different_lineage_metric_substitution_allowed": false,
-    "failed_baselines_or_seeds_may_be_omitted": false,
+    "failed_tasks_seeds_or_hosts_may_be_omitted": false,
     "synthetic_proxy_success_counts_as_python_functional_success": false,
-    "installation_time_receiver_learning_counts_as_lossless_transfer": false
+    "installation_time_receiver_learning_counts_as_lossless_transfer": false,
+    "phase4_may_begin_before_phase3_is_sealed": false,
+    "unmeasured_training_cost_called_free_allowed": false
   }
 }

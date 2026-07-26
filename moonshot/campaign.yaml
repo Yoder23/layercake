@@ -16,7 +16,7 @@
   "current_phase": 3,
   "forward_contract_amendments": [
     {
-      "amendment_id": "phase4-cpu-cake-training/1",
+      "amendment_id": "phase4-portable-python-cake/4",
       "applies_to_phases": [
         4,
         5,
@@ -25,9 +25,26 @@
         8
       ],
       "contract": "moonshot/phase4_cpu_cake_training_lock.json",
-      "contract_sha256": "2cdbe292fc0126aed898495dda4481a216211e111b6e24d0ba6a3098059410d2",
+      "contract_sha256": "47b020a7b82661e3b8699a1f6ba940e04423b6d4318ac6b66ca5fe370702362e",
       "effective_while_phase4_is_locked": true,
-      "reason": "Require CPU-only cake training, frozen English-core weights, 5x functional-error reduction, 5x time-to-matched-quality dominance over every applicable strong adaptation baseline, lower trainable parameters and peak RAM, preserved inference, and lossless portability."
+      "reason": "Require one useful portable Python cake with a byte-identical English core and canonical ABI, preserved CPU inference dominance, safe package identity, lossless transfer, no receiver learning, and complete training-cost reporting without making training speed a product gate."
+    },
+    {
+      "amendment_id": "phase3-training-gate-retirement/1",
+      "applies_to_phases": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "contract": "moonshot/phase3_retirement_lock.json",
+      "contract_sha256": "cf2b7fb47579f475c36b71bb0d8a60ab71036a80a77a9d9382b1fd2fa82f5d68",
+      "effective_while_phase3_is_open": true,
+      "legacy_contract": "moonshot/phase3_training_efficiency_lock.json",
+      "legacy_contract_sha256": "b58c71ed824f4d6c0da9a3835a6622a0ff47825f8381732549f104e7f93b2654",
+      "reason": "Retire faster training as a LayerCake product gate without claiming the old scientific thresholds passed; preserve all controls and hand the sealed Phase 2 core to Phase 4."
     },
     {
       "amendment_id": "phase2-core-cake-boundary/1",
@@ -238,9 +255,14 @@
       "completion_tag": "layercake-moonshot-phase3",
       "continuation_status": "results/moonshot/phase3/continuation_status.json",
       "continuation_status_sha256": "38d077433fb540c1b9a98c99fc21562f83f4379f1ccb3e7038ab7cafc43d21e2",
+      "legacy_control_protocol": "moonshot/phase3_training_efficiency_lock.json",
+      "legacy_control_protocol_sha256": "b58c71ed824f4d6c0da9a3835a6622a0ff47825f8381732549f104e7f93b2654",
+      "objective": "Retired training-efficiency controls and lineage handoff",
       "parent_phase2_tag": "layercake-moonshot-phase2-r3",
-      "protocol": "moonshot/phase3_training_efficiency_lock.json",
-      "status": "OPEN_CONTINUATION_REQUIRED"
+      "protocol": "moonshot/phase3_retirement_lock.json",
+      "protocol_sha256": "cf2b7fb47579f475c36b71bb0d8a60ab71036a80a77a9d9382b1fd2fa82f5d68",
+      "scientific_training_efficiency_passed": false,
+      "status": "OPEN_RETIREMENT_EVIDENCE_REQUIRED"
     }
   },
   "phases": {
@@ -261,6 +283,17 @@
       "legacy_certificate": "results/moonshot/phase0/release_certificate.json",
       "legacy_tag_commit": "2a7439c3e4dcea71d3f6d36bbd33bd5159bee3b9",
       "reason": "legacy PASS conflated scientific promotion with git sealing"
+    }
+  ],
+  "retirement_history": [
+    {
+      "phase": 3,
+      "retirement_id": "phase3-training-gate-retirement/1",
+      "disposition": "RETIRED_BY_GOVERNANCE_PENDING_SEAL",
+      "scientific_training_efficiency_passed": false,
+      "legacy_contract": "moonshot/phase3_training_efficiency_lock.json",
+      "legacy_contract_sha256": "b58c71ed824f4d6c0da9a3835a6622a0ff47825f8381732549f104e7f93b2654",
+      "reason": "Faster training is no longer a LayerCake product gate; ABI research is handled separately."
     }
   ]
 }

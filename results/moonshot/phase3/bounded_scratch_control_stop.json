@@ -1,0 +1,41 @@
+{
+  "format": "layercake-phase3-bounded-scratch-control-stop/1",
+  "status": "STOPPED_BY_GOVERNANCE",
+  "stopped_process": {
+    "pid": 27216,
+    "executable": "C:\\Python310\\python.exe",
+    "start_time_local": "2026-07-25T21:44:04-04:00",
+    "observed_process_cpu_seconds_before_stop": 33153.96875,
+    "stop_command": "Stop-Process -Id 27216",
+    "stop_verified": true
+  },
+  "reason": "Phase 3 was redefined as LayerCake Host Certification and Capability-Acquisition Efficiency. Faster random-initialized English acquisition is no longer a mandatory product gate, and no additional major from-scratch optimization is authorized.",
+  "legacy_protocol": {
+    "path": "moonshot/phase3_training_efficiency_lock.json",
+    "sha256": "b58c71ed824f4d6c0da9a3835a6622a0ff47825f8381732549f104e7f93b2654"
+  },
+  "preserved_completed_milestone": {
+    "evidence": "results/moonshot/phase3/learning_curves/milestones/layercake_seed9824_continuous30m_schedule_units5000000.json",
+    "file_sha256": "9545528be61a0b15eeb580705ee46c30235f097312ca453d89c127af2a0dde32",
+    "internal_evidence_sha256": "f2da39f1c8fada79b3598673d1c341f0f161fe4efd6727da003d3b626f1c047b",
+    "checkpoint_directory": "artifacts/moonshot/phase3_cpu_training/layercake-seed9824-continuous30m-milestones/units-5000000",
+    "model_sha256": "498fcd51a4e3895226770f2ce02fac5ecfd2e8fd02a6a121acfa98d35bf822fb",
+    "dense_optimizer_state_sha256": "b164410de9a6e06a38fb8cbb9adbdce0f004221a6c67e08316083686c7c69560",
+    "observed_model_visible_nonpadding_units": 5000486,
+    "validation_bits_per_byte": 2.239427280302536,
+    "quality_gate_bits_per_byte_max": 1.7174,
+    "quality_gate_passed": false
+  },
+  "uncheckpointed_tail": {
+    "last_console_observation": {
+      "step": 6750,
+      "model_visible_nonpadding_units": 6699667,
+      "elapsed_seconds": 3453.4620252999885,
+      "latest_training_loss": 8.804919242858887,
+      "peak_process_resident_memory_bytes": 2030211072
+    },
+    "promotion_credit": false,
+    "reason": "No immutable scheduled evaluation or final checkpoint was completed after the 5M milestone."
+  },
+  "historical_evidence_policy": "Preserve every completed artifact and negative result. Do not relabel this control under the host-certification contract and do not resume it without a future explicit governance amendment."
+}

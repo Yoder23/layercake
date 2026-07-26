@@ -9,11 +9,15 @@ performed from this directory.
 The campaign may declare the LayerCake moonshot proven only when one integrated lineage
 establishes all of the following:
 
-1. A useful general-English LayerCake core is trained from scratch.
+1. A useful general-English LayerCake core is independently validated and
+   deployable without a source teacher at inference.
 2. Its general quality is no worse than a strong transformer.
 3. Its routed mixed-domain quality is statistically better than the transformer.
-4. LayerCake reaches matched general quality faster during foundation training.
-5. A LayerCake domain reaches matched functional quality faster than transformer adaptation.
+4. Ordinary LayerCake training remains available as a research and fallback
+   capability; faster training is measured when studied but is not a product
+   promotion gate.
+5. Useful domain artifacts install and retain matched functional quality without
+   retraining or mutating the English core.
 6. LayerCake is substantially faster than an optimized transformer on the same CPU.
 7. LayerCake is faster than an optimized transformer on the same GPU.
 8. LayerCake on CPU matches or exceeds an optimized transformer on GPU.
@@ -44,8 +48,8 @@ The canonical state is `moonshot/campaign.yaml`. The phases are strictly ordered
 0. governance and campaign state;
 1. benchmark truth;
 2. matched-quality CPU speed;
-3. foundation-training speed;
-4. one useful lossless portable domain;
+3. retired training-efficiency controls and lineage handoff;
+4. one useful lossless portable domain artifact;
 5. generic multi-domain extensibility;
 6. orchestration and catalog scalability;
 7. integrated CPU, GPU, CPU-versus-GPU, and device performance;
@@ -167,3 +171,19 @@ python -m layercake.moonshot_campaign verify-all
 Legacy Moonshot artifacts pre-dating this campaign are retained as historical evidence and
 negative controls. They do not pass a campaign phase unless the new verifier imports their
 raw records, validates their lineage, and recomputes every applicable gate.
+
+## Repository and responsibility boundary
+
+ABI is a separate product, repository, campaign, runtime dependency graph, and
+evidence lineage. ABI work is outside this LayerCake task. Do not clone, vendor,
+create, import, execute, or modify ABI extraction code or evidence here.
+
+LayerCake owns safe hosting, execution, installation, transfer, composition,
+sparse activation, routing, and orchestration. A future ABI artifact may cross
+into LayerCake only as an independently validated, signed, content-addressed,
+non-executable package. Any future core, ABI, fusion, or runtime change invokes
+the invalidation matrix and must recertify every dependent phase.
+
+From-scratch LayerCake training remains available as bounded research and
+fallback control, but faster training is not a product promotion gate and must
+not consume additional major campaign compute.

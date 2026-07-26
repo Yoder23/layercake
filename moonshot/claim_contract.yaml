@@ -59,20 +59,14 @@
       "completion_tag": "layercake-moonshot-phase2-r3"
     },
     "3": {
-      "name": "training_speed",
-      "minimum_unique_seeds": 3,
+      "name": "retired_training_efficiency_controls",
+      "minimum_unique_seeds": 0,
       "required_gates": [
-        {"id": "time_to_matched_quality_ratio", "operator": "le", "threshold": 0.50},
-        {"id": "phase2_cpu_speed_retention", "operator": "ge", "threshold": 0.95},
-        {"id": "sample_efficiency_ratio", "operator": "le", "threshold": 0.50},
-        {"id": "raw_data_exposure_ratio", "operator": "le", "threshold": 1.0},
-        {"id": "executed_cpu_operations_ratio", "operator": "le", "threshold": 0.50},
-        {"id": "active_parameter_seconds_ratio", "operator": "le", "threshold": 0.50},
-        {"id": "peak_training_memory_ratio", "operator": "lt", "threshold": 1.0},
-        {"id": "promoted_accelerator_hours", "operator": "eq", "threshold": 0.0},
-        {"id": "single_seed_training_hours", "operator": "le", "threshold": 168.0},
-        {"id": "threshold_frozen_before_training", "operator": "eq", "threshold": 1.0},
-        {"id": "lower_parameter_seconds_or_training_memory", "operator": "eq", "threshold": 1.0}
+        {"id": "retirement_authorized", "operator": "eq", "threshold": 1.0},
+        {"id": "historical_evidence_preserved", "operator": "eq", "threshold": 1.0},
+        {"id": "no_scientific_training_pass_claimed", "operator": "eq", "threshold": 1.0},
+        {"id": "phase2_parent_sealed", "operator": "eq", "threshold": 1.0},
+        {"id": "future_abi_recertification_required", "operator": "eq", "threshold": 1.0}
       ],
       "completion_tag": "layercake-moonshot-phase3"
     },
@@ -83,14 +77,12 @@
         {"id": "functional_error_ratio", "operator": "le", "threshold": 0.20},
         {"id": "core_plus_cake_phase3_throughput_retention", "operator": "ge", "threshold": 0.90},
         {"id": "core_plus_cake_cpu_transformer_ratio", "operator": "ge", "threshold": 2.0},
-        {"id": "cake_adaptation_time_ratio", "operator": "le", "threshold": 0.20},
-        {"id": "cpu_only_cake_training", "operator": "eq", "threshold": 1.0},
         {"id": "english_core_parameters_changed", "operator": "eq", "threshold": 0.0},
-        {"id": "cake_trainable_parameter_ratio", "operator": "lt", "threshold": 1.0},
-        {"id": "cake_peak_training_memory_ratio", "operator": "lt", "threshold": 1.0},
         {"id": "source_success_retention_ratio", "operator": "eq", "threshold": 1.0},
         {"id": "receiver_training_examples", "operator": "eq", "threshold": 0.0},
-        {"id": "receiver_calibration_runs", "operator": "eq", "threshold": 0.0}
+        {"id": "receiver_calibration_runs", "operator": "eq", "threshold": 0.0},
+        {"id": "identical_package_bytes", "operator": "eq", "threshold": 1.0},
+        {"id": "inactive_cake_compute", "operator": "eq", "threshold": 0.0}
       ],
       "completion_tag": "layercake-moonshot-phase4"
     },
@@ -100,7 +92,6 @@
       "required_gates": [
         {"id": "real_neural_domain_count", "operator": "ge", "threshold": 3.0},
         {"id": "minimum_domain_functional_error_reduction", "operator": "ge", "threshold": 5.0},
-        {"id": "minimum_domain_training_speedup", "operator": "ge", "threshold": 5.0},
         {"id": "generic_authoring_requires_source_edits", "operator": "eq", "threshold": 0.0},
         {"id": "inactive_cake_effect", "operator": "eq", "threshold": 0.0}
       ],
@@ -149,8 +140,7 @@
     "train_useful_general_english_core",
     "general_quality_non_inferior_to_transformer",
     "mixed_domain_quality_superior",
-    "foundation_time_to_quality_faster",
-    "domain_time_to_functional_quality_faster",
+    "training_efficiency_reported_not_required",
     "same_cpu_substantially_faster",
     "same_gpu_faster",
     "cpu_matches_or_beats_transformer_gpu",

@@ -6,7 +6,7 @@
 >
 > **QUALITY PARITY OR SUPERIORITY IS MANDATORY.**
 >
-> **FASTER TRAINING IS MANDATORY.**
+> **SAFE, IMMUTABLE CAPABILITY HOSTING IS MANDATORY.**
 >
 > **PORTABLE USEFUL CAKES ARE MANDATORY.**
 >
@@ -60,49 +60,35 @@ host token IDs. Compatibility may honestly be limited to one tokenizer class,
 ABI version, and fusion contract. Cross-representation portability cannot be
 claimed without identical conformance tests.
 
-Phase 3 may begin only after the corrected Phase 2 release is committed, sealed
-under `layercake-moonshot-phase2-r3`, and independently verified. Phase 3 must
-preserve the exact Phase 2 representation and architecture and prove at least
-2x lower wall-clock time to the same frozen general-quality threshold while
-retaining at least 95% of certified Phase 2 CPU throughput.
+Phase 3 began only after the corrected Phase 2 release was committed, sealed
+under `layercake-moonshot-phase2-r3`, and independently verified. Its
+random-initialized training studies remain useful scientific controls, but
+faster training is no longer a LayerCake product gate. Phase 3 is therefore
+closed through an explicit governance retirement, not a fabricated
+training-efficiency result.
 
-## Phase 3 training-efficiency lock
+## Phase 3 retirement lock
 
-Phase 3 is representation-neutral. A byte-level internal model is not required.
-The exact Phase 2 winning representation and architecture are frozen for the
-matched training study.
+Every completed learning curve, checkpoint, optimizer state, negative branch,
+and stopped-run record is preserved under its original protocol and hash. The
+retirement certificate must state that the old quality, time-to-quality, and
+sample-efficiency gates were not passed. It may certify only the governance
+decision, evidence preservation, sealed Phase 2 parent, and clean handoff to
+Phase 4.
 
-The primary training result is the first immutable evaluation at which the
-frozen quality threshold is reached. LayerCake must reach that point in no more
-than 0.50x the transformer's end-to-end wall-clock time. The study must also
-show strictly fewer non-padding model-visible training units and lower peak
-active training memory, while exposing no more raw UTF-8 training bytes. A
-tokenizer's compression ratio is not, by itself, a token-efficiency result.
+No additional major random-init English optimization is authorized. Ordinary
+LayerCake training remains available as a research and fallback capability.
+Phase 4 inherits the exact sealed Phase 2 core, native runtime, UTF-8 boundary,
+and canonical semantic cake ABI.
 
-Every run must report raw UTF-8 bytes exposed, model-visible units, non-padding
-units, sequences, optimizer steps, examples, forward/backward unit count,
-tokenizer training and tokenization cost, preprocessing, data loading,
-compilation, evaluation, checkpointing, end-to-end wall time, peak process and
-accelerator memory, and accelerator-hours. Measured energy and hardware-counter
-compute are reported when meters are available; if unavailable they are marked
-unmeasured and cannot support an energy-efficiency claim.
+ABI research is handled separately and is not created, imported, or executed in
+this task. If a future ABI artifact changes the core, canonical ABI, fusion, or
+runtime lineage, the invalidation matrix requires recertification of every
+dependent phase before any final release claim.
 
-At least three independent seeds per system are required on the same machine,
-precision, data order, quality suite, and immutable evaluation schedule. Report
-every learning curve and seed, paired time-to-threshold ratios, and bootstrap
-confidence intervals. Promotion requires the upper 95% confidence bound for
-the paired wall-time ratio to be at most 0.50 and the upper 95% confidence bound
-for the paired non-padding-unit ratio to be below 1.00. Runs that never cross
-the threshold are failures, not censored successes. No favorable point from a
-different lineage may be substituted.
-
-The promoted checkpoint must still pass the Phase 2 quality, generation,
-memory, incremental-state, physical-sparsity, ABI, and long-output CPU gates,
-retain at least 95% of certified Phase 2 throughput, and remain at least 2x
-faster than the optimized CPU-transformer baseline.
-
-The machine-readable version of this lock is
-`moonshot/phase3_training_efficiency_lock.json`.
+The historical experimental protocol remains
+`moonshot/phase3_training_efficiency_lock.json`. The canonical closure contract
+is `moonshot/phase3_retirement_lock.json`.
 
 ## English-core and domain-cake boundary
 
@@ -150,21 +136,20 @@ assigned to later attachable domain cakes; no closed-book knowledge metric can
 support Phase 2 promotion. The immutable contract is
 `moonshot/phase2_shallow_sparse_pretrained_preregistration.json`.
 
-## Phase 4 and later CPU cake-training lock
+## Phase 4 and later portable-domain lock
 
-Phase 4 cannot pass unless the Python cake is trained entirely on the declared
-commodity CPU while the sealed English core remains byte-identical. The
-promoted cake must reduce functional error by at least 5x, reach matched
-functional quality at least 5x faster than every applicable strong CPU
-adaptation baseline, use fewer trainable parameters and less peak RAM, preserve
-the core CPU inference advantage, and transfer mathematically and semantically
-losslessly with 100% retention of the locked source-host success set.
+Phase 4 begins only after Phase 3 is sealed and trains or accepts one real
+Python cake while the sealed Phase 2 English core remains byte-identical. The
+current campaign uses the direct LayerCake cake-training path; any future ABI
+artifact remains a separately certified alternative. Training time, units,
+memory, and parameter-seconds are fully measured but are not promotion gates.
 
-LoRA, PEFT, full adaptation, and a specialist transformer are included wherever
-applicable; weak or failed baselines cannot be selected to manufacture a win.
-The same CPU-training and accounting contract applies to every later cake.
-Training a substantial new cake within 24 hours on a commodity CPU is a target,
-not an automatic pass threshold.
+Phase 4 proves useful Python behavior, safe installation, package and core
+immutability, identical package transfer, mathematical equivalence, 100%
+retention of the locked source-host success set, no receiver learning,
+preserved inference dominance, and physical activation of only the selected
+cake. The same rules apply to Java and every later domain. Weak functional
+evidence or synthetic proxy success cannot pass.
 
 The machine-readable version of this lock is
 `moonshot/phase4_cpu_cake_training_lock.json`.

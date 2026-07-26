@@ -1,0 +1,63 @@
+{
+  "format": "layercake-phase3-retirement-lock/1",
+  "status": "RETIRED_BY_GOVERNANCE_PENDING_SEAL",
+  "objective": "Close the former faster-training phase without claiming that its scientific training-efficiency gates passed, preserve all control evidence, and hand the sealed Phase 2 English core to Phase 4.",
+  "authorization": {
+    "decision": "Faster training is no longer a LayerCake product promotion gate because capability extraction is being pursued separately through ABI.",
+    "additional_major_random_init_english_optimization_authorized": false,
+    "ordinary_layercake_training_retained_for_research_and_fallback": true,
+    "phase3_scientific_training_efficiency_pass_claimed": false
+  },
+  "legacy_contract": {
+    "path": "moonshot/phase3_training_efficiency_lock.json",
+    "sha256": "b58c71ed824f4d6c0da9a3835a6622a0ff47825f8381732549f104e7f93b2654",
+    "evidence_policy": "all evidence remains governed by the protocol active when it was produced; no historical result is relabeled under this retirement contract"
+  },
+  "sealed_parent": {
+    "phase": 2,
+    "completion_tag": "layercake-moonshot-phase2-r3",
+    "release_commit": "187cd9d9a43de2726157c204389e2a1eb2edf733",
+    "seal_commit": "03fe38f7aa5cb891e516de039f78e6ab3f63268c",
+    "final_core_manifest": "artifacts/moonshot/phase2/final_core_r3/manifest.json",
+    "final_core_manifest_sha256": "518dcee35de4878e7ecab4064d75883b934a434d930afc6894e4f28592e4ecb6",
+    "architecture_sha256": "b8020040300df16d627895685b584a1b615492275bda59ed42fca52762e12ad0",
+    "canonical_semantic_abi_sha256": "d024de52144a2d797d0501acb7deb55575ffca7e33f72900beff599cf0a97761"
+  },
+  "preserved_controls": {
+    "evidence_directory": "results/moonshot/phase3",
+    "artifact_directory": "artifacts/moonshot/phase3_cpu_training",
+    "experiment_ledger": "results/moonshot/phase3/experiment_ledger.jsonl",
+    "stopped_run_record": "results/moonshot/phase3/bounded_scratch_control_stop.json",
+    "minimum_completed_milestone": "results/moonshot/phase3/learning_curves/milestones/layercake_seed9824_continuous30m_schedule_units5000000.json",
+    "negative_results_must_remain_addressable": true,
+    "uncheckpointed_tail_receives_promotion_credit": false
+  },
+  "retirement_gates": {
+    "retirement_authorized": 1.0,
+    "historical_evidence_preserved": 1.0,
+    "no_scientific_training_pass_claimed": 1.0,
+    "phase2_parent_sealed": 1.0,
+    "future_abi_recertification_required": 1.0
+  },
+  "handoff_to_phase4": {
+    "core_source": "sealed Phase 2 r3 core",
+    "core_weights_must_remain_byte_identical": true,
+    "canonical_abi_must_remain_byte_identical": true,
+    "training_speed_is_phase4_gate": false,
+    "training_costs_still_measured": true,
+    "all_non_training_speed_moonshot_gates_remain": true
+  },
+  "future_abi_policy": {
+    "abi_work_in_current_layercake_task": false,
+    "abi_repository_and_evidence_lineage_separate": true,
+    "future_artifact_may_cross_only_by_signed_content_addressed_package": true,
+    "core_or_runtime_change_triggers_invalidation_matrix": true,
+    "dependent_phase_recertification_required_before_release": true
+  },
+  "anti_gaming": {
+    "retirement_described_as_training_efficiency_pass_allowed": false,
+    "failed_quality_crossing_omitted_allowed": false,
+    "phase2_speed_substituted_as_phase3_training_speed_allowed": false,
+    "future_abi_claim_inherited_without_evidence_allowed": false
+  }
+}

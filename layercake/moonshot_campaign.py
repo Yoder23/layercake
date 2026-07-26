@@ -932,6 +932,27 @@ def _verify_phase_evidence(root: Path, phase: int, contracts: Mapping[str, Mappi
             return summary
         except Phase2EvidenceError as error:
             raise CampaignVerificationError(f"Phase 2 typed evidence failed: {error}") from error
+    if phase == 3:
+        try:
+            from .evaluation.phase3_retirement_evidence import (
+                Phase3RetirementEvidenceError,
+                validate_phase3_retirement_bundle,
+            )
+
+            summary = validate_phase3_retirement_bundle(
+                root, _phase_dir(root, 3)
+            )
+            payload = read_document(
+                _lifecycle_path(root, 3, "certificate_payload.json")
+            )
+            validate_required_gates(
+                root, 3, payload, contracts["claim_contract.yaml"]
+            )
+            return summary
+        except Phase3RetirementEvidenceError as error:
+            raise CampaignVerificationError(
+                f"Phase 3 retirement evidence failed: {error}"
+            ) from error
     raise CampaignVerificationError(
         f"Phase {phase} requires its phase-specific typed verifier before candidate construction"
     )
@@ -1051,6 +1072,7 @@ def promote_phase(root: Path, phase: int) -> dict[str, Any]:
             "governance_only_no_model_or_training_claim" if phase == 0
             else "benchmark_truth_no_architecture_selection" if phase == 1
             else "matched_quality_cpu_speed_integrated_core" if phase == 2
+            else "governance_retirement_no_training_efficiency_claim" if phase == 3
             else "phase_specific_verified_claims"
         ),
         "model_source_commit": campaign["lineage"]["model_source_commit"],
@@ -1123,6 +1145,18 @@ def promote_phase(root: Path, phase: int) -> dict[str, Any]:
         validate_required_gates(root, 2, certificate, contracts["claim_contract.yaml"])
         validate_matched_quality(certificate, contracts["benchmark_contract.yaml"])
         validate_lineage_consistency(campaign, certificate, 2)
+    if phase == 3:
+        payload = read_document(
+            _lifecycle_path(root, 3, "certificate_payload.json")
+        )
+        certificate["disposition"] = "RETIRED_BY_GOVERNANCE"
+        certificate["scientific_training_efficiency_passed"] = False
+        certificate["claims"] = payload["claims"]
+        certificate["headline_claims"] = []
+        certificate["lineage"] = dict(campaign["lineage"])
+        validate_required_gates(
+            root, 3, certificate, contracts["claim_contract.yaml"]
+        )
     certificate_path = _lifecycle_path(root, phase, "release_certificate.json")
     _atomic_write(certificate_path, certificate)
     handoff = {
