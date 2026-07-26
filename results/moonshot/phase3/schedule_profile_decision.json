@@ -1,0 +1,142 @@
+{
+  "candidate": {
+    "accounting": {
+      "active_model_parameters": 60756490,
+      "active_parameter_seconds": 15016093776.193249,
+      "checkpointing_wall_time_seconds": 0.5536086999927647,
+      "cumulative_model_visible_nonpadding_units_at_end": 16003635,
+      "cumulative_model_visible_nonpadding_units_at_start": 15502767,
+      "dense_trainable_parameters": 24237322,
+      "end_to_end_wall_time_seconds": 260.4385054000013,
+      "estimated_executed_cpu_multiply_accumulates": 50902909664256,
+      "evaluation_wall_time_seconds": 4.131859100001748,
+      "forward_backward_supervised_target_units": 1501551,
+      "measured_step_wall_time_seconds": 247.15209479996702,
+      "median_step_wall_time_seconds": 0.4592305123806,
+      "model_initialization_wall_time_seconds": 0.7019758000096772,
+      "model_visible_nonpadding_units": 500868,
+      "optimizer_steps": 504,
+      "peak_process_resident_memory_bytes": 2013609984,
+      "process_system_cpu_seconds": 26.875,
+      "process_user_cpu_seconds": 1990.96875,
+      "raw_utf8_training_bytes_exposed": 2313407,
+      "tokenization_wall_time_seconds": 5.225470300007146,
+      "tokenizer_training_wall_time_seconds": 0.0,
+      "total_model_parameters": 61655050,
+      "training_loop_wall_time_seconds_including_warmup": 249.8253032999928,
+      "units_per_wall_second": 2026.5577777334981,
+      "vocabulary_optimizer_logical_state_bytes": 0,
+      "vocabulary_optimizer_state_rows": 0
+    },
+    "checkpoint_sha256": "c999539441879ac06442cb6929768489ab9fb5bcbdd6bb47740f28d3e5d43044",
+    "first_learning_rate": {
+      "cumulative_units_before_step": 15502767,
+      "dense_adamw_learning_rate": 0.0001649595335789582,
+      "factor": 0.5498651119298608,
+      "vocabulary_learning_rate": 0.005498651119298608
+    },
+    "last_learning_rate": {
+      "cumulative_units_before_step": 16002615,
+      "dense_adamw_learning_rate": 0.00015765306024807538,
+      "factor": 0.525510200826918,
+      "vocabulary_learning_rate": 0.005255102008269181
+    },
+    "path": "results/moonshot/phase3/learning_curves/layercake_seed9824_units0p5m_schedule_from15p5m.json",
+    "sha256": "1cfe2147f53bd1c54bbd4d900c7a87247dc75a4f0332a1922fe072d994d73099",
+    "validation_bpb": 2.0326411564139044
+  },
+  "checks": {
+    "authorized_by_prior_decision": true,
+    "candidate_beats_control": true,
+    "candidate_improves_parent": true,
+    "cpu_only": true,
+    "inference_unchanged": true,
+    "same_evaluation_coverage": true,
+    "same_parent": true,
+    "same_raw_bytes": true,
+    "same_seed": true,
+    "same_trace": true,
+    "same_units": true,
+    "schedule_frozen": true
+  },
+  "control": {
+    "accounting": {
+      "active_model_parameters": 60756490,
+      "active_parameter_seconds": 14477712139.469805,
+      "checkpointing_wall_time_seconds": 0.41813469999760855,
+      "dense_trainable_parameters": 24237322,
+      "end_to_end_wall_time_seconds": 250.890092799993,
+      "estimated_executed_cpu_multiply_accumulates": 50902909664256,
+      "evaluation_wall_time_seconds": 3.6673305000003893,
+      "forward_backward_supervised_target_units": 1501551,
+      "measured_step_wall_time_seconds": 238.29079230004572,
+      "median_step_wall_time_seconds": 0.4521887004375458,
+      "model_initialization_wall_time_seconds": 0.7018529000051785,
+      "model_visible_nonpadding_units": 500868,
+      "optimizer_steps": 504,
+      "peak_process_resident_memory_bytes": 2013331456,
+      "process_system_cpu_seconds": 26.703125,
+      "process_user_cpu_seconds": 1890.375,
+      "raw_utf8_training_bytes_exposed": 2313407,
+      "tokenization_wall_time_seconds": 5.1417476999922656,
+      "tokenizer_training_wall_time_seconds": 0.0,
+      "total_model_parameters": 61655050,
+      "training_loop_wall_time_seconds_including_warmup": 240.96098760000314,
+      "units_per_wall_second": 2101.9192355923183,
+      "vocabulary_optimizer_logical_state_bytes": 0,
+      "vocabulary_optimizer_state_rows": 0
+    },
+    "path": "results/moonshot/phase3/learning_curves/layercake_seed9824_units0p5m_stateless_from15p5m.json",
+    "sha256": "4b0e69e007b8bdd88c8b6beb51b1c88751b85c76998130515555e0354e2bc71c",
+    "validation_bpb": 2.0559667774588757
+  },
+  "decision_basis": "The sole frozen schedule reversed the measured resume regression at matched trace and units. One from-scratch single-process run is authorized so optimizer state is continuous and all 5M-unit quality points are immutable. Passing remains contingent on every pre-existing Phase 3 gate.",
+  "decision_sha256": "e488f5b67b079ea852fc40e8ce25e79885d72824c76240327a452e4482d48df4",
+  "format": "layercake-phase3-schedule-profile-decision/1",
+  "frozen_continuous_run": {
+    "exact_softmax_chunk_rows": 4096,
+    "exact_softmax_period_steps": 8,
+    "exact_softmax_positions": 64,
+    "exact_softmax_weight": 1.0,
+    "immutable_evaluation_interval_units": 5000000,
+    "instruction_period_steps": 32,
+    "nearby_schedule_or_optimizer_sweeps_authorized": false,
+    "negative_vocabulary_rows": 2048,
+    "prediction_horizons": [
+      1,
+      2,
+      4
+    ],
+    "pretrained_weights_loaded": false,
+    "random_initialization": true,
+    "resume_parent": null,
+    "schedule_minimum_ratio": 0.1,
+    "schedule_total_units": 30000000,
+    "schedule_warmup_units": 1000000,
+    "seed": 9824,
+    "sequence_units": 1020,
+    "system": "layercake_complete",
+    "target_model_visible_nonpadding_units": 30000000,
+    "threads": 14,
+    "vocabulary_optimizer": "stateless hybrid sparse/dense SGD",
+    "warmup_steps_with_uncharged_updates": 0
+  },
+  "paired_deltas": {
+    "candidate_minus_control_bpb": -0.023325621044971268,
+    "candidate_minus_parent_bpb": -0.012325968318085856,
+    "candidate_over_control_rss": 1.0001383418508512,
+    "candidate_over_control_wall_time": 1.0380581492614784
+  },
+  "parent": {
+    "checkpoint_sha256": "23de4a3e581bc730cc857b6daa46815e26224cfae4cc10803943553abca1962b",
+    "path": "results/moonshot/phase3/learning_curves/layercake_seed9824_units5m_exact_from10p5m.json",
+    "sha256": "92f9af4d64aec792c89b56115d6f0fed68463671b8c966763f1d8832ebe76640",
+    "validation_bpb": 2.0449671247319903
+  },
+  "prior_decision": {
+    "path": "results/moonshot/phase3/rowwise_optimizer_decision.json",
+    "sha256": "94380979d6889b794119b84a1e3ccf4796e4a6e33e7b797cda2a9b06fdcf71f6"
+  },
+  "promotion_eligible": false,
+  "status": "CONTINUOUS_RUN_AUTHORIZED"
+}
