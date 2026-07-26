@@ -6,6 +6,7 @@ from layercake.training.phase3_cpu import (
     RowWiseAdagradVocabulary,
     TrainingOnlyHorizonHeads,
     _chunked_exact_next_token_loss,
+    _cosine_learning_rate_factor,
     _estimated_training_operations,
     _sampled_multihorizon_loss,
     _sparse_sgd_step,
@@ -139,3 +140,17 @@ def test_rowwise_adagrad_keeps_exact_update_stateless() -> None:
     assert metrics["kind"] == "stateless_dense_exact_sgd"
     assert optimizer.accumulator == {}
     torch.testing.assert_close(weight, torch.full_like(weight, -0.01))
+
+
+def test_cumulative_unit_cosine_schedule_boundaries() -> None:
+    common = {
+        "warmup_units": 1_000_000,
+        "total_units": 30_000_000,
+        "minimum_ratio": 0.1,
+    }
+    assert _cosine_learning_rate_factor(0, **common) == 0.1
+    assert _cosine_learning_rate_factor(1_000_000, **common) == 1.0
+    midpoint = _cosine_learning_rate_factor(15_500_000, **common)
+    assert abs(midpoint - 0.55) < 1.0e-12
+    assert _cosine_learning_rate_factor(30_000_000, **common) == 0.1
+    assert _cosine_learning_rate_factor(35_000_000, **common) == 0.1

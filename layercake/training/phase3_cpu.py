@@ -611,6 +611,31 @@ def _estimated_exact_softmax_operations(
     return 3 * positions * width * vocabulary
 
 
+def _cosine_learning_rate_factor(
+    cumulative_units: int,
+    *,
+    warmup_units: int,
+    total_units: int,
+    minimum_ratio: float,
+) -> float:
+    """Return a cumulative-unit warmup/cosine factor frozen before a run."""
+
+    if total_units <= 0:
+        return 1.0
+    if not 0 <= warmup_units < total_units:
+        raise ValueError("warmup_units must be in [0, total_units)")
+    if not 0.0 <= minimum_ratio <= 1.0:
+        raise ValueError("minimum_ratio must be in [0, 1]")
+    position = max(0, min(int(cumulative_units), int(total_units)))
+    if warmup_units and position < warmup_units:
+        return max(minimum_ratio, position / warmup_units)
+    progress = (
+        (position - warmup_units) / (total_units - warmup_units)
+    )
+    cosine = 0.5 * (1.0 + math.cos(math.pi * progress))
+    return minimum_ratio + (1.0 - minimum_ratio) * cosine
+
+
 @torch.inference_mode()
 def _evaluate_bpb(
     model: nn.Module,
@@ -766,6 +791,10 @@ def profile_training(
     exact_softmax_weight: float = 1.0,
     vocabulary_optimizer_mode: str = "stateless_sgd",
     rowwise_adagrad_learning_rate: float = 0.0,
+    cumulative_units_before: int = 0,
+    schedule_total_units: int = 0,
+    schedule_warmup_units: int = 0,
+    schedule_minimum_ratio: float = 0.1,
 ) -> dict[str, Any]:
     protocol = _validate_lock()
     if system not in {"layercake_complete", "dense_transformer"}:
@@ -793,6 +822,17 @@ def profile_training(
     ):
         raise ValueError(
             "row-wise Adagrad requires a positive measured learning rate"
+        )
+    if cumulative_units_before < 0:
+        raise ValueError("cumulative_units_before cannot be negative")
+    if schedule_total_units < 0:
+        raise ValueError("schedule_total_units cannot be negative")
+    if schedule_total_units:
+        _cosine_learning_rate_factor(
+            cumulative_units_before,
+            warmup_units=schedule_warmup_units,
+            total_units=schedule_total_units,
+            minimum_ratio=schedule_minimum_ratio,
         )
     torch.set_num_threads(threads)
     try:
@@ -935,6 +975,24 @@ def profile_training(
                     rng=rng,
                 )
             optimizer.zero_grad(set_to_none=True)
+            schedule_position = cumulative_units_before + model_visible_units
+            learning_rate_factor = _cosine_learning_rate_factor(
+                schedule_position,
+                warmup_units=schedule_warmup_units,
+                total_units=schedule_total_units,
+                minimum_ratio=schedule_minimum_ratio,
+            )
+            dense_learning_rate = 3.0e-4 * learning_rate_factor
+            vocabulary_learning_rate = 1.0e-2 * learning_rate_factor
+            for parameter_group in optimizer.param_groups:
+                parameter_group["lr"] = dense_learning_rate
+            if vocabulary_optimizer is not None:
+                vocabulary_optimizer.learning_rate = (
+                    rowwise_adagrad_learning_rate * learning_rate_factor
+                )
+                vocabulary_optimizer.dense_exact_learning_rate = (
+                    vocabulary_learning_rate
+                )
             started = time.perf_counter()
             hidden, task_logits = _hidden(
                 model,
@@ -969,7 +1027,10 @@ def profile_training(
             torch.nn.utils.clip_grad_norm_(dense, 1.0)
             optimizer.step()
             if vocabulary_optimizer is None:
-                sparse_rows = _sparse_sgd_step(_weight(model), 1.0e-2)
+                sparse_rows = _sparse_sgd_step(
+                    _weight(model),
+                    vocabulary_learning_rate,
+                )
                 vocabulary_step = {
                     "kind": (
                         "stateless_dense_exact_sgd"
@@ -978,7 +1039,7 @@ def profile_training(
                     ),
                     "state_rows": 0,
                     "logical_state_bytes": 0,
-                    "learning_rate": 1.0e-2,
+                    "learning_rate": vocabulary_learning_rate,
                 }
             else:
                 sparse_rows, vocabulary_step = vocabulary_optimizer.step()
@@ -1026,6 +1087,18 @@ def profile_training(
                             else "row_sparse_sampled"
                         ),
                         "vocabulary_optimizer_step": vocabulary_step,
+                        "learning_rate_schedule": {
+                            "cumulative_units_before_step": (
+                                schedule_position
+                            ),
+                            "factor": learning_rate_factor,
+                            "dense_adamw_learning_rate": (
+                                dense_learning_rate
+                            ),
+                            "vocabulary_learning_rate": (
+                                vocabulary_learning_rate
+                            ),
+                        },
                         "exact_softmax": exact_metrics,
                     }
                 )
@@ -1093,6 +1166,10 @@ def profile_training(
                 "vocabulary_optimizer_state_loaded": (
                     vocabulary_optimizer_state_loaded
                 ),
+                "cumulative_units_before": cumulative_units_before,
+                "schedule_total_units": schedule_total_units,
+                "schedule_warmup_units": schedule_warmup_units,
+                "schedule_minimum_ratio": schedule_minimum_ratio,
                 "model_visible_nonpadding_units": model_visible_units,
                 "raw_utf8_training_bytes_exposed": raw_bytes,
                 "quality": quality,
@@ -1156,6 +1233,10 @@ def profile_training(
             "vocabulary_optimizer_state_loaded": (
                 vocabulary_optimizer_state_loaded
             ),
+            "cumulative_units_before": cumulative_units_before,
+            "schedule_total_units": schedule_total_units,
+            "schedule_warmup_units": schedule_warmup_units,
+            "schedule_minimum_ratio": schedule_minimum_ratio,
             "tokenizer_only_reused": True,
             "route_homogeneous_batches": True,
             "sparse_vocabulary_gradient": exact_softmax_period == 0,
@@ -1181,6 +1262,12 @@ def profile_training(
         "accounting": {
             "raw_utf8_training_bytes_exposed": raw_bytes,
             "model_visible_nonpadding_units": model_visible_units,
+            "cumulative_model_visible_nonpadding_units_at_start": (
+                cumulative_units_before
+            ),
+            "cumulative_model_visible_nonpadding_units_at_end": (
+                cumulative_units_before + model_visible_units
+            ),
             "forward_backward_supervised_target_units": supervised_units,
             "optimizer_steps": len(step_records),
             "estimated_executed_cpu_multiply_accumulates": operation_count,
@@ -1288,6 +1375,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=float,
         default=0.0,
     )
+    parser.add_argument("--cumulative-units-before", type=int, default=0)
+    parser.add_argument("--schedule-total-units", type=int, default=0)
+    parser.add_argument("--schedule-warmup-units", type=int, default=0)
+    parser.add_argument("--schedule-minimum-ratio", type=float, default=0.1)
     args = parser.parse_args(argv)
     output = args.output if args.output.is_absolute() else ROOT / args.output
     checkpoint_directory = args.checkpoint_directory
@@ -1319,6 +1410,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         exact_softmax_weight=args.exact_softmax_weight,
         vocabulary_optimizer_mode=args.vocabulary_optimizer,
         rowwise_adagrad_learning_rate=args.rowwise_adagrad_learning_rate,
+        cumulative_units_before=args.cumulative_units_before,
+        schedule_total_units=args.schedule_total_units,
+        schedule_warmup_units=args.schedule_warmup_units,
+        schedule_minimum_ratio=args.schedule_minimum_ratio,
     )
     print(json.dumps(result["accounting"], indent=2, sort_keys=True))
     return 0
