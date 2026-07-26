@@ -1,0 +1,65 @@
+{
+  "checks": {
+    "all_exact_steps_cover_full_vocabulary": true,
+    "bpb_gain_positive": true,
+    "cpu_only": true,
+    "exact_configuration_frozen": true,
+    "exact_steps_executed": true,
+    "inference_architecture_unchanged": true,
+    "rss_below_measured_transformer": true,
+    "same_evaluation_coverage": true,
+    "same_model_visible_units": true,
+    "same_parent_checkpoint": true,
+    "same_raw_utf8_bytes": true,
+    "same_seed": true,
+    "same_trace": true,
+    "sampled_steps_remain_sparse": true
+  },
+  "decision_basis": "At identical trace, units, bytes, and evaluation coverage, infrequent exact normalization produced a positive full-vocabulary BPB gain while remaining CPU-only and below the measured transformer training-memory peak. One scale run is authorized to determine whether the gain compounds. This profile does not satisfy or modify any Phase 3 promotion gate.",
+  "decision_sha256": "ff58ce5b06e4a27dc9e7810ce0cbf7dd745c8a5f21ca33f0abf3f8762d389fbd",
+  "format": "layercake-phase3-exact-softmax-profile-decision/1",
+  "frozen_scale_configuration": {
+    "additional_model_visible_nonpadding_units": 5000000,
+    "additional_scale_runs_authorized_after_this": false,
+    "exact_softmax_chunk_rows": 4096,
+    "exact_softmax_period_steps": 8,
+    "exact_softmax_positions": 64,
+    "exact_softmax_weight": 1.0,
+    "instruction_period_steps": 32,
+    "nearby_sweeps_authorized": false,
+    "parent_checkpoint": "artifacts/moonshot/phase3_cpu_training/layercake-seed9824-units10p5m-exact",
+    "parent_checkpoint_sha256": "04ad6b65481b83212cf0f9a436bc65a7cb22f76b4612ed1c79fda1dbdfe9f437"
+  },
+  "measured_transformer_memory_reference": {
+    "path": "results/moonshot/phase3/learning_curves/transformer_seed9824_units5m_paired.json",
+    "peak_process_resident_memory_bytes": 2373300224,
+    "sha256": "c677437d6bed674a4b1af6738dacfb0a83f5af75e7dcbf48cb9c9b93963f0d13"
+  },
+  "paired_profile": {
+    "exact": {
+      "checkpoint_sha256": "04ad6b65481b83212cf0f9a436bc65a7cb22f76b4612ed1c79fda1dbdfe9f437",
+      "exact_steps": 48,
+      "path": "results/moonshot/phase3/learning_curves/layercake_seed9824_units0p5m_exact_from10m.json",
+      "sha256": "3ef7afbb0bb0008dbe4db2a8357b2b4fba70c93cc5de31213f7244a4a932c1a3",
+      "validation_bpb": 2.140166965982793
+    },
+    "exact_minus_sampled_bpb": -0.003637924329280562,
+    "model_visible_units_each": 500868,
+    "ratios_exact_over_sampled": {
+      "end_to_end_wall_time_seconds": 1.0537804880372132,
+      "estimated_executed_cpu_multiply_accumulates": 1.0070372531737966,
+      "measured_step_wall_time_seconds": 1.0570789098002265,
+      "peak_process_resident_memory_bytes": 1.1822053166073607
+    },
+    "raw_utf8_bytes_each": 2313407,
+    "sampled": {
+      "checkpoint_sha256": "80f0601f5f834a51a9b1a51db22f4518f02d8df0a4e81e957e8c75bcef48a81e",
+      "path": "results/moonshot/phase3/learning_curves/layercake_seed9824_units0p5m_sampled_from10m.json",
+      "sha256": "7d022aaab5a4bad96b389b9e91d090841f7fb5747ae14b66fb13ef083f9bba97",
+      "validation_bpb": 2.1438048903120737
+    }
+  },
+  "promotion_eligible": false,
+  "role": "bounded validation-only profile required by the prior continuation decision",
+  "status": "SCALE_ONCE_AUTHORIZED"
+}
