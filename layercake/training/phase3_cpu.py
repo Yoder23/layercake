@@ -181,11 +181,18 @@ def _hidden(
     routes: torch.Tensor,
     prompt_lengths: torch.Tensor | None,
     attention_mask: torch.Tensor,
+    *,
+    sparse_vocabulary_gradient: bool = True,
 ) -> tuple[torch.Tensor, torch.Tensor | None]:
     weight = _weight(model)
-    # sparse=True guarantees that the tied vocabulary table receives a sparse
-    # gradient from both input lookup and sampled output lookup.
-    embeds = F.embedding(input_ids, weight, sparse=True)
+    # Sampled steps keep the tied vocabulary gradient row-sparse. Exact
+    # normalization steps deliberately use a dense vocabulary gradient because
+    # every output row contributes probability mass to the normalizer.
+    embeds = F.embedding(
+        input_ids,
+        weight,
+        sparse=sparse_vocabulary_gradient,
+    )
     if isinstance(model, ShallowSparseEnglishCore):
         hidden = model.transformer(
             inputs_embeds=embeds,
@@ -232,6 +239,7 @@ def _sampled_multihorizon_loss(
     *,
     negatives: int,
     generator: torch.Generator,
+    sparse_vocabulary_gradient: bool = True,
 ) -> tuple[torch.Tensor, dict[str, float | int]]:
     candidates = _candidate_vocabulary(
         list(targets.values()),
@@ -239,7 +247,11 @@ def _sampled_multihorizon_loss(
         vocabulary_size=weight.shape[0],
         generator=generator,
     ).to(hidden.device)
-    output_embeddings = F.embedding(candidates, weight, sparse=True)
+    output_embeddings = F.embedding(
+        candidates,
+        weight,
+        sparse=sparse_vocabulary_gradient,
+    )
     losses = []
     visible_targets = 0
     for horizon in heads.horizons:
@@ -255,6 +267,67 @@ def _sampled_multihorizon_loss(
         "candidate_vocabulary_rows": int(candidates.numel()),
         "supervised_target_units": visible_targets,
         "horizon_losses": [float(value.detach()) for value in losses],
+    }
+
+
+def _chunked_exact_next_token_loss(
+    hidden: torch.Tensor,
+    target: torch.Tensor,
+    weight: torch.Tensor,
+    *,
+    maximum_positions: int,
+    vocabulary_chunk_rows: int,
+) -> tuple[torch.Tensor, dict[str, float | int]]:
+    """Compute exact full-vocabulary CE without materializing full logits.
+
+    The selected positions are deterministic and span the valid target range.
+    Chunking changes peak temporary-logit memory only; the result and gradient
+    are the exact softmax objective for those positions.
+    """
+
+    if maximum_positions <= 0:
+        raise ValueError("maximum_positions must be positive")
+    if vocabulary_chunk_rows <= 0:
+        raise ValueError("vocabulary_chunk_rows must be positive")
+    valid = target >= 0
+    selected_hidden = hidden[valid]
+    selected_target = target[valid]
+    if selected_target.numel() == 0:
+        raise ValueError("exact softmax requires at least one valid target")
+    if selected_target.numel() > maximum_positions:
+        indices = torch.linspace(
+            0,
+            selected_target.numel() - 1,
+            steps=maximum_positions,
+            device=selected_target.device,
+        ).round().to(torch.long)
+        selected_hidden = selected_hidden.index_select(0, indices)
+        selected_target = selected_target.index_select(0, indices)
+    target_embeddings = F.embedding(
+        selected_target,
+        weight,
+        sparse=False,
+    )
+    target_logits = (selected_hidden * target_embeddings).sum(dim=-1).float()
+    log_normalizer = None
+    chunks = 0
+    for start in range(0, weight.shape[0], vocabulary_chunk_rows):
+        stop = min(start + vocabulary_chunk_rows, weight.shape[0])
+        logits = selected_hidden @ weight[start:stop].transpose(0, 1)
+        chunk_normalizer = torch.logsumexp(logits.float(), dim=-1)
+        log_normalizer = (
+            chunk_normalizer
+            if log_normalizer is None
+            else torch.logaddexp(log_normalizer, chunk_normalizer)
+        )
+        chunks += 1
+    assert log_normalizer is not None
+    loss = (log_normalizer - target_logits).mean()
+    return loss, {
+        "exact_softmax_positions": int(selected_target.numel()),
+        "exact_softmax_vocabulary_rows": int(weight.shape[0]),
+        "exact_softmax_chunks": chunks,
+        "exact_softmax_loss": float(loss.detach()),
     }
 
 
@@ -374,15 +447,22 @@ def _sparse_sgd_step(weight: torch.Tensor, learning_rate: float) -> int:
     gradient = weight.grad
     if gradient is None:
         return 0
-    if not gradient.is_sparse:
-        raise RuntimeError("vocabulary gradient became dense")
-    gradient = gradient.coalesce()
-    rows = gradient.indices()[0]
-    values = gradient.values()
-    with torch.no_grad():
-        weight.index_add_(0, rows, values, alpha=-learning_rate)
+    if gradient.is_sparse:
+        gradient = gradient.coalesce()
+        rows = gradient.indices()[0]
+        values = gradient.values()
+        with torch.no_grad():
+            weight.index_add_(0, rows, values, alpha=-learning_rate)
+        updated_rows = int(torch.unique(rows).numel())
+    else:
+        # Exact full-vocabulary normalization necessarily touches every output
+        # row. Keep the update stateless so it does not allocate dense Adam
+        # moments for the 50,257 x 768 tied table.
+        with torch.no_grad():
+            weight.add_(gradient, alpha=-learning_rate)
+        updated_rows = int(weight.shape[0])
     weight.grad = None
-    return int(torch.unique(rows).numel())
+    return updated_rows
 
 
 def _estimated_training_operations(
@@ -420,6 +500,13 @@ def _estimated_training_operations(
         + auxiliary_forward
         + cake_forward
     )
+
+
+def _estimated_exact_softmax_operations(
+    *, positions: int, width: int, vocabulary: int
+) -> int:
+    # One forward matrix product and two backward matrix products.
+    return 3 * positions * width * vocabulary
 
 
 @torch.inference_mode()
@@ -555,12 +642,24 @@ def profile_training(
     progress_every: int = 0,
     resume_directory: Path | None = None,
     instruction_period: int = 4,
+    exact_softmax_period: int = 0,
+    exact_softmax_positions: int = 64,
+    exact_softmax_chunk_rows: int = 4096,
+    exact_softmax_weight: float = 1.0,
 ) -> dict[str, Any]:
     protocol = _validate_lock()
     if system not in {"layercake_complete", "dense_transformer"}:
         raise ValueError(f"unsupported profiled system: {system}")
     if output.exists():
         raise RuntimeError(f"profile evidence is immutable: {output}")
+    if exact_softmax_period < 0:
+        raise ValueError("exact_softmax_period cannot be negative")
+    if exact_softmax_positions <= 0:
+        raise ValueError("exact_softmax_positions must be positive")
+    if exact_softmax_chunk_rows <= 0:
+        raise ValueError("exact_softmax_chunk_rows must be positive")
+    if exact_softmax_weight < 0:
+        raise ValueError("exact_softmax_weight cannot be negative")
     torch.set_num_threads(threads)
     try:
         torch.set_num_interop_threads(1)
@@ -640,6 +739,11 @@ def profile_training(
             # validation deficits, but may never let each model choose its own
             # examples because that would break paired data order.
             instruction = step % instruction_period == 0
+            exact_softmax_step = (
+                exact_softmax_period > 0
+                and step % exact_softmax_period == 0
+                and not instruction
+            )
             prompt_lengths = None
             if instruction:
                 route = (
@@ -680,7 +784,12 @@ def profile_training(
             optimizer.zero_grad(set_to_none=True)
             started = time.perf_counter()
             hidden, task_logits = _hidden(
-                model, inputs, routes, prompt_lengths, attention_mask
+                model,
+                inputs,
+                routes,
+                prompt_lengths,
+                attention_mask,
+                sparse_vocabulary_gradient=not exact_softmax_step,
             )
             loss, loss_metrics = _sampled_multihorizon_loss(
                 hidden,
@@ -689,7 +798,18 @@ def profile_training(
                 heads,
                 negatives=negatives,
                 generator=negative_generator,
+                sparse_vocabulary_gradient=not exact_softmax_step,
             )
+            exact_metrics = None
+            if exact_softmax_step:
+                exact_loss, exact_metrics = _chunked_exact_next_token_loss(
+                    hidden,
+                    targets[1],
+                    _weight(model),
+                    maximum_positions=exact_softmax_positions,
+                    vocabulary_chunk_rows=exact_softmax_chunk_rows,
+                )
+                loss = loss + exact_softmax_weight * exact_loss
             if task_logits is not None and instruction:
                 loss = loss + F.cross_entropy(task_logits, routes)
             loss.backward()
@@ -715,6 +835,16 @@ def profile_training(
                     horizons=horizons,
                     active_cake=system == "layercake_complete",
                 )
+                if exact_metrics is not None:
+                    operation_count += _estimated_exact_softmax_operations(
+                        positions=int(
+                            exact_metrics["exact_softmax_positions"]
+                        ),
+                        width=768,
+                        vocabulary=int(
+                            exact_metrics["exact_softmax_vocabulary_rows"]
+                        ),
+                    )
                 step_records.append(
                     {
                         "step": step - warmup_steps,
@@ -724,6 +854,12 @@ def profile_training(
                         "route": route,
                         "candidate_vocabulary_rows": candidates,
                         "sparse_vocabulary_rows_updated": sparse_rows,
+                        "vocabulary_gradient_kind": (
+                            "dense_exact_full_vocabulary"
+                            if exact_metrics is not None
+                            else "row_sparse_sampled"
+                        ),
+                        "exact_softmax": exact_metrics,
                     }
                 )
                 vocabulary_rows_updated.add(sparse_rows)
@@ -779,6 +915,10 @@ def profile_training(
                     resume_directory is not None
                 ),
                 "instruction_period_steps": instruction_period,
+                "exact_softmax_period_steps": exact_softmax_period,
+                "exact_softmax_positions": exact_softmax_positions,
+                "exact_softmax_chunk_rows": exact_softmax_chunk_rows,
+                "exact_softmax_weight": exact_softmax_weight,
                 "model_visible_nonpadding_units": model_visible_units,
                 "raw_utf8_training_bytes_exposed": raw_bytes,
                 "quality": quality,
@@ -826,10 +966,23 @@ def profile_training(
                 resume_directory is not None
             ),
             "instruction_period_steps": instruction_period,
+            "exact_softmax_period_steps": exact_softmax_period,
+            "exact_softmax_positions": exact_softmax_positions,
+            "exact_softmax_chunk_rows": exact_softmax_chunk_rows,
+            "exact_softmax_weight": exact_softmax_weight,
             "tokenizer_only_reused": True,
             "route_homogeneous_batches": True,
-            "sparse_vocabulary_gradient": True,
-            "vocabulary_optimizer": "stateless row-sparse SGD",
+            "sparse_vocabulary_gradient": exact_softmax_period == 0,
+            "vocabulary_gradient_mode": (
+                "row-sparse sampled steps plus infrequent dense exact steps"
+                if exact_softmax_period
+                else "row-sparse sampled steps"
+            ),
+            "vocabulary_optimizer": (
+                "stateless hybrid sparse/dense SGD"
+                if exact_softmax_period
+                else "stateless row-sparse SGD"
+            ),
             "dense_optimizer": "AdamW",
         },
         "accounting": {
@@ -918,6 +1071,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--progress-every", type=int, default=0)
     parser.add_argument("--resume-directory", type=Path)
     parser.add_argument("--instruction-period", type=int, default=4)
+    parser.add_argument("--exact-softmax-period", type=int, default=0)
+    parser.add_argument("--exact-softmax-positions", type=int, default=64)
+    parser.add_argument("--exact-softmax-chunk-rows", type=int, default=4096)
+    parser.add_argument("--exact-softmax-weight", type=float, default=1.0)
     args = parser.parse_args(argv)
     output = args.output if args.output.is_absolute() else ROOT / args.output
     checkpoint_directory = args.checkpoint_directory
@@ -943,6 +1100,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         progress_every=args.progress_every,
         resume_directory=resume_directory,
         instruction_period=args.instruction_period,
+        exact_softmax_period=args.exact_softmax_period,
+        exact_softmax_positions=args.exact_softmax_positions,
+        exact_softmax_chunk_rows=args.exact_softmax_chunk_rows,
+        exact_softmax_weight=args.exact_softmax_weight,
     )
     print(json.dumps(result["accounting"], indent=2, sort_keys=True))
     return 0
