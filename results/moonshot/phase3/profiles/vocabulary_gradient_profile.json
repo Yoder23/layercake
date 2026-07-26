@@ -1,0 +1,67 @@
+{
+  "configuration": {
+    "exact_softmax_chunk_rows": 4096,
+    "exact_softmax_positions": 64,
+    "negative_vocabulary_rows": 2048,
+    "prediction_horizons": [
+      1,
+      2,
+      4
+    ],
+    "raw_utf8_bytes": 4748,
+    "seed": 9824,
+    "sequence_units": 1020
+  },
+  "cuda_memory_allocated": 0,
+  "device": "cpu",
+  "evidence_sha256": "65542be777de1ace51977fbbda9f6e9fbe5f7cb03c2ec3956bb74144e9f0abba",
+  "exact_step": {
+    "combined_loss": 14.169058799743652,
+    "exact_loss": 5.6168928146362305,
+    "gradient_rows": 50257,
+    "row_gradient_rms": {
+      "maximum": 0.08000247180461884,
+      "mean": 0.00010241377458442003,
+      "median": 7.097366960806539e-06,
+      "minimum": 1.005212425297941e-06,
+      "p10": 3.587425226214691e-06,
+      "p90": 5.4279658797895536e-05
+    },
+    "stateless_dense_sgd_retained": true
+  },
+  "format": "layercake-phase3-vocabulary-gradient-profile/1",
+  "inference_architecture_change": false,
+  "parent_checkpoint": {
+    "metadata_sha256": "15f8f19621d55ccc4a84b5c60365020fd8405731ee1f36cffb4f9d6454c21fd6",
+    "model_sha256": "23de4a3e581bc730cc857b6daa46815e26224cfae4cc10803943553abca1962b",
+    "path": "artifacts/moonshot/phase3_cpu_training/layercake-seed9824-units15p5m-exact"
+  },
+  "process_resident_memory_bytes": 1784291328,
+  "promotion_eligible": false,
+  "sampled_step": {
+    "candidate_vocabulary_rows": 2489,
+    "current_stateless_sgd_learning_rate": 0.01,
+    "current_update_row_rms": {
+      "maximum": 0.00033837129012681544,
+      "mean": 8.79118852026295e-06,
+      "median": 1.2202324342069915e-06,
+      "minimum": 1.3634166862175334e-07,
+      "p10": 5.01022327625833e-07,
+      "p90": 2.7584463168750517e-05
+    },
+    "derivation": "current SGD learning rate multiplied by observed median per-row gradient RMS; this matches the median first-use row update RMS",
+    "gradient_rows": 2489,
+    "loss": 8.552165985107422,
+    "row_gradient_rms": {
+      "maximum": 0.033837128430604935,
+      "mean": 0.0008791189175099134,
+      "median": 0.00012202325160615146,
+      "minimum": 1.3634167771670036e-05,
+      "p10": 5.010223321733065e-05,
+      "p90": 0.0027584463823586702
+    },
+    "suggested_rowwise_adagrad_learning_rate": 1.2202325160615147e-06
+  },
+  "status": "PASS",
+  "wall_time_seconds": 2.367526899994118
+}

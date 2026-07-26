@@ -465,6 +465,108 @@ def _sparse_sgd_step(weight: torch.Tensor, learning_rate: float) -> int:
     return updated_rows
 
 
+class RowWiseAdagradVocabulary:
+    """Physically sparse scalar second-moment state for sampled vocab rows."""
+
+    def __init__(
+        self,
+        weight: torch.Tensor,
+        *,
+        learning_rate: float,
+        dense_exact_learning_rate: float,
+        epsilon: float = 1.0e-12,
+    ):
+        if learning_rate <= 0:
+            raise ValueError("row-wise learning rate must be positive")
+        self.weight = weight
+        self.learning_rate = float(learning_rate)
+        self.dense_exact_learning_rate = float(dense_exact_learning_rate)
+        self.epsilon = float(epsilon)
+        # A dict ensures optimizer state is allocated only for rows physically
+        # encountered by sampled training; no vocabulary-sized moment tensor is
+        # allocated merely because the vocabulary is installed.
+        self.accumulator: dict[int, float] = {}
+
+    def step(self) -> tuple[int, dict[str, float | int | str]]:
+        gradient = self.weight.grad
+        if gradient is None:
+            return 0, {
+                "kind": "none",
+                "state_rows": len(self.accumulator),
+                "logical_state_bytes": len(self.accumulator) * 12,
+            }
+        if not gradient.is_sparse:
+            with torch.no_grad():
+                self.weight.add_(
+                    gradient,
+                    alpha=-self.dense_exact_learning_rate,
+                )
+            self.weight.grad = None
+            return int(self.weight.shape[0]), {
+                "kind": "stateless_dense_exact_sgd",
+                "state_rows": len(self.accumulator),
+                "logical_state_bytes": len(self.accumulator) * 12,
+                "learning_rate": self.dense_exact_learning_rate,
+            }
+        gradient = gradient.coalesce()
+        rows = gradient.indices()[0]
+        values = gradient.values()
+        row_ids = [int(value) for value in rows.tolist()]
+        row_mean_squares = values.square().mean(dim=1).detach().cpu().tolist()
+        accumulated = []
+        for row, mean_square in zip(row_ids, row_mean_squares):
+            value = self.accumulator.get(row, 0.0) + float(mean_square)
+            self.accumulator[row] = value
+            accumulated.append(value)
+        denominators = (
+            torch.tensor(
+                accumulated,
+                dtype=values.dtype,
+                device=values.device,
+            ).sqrt()
+            + self.epsilon
+        )
+        normalized = values / denominators[:, None]
+        with torch.no_grad():
+            self.weight.index_add_(
+                0,
+                rows,
+                normalized,
+                alpha=-self.learning_rate,
+            )
+        self.weight.grad = None
+        update_rms = (
+            normalized.square().mean(dim=1).sqrt() * self.learning_rate
+        )
+        return int(torch.unique(rows).numel()), {
+            "kind": "physically_sparse_rowwise_adagrad",
+            "state_rows": len(self.accumulator),
+            "logical_state_bytes": len(self.accumulator) * 12,
+            "learning_rate": self.learning_rate,
+            "median_update_row_rms": float(update_rms.median()),
+            "maximum_update_row_rms": float(update_rms.max()),
+        }
+
+    def state_tensors(self) -> dict[str, torch.Tensor]:
+        rows = sorted(self.accumulator)
+        return {
+            "rows": torch.tensor(rows, dtype=torch.int64),
+            "accumulator": torch.tensor(
+                [self.accumulator[row] for row in rows],
+                dtype=torch.float32,
+            ),
+        }
+
+    def load_state_tensors(self, state: dict[str, torch.Tensor]) -> None:
+        rows = state["rows"].tolist()
+        values = state["accumulator"].tolist()
+        if len(rows) != len(values) or len(set(rows)) != len(rows):
+            raise RuntimeError("invalid row-wise vocabulary optimizer state")
+        self.accumulator = {
+            int(row): float(value) for row, value in zip(rows, values)
+        }
+
+
 def _estimated_training_operations(
     *,
     layers: int,
@@ -566,6 +668,7 @@ def _save_diagnostic_checkpoint(
     heads: TrainingOnlyHorizonHeads,
     directory: Path,
     metadata: dict[str, Any],
+    vocabulary_optimizer_state: dict[str, torch.Tensor] | None = None,
 ) -> dict[str, Any]:
     if directory.exists():
         raise RuntimeError(f"diagnostic checkpoint is immutable: {directory}")
@@ -604,6 +707,21 @@ def _save_diagnostic_checkpoint(
             "included_in_final_inference": False,
         },
     }
+    if vocabulary_optimizer_state is not None:
+        optimizer_path = directory / "vocabulary_optimizer_state.safetensors"
+        save_file(
+            {
+                name: value.detach().cpu().contiguous()
+                for name, value in vocabulary_optimizer_state.items()
+            },
+            str(optimizer_path),
+        )
+        metadata["training_only_vocabulary_optimizer_state"] = {
+            "path": optimizer_path.relative_to(ROOT).as_posix(),
+            "sha256": _sha(optimizer_path),
+            "bytes": optimizer_path.stat().st_size,
+            "included_in_final_inference": False,
+        }
     _write(directory / "metadata.json", metadata)
     return metadata
 
@@ -646,6 +764,8 @@ def profile_training(
     exact_softmax_positions: int = 64,
     exact_softmax_chunk_rows: int = 4096,
     exact_softmax_weight: float = 1.0,
+    vocabulary_optimizer_mode: str = "stateless_sgd",
+    rowwise_adagrad_learning_rate: float = 0.0,
 ) -> dict[str, Any]:
     protocol = _validate_lock()
     if system not in {"layercake_complete", "dense_transformer"}:
@@ -660,6 +780,20 @@ def profile_training(
         raise ValueError("exact_softmax_chunk_rows must be positive")
     if exact_softmax_weight < 0:
         raise ValueError("exact_softmax_weight cannot be negative")
+    if vocabulary_optimizer_mode not in {
+        "stateless_sgd",
+        "rowwise_adagrad_sparse",
+    }:
+        raise ValueError(
+            f"unsupported vocabulary optimizer: {vocabulary_optimizer_mode}"
+        )
+    if (
+        vocabulary_optimizer_mode == "rowwise_adagrad_sparse"
+        and rowwise_adagrad_learning_rate <= 0
+    ):
+        raise ValueError(
+            "row-wise Adagrad requires a positive measured learning rate"
+        )
     torch.set_num_threads(threads)
     try:
         torch.set_num_interop_threads(1)
@@ -721,6 +855,25 @@ def profile_training(
     optimizer = torch.optim.AdamW(
         dense, lr=3.0e-4, betas=(0.9, 0.95), weight_decay=0.1
     )
+    vocabulary_optimizer = (
+        RowWiseAdagradVocabulary(
+            _weight(model),
+            learning_rate=rowwise_adagrad_learning_rate,
+            dense_exact_learning_rate=1.0e-2,
+        )
+        if vocabulary_optimizer_mode == "rowwise_adagrad_sparse"
+        else None
+    )
+    vocabulary_optimizer_state_loaded = False
+    if vocabulary_optimizer is not None and resume_directory is not None:
+        state_path = (
+            resume_directory / "vocabulary_optimizer_state.safetensors"
+        )
+        if state_path.is_file():
+            vocabulary_optimizer.load_state_tensors(
+                load_file(str(state_path))
+            )
+            vocabulary_optimizer_state_loaded = True
     initialization_seconds = time.perf_counter() - initialization_started
     rng = random.Random(seed)
     negative_generator = torch.Generator().manual_seed(seed ^ 0xBAD5EED)
@@ -815,7 +968,20 @@ def profile_training(
             loss.backward()
             torch.nn.utils.clip_grad_norm_(dense, 1.0)
             optimizer.step()
-            sparse_rows = _sparse_sgd_step(_weight(model), 1.0e-2)
+            if vocabulary_optimizer is None:
+                sparse_rows = _sparse_sgd_step(_weight(model), 1.0e-2)
+                vocabulary_step = {
+                    "kind": (
+                        "stateless_dense_exact_sgd"
+                        if exact_softmax_step
+                        else "stateless_row_sparse_sgd"
+                    ),
+                    "state_rows": 0,
+                    "logical_state_bytes": 0,
+                    "learning_rate": 1.0e-2,
+                }
+            else:
+                sparse_rows, vocabulary_step = vocabulary_optimizer.step()
             elapsed = time.perf_counter() - started
             if instruction:
                 route_losses[route] = (
@@ -859,6 +1025,7 @@ def profile_training(
                             if exact_metrics is not None
                             else "row_sparse_sampled"
                         ),
+                        "vocabulary_optimizer_step": vocabulary_step,
                         "exact_softmax": exact_metrics,
                     }
                 )
@@ -919,10 +1086,22 @@ def profile_training(
                 "exact_softmax_positions": exact_softmax_positions,
                 "exact_softmax_chunk_rows": exact_softmax_chunk_rows,
                 "exact_softmax_weight": exact_softmax_weight,
+                "vocabulary_optimizer_mode": vocabulary_optimizer_mode,
+                "rowwise_adagrad_learning_rate": (
+                    rowwise_adagrad_learning_rate
+                ),
+                "vocabulary_optimizer_state_loaded": (
+                    vocabulary_optimizer_state_loaded
+                ),
                 "model_visible_nonpadding_units": model_visible_units,
                 "raw_utf8_training_bytes_exposed": raw_bytes,
                 "quality": quality,
             },
+            (
+                vocabulary_optimizer.state_tensors()
+                if vocabulary_optimizer is not None
+                else None
+            ),
         )
         checkpoint_seconds = time.perf_counter() - checkpoint_started
     end_to_end_seconds = time.perf_counter() - end_to_end_started
@@ -970,6 +1149,13 @@ def profile_training(
             "exact_softmax_positions": exact_softmax_positions,
             "exact_softmax_chunk_rows": exact_softmax_chunk_rows,
             "exact_softmax_weight": exact_softmax_weight,
+            "vocabulary_optimizer_mode": vocabulary_optimizer_mode,
+            "rowwise_adagrad_learning_rate": (
+                rowwise_adagrad_learning_rate
+            ),
+            "vocabulary_optimizer_state_loaded": (
+                vocabulary_optimizer_state_loaded
+            ),
             "tokenizer_only_reused": True,
             "route_homogeneous_batches": True,
             "sparse_vocabulary_gradient": exact_softmax_period == 0,
@@ -979,9 +1165,16 @@ def profile_training(
                 else "row-sparse sampled steps"
             ),
             "vocabulary_optimizer": (
-                "stateless hybrid sparse/dense SGD"
-                if exact_softmax_period
-                else "stateless row-sparse SGD"
+                (
+                    "physically sparse row-wise Adagrad on sampled rows; "
+                    "stateless dense SGD on exact steps"
+                )
+                if vocabulary_optimizer is not None
+                else (
+                    "stateless hybrid sparse/dense SGD"
+                    if exact_softmax_period
+                    else "stateless row-sparse SGD"
+                )
             ),
             "dense_optimizer": "AdamW",
         },
@@ -1012,6 +1205,16 @@ def profile_training(
                 model_visible_units / measured_step_seconds
             ),
             "peak_process_resident_memory_bytes": memory["peak"],
+            "vocabulary_optimizer_state_rows": (
+                len(vocabulary_optimizer.accumulator)
+                if vocabulary_optimizer is not None
+                else 0
+            ),
+            "vocabulary_optimizer_logical_state_bytes": (
+                len(vocabulary_optimizer.accumulator) * 12
+                if vocabulary_optimizer is not None
+                else 0
+            ),
             "process_user_cpu_seconds": cpu_end.user - cpu_start.user,
             "process_system_cpu_seconds": cpu_end.system - cpu_start.system,
         },
@@ -1075,6 +1278,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--exact-softmax-positions", type=int, default=64)
     parser.add_argument("--exact-softmax-chunk-rows", type=int, default=4096)
     parser.add_argument("--exact-softmax-weight", type=float, default=1.0)
+    parser.add_argument(
+        "--vocabulary-optimizer",
+        choices=("stateless_sgd", "rowwise_adagrad_sparse"),
+        default="stateless_sgd",
+    )
+    parser.add_argument(
+        "--rowwise-adagrad-learning-rate",
+        type=float,
+        default=0.0,
+    )
     args = parser.parse_args(argv)
     output = args.output if args.output.is_absolute() else ROOT / args.output
     checkpoint_directory = args.checkpoint_directory
@@ -1104,6 +1317,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         exact_softmax_positions=args.exact_softmax_positions,
         exact_softmax_chunk_rows=args.exact_softmax_chunk_rows,
         exact_softmax_weight=args.exact_softmax_weight,
+        vocabulary_optimizer_mode=args.vocabulary_optimizer,
+        rowwise_adagrad_learning_rate=args.rowwise_adagrad_learning_rate,
     )
     print(json.dumps(result["accounting"], indent=2, sort_keys=True))
     return 0

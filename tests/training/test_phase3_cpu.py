@@ -3,6 +3,7 @@ from __future__ import annotations
 import torch
 
 from layercake.training.phase3_cpu import (
+    RowWiseAdagradVocabulary,
     TrainingOnlyHorizonHeads,
     _chunked_exact_next_token_loss,
     _estimated_training_operations,
@@ -97,3 +98,44 @@ def test_exact_softmax_uses_stateless_dense_vocabulary_update() -> None:
     assert rows == weight.shape[0]
     assert weight.grad is None
     assert not torch.equal(before, weight)
+
+
+def test_rowwise_adagrad_allocates_state_only_for_sparse_rows() -> None:
+    weight = torch.nn.Parameter(torch.zeros(7, 3))
+    optimizer = RowWiseAdagradVocabulary(
+        weight,
+        learning_rate=1.0e-4,
+        dense_exact_learning_rate=1.0e-2,
+    )
+    indices = torch.tensor([[1, 5]])
+    values = torch.tensor([[1.0, 2.0, 3.0], [2.0, 1.0, 2.0]])
+    weight.grad = torch.sparse_coo_tensor(indices, values, weight.shape)
+    rows, metrics = optimizer.step()
+    assert rows == 2
+    assert metrics["state_rows"] == 2
+    assert set(optimizer.accumulator) == {1, 5}
+    assert torch.count_nonzero(weight[0]).item() == 0
+    assert torch.count_nonzero(weight[1]).item() == 3
+    state = optimizer.state_tensors()
+    restored = RowWiseAdagradVocabulary(
+        torch.nn.Parameter(torch.zeros(7, 3)),
+        learning_rate=1.0e-4,
+        dense_exact_learning_rate=1.0e-2,
+    )
+    restored.load_state_tensors(state)
+    assert restored.accumulator == optimizer.accumulator
+
+
+def test_rowwise_adagrad_keeps_exact_update_stateless() -> None:
+    weight = torch.nn.Parameter(torch.zeros(5, 2))
+    optimizer = RowWiseAdagradVocabulary(
+        weight,
+        learning_rate=1.0e-4,
+        dense_exact_learning_rate=1.0e-2,
+    )
+    weight.grad = torch.ones_like(weight)
+    rows, metrics = optimizer.step()
+    assert rows == 5
+    assert metrics["kind"] == "stateless_dense_exact_sgd"
+    assert optimizer.accumulator == {}
+    torch.testing.assert_close(weight, torch.full_like(weight, -0.01))
