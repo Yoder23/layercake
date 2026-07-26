@@ -1,0 +1,76 @@
+{
+  "branch_decision": {
+    "additional_exact_period_weight_position_or_chunk_sweeps": false,
+    "exact_softmax_calibration_alone": "CLOSED_INSUFFICIENT",
+    "reason": "The sole authorized 5M-unit scale run remained 0.32757 BPB above the locked threshold. Exact normalization is physically verified and bounded, but its gain is insufficient as a standalone repair."
+  },
+  "checks": {
+    "cpu_only": true,
+    "exact_steps_executed": true,
+    "frozen_exact_configuration_used": true,
+    "full_vocabulary_physically_updated": true,
+    "inference_architecture_unchanged": true,
+    "profile_authorized_exactly_one_scale": true,
+    "quality_threshold_not_crossed": true,
+    "scale_budget_reached": true,
+    "scale_parent_is_profile_checkpoint": true
+  },
+  "decision_sha256": "f25e5932f3812142e42c23cf4cb199cb3e6d7af0e2bc7a309945633dd50caadf",
+  "format": "layercake-phase3-exact-softmax-scale-decision/1",
+  "measured_limiting_factor": "The tied 50,257-row vocabulary still uses stateless SGD: sampled rows retain no adaptive learning history, while exact steps must remain stateless to avoid dense optimizer moments.",
+  "negative_evidence_preserved": true,
+  "next_bounded_experiment": {
+    "change": "Replace stateless SGD on sampled vocabulary rows with one scalar second-moment accumulator per row; retain stateless dense SGD on the already frozen exact-softmax steps.",
+    "inference_architecture_change": false,
+    "name": "rowwise_adaptive_sparse_vocabulary_state",
+    "nearby_optimizer_or_learning_rate_sweeps_authorized": false,
+    "profile": "one paired 0.5M-unit validation branch from the same parent, same trace, exact schedule, CPU, and evaluation coverage"
+  },
+  "phase3_status": "OPEN_CONTINUATION_REQUIRED",
+  "profile_decision": {
+    "path": "results/moonshot/phase3/exact_softmax_profile_decision.json",
+    "sha256": "8642628d3bd4014c596f4c5da0ebf3111c2fb8f75c55eeda975b2c6b1c3a3067"
+  },
+  "promotion_eligible": false,
+  "same_random_init_lineage_cumulative": {
+    "end_to_end_wall_time_hours": 2.752855934111099,
+    "end_to_end_wall_time_seconds": 9910.281362799957,
+    "model_visible_nonpadding_units": 15502767,
+    "raw_utf8_training_bytes_exposed": 72048737,
+    "validation_bpb": 2.0449671247319903
+  },
+  "scale_run": {
+    "accounting": {
+      "active_model_parameters": 60756490,
+      "active_parameter_seconds": 144834227537.51318,
+      "checkpointing_wall_time_seconds": 0.5537316999980249,
+      "dense_trainable_parameters": 24237322,
+      "end_to_end_wall_time_seconds": 2399.443261099994,
+      "estimated_executed_cpu_multiply_accumulates": 508766424293376,
+      "evaluation_wall_time_seconds": 3.6040632000076585,
+      "forward_backward_supervised_target_units": 14990802,
+      "measured_step_wall_time_seconds": 2383.847841399547,
+      "median_step_wall_time_seconds": 0.453521192073822,
+      "model_initialization_wall_time_seconds": 0.7058802999963518,
+      "model_visible_nonpadding_units": 5000486,
+      "optimizer_steps": 5038,
+      "peak_process_resident_memory_bytes": 2016301056,
+      "process_system_cpu_seconds": 245.53125,
+      "process_user_cpu_seconds": 18508.343749999996,
+      "raw_utf8_training_bytes_exposed": 23168042,
+      "tokenization_wall_time_seconds": 5.146780099996249,
+      "tokenizer_training_wall_time_seconds": 0.0,
+      "total_model_parameters": 61655050,
+      "training_loop_wall_time_seconds_including_warmup": 2389.43275729999,
+      "units_per_wall_second": 2097.65317784051
+    },
+    "bpb_gain_during_scale_segment": 0.09519984125080283,
+    "checkpoint_sha256": "23de4a3e581bc730cc857b6daa46815e26224cfae4cc10803943553abca1962b",
+    "exact_steps": 473,
+    "path": "results/moonshot/phase3/learning_curves/layercake_seed9824_units5m_exact_from10p5m.json",
+    "quality_gap_to_locked_threshold": 0.32756712473199023,
+    "sha256": "92f9af4d64aec792c89b56115d6f0fed68463671b8c966763f1d8832ebe76640",
+    "validation_bpb": 2.0449671247319903
+  },
+  "status": "CLOSED_INSUFFICIENT"
+}
