@@ -1,0 +1,38 @@
+{
+  "format": "layercake-phase4-portable-lexical-autonomous-protocol/1",
+  "status": "PREREGISTERED_BEFORE_AUTONOMOUS_EVALUATION",
+  "parent": "moonshot/phase4_portable_lexical_pointer_preregistration.json",
+  "artifact": {
+    "path": "artifacts/moonshot/phase4/candidates/python-portable-lexical-pointer-seed9440.pt",
+    "file_sha256": "90192d3ceec4c07b81d4f0773a6da22c12cc87aee510eff1a1ca41548052c902",
+    "payload_hash": "414d002aa646c23cb03805fdb27dbf0da1b151408d02f798b6e2f0dc2bdb1fbd"
+  },
+  "teacher_forced_probe": {
+    "evidence_sha256": "967f90e3f5fa19e8f3615f0b6ba53891f271120589b6ee0141ba0b76187804e5",
+    "distinct_prompts": 256,
+    "pointer_byte_accuracy": 0.9824298024177551,
+    "identifier_next_byte_accuracy": 0.9586458206176758,
+    "gate_passed": true
+  },
+  "dataset": {
+    "path": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+    "sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+    "split": "validation",
+    "distinct_prompts": 256,
+    "functional_validation_or_test_rows": 0,
+    "promotion_credit": 0
+  },
+  "generation": {
+    "policy": "greedy_argmax_persistent_incremental_neural_pointer_distribution",
+    "required_exact_prefix": "UTF-8 bytes for def, one space, the exact requested identifier, and opening parenthesis",
+    "generated_bytes_per_prompt": "length of the required exact prefix",
+    "templates_retrieval_forcing_or_output_rewrite_allowed": false
+  },
+  "gate": {
+    "minimum_exact_prefix_successes": 231,
+    "minimum_exact_prefix_rate": 0.9,
+    "if_pass": "Authorize the locked 64-prompt functional validation once.",
+    "if_fail": "Close the raw-byte pointer branch without a nearby sweep.",
+    "test_split_access_allowed": false
+  }
+}
