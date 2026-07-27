@@ -28,7 +28,10 @@ import torch.nn.functional as F
 from safetensors.torch import load_file, save_file
 
 from layercake.models.routed_cakes import HostResidualCake
-from layercake.domain_runtime import RecurrentHostResidualCake
+from layercake.domain_runtime import (
+    AttentiveHostResidualCake,
+    RecurrentHostResidualCake,
+)
 from layercake.training.data import sha256_file
 from layercake.training.phase2_shallow_sparse import load_student
 
@@ -980,6 +983,9 @@ def train_recurrent_cake(
     initial_checkpoint: Path | None = None,
     prompt_retention_fraction: float = 0.0,
     prompt_retention_weight: float = 0.25,
+    architecture: str = "recurrent",
+    heads: int = 6,
+    expansion: int = 4,
 ) -> dict[str, Any]:
     checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
     cache = cache if cache.is_absolute() else ROOT / cache
@@ -999,12 +1005,24 @@ def train_recurrent_cake(
     targets = cached["target_ids"].long()
     masks = cached["response_mask"].bool()
     offsets = cached["row_offsets"].long().tolist()
-    cake = RecurrentHostResidualCake(
-        d_abi=768,
-        hidden_width=hidden_width,
-        layers=layers,
-        max_residual=max_residual,
-    )
+    if architecture == "recurrent":
+        cake = RecurrentHostResidualCake(
+            d_abi=768,
+            hidden_width=hidden_width,
+            layers=layers,
+            max_residual=max_residual,
+        )
+    elif architecture == "attentive":
+        cake = AttentiveHostResidualCake(
+            d_abi=768,
+            hidden_width=hidden_width,
+            layers=layers,
+            heads=heads,
+            expansion=expansion,
+            max_residual=max_residual,
+        )
+    else:
+        raise ValueError(f"unknown semantic cake architecture: {architecture}")
     initial_sha = None
     if initial_checkpoint is not None:
         initial_checkpoint = (
@@ -1040,7 +1058,11 @@ def train_recurrent_cake(
             batch_masks[batch_index, :count] = masks[start:stop]
             batch_valid[batch_index, :count] = True
         optimizer.zero_grad(set_to_none=True)
-        adapted, _ = cake(batch_states)
+        adapted = (
+            cake.training_forward(batch_states)
+            if isinstance(cake, AttentiveHostResidualCake)
+            else cake(batch_states)[0]
+        )
         supervised = batch_masks.clone()
         prompt_selected = torch.zeros_like(batch_masks)
         if prompt_retention_fraction > 0:
@@ -1058,9 +1080,9 @@ def train_recurrent_cake(
         if prompt_selected.any():
             weights[prompt_selected[supervised]] = prompt_retention_weight
         loss = (losses * weights).sum() / weights.sum()
-        residual = selected_adapted - batch_states[batch_masks]
+        residual = selected_adapted - batch_states[supervised]
         stability = residual.square().mean() / (
-            batch_states[batch_masks].square().mean().clamp_min(1e-6)
+            batch_states[supervised].square().mean().clamp_min(1e-6)
         )
         objective = loss + 0.002 * stability
         objective.backward()
@@ -1110,11 +1132,20 @@ def train_recurrent_cake(
         "cake_checkpoint": output.relative_to(ROOT).as_posix(),
         "cake_checkpoint_sha256": sha256_file(output),
         "architecture": {
-            "name": "recurrent_host_residual",
+            "name": (
+                "attentive_host_residual"
+                if isinstance(cake, AttentiveHostResidualCake)
+                else "recurrent_host_residual"
+            ),
             "d_abi": 768,
             "hidden_width": hidden_width,
             "layers": layers,
             "max_residual": max_residual,
+            **(
+                {"heads": heads, "expansion": expansion}
+                if isinstance(cake, AttentiveHostResidualCake)
+                else {}
+            ),
         },
         "optimizer_steps": steps,
         "batch_size": batch_size,
@@ -1150,7 +1181,7 @@ def _domain_prefill(model, cake, input_ids: torch.Tensor) -> dict[str, Any]:
         use_cache=True,
     )
     cake_state = None
-    if isinstance(cake, RecurrentHostResidualCake):
+    if isinstance(cake, (RecurrentHostResidualCake, AttentiveHostResidualCake)):
         adapted_sequence, cake_state = cake(result["hidden"])
         adapted = adapted_sequence[:, -1]
     else:
@@ -1172,7 +1203,12 @@ def _domain_decode(model, cake, state: dict[str, Any], token: torch.Tensor) -> N
         use_cache=True,
     )
     state["past_key_values"] = result["past_key_values"]
-    if isinstance(cake, RecurrentHostResidualCake):
+    if isinstance(cake, AttentiveHostResidualCake):
+        adapted, cake_state = cake.step(
+            result["hidden"][:, -1], state["cake_state"]
+        )
+        state["cake_state"] = cake_state
+    elif isinstance(cake, RecurrentHostResidualCake):
         adapted, cake_state = cake(
             result["hidden"][:, -1], state["cake_state"]
         )
@@ -1409,7 +1445,28 @@ def evaluate_functional(
             else ROOT / cake_checkpoint
         )
         tensors = load_file(str(cake_checkpoint), device="cpu")
-        if "recurrent.weight_ih_l0" in tensors:
+        if "blocks.0.attention.in_proj_weight" in tensors:
+            hidden_width = int(tensors["input.weight"].shape[0])
+            layers = len(
+                {
+                    name.split(".")[1]
+                    for name in tensors
+                    if name.startswith("blocks.")
+                }
+            )
+            heads = 6
+            expansion = int(
+                tensors["blocks.0.feedforward.0.weight"].shape[0]
+                / hidden_width
+            )
+            cake = AttentiveHostResidualCake(
+                d_abi=768,
+                hidden_width=hidden_width,
+                layers=layers,
+                heads=heads,
+                expansion=expansion,
+            )
+        elif "recurrent.weight_ih_l0" in tensors:
             hidden_width = int(tensors["recurrent.weight_hh_l0"].shape[1])
             layers = sum(
                 name.startswith("recurrent.weight_ih_l")
@@ -1569,6 +1626,23 @@ def main(argv: Sequence[str] | None = None) -> int:
     recurrent.add_argument("--initial-checkpoint", type=Path)
     recurrent.add_argument("--prompt-retention-fraction", type=float, default=0.0)
     recurrent.add_argument("--prompt-retention-weight", type=float, default=0.25)
+    attentive = sub.add_parser("train-attentive")
+    attentive.add_argument(
+        "--checkpoint", type=Path, default=DEFAULT_CHECKPOINT
+    )
+    attentive.add_argument("--cache", type=Path, required=True)
+    attentive.add_argument("--output", type=Path, required=True)
+    attentive.add_argument("--seed", type=int, required=True)
+    attentive.add_argument("--hidden-width", type=int, default=384)
+    attentive.add_argument("--layers", type=int, default=1)
+    attentive.add_argument("--heads", type=int, default=6)
+    attentive.add_argument("--expansion", type=int, default=4)
+    attentive.add_argument("--max-residual", type=float, default=6.0)
+    attentive.add_argument("--steps", type=int, default=800)
+    attentive.add_argument("--batch-size", type=int, default=8)
+    attentive.add_argument("--learning-rate", type=float, default=3.0e-4)
+    attentive.add_argument("--prompt-retention-fraction", type=float, default=0.25)
+    attentive.add_argument("--prompt-retention-weight", type=float, default=0.25)
     evaluate = sub.add_parser("evaluate")
     evaluate.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     evaluate.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
@@ -1601,7 +1675,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             negative_count=args.negative_count,
             learning_rate=args.learning_rate,
         )
-    elif args.command == "train-recurrent":
+    elif args.command in {"train-recurrent", "train-attentive"}:
         result = train_recurrent_cake(
             args.checkpoint,
             args.cache,
@@ -1613,9 +1687,22 @@ def main(argv: Sequence[str] | None = None) -> int:
             steps=args.steps,
             batch_size=args.batch_size,
             learning_rate=args.learning_rate,
-            initial_checkpoint=args.initial_checkpoint,
+            initial_checkpoint=(
+                args.initial_checkpoint
+                if args.command == "train-recurrent"
+                else None
+            ),
             prompt_retention_fraction=args.prompt_retention_fraction,
             prompt_retention_weight=args.prompt_retention_weight,
+            architecture=(
+                "attentive"
+                if args.command == "train-attentive"
+                else "recurrent"
+            ),
+            heads=(args.heads if args.command == "train-attentive" else 6),
+            expansion=(
+                args.expansion if args.command == "train-attentive" else 4
+            ),
         )
     else:
         result = evaluate_functional(

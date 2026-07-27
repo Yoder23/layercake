@@ -1,0 +1,36 @@
+{
+  "format": "layercake-phase4-attentive-cake-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_TRAINING",
+  "parent": "moonshot/phase4_identifier_retention_preregistration.json",
+  "failed_checkpoint_sha256": "3c35441a9444f9e048ccb3da77818daf1f3da767bab20346e6fbd1f9a8c9bc3b",
+  "failed_validation_evidence_sha256": "5eec4c075679a799e2cde26e24e6d675767d237e3bd600de71ccfcdadfad8422",
+  "representation_decision": "Reject single-state recurrent semantic residual; directly retain causal ABI-state history.",
+  "bounded_architecture": {
+    "name": "attentive_host_residual",
+    "canonical_input_width": 768,
+    "canonical_output_width": 768,
+    "private_width": 384,
+    "causal_attention_layers": 1,
+    "attention_heads": 6,
+    "feedforward_expansion": 4,
+    "maximum_residual": 6.0,
+    "host_core_trainable_parameters": 0,
+    "host_output_head_trainable_parameters": 0
+  },
+  "bounded_screen": {
+    "seed": 9404,
+    "training_device": "cpu",
+    "optimizer_steps": 800,
+    "batch_size": 8,
+    "learning_rate": 0.0003,
+    "prompt_token_sample_fraction": 0.25,
+    "prompt_token_loss_weight": 0.25,
+    "validation_prompts": 64,
+    "minimum_success_rate_to_authorize_other_seeds": 0.8,
+    "test_split_access_allowed": false
+  },
+  "speed_risk": {
+    "reason": "Attention adds an active domain path and must retain at least 90% of sealed Phase 2 throughput.",
+    "no_quality_only_promotion": true
+  }
+}

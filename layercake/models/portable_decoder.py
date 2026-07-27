@@ -7,7 +7,10 @@ from typing import Any
 from torch import nn
 
 from layercake.cake.package import CakePackage
-from layercake.domain_runtime import RecurrentHostResidualCake
+from layercake.domain_runtime import (
+    AttentiveHostResidualCake,
+    RecurrentHostResidualCake,
+)
 from layercake.portable_domain import PortableDomainDecoder
 
 from .portable_fusion import PortableFusionCake, PortableFusionConfig
@@ -66,6 +69,27 @@ def load_cake_module(package: CakePackage) -> nn.Module:
                 d_abi=int(architecture["d_abi"]),
                 hidden_width=int(architecture["hidden_width"]),
                 layers=int(architecture["layers"]),
+                max_residual=float(architecture["max_residual"]),
+            )
+        elif (
+            set(architecture)
+            == {
+                "name",
+                "d_abi",
+                "hidden_width",
+                "layers",
+                "heads",
+                "expansion",
+                "max_residual",
+            }
+            and architecture.get("name") == "attentive_host_residual"
+        ):
+            model = AttentiveHostResidualCake(
+                d_abi=int(architecture["d_abi"]),
+                hidden_width=int(architecture["hidden_width"]),
+                layers=int(architecture["layers"]),
+                heads=int(architecture["heads"]),
+                expansion=int(architecture["expansion"]),
                 max_residual=float(architecture["max_residual"]),
             )
         else:

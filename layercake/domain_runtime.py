@@ -69,6 +69,157 @@ class RecurrentHostResidualCake(nn.Module):
         return sum(parameter.numel() for parameter in self.parameters())
 
 
+class _AttentiveResidualBlock(nn.Module):
+    def __init__(self, width: int, heads: int, expansion: int):
+        super().__init__()
+        self.attention_norm = nn.LayerNorm(width)
+        self.attention = nn.MultiheadAttention(
+            width, heads, batch_first=True, dropout=0.0
+        )
+        self.feedforward_norm = nn.LayerNorm(width)
+        self.feedforward = nn.Sequential(
+            nn.Linear(width, expansion * width),
+            nn.GELU(),
+            nn.Linear(expansion * width, width),
+        )
+
+    def forward(self, hidden: torch.Tensor) -> torch.Tensor:
+        normalized = self.attention_norm(hidden)
+        length = hidden.shape[1]
+        causal = torch.triu(
+            torch.ones(
+                length, length, dtype=torch.bool, device=hidden.device
+            ),
+            diagonal=1,
+        )
+        attended, _ = self.attention(
+            normalized, normalized, normalized, attn_mask=causal,
+            need_weights=False,
+        )
+        hidden = hidden + attended
+        return hidden + self.feedforward(self.feedforward_norm(hidden))
+
+    def prefill(
+        self, hidden: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        normalized = self.attention_norm(hidden)
+        length = hidden.shape[1]
+        causal = torch.triu(
+            torch.ones(
+                length, length, dtype=torch.bool, device=hidden.device
+            ),
+            diagonal=1,
+        )
+        attended, _ = self.attention(
+            normalized, normalized, normalized, attn_mask=causal,
+            need_weights=False,
+        )
+        hidden = hidden + attended
+        return (
+            hidden + self.feedforward(self.feedforward_norm(hidden)),
+            normalized,
+        )
+
+    def step(
+        self, hidden: torch.Tensor, normalized_cache: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        normalized = self.attention_norm(hidden)
+        memory = torch.cat((normalized_cache, normalized), dim=1)
+        attended, _ = self.attention(
+            normalized, memory, memory, need_weights=False
+        )
+        hidden = hidden + attended
+        hidden = hidden + self.feedforward(self.feedforward_norm(hidden))
+        return hidden, memory
+
+
+class AttentiveHostResidualCake(nn.Module):
+    """Causal semantic residual retaining direct attention to ABI history."""
+
+    def __init__(
+        self,
+        d_abi: int = 768,
+        hidden_width: int = 384,
+        layers: int = 1,
+        heads: int = 6,
+        expansion: int = 4,
+        max_residual: float = 6.0,
+    ):
+        super().__init__()
+        if (
+            min(d_abi, hidden_width, layers, heads, expansion) <= 0
+            or hidden_width % heads
+            or max_residual <= 0
+        ):
+            raise ValueError("attentive host residual dimensions are invalid")
+        self.d_abi = int(d_abi)
+        self.hidden_width = int(hidden_width)
+        self.layers = int(layers)
+        self.heads = int(heads)
+        self.expansion = int(expansion)
+        self.max_residual = float(max_residual)
+        self.input_norm = nn.LayerNorm(d_abi)
+        self.input = nn.Linear(d_abi, hidden_width, bias=False)
+        self.blocks = nn.ModuleList(
+            _AttentiveResidualBlock(hidden_width, heads, expansion)
+            for _ in range(layers)
+        )
+        self.output_norm = nn.LayerNorm(hidden_width)
+        self.output = nn.Linear(hidden_width, d_abi, bias=False)
+        self.alpha = nn.Parameter(torch.tensor(1.0))
+        nn.init.zeros_(self.output.weight)
+
+    def _adapt(
+        self, abi_state: torch.Tensor, hidden: torch.Tensor
+    ) -> torch.Tensor:
+        residual = self.max_residual * torch.tanh(
+            self.output(self.output_norm(hidden))
+        )
+        return abi_state + self.alpha * residual
+
+    def forward(
+        self, abi_state: torch.Tensor
+    ) -> tuple[torch.Tensor, tuple[torch.Tensor, ...]]:
+        squeeze = abi_state.ndim == 2
+        if squeeze:
+            abi_state = abi_state[:, None]
+        if abi_state.ndim != 3 or abi_state.shape[-1] != self.d_abi:
+            raise ValueError("host ABI state must be [batch, sequence, d_abi]")
+        hidden = self.input(self.input_norm(abi_state))
+        caches = []
+        for block in self.blocks:
+            hidden, cache = block.prefill(hidden)
+            caches.append(cache)
+        adapted = self._adapt(abi_state, hidden)
+        if squeeze:
+            adapted = adapted[:, 0]
+        return adapted, tuple(caches)
+
+    def training_forward(self, abi_state: torch.Tensor) -> torch.Tensor:
+        hidden = self.input(self.input_norm(abi_state))
+        for block in self.blocks:
+            hidden = block(hidden)
+        return self._adapt(abi_state, hidden)
+
+    def step(
+        self,
+        abi_state: torch.Tensor,
+        caches: tuple[torch.Tensor, ...],
+    ) -> tuple[torch.Tensor, tuple[torch.Tensor, ...]]:
+        if abi_state.ndim != 2:
+            raise ValueError("incremental ABI state must be [batch, d_abi]")
+        hidden = self.input(self.input_norm(abi_state))[:, None]
+        next_caches = []
+        for block, cache in zip(self.blocks, caches):
+            hidden, next_cache = block.step(hidden, cache)
+            next_caches.append(next_cache)
+        adapted = self._adapt(abi_state[:, None], hidden)[:, 0]
+        return adapted, tuple(next_caches)
+
+    def parameter_count(self) -> int:
+        return sum(parameter.numel() for parameter in self.parameters())
+
+
 _QA_RE = re.compile(
     r"Question:\s*(?P<question>.*?)\s*Answer:\s*(?P<answer>.*)",
     flags=re.IGNORECASE,

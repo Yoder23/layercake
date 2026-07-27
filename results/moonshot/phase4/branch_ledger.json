@@ -82,6 +82,34 @@
       "next_bounded_change": "Continue the identical recurrent checkpoint with sampled prompt-token retention loss so its private state must preserve exact identifiers; do not add capacity.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "recurrent-host-residual-identifier-retention-seed9404",
+      "disposition": "REJECTED_QUALITY_AND_REPRESENTATION",
+      "architecture": {
+        "name": "recurrent_host_residual",
+        "d_abi": 768,
+        "hidden_width": 1024,
+        "layers": 1
+      },
+      "training": {
+        "seed": 9404,
+        "additional_optimizer_steps": 600,
+        "prompt_retention_fraction": 0.25,
+        "prompt_retention_weight": 0.25,
+        "cpu_wall_seconds": 1460.423483199993,
+        "checkpoint_sha256": "3c35441a9444f9e048ccb3da77818daf1f3da767bab20346e6fbd1f9a8c9bc3b"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "functional_successes": 0,
+        "functional_error_rate": 1.0,
+        "evidence_sha256": "5eec4c075679a799e2cde26e24e6d675767d237e3bd600de71ccfcdadfad8422"
+      },
+      "measured_bottleneck": "Prompt-token retention loss did not make a single compressed recurrent state preserve exact held-out identifiers under autonomous decoding.",
+      "next_bounded_change": "Replace compressed recurrence with one small causal-attention layer over immutable ABI-state history; retain exact prompts instead of adding capacity to the failed GRU.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }
