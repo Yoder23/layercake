@@ -1,4 +1,6 @@
 import torch
+import sys
+from pathlib import Path
 
 from layercake.causal_byte_models import CausalBytePatchLM
 from layercake.portable_domain import (
@@ -167,3 +169,22 @@ def test_runtime_persistent_generation_is_identical_across_receivers():
         b"Return Python:\n", max_new_bytes=32, domain_id="python"
     )
     assert torch.equal(a, b)
+
+
+def test_functional_batch_identifier_mask_selects_exact_response_name():
+    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    sys.path.insert(0, str(scripts))
+    try:
+        from train_phase4_portable_functional_decoder import _batch
+    finally:
+        sys.path.remove(str(scripts))
+    row = {
+        "prompt": "Define exact_name(value).",
+        "response": "def exact_name(value):\n    return value\n",
+        "function_name": "exact_name",
+    }
+    _, targets, _, identifier_mask = _batch(
+        [row], [0], maximum_sequence_bytes=128
+    )
+    selected = bytes(targets[identifier_mask].tolist())
+    assert selected == b"exact_name"

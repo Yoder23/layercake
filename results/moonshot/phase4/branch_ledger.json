@@ -575,6 +575,41 @@
       "next_bounded_change": "Train the existing core-independent PortableDomainDecoder and artifact format on the locked functional training rows. Do not introduce another host-residual, pointer, or fusion architecture.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "portable-functional-byte-gru256-seed9440",
+      "disposition": "REJECTED_STRICT_IDENTIFIER_ADHERENCE_SEMANTICS_COMPLETE",
+      "architecture": {
+        "name": "PortableDomainDecoder",
+        "architecture": "byte_gru",
+        "feature_width": 64,
+        "embedding_width": 64,
+        "hidden_width": 256,
+        "parameters": 379136,
+        "new_model_class": false
+      },
+      "training": {
+        "seed": 9440,
+        "optimizer_steps": 2400,
+        "cpu_wall_seconds": 465.86318899999605,
+        "best_response_cross_entropy": 0.03665363788604736,
+        "artifact_file_sha256": "805ab616c63c197c4738e670627137dff001fe110ad42638ec94fe8a7a6dbf08",
+        "payload_hash": "ab1733c73585833095164306deccd3103c6c80b21001f7f26214cee221fff882"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "name_agnostic_functional_successes_diagnostic_only": 64,
+        "header_repair_functional_successes_diagnostic_only": 64,
+        "functional_error_rate": 1.0,
+        "median_time_to_first_output_seconds": 0.01161215000320226,
+        "median_total_latency_seconds": 0.1112740499956999,
+        "evidence_sha256": "48a3819df86ce9aba14773e3472bfa660c8c9e5d519e87d8e8c3cadeb6f9ce0d"
+      },
+      "measured_bottleneck": "The existing portable decoder autonomously generated a correct signature and unit-tested body for all 64 validation prompts under a generated training identifier, but failed to reproduce every requested unseen identifier.",
+      "next_bounded_change": "Continue the identical payload lineage with extra cross-entropy weight only on exact response identifier bytes. No architecture, data, runtime rewrite, pointer, or deterministic copying change.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

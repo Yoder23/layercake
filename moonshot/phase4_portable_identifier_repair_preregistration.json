@@ -1,0 +1,54 @@
+{
+  "format": "layercake-phase4-portable-identifier-repair-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_CONTINUATION",
+  "parent": "moonshot/phase4_portable_decoder_functional_preregistration.json",
+  "parent_artifact": {
+    "path": "artifacts/moonshot/phase4/candidates/python-portable-functional-seed9440.pt",
+    "file_sha256": "805ab616c63c197c4738e670627137dff001fe110ad42638ec94fe8a7a6dbf08",
+    "payload_hash": "ab1733c73585833095164306deccd3103c6c80b21001f7f26214cee221fff882"
+  },
+  "failed_strict_validation": {
+    "path": "results/moonshot/phase4/python-portable-functional-seed9440-validation.json",
+    "evidence_sha256": "48a3819df86ce9aba14773e3472bfa660c8c9e5d519e87d8e8c3cadeb6f9ce0d",
+    "strict_functional_successes": 0,
+    "distinct_prompts": 64
+  },
+  "diagnostic_only": {
+    "name_agnostic_functional_successes": 64,
+    "name_agnostic_file_sha256": "c297eb4de74a0f6985ee5e2559990dbd4ee6f5f0029420d345baa4b61da13aa2",
+    "header_repair_functional_successes": 64,
+    "header_repair_file_sha256": "1a4c72dcc22be3342239d701ce2b8a03a7f8103a3b701bb2364bdb0d9faef5b6",
+    "promotion_credit": 0
+  },
+  "measured_bottleneck": "The existing portable decoder learned correct signatures and bodies for every validation family but generated memorized training identifiers instead of the exact identifier supplied in each prompt.",
+  "bounded_continuation": {
+    "architecture_changed": false,
+    "parameters_changed": 0,
+    "training_data_changed": false,
+    "seed": 9540,
+    "device": "cpu",
+    "torch_threads": 8,
+    "optimizer": "AdamW",
+    "optimizer_steps": 800,
+    "batch_size": 16,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0,
+    "objective": "response cross-entropy plus 4.0 times exact response-function-identifier cross-entropy",
+    "checkpoint_selection": "lowest deterministic combined training objective; validation is evaluated once after continuation"
+  },
+  "prohibited_repairs": {
+    "runtime_header_rewrite": true,
+    "prompt_parser_forced_output": true,
+    "template_or_stored_answer": true,
+    "deterministic_copy_transducer": true,
+    "pointer_or_new_model_architecture": true,
+    "validation_or_test_rows_in_training": true
+  },
+  "stopping_rule": {
+    "minimum_strict_validation_successes": 52,
+    "additional_seed_training_only_after_pass": true,
+    "test_split_access_allowed": false,
+    "if_failure": "Preserve the result and require a new measured hypothesis; do not sweep identifier weights."
+  }
+}

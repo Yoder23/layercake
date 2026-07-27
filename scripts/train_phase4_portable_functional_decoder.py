@@ -41,30 +41,42 @@ def _batch(
     indexes: list[int],
     *,
     maximum_sequence_bytes: int,
-) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
     sequences = []
     response_starts = []
+    identifier_spans = []
     for index in indexes:
         row = rows[index]
         prompt = (row["prompt"] + "\n").encode("utf-8")
         response = row["response"].encode("utf-8")
+        identifier = row["function_name"].encode("utf-8")
         sequence = list((prompt + response)[:maximum_sequence_bytes])
         if len(sequence) < 2 or len(prompt) >= len(sequence):
             raise ValueError("functional row has no trainable response bytes")
         sequences.append(sequence)
         response_starts.append(len(prompt) - 1)
+        identifier_start = len(prompt) - 1 + len(b"def ")
+        identifier_spans.append(
+            (identifier_start, identifier_start + len(identifier))
+        )
     width = max(len(sequence) - 1 for sequence in sequences)
     inputs = torch.zeros((len(sequences), width), dtype=torch.long)
     targets = torch.zeros((len(sequences), width), dtype=torch.long)
     mask = torch.zeros((len(sequences), width), dtype=torch.bool)
-    for batch_index, (sequence, response_start) in enumerate(
-        zip(sequences, response_starts)
+    identifier_mask = torch.zeros((len(sequences), width), dtype=torch.bool)
+    for batch_index, (sequence, response_start, identifier_span) in enumerate(
+        zip(sequences, response_starts, identifier_spans)
     ):
         length = len(sequence) - 1
         inputs[batch_index, :length] = torch.tensor(sequence[:-1])
         targets[batch_index, :length] = torch.tensor(sequence[1:])
         mask[batch_index, response_start:length] = True
-    return inputs, targets, mask
+        identifier_start, identifier_stop = identifier_span
+        identifier_mask[
+            batch_index,
+            identifier_start : min(identifier_stop, length),
+        ] = True
+    return inputs, targets, mask, identifier_mask
 
 
 def train(
@@ -122,7 +134,7 @@ def train(
             cursor = 0
         indexes = order[cursor : cursor + batch_size]
         cursor += batch_size
-        inputs, targets, mask = _batch(
+        inputs, targets, mask, _ = _batch(
             rows,
             indexes,
             maximum_sequence_bytes=int(settings["maximum_sequence_bytes"]),
@@ -208,6 +220,164 @@ def train(
         "payload_hash": artifact["payload_hash"],
         "history": history,
         "validation_split_accessed": False,
+        "test_split_accessed": False,
+    }
+    evidence["evidence_sha256"] = _canonical_sha(evidence)
+    evidence_path.parent.mkdir(parents=True, exist_ok=True)
+    evidence_path.write_text(
+        json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return evidence
+
+
+def continue_identifier(
+    protocol_path: Path,
+    initial_artifact_path: Path,
+    artifact_path: Path,
+    evidence_path: Path,
+) -> dict[str, Any]:
+    protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+    if protocol["status"] != "PREREGISTERED_BEFORE_CONTINUATION":
+        raise ValueError("identifier repair is not preregistered")
+    parent = protocol["parent_artifact"]
+    if _sha256(initial_artifact_path) != parent["file_sha256"]:
+        raise ValueError("identifier repair parent artifact hash mismatch")
+    if artifact_path.exists() or evidence_path.exists():
+        raise RuntimeError("identifier repair outputs are immutable")
+    data_contract = json.loads(
+        (
+            ROOT
+            / "moonshot"
+            / "phase4_portable_decoder_functional_preregistration.json"
+        ).read_text(encoding="utf-8")
+    )["training_data"]
+    data_path = ROOT / data_contract["path"]
+    if _sha256(data_path) != data_contract["sha256"]:
+        raise ValueError("identifier repair training dataset hash mismatch")
+    rows = [row for row in _load_rows(data_path) if row["split"] == "train"]
+    settings = protocol["bounded_continuation"]
+    seed = int(settings["seed"])
+    torch.manual_seed(seed)
+    random.seed(seed)
+    torch.set_num_threads(int(settings["torch_threads"]))
+    initial = torch.load(
+        initial_artifact_path, map_location="cpu", weights_only=True
+    )
+    spec, model = load_portable_artifact(initial, "cpu")
+    if initial["payload_hash"] != parent["payload_hash"]:
+        raise ValueError("identifier repair parent payload hash mismatch")
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=float(settings["learning_rate"]),
+        weight_decay=float(settings["weight_decay"]),
+    )
+    process = psutil.Process()
+    peak_rss = int(process.memory_info().rss)
+    started = time.perf_counter()
+    history = []
+    best_loss = float("inf")
+    best_state = None
+    steps = int(settings["optimizer_steps"])
+    batch_size = int(settings["batch_size"])
+    order = list(range(len(rows)))
+    cursor = len(order)
+    generator = random.Random(seed + 1)
+    model.train()
+    for step in range(1, steps + 1):
+        if cursor + batch_size > len(order):
+            generator.shuffle(order)
+            cursor = 0
+        indexes = order[cursor : cursor + batch_size]
+        cursor += batch_size
+        inputs, targets, response_mask, identifier_mask = _batch(
+            rows, indexes, maximum_sequence_bytes=512
+        )
+        logits = model(inputs)
+        response_loss = F.cross_entropy(
+            logits[response_mask], targets[response_mask]
+        )
+        identifier_loss = F.cross_entropy(
+            logits[identifier_mask], targets[identifier_mask]
+        )
+        loss = response_loss + 4.0 * identifier_loss
+        optimizer.zero_grad(set_to_none=True)
+        loss.backward()
+        gradient_norm = torch.nn.utils.clip_grad_norm_(
+            model.parameters(), float(settings["gradient_clip_norm"])
+        )
+        optimizer.step()
+        value = float(loss.item())
+        if value < best_loss:
+            best_loss = value
+            best_state = {
+                name: tensor.detach().cpu().clone()
+                for name, tensor in model.state_dict().items()
+            }
+        if step == 1 or step % 100 == 0 or step == steps:
+            record = {
+                "step": step,
+                "combined_objective": value,
+                "response_cross_entropy": float(response_loss.item()),
+                "identifier_cross_entropy": float(identifier_loss.item()),
+                "identifier_byte_accuracy": float(
+                    (
+                        logits[identifier_mask].argmax(dim=-1)
+                        == targets[identifier_mask]
+                    )
+                    .float()
+                    .mean()
+                    .item()
+                ),
+                "gradient_norm_before_clip": float(gradient_norm),
+                "cpu_wall_seconds": time.perf_counter() - started,
+            }
+            history.append(record)
+            print(json.dumps(record), flush=True)
+        peak_rss = max(peak_rss, int(process.memory_info().rss))
+    if best_state is None:
+        raise RuntimeError("identifier continuation produced no checkpoint")
+    model.load_state_dict(best_state)
+    model.eval()
+    wall = time.perf_counter() - started
+    artifact = build_portable_artifact(
+        model,
+        spec,
+        training={
+            **initial.get("training", {}),
+            "identifier_repair_protocol": protocol_path.relative_to(
+                ROOT
+            ).as_posix(),
+            "identifier_repair_protocol_sha256": _sha256(protocol_path),
+            "identifier_repair_seed": seed,
+            "identifier_repair_steps": steps,
+            "best_identifier_repair_objective": best_loss,
+        },
+    )
+    artifact_path.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(artifact, artifact_path)
+    evidence = {
+        "format": "layercake-phase4-portable-identifier-repair-training/1",
+        "status": "TRAINED",
+        "protocol": protocol_path.relative_to(ROOT).as_posix(),
+        "protocol_sha256": _sha256(protocol_path),
+        "parent_artifact": initial_artifact_path.relative_to(ROOT).as_posix(),
+        "parent_artifact_file_sha256": _sha256(initial_artifact_path),
+        "parent_payload_hash": initial["payload_hash"],
+        "device": "cpu",
+        "torch_threads": int(settings["torch_threads"]),
+        "seed": seed,
+        "optimizer_steps": steps,
+        "batch_size": batch_size,
+        "best_combined_objective": best_loss,
+        "cpu_wall_seconds": wall,
+        "peak_process_resident_memory_bytes": peak_rss,
+        "artifact": artifact_path.relative_to(ROOT).as_posix(),
+        "artifact_file_sha256": _sha256(artifact_path),
+        "spec_hash": artifact["spec_hash"],
+        "payload_hash": artifact["payload_hash"],
+        "history": history,
+        "validation_split_accessed_during_continuation": False,
         "test_split_accessed": False,
     }
     evidence["evidence_sha256"] = _canonical_sha(evidence)
@@ -334,7 +504,9 @@ def evaluate(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("train", "evaluate"))
+    parser.add_argument(
+        "command", choices=("train", "continue-identifier", "evaluate")
+    )
     parser.add_argument(
         "--protocol",
         type=Path,
@@ -343,6 +515,7 @@ def main() -> int:
         / "phase4_portable_decoder_functional_preregistration.json",
     )
     parser.add_argument("--artifact", type=Path, required=True)
+    parser.add_argument("--initial-artifact", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     protocol = (
@@ -354,6 +527,17 @@ def main() -> int:
     output = args.output if args.output.is_absolute() else ROOT / args.output
     if args.command == "train":
         result = train(protocol, artifact, output)
+    elif args.command == "continue-identifier":
+        if args.initial_artifact is None:
+            parser.error("continue-identifier requires --initial-artifact")
+        initial_artifact = (
+            args.initial_artifact
+            if args.initial_artifact.is_absolute()
+            else ROOT / args.initial_artifact
+        )
+        result = continue_identifier(
+            protocol, initial_artifact, artifact, output
+        )
     else:
         result = evaluate(protocol, artifact, output)
     print(
