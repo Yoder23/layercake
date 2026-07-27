@@ -9,6 +9,7 @@ from typing import Mapping
 
 import torch
 from torch import nn
+import torch.nn.functional as F
 
 from .canonical_anchors import canonical_byte_table, causal_byte_anchors
 
@@ -29,6 +30,7 @@ class PortableDomainSpec:
     hidden_width: int = 256
     architecture: str = "anchor_mlp"
     embedding_width: int = 64
+    pointer_width: int = 64
     format_version: str = PORTABLE_DOMAIN_FORMAT
     anchor_version: str = CANONICAL_ANCHOR_VERSION
     input_mode: str = "byte"
@@ -40,10 +42,14 @@ class PortableDomainSpec:
             raise ValueError("domain_id must be non-empty")
         if self.feature_width <= 0 or self.hidden_width <= 0:
             raise ValueError("decoder widths must be positive")
-        if self.architecture not in {"anchor_mlp", "byte_gru"}:
+        if self.architecture not in {
+            "anchor_mlp",
+            "byte_gru",
+            "byte_gru_pointer",
+        }:
             raise ValueError(f"unsupported decoder architecture: {self.architecture}")
-        if self.embedding_width <= 0:
-            raise ValueError("embedding_width must be positive")
+        if self.embedding_width <= 0 or self.pointer_width <= 0:
+            raise ValueError("embedding and pointer widths must be positive")
         if self.format_version != PORTABLE_DOMAIN_FORMAT:
             raise ValueError(f"unsupported format: {self.format_version}")
         if self.anchor_version != CANONICAL_ANCHOR_VERSION:
@@ -73,6 +79,7 @@ class PortableDomainDecoder(nn.Module):
         hidden_width: int = 256,
         architecture: str = "anchor_mlp",
         embedding_width: int = 64,
+        pointer_width: int = 64,
         *,
         d_abi: int | None = None,
         hidden: int | None = None,
@@ -83,6 +90,7 @@ class PortableDomainDecoder(nn.Module):
         self.hidden_width = hidden if hidden is not None else hidden_width
         self.architecture = architecture
         self.embedding_width = embedding_width
+        self.pointer_width = pointer_width
         if architecture == "anchor_mlp":
             self.decoder = nn.Sequential(
                 nn.LayerNorm(self.feature_width),
@@ -90,7 +98,7 @@ class PortableDomainDecoder(nn.Module):
                 nn.GELU(),
                 nn.Linear(self.hidden_width, 256),
             )
-        elif architecture == "byte_gru":
+        elif architecture in {"byte_gru", "byte_gru_pointer"}:
             self.byte_embedding = nn.Embedding(256, embedding_width)
             self.recurrent = nn.GRU(
                 embedding_width + self.feature_width,
@@ -101,6 +109,18 @@ class PortableDomainDecoder(nn.Module):
                 nn.LayerNorm(self.hidden_width),
                 nn.Linear(self.hidden_width, 256),
             )
+            if architecture == "byte_gru_pointer":
+                self.copy_query = nn.Linear(
+                    self.hidden_width, pointer_width, bias=False
+                )
+                self.copy_key = nn.Linear(
+                    self.hidden_width, pointer_width, bias=False
+                )
+                self.copy_gate = nn.Linear(self.hidden_width, 1)
+                nn.init.xavier_uniform_(self.copy_query.weight)
+                nn.init.xavier_uniform_(self.copy_key.weight)
+                nn.init.zeros_(self.copy_gate.weight)
+                nn.init.constant_(self.copy_gate.bias, -4.0)
         else:
             raise ValueError(f"unsupported decoder architecture: {architecture}")
 
@@ -114,17 +134,105 @@ class PortableDomainDecoder(nn.Module):
 
     def forward(self, byte_ids: torch.Tensor) -> torch.Tensor:
         anchors = causal_byte_anchors(byte_ids, self.feature_width)
-        if self.architecture == "byte_gru":
+        if self.architecture in {"byte_gru", "byte_gru_pointer"}:
             embedded = self.byte_embedding(byte_ids)
             hidden, _ = self.recurrent(torch.cat([embedded, anchors], dim=-1))
+            if self.architecture == "byte_gru_pointer":
+                return self.pointer_forward(byte_ids, hidden)["logits"]
             return self.decoder(hidden)
         return self.decoder(anchors)
+
+    def _pointer_distribution(
+        self,
+        scores: torch.Tensor,
+        byte_ids: torch.Tensor,
+    ) -> torch.Tensor:
+        probabilities = torch.softmax(scores, dim=-1)
+        output = probabilities.new_zeros(
+            *probabilities.shape[:-1], 256
+        )
+        values = byte_ids[:, None, :].expand_as(scores)
+        return output.scatter_add(2, values, probabilities)
+
+    def _mix_pointer_logits(
+        self,
+        recurrent: torch.Tensor,
+        pointer_distribution: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        language = torch.log_softmax(self.decoder(recurrent), dim=-1)
+        gate_logits = self.copy_gate(recurrent)
+        pointer = torch.log(pointer_distribution.clamp_min(1e-12))
+        mixed = torch.logaddexp(
+            F.logsigmoid(-gate_logits) + language,
+            F.logsigmoid(gate_logits) + pointer,
+        )
+        return mixed, gate_logits
+
+    def pointer_forward(
+        self,
+        byte_ids: torch.Tensor,
+        recurrent: torch.Tensor | None = None,
+    ) -> dict[str, torch.Tensor]:
+        if self.architecture != "byte_gru_pointer":
+            raise ValueError("neural pointer path is disabled")
+        if recurrent is None:
+            anchors = causal_byte_anchors(byte_ids, self.feature_width)
+            recurrent, _ = self.recurrent(
+                torch.cat([self.byte_embedding(byte_ids), anchors], dim=-1)
+            )
+        query = self.copy_query(recurrent)
+        key = self.copy_key(recurrent)
+        scores = torch.matmul(query, key.transpose(1, 2)) / (
+            self.pointer_width ** 0.5
+        )
+        length = byte_ids.shape[1]
+        future = torch.triu(
+            torch.ones(
+                length,
+                length,
+                dtype=torch.bool,
+                device=byte_ids.device,
+            ),
+            diagonal=1,
+        )
+        scores = scores.masked_fill(
+            future, torch.finfo(scores.dtype).min
+        )
+        pointer = self._pointer_distribution(scores, byte_ids)
+        logits, gate_logits = self._mix_pointer_logits(
+            recurrent, pointer
+        )
+        return {
+            "logits": logits,
+            "pointer_scores": scores,
+            "pointer_distribution": pointer,
+            "gate_logits": gate_logits,
+            "recurrent": recurrent,
+        }
+
+    def _pointer_step_logits(
+        self,
+        recurrent: torch.Tensor,
+        pointer_keys: torch.Tensor,
+        pointer_byte_ids: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        query = self.copy_query(recurrent)
+        scores = torch.matmul(
+            query[:, None], pointer_keys.transpose(1, 2)
+        ) / (self.pointer_width ** 0.5)
+        pointer = self._pointer_distribution(
+            scores, pointer_byte_ids
+        )[:, 0]
+        logits, gate_logits = self._mix_pointer_logits(
+            recurrent, pointer
+        )
+        return logits, gate_logits
 
     def prefill_incremental(
         self, byte_ids: torch.Tensor
     ) -> dict[str, torch.Tensor]:
         """Create persistent byte-GRU state without changing model mathematics."""
-        if self.architecture != "byte_gru":
+        if self.architecture not in {"byte_gru", "byte_gru_pointer"}:
             raise ValueError("persistent incremental state requires byte_gru")
         if byte_ids.ndim != 2 or byte_ids.shape[1] == 0:
             raise ValueError("prefill requires non-empty [batch, sequence] bytes")
@@ -151,11 +259,27 @@ class PortableDomainDecoder(nn.Module):
                 [self.byte_embedding(byte_ids), anchor_sequence], dim=-1
             )
         )
-        return {
+        result = {
             "anchor_state": anchor_state,
             "recurrent_hidden": hidden,
             "next_logits": self.decoder(recurrent[:, -1]),
         }
+        if self.architecture == "byte_gru_pointer":
+            pointer_keys = self.copy_key(recurrent)
+            next_logits, gate_logits = self._pointer_step_logits(
+                recurrent[:, -1],
+                pointer_keys,
+                byte_ids,
+            )
+            result.update(
+                {
+                    "pointer_keys": pointer_keys,
+                    "pointer_byte_ids": byte_ids,
+                    "pointer_gate_logits": gate_logits,
+                    "next_logits": next_logits,
+                }
+            )
+        return result
 
     def decode_incremental(
         self,
@@ -163,7 +287,7 @@ class PortableDomainDecoder(nn.Module):
         state: dict[str, torch.Tensor],
     ) -> torch.Tensor:
         """Advance persistent state by one observed generated byte."""
-        if self.architecture != "byte_gru":
+        if self.architecture not in {"byte_gru", "byte_gru_pointer"}:
             raise ValueError("persistent incremental state requires byte_gru")
         if byte_ids.ndim == 1:
             byte_ids = byte_ids[:, None]
@@ -186,7 +310,27 @@ class PortableDomainDecoder(nn.Module):
             ),
             state["recurrent_hidden"],
         )
-        logits = self.decoder(recurrent[:, -1])
+        recurrent_last = recurrent[:, -1]
+        logits = self.decoder(recurrent_last)
+        if self.architecture == "byte_gru_pointer":
+            pointer_keys = torch.cat(
+                (
+                    state["pointer_keys"],
+                    self.copy_key(recurrent),
+                ),
+                dim=1,
+            )
+            pointer_byte_ids = torch.cat(
+                (state["pointer_byte_ids"], byte_ids), dim=1
+            )
+            logits, gate_logits = self._pointer_step_logits(
+                recurrent_last,
+                pointer_keys,
+                pointer_byte_ids,
+            )
+            state["pointer_keys"] = pointer_keys
+            state["pointer_byte_ids"] = pointer_byte_ids
+            state["pointer_gate_logits"] = gate_logits
         state["anchor_state"] = anchor_state
         state["recurrent_hidden"] = hidden
         state["next_logits"] = logits
@@ -233,6 +377,8 @@ def build_portable_artifact(
         raise ValueError("model architecture does not match artifact spec")
     if model.embedding_width != spec.embedding_width:
         raise ValueError("model embedding width does not match artifact spec")
+    if model.pointer_width != spec.pointer_width:
+        raise ValueError("model pointer width does not match artifact spec")
     state = {
         name: tensor.detach().cpu().clone()
         for name, tensor in model.state_dict().items()
@@ -289,6 +435,7 @@ def load_portable_artifact(
         hidden_width=spec.hidden_width,
         architecture=spec.architecture,
         embedding_width=spec.embedding_width,
+        pointer_width=spec.pointer_width,
     ).to(device)
     model.load_state_dict(state_dict)
     model.eval()

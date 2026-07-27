@@ -20,8 +20,9 @@ from .routed_cakes import HostResidualCake
 def portable_decoder_manifest_architecture(
     *, feature_width: int = 64, hidden_width: int = 256,
     architecture: str = "anchor_mlp", embedding_width: int = 64,
+    pointer_width: int = 64,
 ) -> dict[str, Any]:
-    return {
+    result = {
         "name": "portable_domain_decoder",
         "feature_width": int(feature_width),
         "hidden_width": int(hidden_width),
@@ -29,6 +30,9 @@ def portable_decoder_manifest_architecture(
         "embedding_width": int(embedding_width),
         "anchor_version": "lc-causal-byte-anchor/1",
     }
+    if architecture == "byte_gru_pointer":
+        result["pointer_width"] = int(pointer_width)
+    return result
 
 
 def load_cake_module(package: CakePackage) -> nn.Module:
@@ -37,11 +41,16 @@ def load_cake_module(package: CakePackage) -> nn.Module:
     if manifest.cake_type == "portable_decoder":
         if architecture.get("name") != "portable_domain_decoder":
             raise ValueError("portable decoder architecture name is invalid")
-        allowed = {
+        legacy_allowed = {
             "name", "feature_width", "hidden_width", "decoder_architecture",
             "embedding_width", "anchor_version",
         }
-        if set(architecture) != allowed:
+        pointer_allowed = legacy_allowed | {"pointer_width"}
+        declared = frozenset(architecture)
+        if declared not in {
+            frozenset(legacy_allowed),
+            frozenset(pointer_allowed),
+        }:
             raise ValueError("portable decoder architecture metadata is incomplete or ambiguous")
         if architecture["anchor_version"] != "lc-causal-byte-anchor/1":
             raise ValueError("unsupported deterministic anchor contract")
@@ -50,6 +59,7 @@ def load_cake_module(package: CakePackage) -> nn.Module:
             hidden_width=int(architecture["hidden_width"]),
             architecture=str(architecture["decoder_architecture"]),
             embedding_width=int(architecture["embedding_width"]),
+            pointer_width=int(architecture.get("pointer_width", 64)),
         )
     elif manifest.cake_type == "host_residual":
         if (

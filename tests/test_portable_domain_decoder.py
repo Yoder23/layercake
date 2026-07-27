@@ -183,8 +183,55 @@ def test_functional_batch_identifier_mask_selects_exact_response_name():
         "response": "def exact_name(value):\n    return value\n",
         "function_name": "exact_name",
     }
-    _, targets, _, identifier_mask = _batch(
+    inputs, targets, _, identifier_mask, pointer_labels = _batch(
         [row], [0], maximum_sequence_bytes=128
     )
     selected = bytes(targets[identifier_mask].tolist())
     assert selected == b"exact_name"
+    source_positions = pointer_labels[identifier_mask]
+    assert bytes(inputs[0, source_positions].tolist()) == b"exact_name"
+
+
+def test_pointer_decoder_incremental_logits_match_full_prefix():
+    torch.manual_seed(29)
+    decoder = PortableDomainDecoder(
+        feature_width=16,
+        hidden_width=24,
+        architecture="byte_gru_pointer",
+        embedding_width=8,
+        pointer_width=12,
+    ).eval()
+    prompt = torch.randint(0, 256, (2, 23))
+    state = decoder.prefill_incremental(prompt)
+    expected = decoder(prompt)[:, -1]
+    assert torch.allclose(state["next_logits"], expected, atol=1e-6, rtol=1e-6)
+
+    observed = torch.randint(0, 256, (2, 1))
+    actual = decoder.decode_incremental(observed, state)
+    expected = decoder(torch.cat([prompt, observed], dim=1))[:, -1]
+    assert torch.allclose(actual, expected, atol=1e-6, rtol=1e-6)
+
+
+def test_pointer_artifact_round_trip_preserves_logits():
+    torch.manual_seed(31)
+    decoder = PortableDomainDecoder(
+        feature_width=16,
+        hidden_width=24,
+        architecture="byte_gru_pointer",
+        embedding_width=8,
+        pointer_width=12,
+    ).eval()
+    artifact = build_portable_artifact(
+        decoder,
+        PortableDomainSpec(
+            "python",
+            feature_width=16,
+            hidden_width=24,
+            architecture="byte_gru_pointer",
+            embedding_width=8,
+            pointer_width=12,
+        ),
+    )
+    _, loaded = load_portable_artifact(artifact)
+    prompt = torch.randint(0, 256, (2, 19))
+    assert torch.equal(decoder(prompt), loaded(prompt))
