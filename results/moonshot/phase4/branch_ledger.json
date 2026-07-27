@@ -1,0 +1,58 @@
+{
+  "format": "layercake-phase4-branch-ledger/1",
+  "status": "OPEN",
+  "branches": [
+    {
+      "branch_id": "host-residual-rank768-sampled-softmax-seed9404",
+      "disposition": "REJECTED_QUALITY",
+      "architecture": {
+        "name": "host_residual",
+        "d_abi": 768,
+        "rank": 768
+      },
+      "training": {
+        "seed": 9404,
+        "optimizer_steps": 2400,
+        "negative_vocabulary_samples_per_step": 1536,
+        "best_sampled_cross_entropy": 0.0001732952514430508,
+        "checkpoint_sha256": "aaa85b0f3f85faa35d4d67e195e2b5b286d6de0d1a5fd3931286f71748238c85"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "functional_successes": 0,
+        "functional_error_rate": 1.0,
+        "evidence_sha256": "2baf3232df50fc3b2d371a2b62c3998aa9ebb7ac071e82c316dea32c5a70f236"
+      },
+      "measured_bottleneck": "Near-zero sampled contrastive loss did not calibrate the adapter against full-vocabulary competitors; autonomous output mixed memorized fragments and never produced a passing function.",
+      "next_bounded_change": "Use full-vocabulary cross-entropy with the same frozen host, data, rank, and functional validation suite.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
+    },
+    {
+      "branch_id": "host-residual-rank768-full-vocabulary-screen-seed9404",
+      "disposition": "REJECTED_QUALITY",
+      "architecture": {
+        "name": "host_residual",
+        "d_abi": 768,
+        "rank": 768
+      },
+      "training": {
+        "seed": 9404,
+        "optimizer_steps": 400,
+        "objective": "full_vocabulary_cross_entropy",
+        "best_cross_entropy": 0.04340045526623726,
+        "checkpoint_sha256": "2d9b5b0f415cf2d5f71d13593aa11c044dd9983b979b6945da561983348f5f2f"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "functional_successes": 0,
+        "functional_error_rate": 1.0,
+        "evidence_sha256": "bac17004fb5977f97bce1bd16ff5353f99a5b1f4fd4bb9176ef25e0af727240b"
+      },
+      "measured_bottleneck": "Full-vocabulary calibration improved teacher-forced loss but the memoryless cake still lost function identity and mixed code plans during autonomous generation.",
+      "next_bounded_change": "Add one persistent recurrent state while preserving the exact host ABI state width, frozen core, tied output head, data, and validation suite.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
+    }
+  ]
+}
