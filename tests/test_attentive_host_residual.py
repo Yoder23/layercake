@@ -48,3 +48,17 @@ def test_attentive_copy_path_retains_raw_abi_history_incrementally():
     scores = cake.copy_scores(semantic)
     assert scores.shape == (1, 4, 4)
     assert scores[0, 0, 1] < -1.0e20
+
+
+def test_copy_value_projection_is_identity_initialized():
+    cake = AttentiveHostResidualCake(
+        d_abi=8,
+        hidden_width=12,
+        layers=1,
+        heads=3,
+        expansion=2,
+        copy_width=4,
+        copy_value_projection=True,
+    )
+    expected = torch.eye(8)
+    torch.testing.assert_close(cake.copy_value.weight, expected)

@@ -1,0 +1,36 @@
+{
+  "format": "layercake-phase4-copy-value-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_CONTINUATION",
+  "parent": "moonshot/phase4_pointer_supervision_preregistration.json",
+  "failed_checkpoint_sha256": "d158a119e92e46535ce57cf1321427a899a9b1e8852afccacbe006c410226c31",
+  "failed_validation_evidence_sha256": "5002ab969f3f5ebf323acb69547fd502a168941dc22648475d541dafab05b621",
+  "scale_diagnostic": {
+    "tested_raw_copy_alpha": [-2.0, -1.0, -0.25, 0.0, 0.25, 0.5, 1.0, 2.0],
+    "requested_identifier_reproduced": false,
+    "promotion_credit": 0
+  },
+  "measured_bottleneck": "Aligned raw ABI values are not tied-head copy vectors; the mismatch is representational rather than pointer sign or scale.",
+  "single_architecture_change": {
+    "copy_value_projection_shape": [768, 768],
+    "initialization": "identity",
+    "new_parameters": 589824,
+    "copy_alpha_reset": 0.0,
+    "core_or_head_parameters_changed": 0,
+    "private_token_ids_exposed_at_inference": false
+  },
+  "bounded_continuation": {
+    "initialize_all_existing_tensors_from_failed_checkpoint": true,
+    "additional_optimizer_steps": 800,
+    "training_device": "cpu",
+    "batch_size": 8,
+    "learning_rate": 0.0001,
+    "pointer_supervision_weight": 1.0,
+    "dataset_sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa"
+  },
+  "stopping_rule": {
+    "strict_minimum_validation_success_rate": 0.8,
+    "test_split_access_allowed": false,
+    "other_seeds_authorized_only_after_pass": true,
+    "speed_gate_unchanged": true
+  }
+}

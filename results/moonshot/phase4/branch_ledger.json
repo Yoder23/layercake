@@ -226,6 +226,41 @@
       "next_bounded_change": "Continue the same checkpoint with explicit prior-position pointer labels for response tokens that occur in the prompt; no capacity or data change.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "attentive-semantic-pointer64-supervised-v4-seed9404",
+      "disposition": "REJECTED_POINTER_VALUE_REPRESENTATION",
+      "architecture": {
+        "name": "attentive_host_residual",
+        "d_abi": 768,
+        "hidden_width": 384,
+        "layers": 1,
+        "heads": 6,
+        "copy_width": 64,
+        "copy_value_projection": false
+      },
+      "training": {
+        "seed": 9404,
+        "additional_optimizer_steps": 600,
+        "cpu_wall_seconds": 133.209287900012,
+        "pointer_cross_entropy_final": 0.623124361038208,
+        "checkpoint_sha256": "d158a119e92e46535ce57cf1321427a899a9b1e8852afccacbe006c410226c31"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "functional_error_rate": 1.0,
+        "evidence_sha256": "5002ab969f3f5ebf323acb69547fd502a168941dc22648475d541dafab05b621"
+      },
+      "bounded_scale_diagnostic": {
+        "raw_copy_alpha_values": [-2.0, -1.0, -0.25, 0.0, 0.25, 0.5, 1.0, 2.0],
+        "requested_identifier_reproduced": false,
+        "promotion_credit": 0
+      },
+      "measured_bottleneck": "Pointer positions align, but raw ABI values do not map through the tied head to the copied token; sign/scale changes cannot fix the coordinate mismatch.",
+      "next_bounded_change": "Add one identity-initialized ABI-to-ABI copy-value projection; retain pointer keys, queries, data, core, head, and validation.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

@@ -1339,6 +1339,7 @@ def train_recurrent_cake(
     expansion: int = 4,
     copy_width: int = 0,
     pointer_supervision_weight: float = 0.0,
+    copy_value_projection: bool = False,
 ) -> dict[str, Any]:
     checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
     cache = cache if cache.is_absolute() else ROOT / cache
@@ -1374,6 +1375,7 @@ def train_recurrent_cake(
             expansion=expansion,
             max_residual=max_residual,
             copy_width=copy_width,
+            copy_value_projection=copy_value_projection,
         )
     else:
         raise ValueError(f"unknown semantic cake architecture: {architecture}")
@@ -1384,9 +1386,22 @@ def train_recurrent_cake(
             if initial_checkpoint.is_absolute()
             else ROOT / initial_checkpoint
         )
-        cake.load_state_dict(
-            load_file(str(initial_checkpoint), device="cpu"), strict=True
+        initial_tensors = load_file(str(initial_checkpoint), device="cpu")
+        migrated_copy_value = (
+            isinstance(cake, AttentiveHostResidualCake)
+            and cake.copy_value_projection
+            and "copy_value.weight" not in initial_tensors
         )
+        incompatible = cake.load_state_dict(
+            initial_tensors, strict=not migrated_copy_value
+        )
+        if migrated_copy_value:
+            if incompatible.missing_keys != ["copy_value.weight"]:
+                raise RuntimeError(
+                    "copy-value migration has unexpected missing tensors"
+                )
+            with torch.no_grad():
+                cake.copy_alpha.zero_()
         initial_sha = sha256_file(initial_checkpoint)
     cake.train()
     optimizer = torch.optim.AdamW(
@@ -1549,6 +1564,7 @@ def train_recurrent_cake(
             **(
                 {"heads": heads, "expansion": expansion}
                 | {"copy_width": copy_width}
+                | {"copy_value_projection": copy_value_projection}
                 if isinstance(cake, AttentiveHostResidualCake)
                 else {}
             ),
@@ -1877,6 +1893,7 @@ def evaluate_functional(
                     if "copy_query.weight" in tensors
                     else 0
                 ),
+                copy_value_projection="copy_value.weight" in tensors,
             )
         elif "recurrent.weight_ih_l0" in tensors:
             hidden_width = int(tensors["recurrent.weight_hh_l0"].shape[1])
@@ -2061,6 +2078,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     attentive.add_argument("--copy-width", type=int, default=0)
     attentive.add_argument("--initial-checkpoint", type=Path)
     attentive.add_argument("--pointer-supervision-weight", type=float, default=0.0)
+    attentive.add_argument(
+        "--copy-value-projection", action="store_true"
+    )
     attentive.add_argument("--max-residual", type=float, default=6.0)
     attentive.add_argument("--steps", type=int, default=800)
     attentive.add_argument("--batch-size", type=int, default=8)
@@ -2144,6 +2164,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.pointer_supervision_weight
                 if args.command == "train-attentive"
                 else 0.0
+            ),
+            copy_value_projection=(
+                args.copy_value_projection
+                if args.command == "train-attentive"
+                else False
             ),
         )
     else:

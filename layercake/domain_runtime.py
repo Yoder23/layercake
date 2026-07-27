@@ -145,6 +145,7 @@ class AttentiveHostResidualCake(nn.Module):
         expansion: int = 4,
         max_residual: float = 6.0,
         copy_width: int = 0,
+        copy_value_projection: bool = False,
     ):
         super().__init__()
         if (
@@ -160,6 +161,7 @@ class AttentiveHostResidualCake(nn.Module):
         self.expansion = int(expansion)
         self.max_residual = float(max_residual)
         self.copy_width = int(copy_width)
+        self.copy_value_projection = bool(copy_value_projection)
         self.input_norm = nn.LayerNorm(d_abi)
         self.input = nn.Linear(d_abi, hidden_width, bias=False)
         self.blocks = nn.ModuleList(
@@ -174,6 +176,9 @@ class AttentiveHostResidualCake(nn.Module):
             self.copy_query = nn.Linear(d_abi, self.copy_width, bias=False)
             self.copy_key = nn.Linear(d_abi, self.copy_width, bias=False)
             self.copy_alpha = nn.Parameter(torch.tensor(0.0))
+            if self.copy_value_projection:
+                self.copy_value = nn.Linear(d_abi, d_abi, bias=False)
+                nn.init.eye_(self.copy_value.weight)
 
     def copy_scores(self, abi_state: torch.Tensor) -> torch.Tensor:
         if self.copy_width <= 0:
@@ -199,7 +204,12 @@ class AttentiveHostResidualCake(nn.Module):
         if self.copy_width <= 0:
             return None
         scores = self.copy_scores(abi_state)
-        return torch.matmul(torch.softmax(scores, dim=-1), abi_state)
+        values = (
+            self.copy_value(abi_state)
+            if self.copy_value_projection
+            else abi_state
+        )
+        return torch.matmul(torch.softmax(scores, dim=-1), values)
 
     def _adapt(
         self,
@@ -269,8 +279,13 @@ class AttentiveHostResidualCake(nn.Module):
                 self.copy_query(normalized_query),
                 self.copy_key(normalized_memory).transpose(1, 2),
             ) / (self.copy_width ** 0.5)
+            values = (
+                self.copy_value(raw_memory)
+                if self.copy_value_projection
+                else raw_memory
+            )
             copy_context = torch.matmul(
-                torch.softmax(scores, dim=-1), raw_memory
+                torch.softmax(scores, dim=-1), values
             )
             next_caches.append(raw_memory)
         adapted = self._adapt(
