@@ -296,6 +296,54 @@
       "next_bounded_change": "Shift lexical pointer labels to the post-token ABI state and explicitly train the copy-value projection to reconstruct the matched token through the unchanged frozen tied head. Continue the same checkpoint, data, capacity, and validation suite.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "attentive-causal-copy-v4-seed9404",
+      "disposition": "REJECTED_SELECTIVITY_AND_LEXICAL_GENERALIZATION",
+      "architecture": {
+        "name": "attentive_host_residual",
+        "d_abi": 768,
+        "hidden_width": 384,
+        "layers": 1,
+        "heads": 6,
+        "copy_width": 64,
+        "copy_value_projection": true
+      },
+      "training": {
+        "seed": 9404,
+        "additional_optimizer_steps": 600,
+        "cpu_wall_seconds": 168.58426319999853,
+        "trainable_parameters": 3054722,
+        "checkpoint_sha256": "572cb2c951d9938cd1dc6f650204d1e442f69bdd6fb10b196ac3cadd4f3ee2db",
+        "best_selection_objective": 0.31629592180252075,
+        "raw_copy_alpha": -0.01512052584439516,
+        "effective_copy_scale": -0.015119373798370361
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "functional_error_rate": 1.0,
+        "median_time_to_first_output_seconds": 0.021672000002581626,
+        "median_total_latency_seconds": 1.290915200006566,
+        "evidence_sha256": "59f3b7548f934018f087a13a26404dd6fd24292e03e3d08833952c84dc6e6813"
+      },
+      "teacher_forced_copy_decomposition": {
+        "distinct_validation_prompts": 64,
+        "copyable_identifier_units": 504,
+        "identifier_pointer_top1_accuracy": 0.3373015873015873,
+        "identifier_true_source_value_top1_accuracy": 0.5198412698412699,
+        "identifier_attended_value_top1_accuracy": 0.25992063492063494,
+        "promotion_credit": 0
+      },
+      "bounded_scale_diagnostic": {
+        "effective_scales": [-0.5, -0.1, 0.0, 0.05, 0.1, 0.25, 0.5, 0.75, 0.95],
+        "requested_identifier_reproduced": false,
+        "promotion_credit": 0
+      },
+      "measured_bottleneck": "The post-token alignment repair learned its training objectives, but a single global signed mixture remained inactive because copying is useful only on selected response units. Soft pointer averaging further blended source states, and value supervision limited to repeated response tokens reconstructed only 52.0% of unseen identifier units even at the true source state.",
+      "next_bounded_change": "Use one supervised per-unit copy gate, straight-through hard top-1 lexical routing, and prompt-wide post-token lexical conformance on the same data and capacity lineage. This adds only a 769-parameter gate and makes the active copy read physically sparse.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

@@ -1358,6 +1358,34 @@ def _causal_copy_labels(
     return labels
 
 
+def _prompt_post_token_pairs(
+    targets: torch.Tensor,
+    valid: torch.Tensor,
+    response_mask: torch.Tensor,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Return batch indexes, post-token state indexes, and prompt token IDs."""
+
+    if targets.shape != valid.shape or targets.shape != response_mask.shape:
+        raise ValueError("prompt-value tensors must have identical shapes")
+    batch_indexes, prompt_positions = torch.nonzero(
+        valid & ~response_mask, as_tuple=True
+    )
+    source_positions = prompt_positions + 1
+    in_range = source_positions < targets.shape[1]
+    batch_indexes = batch_indexes[in_range]
+    prompt_positions = prompt_positions[in_range]
+    source_positions = source_positions[in_range]
+    source_valid = valid[batch_indexes, source_positions]
+    batch_indexes = batch_indexes[source_valid]
+    prompt_positions = prompt_positions[source_valid]
+    source_positions = source_positions[source_valid]
+    return (
+        batch_indexes,
+        source_positions,
+        targets[batch_indexes, prompt_positions],
+    )
+
+
 def train_recurrent_cake(
     checkpoint: Path,
     cache: Path,
@@ -1380,6 +1408,9 @@ def train_recurrent_cake(
     pointer_supervision_weight: float = 0.0,
     copy_value_projection: bool = False,
     copy_value_supervision_weight: float = 0.0,
+    selective_copy: bool = False,
+    copy_gate_supervision_weight: float = 0.0,
+    prompt_value_supervision_weight: float = 0.0,
 ) -> dict[str, Any]:
     checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
     cache = cache if cache.is_absolute() else ROOT / cache
@@ -1416,6 +1447,7 @@ def train_recurrent_cake(
             max_residual=max_residual,
             copy_width=copy_width,
             copy_value_projection=copy_value_projection,
+            selective_copy=selective_copy,
         )
     else:
         raise ValueError(f"unknown semantic cake architecture: {architecture}")
@@ -1427,19 +1459,34 @@ def train_recurrent_cake(
             else ROOT / initial_checkpoint
         )
         initial_tensors = load_file(str(initial_checkpoint), device="cpu")
-        migrated_copy_value = (
+        expected_missing = set()
+        if (
             isinstance(cake, AttentiveHostResidualCake)
             and cake.copy_value_projection
             and "copy_value.weight" not in initial_tensors
-        )
+        ):
+            expected_missing.add("copy_value.weight")
+        if (
+            isinstance(cake, AttentiveHostResidualCake)
+            and cake.selective_copy
+            and "copy_gate.weight" not in initial_tensors
+        ):
+            expected_missing.update(
+                {"copy_gate.weight", "copy_gate.bias"}
+            )
         incompatible = cake.load_state_dict(
-            initial_tensors, strict=not migrated_copy_value
+            initial_tensors, strict=not expected_missing
         )
-        if migrated_copy_value:
-            if incompatible.missing_keys != ["copy_value.weight"]:
+        if expected_missing:
+            if set(incompatible.missing_keys) != expected_missing:
                 raise RuntimeError(
-                    "copy-value migration has unexpected missing tensors"
+                    "copy-path migration has unexpected missing tensors"
                 )
+            if incompatible.unexpected_keys:
+                raise RuntimeError(
+                    "copy-path migration has unexpected source tensors"
+                )
+        if "copy_value.weight" in expected_missing:
             with torch.no_grad():
                 cake.copy_alpha.zero_()
         initial_sha = sha256_file(initial_checkpoint)
@@ -1497,11 +1544,19 @@ def train_recurrent_cake(
         objective = loss + 0.002 * stability
         pointer_loss = None
         copy_value_loss = None
+        copy_gate_loss = None
+        prompt_value_loss = None
         pointer_labels_count = 0
+        prompt_value_units = 0
         if (
             isinstance(cake, AttentiveHostResidualCake)
             and cake.copy_width > 0
-            and pointer_supervision_weight > 0
+            and (
+                pointer_supervision_weight > 0
+                or copy_value_supervision_weight > 0
+                or copy_gate_supervision_weight > 0
+                or prompt_value_supervision_weight > 0
+            )
         ):
             pointer_labels = _causal_copy_labels(
                 batch_targets,
@@ -1510,16 +1565,17 @@ def train_recurrent_cake(
             )
             pointer_valid = pointer_labels >= 0
             if pointer_valid.any():
-                pointer_scores = cake.copy_scores(batch_states)
-                pointer_loss = F.cross_entropy(
-                    pointer_scores[pointer_valid],
-                    pointer_labels[pointer_valid],
-                )
                 pointer_labels_count = int(pointer_valid.sum())
-                objective = (
-                    objective
-                    + pointer_supervision_weight * pointer_loss
-                )
+                if pointer_supervision_weight > 0:
+                    pointer_scores = cake.copy_scores(batch_states)
+                    pointer_loss = F.cross_entropy(
+                        pointer_scores[pointer_valid],
+                        pointer_labels[pointer_valid],
+                    )
+                    objective = (
+                        objective
+                        + pointer_supervision_weight * pointer_loss
+                    )
                 if (
                     copy_value_supervision_weight > 0
                     and cake.copy_value_projection
@@ -1541,6 +1597,47 @@ def train_recurrent_cake(
                         objective
                         + copy_value_supervision_weight * copy_value_loss
                     )
+            if (
+                copy_gate_supervision_weight > 0
+                and cake.selective_copy
+            ):
+                gate_valid = batch_valid & batch_masks
+                copy_gate_loss = F.binary_cross_entropy_with_logits(
+                    cake.copy_gate_logits(batch_states)[gate_valid],
+                    pointer_valid[gate_valid].float(),
+                )
+                objective = (
+                    objective
+                    + copy_gate_supervision_weight * copy_gate_loss
+                )
+            if (
+                prompt_value_supervision_weight > 0
+                and cake.copy_value_projection
+            ):
+                (
+                    prompt_batch_indexes,
+                    prompt_source_positions,
+                    prompt_value_targets,
+                ) = _prompt_post_token_pairs(
+                    batch_targets,
+                    batch_valid,
+                    batch_masks,
+                )
+                prompt_source_states = batch_states[
+                    prompt_batch_indexes, prompt_source_positions
+                ]
+                prompt_value_logits = F.linear(
+                    cake.copy_value(prompt_source_states), embedding
+                )
+                prompt_value_loss = F.cross_entropy(
+                    prompt_value_logits, prompt_value_targets
+                )
+                prompt_value_units = int(prompt_value_targets.numel())
+                objective = (
+                    objective
+                    + prompt_value_supervision_weight
+                    * prompt_value_loss
+                )
         objective.backward()
         torch.nn.utils.clip_grad_norm_(cake.parameters(), 1.0)
         optimizer.step()
@@ -1548,7 +1645,11 @@ def train_recurrent_cake(
         objective_value = float(objective.detach())
         selection_loss = (
             objective_value
-            if copy_value_supervision_weight > 0
+            if (
+                copy_value_supervision_weight > 0
+                or copy_gate_supervision_weight > 0
+                or prompt_value_supervision_weight > 0
+            )
             else loss_value
         )
         if selection_loss < best_loss:
@@ -1582,6 +1683,17 @@ def train_recurrent_cake(
                     if copy_value_loss is not None
                     else None
                 ),
+                "copy_gate_binary_cross_entropy": (
+                    float(copy_gate_loss.detach())
+                    if copy_gate_loss is not None
+                    else None
+                ),
+                "prompt_value_cross_entropy": (
+                    float(prompt_value_loss.detach())
+                    if prompt_value_loss is not None
+                    else None
+                ),
+                "prompt_value_supervised_units": prompt_value_units,
                 "selection_objective": objective_value,
                 "wall_seconds": time.perf_counter() - started,
             }
@@ -1626,6 +1738,7 @@ def train_recurrent_cake(
                 {"heads": heads, "expansion": expansion}
                 | {"copy_width": copy_width}
                 | {"copy_value_projection": copy_value_projection}
+                | {"selective_copy": selective_copy}
                 if isinstance(cake, AttentiveHostResidualCake)
                 else {}
             ),
@@ -1638,6 +1751,8 @@ def train_recurrent_cake(
         "prompt_retention_weight": prompt_retention_weight,
         "pointer_supervision_weight": pointer_supervision_weight,
         "copy_value_supervision_weight": copy_value_supervision_weight,
+        "copy_gate_supervision_weight": copy_gate_supervision_weight,
+        "prompt_value_supervision_weight": prompt_value_supervision_weight,
         "trainable_parameters": trainable,
         "active_parameter_seconds_to_quality": trainable * wall,
         "end_to_end_cpu_wall_seconds": wall,
@@ -1957,6 +2072,7 @@ def evaluate_functional(
                     else 0
                 ),
                 copy_value_projection="copy_value.weight" in tensors,
+                selective_copy="copy_gate.weight" in tensors,
             )
         elif "recurrent.weight_ih_l0" in tensors:
             hidden_width = int(tensors["recurrent.weight_hh_l0"].shape[1])
@@ -2145,8 +2261,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--copy-value-supervision-weight", type=float, default=0.0
     )
     attentive.add_argument(
+        "--copy-gate-supervision-weight", type=float, default=0.0
+    )
+    attentive.add_argument(
+        "--prompt-value-supervision-weight", type=float, default=0.0
+    )
+    attentive.add_argument(
         "--copy-value-projection", action="store_true"
     )
+    attentive.add_argument("--selective-copy", action="store_true")
     attentive.add_argument("--max-residual", type=float, default=6.0)
     attentive.add_argument("--steps", type=int, default=800)
     attentive.add_argument("--batch-size", type=int, default=8)
@@ -2238,6 +2361,21 @@ def main(argv: Sequence[str] | None = None) -> int:
             ),
             copy_value_supervision_weight=(
                 args.copy_value_supervision_weight
+                if args.command == "train-attentive"
+                else 0.0
+            ),
+            selective_copy=(
+                args.selective_copy
+                if args.command == "train-attentive"
+                else False
+            ),
+            copy_gate_supervision_weight=(
+                args.copy_gate_supervision_weight
+                if args.command == "train-attentive"
+                else 0.0
+            ),
+            prompt_value_supervision_weight=(
+                args.prompt_value_supervision_weight
                 if args.command == "train-attentive"
                 else 0.0
             ),

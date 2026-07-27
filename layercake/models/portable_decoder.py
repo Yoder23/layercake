@@ -73,7 +73,7 @@ def load_cake_module(package: CakePackage) -> nn.Module:
             )
         elif (
             set(architecture)
-            == {
+            in ({
                 "name",
                 "d_abi",
                 "hidden_width",
@@ -83,7 +83,18 @@ def load_cake_module(package: CakePackage) -> nn.Module:
                 "max_residual",
                 "copy_width",
                 "copy_value_projection",
-            }
+            }, {
+                "name",
+                "d_abi",
+                "hidden_width",
+                "layers",
+                "heads",
+                "expansion",
+                "max_residual",
+                "copy_width",
+                "copy_value_projection",
+                "selective_copy",
+            })
             and architecture.get("name") == "attentive_host_residual"
         ):
             model = AttentiveHostResidualCake(
@@ -96,6 +107,9 @@ def load_cake_module(package: CakePackage) -> nn.Module:
                 copy_width=int(architecture["copy_width"]),
                 copy_value_projection=bool(
                     architecture["copy_value_projection"]
+                ),
+                selective_copy=bool(
+                    architecture.get("selective_copy", False)
                 ),
             )
         else:

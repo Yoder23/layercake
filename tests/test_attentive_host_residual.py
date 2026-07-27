@@ -62,3 +62,26 @@ def test_copy_value_projection_is_identity_initialized():
     )
     expected = torch.eye(8)
     torch.testing.assert_close(cake.copy_value.weight, expected)
+
+
+def test_selective_copy_starts_closed_and_uses_hard_value_read_in_eval():
+    cake = AttentiveHostResidualCake(
+        d_abi=8,
+        hidden_width=12,
+        layers=1,
+        heads=3,
+        expansion=2,
+        copy_width=4,
+        copy_value_projection=True,
+        selective_copy=True,
+    ).eval()
+    assert cake.copy_gate.bias.item() == -4.0
+    assert torch.count_nonzero(cake.copy_gate.weight) == 0
+    semantic = torch.randn(1, 4, 8)
+    context = cake._copy_context(semantic)
+    assert context is not None
+    for position in range(context.shape[1]):
+        assert any(
+            torch.equal(context[0, position], semantic[0, source])
+            for source in range(position + 1)
+        )

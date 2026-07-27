@@ -9,6 +9,7 @@ from layercake.training.phase4_python_cake import (
     _causal_copy_labels,
     _execute_tests,
     _extract_function,
+    _prompt_post_token_pairs,
     generate_diverse_training_dataset,
     generate_dataset,
     generate_identifier_generalization_dataset,
@@ -24,6 +25,18 @@ def test_copy_labels_select_first_state_after_observed_prompt_token():
     response = torch.tensor([[False, False, False, True, True]])
     labels = _causal_copy_labels(targets, valid, response)
     assert labels.tolist() == [[-100, -100, -100, 2, -100]]
+
+
+def test_prompt_value_pairs_use_post_token_states():
+    targets = torch.tensor([[10, 11, 12, 13, 14]])
+    valid = torch.ones_like(targets, dtype=torch.bool)
+    response = torch.tensor([[False, False, False, True, True]])
+    batches, sources, observed = _prompt_post_token_pairs(
+        targets, valid, response
+    )
+    assert batches.tolist() == [0, 0, 0]
+    assert sources.tolist() == [1, 2, 3]
+    assert observed.tolist() == [10, 11, 12]
 
 
 def test_generated_dataset_has_disjoint_promoted_depth(tmp_path: Path):

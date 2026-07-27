@@ -1,0 +1,50 @@
+{
+  "format": "layercake-phase4-selective-hard-copy-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_CONTINUATION",
+  "parent": "moonshot/phase4_causal_copy_repair_preregistration.json",
+  "failed_checkpoint_sha256": "572cb2c951d9938cd1dc6f650204d1e442f69bdd6fb10b196ac3cadd4f3ee2db",
+  "failed_validation_evidence_sha256": "59f3b7548f934018f087a13a26404dd6fd24292e03e3d08833952c84dc6e6813",
+  "measured_validation_decomposition": {
+    "copyable_identifier_units": 504,
+    "identifier_pointer_top1_accuracy": 0.3373015873015873,
+    "identifier_true_source_value_top1_accuracy": 0.5198412698412699,
+    "identifier_soft_attended_value_top1_accuracy": 0.25992063492063494,
+    "global_scale_sweep_reproduced_requested_identifier": false
+  },
+  "single_integrated_architecture_repair": {
+    "name": "selective_hard_lexical_copy",
+    "per_causal_unit_gate": "sigmoid of one ABI-to-scalar projection",
+    "gate_initial_bias": -4.0,
+    "new_parameters": 769,
+    "copy_routing_training": "straight-through hard top-1 with softmax gradient",
+    "copy_routing_inference": "hard top-1 source-state gather",
+    "copy_gate_supervision": "binary target indicating that the response target appears in the prompt",
+    "copy_value_supervision": "reconstruct every observed prompt target from its post-token ABI state through the unchanged frozen tied head",
+    "private_host_token_ids_exposed_at_inference": false,
+    "core_or_head_parameters_changed": 0,
+    "expected_speed_effect": "hard one-state gather replaces dense weighted value aggregation"
+  },
+  "bounded_continuation": {
+    "initialize_existing_tensors_from_failed_checkpoint": true,
+    "additional_optimizer_steps": 800,
+    "training_device": "cpu",
+    "batch_size": 8,
+    "learning_rate": 0.0001,
+    "pointer_supervision_weight": 1.0,
+    "copy_gate_supervision_weight": 1.0,
+    "prompt_value_supervision_weight": 1.0,
+    "dataset_sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa"
+  },
+  "controlled_constants": {
+    "host_core_and_tied_head_unchanged": true,
+    "training_rows_unchanged": true,
+    "validation_rows_unchanged": true,
+    "test_split_access_allowed": false,
+    "functional_gate_unchanged": true,
+    "speed_memory_ttft_gates_unchanged": true
+  },
+  "stopping_rule": {
+    "strict_minimum_validation_success_rate": 0.8,
+    "other_seeds_authorized_only_after_pass": true
+  }
+}
