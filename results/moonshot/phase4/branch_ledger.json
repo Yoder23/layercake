@@ -138,6 +138,35 @@
       "next_bounded_change": "Keep architecture and held-out rows fixed; vary only training prompt wording and identifier patterns.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "attentive-host-residual-384-seed9404-curriculum-v2",
+      "disposition": "REJECTED_ADHERENCE",
+      "architecture": {
+        "name": "attentive_host_residual",
+        "d_abi": 768,
+        "hidden_width": 384,
+        "layers": 1,
+        "heads": 6
+      },
+      "training": {
+        "seed": 9404,
+        "optimizer_steps": 800,
+        "cpu_wall_seconds": 129.13733379999758,
+        "checkpoint_sha256": "e59df9403b751f0c7981210320c768530886c07b206560a1bbd655ba6400f9d7"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "name_agnostic_functional_successes_diagnostic_only": 35,
+        "parseable_first_functions": 55,
+        "functional_error_rate": 1.0,
+        "evidence_sha256": "9d4fff2c22aa9ee24f100db1e6187da72b12b45810523050211192f7641f7e6e"
+      },
+      "measured_bottleneck": "Semantic bodies reached 35/64 unit-test successes under generated names, but no task preserved the exact requested name; family-bearing training identifiers still provide a shortcut.",
+      "next_bounded_change": "Use task-independent multi-token training identifiers so behavior comes from descriptions and names must be copied from prompts.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

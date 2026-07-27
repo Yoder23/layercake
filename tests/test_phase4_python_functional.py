@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from layercake.training.phase4_python_cake import (
@@ -7,6 +8,7 @@ from layercake.training.phase4_python_cake import (
     _extract_function,
     generate_diverse_training_dataset,
     generate_dataset,
+    generate_identifier_generalization_dataset,
 )
 
 
@@ -33,6 +35,21 @@ def test_diverse_repair_changes_only_training_rows(tmp_path: Path):
         manifest["split_hashes"]["train"]
         != manifest["source_split_hashes"]["train"]
     )
+
+
+def test_identifier_repair_keeps_heldout_rows_and_removes_family_shortcut(
+    tmp_path: Path,
+):
+    source = tmp_path / "v1" / "python.jsonl"
+    generate_dataset(source)
+    diverse = tmp_path / "v2" / "python.jsonl"
+    generate_diverse_training_dataset(source, diverse)
+    output = tmp_path / "v3" / "python.jsonl"
+    manifest = generate_identifier_generalization_dataset(diverse, output)
+    assert manifest["validation_rows_unchanged"]
+    assert manifest["test_rows_unchanged"]
+    first = json.loads(output.read_text(encoding="utf-8").splitlines()[0])
+    assert first["family"] not in first["function_name"]
 
 
 def test_safe_function_must_pass_real_unit_tests():

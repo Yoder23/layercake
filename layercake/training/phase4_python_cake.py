@@ -733,6 +733,134 @@ def generate_diverse_training_dataset(
     return manifest
 
 
+def generate_identifier_generalization_dataset(
+    source: Path,
+    output: Path,
+    *,
+    seed: int = 9424,
+) -> dict[str, Any]:
+    """Force behavior-from-description and exact copying of varied identifiers."""
+
+    source = source if source.is_absolute() else ROOT / source
+    output = output if output.is_absolute() else ROOT / output
+    if output.exists():
+        raise RuntimeError(f"dataset artifact is immutable: {output}")
+    source_rows = _load_rows(source)
+    families = {family.family_id: family for family in _families()}
+    prefixes = (
+        "amber",
+        "brisk",
+        "careful",
+        "delta",
+        "exact",
+        "lunar",
+        "quiet",
+        "silver",
+    )
+    suffixes = (
+        "calculation",
+        "configuration",
+        "integration",
+        "operation",
+        "processor",
+        "transformation",
+        "validation",
+        "workflow",
+    )
+    templates = (
+        "Write only valid Python code. Define {name}({parameters}) that {description}.",
+        "Return code only. Create a Python function named {name} with parameters {parameters}. It {description}.",
+        "No prose: implement {name}({parameters}); this callable {description}.",
+        "Produce valid Python source for a function called {name}, taking {parameters}, that {description}.",
+        "Define {name}({parameters}) in Python so it {description}. Output only code.",
+        "Generate only the Python function {name}({parameters}). It {description}.",
+    )
+    rows = []
+    for row in source_rows:
+        if row["split"] != "train":
+            rows.append(row)
+            continue
+        family = families[row["family"]]
+        index = int(row["id"].rsplit("-", 1)[1])
+        family_index = list(families).index(family.family_id)
+        prefix = prefixes[(index + family_index) % len(prefixes)]
+        suffix = suffixes[(3 * index + family_index) % len(suffixes)]
+        if index % 3 == 0:
+            name = f"{prefix}_{suffix}_{100 + index}"
+        elif index % 3 == 1:
+            name = f"apply_{prefix}_{suffix}"
+        else:
+            name = f"{suffix}_{prefix}_{200 + index}"
+        description = family.descriptions[index % len(family.descriptions)]
+        prompt = templates[index % len(templates)].format(
+            name=name,
+            parameters=", ".join(family.parameters),
+            description=description,
+        )
+        rows.append(
+            {
+                **row,
+                "prompt": prompt,
+                "response": _render_response(name, family),
+                "function_name": name,
+            }
+        )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        "".join(
+            json.dumps(row, sort_keys=True, ensure_ascii=False) + "\n"
+            for row in rows
+        ),
+        encoding="utf-8",
+    )
+    def split_sha(items: list[dict[str, Any]], split: str) -> str:
+        return _canonical_sha([row for row in items if row["split"] == split])
+    manifest = {
+        "format": "layercake-phase4-python-functional-dataset/3",
+        "status": "PREREGISTERED_IDENTIFIER_GENERALIZATION_REPAIR",
+        "seed": seed,
+        "source_dataset": (
+            source.relative_to(ROOT).as_posix()
+            if source.is_relative_to(ROOT)
+            else str(source)
+        ),
+        "source_dataset_sha256": sha256_file(source),
+        "dataset": (
+            output.relative_to(ROOT).as_posix()
+            if output.is_relative_to(ROOT)
+            else str(output)
+        ),
+        "dataset_sha256": sha256_file(output),
+        "counts": {
+            split: sum(row["split"] == split for row in rows)
+            for split in ("train", "validation", "test")
+        },
+        "split_hashes": {
+            split: split_sha(rows, split)
+            for split in ("train", "validation", "test")
+        },
+        "source_split_hashes": {
+            split: split_sha(source_rows, split)
+            for split in ("train", "validation", "test")
+        },
+        "validation_rows_unchanged": split_sha(rows, "validation")
+        == split_sha(source_rows, "validation"),
+        "test_rows_unchanged": split_sha(rows, "test")
+        == split_sha(source_rows, "test"),
+        "training_change": (
+            "task-independent multi-token identifiers plus six prompt forms; "
+            "behavior must be inferred from the description"
+        ),
+        "test_definition_unchanged": True,
+    }
+    manifest["manifest_sha256"] = _canonical_sha(manifest)
+    output.with_name("manifest_v3.json").write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return manifest
+
+
 def _load_rows(dataset: Path) -> list[dict[str, Any]]:
     dataset = dataset if dataset.is_absolute() else ROOT / dataset
     return [
@@ -1713,6 +1841,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     diversify = sub.add_parser("generate-diverse-dataset")
     diversify.add_argument("--source", type=Path, default=DEFAULT_DATASET)
     diversify.add_argument("--output", type=Path, required=True)
+    generalize = sub.add_parser("generate-identifier-dataset")
+    generalize.add_argument("--source", type=Path, required=True)
+    generalize.add_argument("--output", type=Path, required=True)
     cache = sub.add_parser("cache")
     cache.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     cache.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
@@ -1780,6 +1911,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         result = generate_dataset(args.output)
     elif args.command == "generate-diverse-dataset":
         result = generate_diverse_training_dataset(
+            args.source, args.output
+        )
+    elif args.command == "generate-identifier-dataset":
+        result = generate_identifier_generalization_dataset(
             args.source, args.output
         )
     elif args.command == "cache":

@@ -1,0 +1,40 @@
+{
+  "format": "layercake-phase4-identifier-generalization-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_TRAINING",
+  "parent": "moonshot/phase4_curriculum_repair_preregistration.json",
+  "failed_checkpoint_sha256": "e59df9403b751f0c7981210320c768530886c07b206560a1bbd655ba6400f9d7",
+  "failed_validation_evidence_sha256": "9d4fff2c22aa9ee24f100db1e6187da72b12b45810523050211192f7641f7e6e",
+  "diagnostic_only": {
+    "name_agnostic_functional_successes": 35,
+    "parseable_first_functions": 55,
+    "tasks": 64,
+    "promotion_credit": 0
+  },
+  "measured_bottleneck": "The cake learned many correct bodies but family-bearing training identifiers let it predict names instead of copying the exact requested identifier.",
+  "repaired_dataset": {
+    "path": "data/moonshot/phase4/python_functional_v3.jsonl",
+    "sha256": "51dc56e15cc909c9f3b98499f7b54035b8f4b78902557bf96402a2b785122f31",
+    "training_split_sha256": "17c0757bd338254d12655d72df97551e1f51725dc42f0a13cf731a6390b03b72",
+    "validation_split_sha256": "233f09a202a7a28605952d9348fa36bfe538e5163ac8b41f46b3a965bc62c75d",
+    "test_split_sha256": "48c5a40e766c495655b4e83bcbe05baca5723d48a6ddfc931250dba31fd06b7e",
+    "validation_rows_unchanged": true,
+    "test_rows_unchanged": true,
+    "training_change_only": "task-independent multi-token identifiers; behavior must come from descriptions"
+  },
+  "bounded_run": {
+    "architecture_unchanged": "attentive_host_residual-384x1-heads6",
+    "seed": 9404,
+    "training_device": "cpu",
+    "optimizer_steps": 1600,
+    "batch_size": 8,
+    "learning_rate": 0.0003,
+    "prompt_token_sample_fraction": 0.5,
+    "prompt_token_loss_weight": 0.5
+  },
+  "stopping_rule": {
+    "strict_minimum_validation_success_rate": 0.8,
+    "name_agnostic_success_cannot_promote": true,
+    "test_split_access_allowed": false,
+    "other_seeds_authorized_only_after_pass": true
+  }
+}
