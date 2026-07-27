@@ -537,6 +537,44 @@
       "additional_recovery_sweeps_authorized": false,
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "existing-portable-python-artifact-audit",
+      "disposition": "REJECTED_SEMANTIC_QUALITY_TRANSFER_MECHANISM_RETAINED",
+      "scope": {
+        "new_architecture_trained": false,
+        "existing_artifacts_changed": false,
+        "screened_artifacts": 5,
+        "validation_prompts_per_artifact": 64,
+        "test_split_accessed": false
+      },
+      "preregistration": {
+        "path": "moonshot/phase4_existing_portable_audit_preregistration.json",
+        "commit": "e2d541c"
+      },
+      "validation": {
+        "required_strict_functional_successes": 52,
+        "successes_by_artifact": {
+          "portable_python_d64_h256_v1.pt": 0,
+          "portable_python_gru148k_v1.pt": 0,
+          "portable_python_gru148k_int8_v1.pt": 0,
+          "portable_python_gru148k_seed6061.pt": 0,
+          "portable_python_gru148k_seed6061_int8.pt": 0
+        },
+        "evidence_sha256": "f8d4a4920cfd262060a1002e55a0e713e5df9399da55aefc0ee822df3ca53f52",
+        "evidence_file_sha256": "3d7b69643987aa7e63734b1cd88a2ca0fb11eec4be6fc7420fe144cd094d6188"
+      },
+      "retained_positive_evidence": {
+        "mathematical_transfer": "PASS_HISTORICAL",
+        "ppl_ratio": 1.0,
+        "max_logit_difference": 0.0,
+        "identical_generation_across_receivers": true,
+        "multi_domain_installation_implementation_present": true
+      },
+      "measured_bottleneck": "The historical portable decoders were trained for Python corpus next-byte prediction and generated spaces for the locked instruction prompts. Exact package and tensor transfer works; useful instruction-to-code capability was never present in these payloads.",
+      "next_bounded_change": "Train the existing core-independent PortableDomainDecoder and artifact format on the locked functional training rows. Do not introduce another host-residual, pointer, or fusion architecture.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }
