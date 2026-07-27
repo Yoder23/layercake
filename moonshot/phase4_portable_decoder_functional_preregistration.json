@@ -1,0 +1,68 @@
+{
+  "format": "layercake-phase4-portable-decoder-functional-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_TRAINING",
+  "parent_audit": {
+    "path": "results/moonshot/phase4/existing_portable_artifact_audit.json",
+    "evidence_sha256": "f8d4a4920cfd262060a1002e55a0e713e5df9399da55aefc0ee822df3ca53f52",
+    "conclusion": "Exact transfer already passes; historical payloads lack instruction-to-code semantics."
+  },
+  "hypothesis": "The existing core-independent byte-GRU PortableDomainDecoder can acquire the missing Python functional behavior while preserving the already-proven exact artifact transfer path.",
+  "architecture": {
+    "existing_class": "layercake.portable_domain.PortableDomainDecoder",
+    "architecture": "byte_gru",
+    "feature_width": 64,
+    "embedding_width": 64,
+    "hidden_width": 256,
+    "parameters": 379136,
+    "new_model_class_allowed": false,
+    "host_residual_pointer_or_fusion_path_allowed": false,
+    "host_core_weights_used_or_changed": false
+  },
+  "training_data": {
+    "path": "data/moonshot/phase4/python_functional_v4.jsonl",
+    "sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa",
+    "training_split_sha256": "368a951ae6b084976b2e3443beeda1cb7f7e0cf0b4cf1bff28d710a4bcdf9e2b",
+    "rows": 960,
+    "unique_function_identifiers": 960,
+    "validation_rows_unchanged": true,
+    "test_rows_unchanged": true,
+    "test_split_access_allowed": false
+  },
+  "bounded_screen": {
+    "seed": 9440,
+    "device": "cpu",
+    "torch_threads": 8,
+    "optimizer": "AdamW",
+    "optimizer_steps": 2400,
+    "batch_size": 16,
+    "learning_rate": 0.001,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0,
+    "objective": "response-only full-vocabulary next-byte cross-entropy",
+    "prompt_suffix": "\n",
+    "maximum_sequence_bytes": 512,
+    "checkpoint_selection": "lowest deterministic training objective; validation is evaluated once after training"
+  },
+  "validation": {
+    "path": "data/moonshot/phase4/python_functional_v1.jsonl",
+    "sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "split_sha256": "233f09a202a7a28605952d9348fa36bfe538e5163ac8b41f46b3a965bc62c75d",
+    "distinct_prompts": 64,
+    "generation_policy": "greedy_argmax_persistent_incremental_byte_gru_state",
+    "maximum_new_bytes": 320,
+    "minimum_strict_functional_successes": 52,
+    "expected_function_name_required": true,
+    "every_unit_test_must_pass": true
+  },
+  "decision_rule": {
+    "authorize_other_seeds_only_if_seed_9440_passes": true,
+    "required_promotion_seeds": [
+      9440,
+      9441,
+      9442
+    ],
+    "if_seed_9440_fails": "Reject this bounded configuration, preserve the artifact, and identify the measured failure mode before any scale or architecture change.",
+    "test_split_before_three_validation_seeds_pass_allowed": false,
+    "transfer_or_speed_claim_from_a_different_payload_allowed": false
+  }
+}

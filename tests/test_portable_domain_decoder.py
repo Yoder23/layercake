@@ -117,3 +117,53 @@ def test_int8_artifact_is_portable_and_bounded():
     x = torch.randint(0, 256, (2, 16))
     assert torch.equal(a(x), b(x))
     assert (decoder(x) - a(x)).abs().max().item() < 0.1
+
+
+def test_persistent_byte_gru_matches_full_prefix_logits():
+    torch.manual_seed(17)
+    decoder = PortableDomainDecoder(
+        feature_width=16,
+        hidden_width=24,
+        architecture="byte_gru",
+        embedding_width=8,
+    ).eval()
+    prompt = torch.randint(0, 256, (2, 23))
+    state = decoder.prefill_incremental(prompt)
+    expected = decoder(prompt)[:, -1]
+    assert torch.allclose(state["next_logits"], expected, atol=1e-6, rtol=1e-6)
+
+    observed = torch.randint(0, 256, (2, 1))
+    actual = decoder.decode_incremental(observed, state)
+    expected = decoder(torch.cat([prompt, observed], dim=1))[:, -1]
+    assert torch.allclose(actual, expected, atol=1e-6, rtol=1e-6)
+
+
+def test_runtime_persistent_generation_is_identical_across_receivers():
+    torch.manual_seed(23)
+    decoder = PortableDomainDecoder(
+        feature_width=16,
+        hidden_width=24,
+        architecture="byte_gru",
+        embedding_width=8,
+    )
+    artifact = build_portable_artifact(
+        decoder,
+        PortableDomainSpec(
+            "python",
+            feature_width=16,
+            hidden_width=24,
+            architecture="byte_gru",
+            embedding_width=8,
+        ),
+    )
+    first = LayerCakeRuntime()
+    second = LayerCakeRuntime()
+    first.install_portable_domain(artifact)
+    second.install_portable_domain(artifact)
+    a = first.generate_incremental(
+        b"Return Python:\n", max_new_bytes=32, domain_id="python"
+    )
+    b = second.generate_incremental(
+        b"Return Python:\n", max_new_bytes=32, domain_id="python"
+    )
+    assert torch.equal(a, b)
