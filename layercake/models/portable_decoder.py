@@ -33,6 +33,7 @@ def portable_decoder_manifest_architecture(
     if architecture in {
         "byte_gru_pointer",
         "byte_gru_pointer_transition",
+        "byte_gru_pointer_self_transition",
     }:
         result["pointer_width"] = int(pointer_width)
     return result

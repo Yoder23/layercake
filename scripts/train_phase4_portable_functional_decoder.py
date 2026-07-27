@@ -20,6 +20,7 @@ from layercake.portable_domain import (
     PortableDomainSpec,
     build_portable_artifact,
     load_portable_artifact,
+    state_dict_hash,
 )
 from layercake.training.phase4_python_cake import (
     _canonical_sha,
@@ -883,6 +884,100 @@ def continue_transition_pointer(
     return evidence
 
 
+def convert_self_gated_transition(
+    protocol_path: Path,
+    initial_artifact_path: Path,
+    artifact_path: Path,
+    evidence_path: Path,
+) -> dict[str, Any]:
+    protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+    if (
+        protocol["status"]
+        != "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_CONVERSION"
+    ):
+        raise ValueError("self-gated transition conversion is not preregistered")
+    parent = protocol["parent_artifact"]
+    if _sha256(initial_artifact_path) != parent["file_sha256"]:
+        raise ValueError("self-gated transition parent artifact hash mismatch")
+    if artifact_path.exists() or evidence_path.exists():
+        raise RuntimeError("self-gated transition outputs are immutable")
+    initial = torch.load(
+        initial_artifact_path, map_location="cpu", weights_only=True
+    )
+    parent_spec, parent_model = load_portable_artifact(initial, "cpu")
+    if initial["payload_hash"] != parent["payload_hash"]:
+        raise ValueError("self-gated transition parent payload hash mismatch")
+    model = PortableDomainDecoder(
+        feature_width=parent_spec.feature_width,
+        hidden_width=parent_spec.hidden_width,
+        architecture="byte_gru_pointer_self_transition",
+        embedding_width=parent_spec.embedding_width,
+        pointer_width=parent_spec.pointer_width,
+    )
+    model.load_state_dict(parent_model.state_dict(), strict=True)
+    model.eval()
+    parent_state_hash = state_dict_hash(parent_model.state_dict())
+    converted_state_hash = state_dict_hash(model.state_dict())
+    if parent_state_hash != converted_state_hash:
+        raise ValueError("self-gated conversion changed parameter tensors")
+    if model.parameter_count() != int(parent["parameters"]):
+        raise ValueError("self-gated conversion changed parameter count")
+    spec = PortableDomainSpec(
+        domain_id=parent_spec.domain_id,
+        feature_width=parent_spec.feature_width,
+        hidden_width=parent_spec.hidden_width,
+        architecture="byte_gru_pointer_self_transition",
+        embedding_width=parent_spec.embedding_width,
+        pointer_width=parent_spec.pointer_width,
+    )
+    artifact = build_portable_artifact(
+        model,
+        spec,
+        training={
+            **initial.get("training", {}),
+            "self_gated_transition_protocol": protocol_path.relative_to(
+                ROOT
+            ).as_posix(),
+            "self_gated_transition_protocol_sha256": _sha256(protocol_path),
+            "conversion_training_rows_accessed": 0,
+            "conversion_optimizer_steps": 0,
+            "parent_state_dict_hash": parent_state_hash,
+        },
+    )
+    artifact_path.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(artifact, artifact_path)
+    evidence = {
+        "format": "layercake-phase4-self-gated-transition-conversion/1",
+        "status": "CONVERTED_WITH_BIT_IDENTICAL_PARAMETERS",
+        "protocol": protocol_path.relative_to(ROOT).as_posix(),
+        "protocol_sha256": _sha256(protocol_path),
+        "parent_artifact": initial_artifact_path.relative_to(ROOT).as_posix(),
+        "parent_artifact_file_sha256": _sha256(initial_artifact_path),
+        "parent_payload_hash": initial["payload_hash"],
+        "parent_state_dict_hash": parent_state_hash,
+        "converted_state_dict_hash": converted_state_hash,
+        "parameter_tensors_bit_identical": True,
+        "parameters": model.parameter_count(),
+        "new_parameters": 0,
+        "trained_parameters": 0,
+        "optimizer_steps": 0,
+        "training_rows_accessed": 0,
+        "validation_rows_accessed": 0,
+        "test_rows_accessed": 0,
+        "artifact": artifact_path.relative_to(ROOT).as_posix(),
+        "artifact_file_sha256": _sha256(artifact_path),
+        "spec_hash": artifact["spec_hash"],
+        "payload_hash": artifact["payload_hash"],
+    }
+    evidence["evidence_sha256"] = _canonical_sha(evidence)
+    evidence_path.parent.mkdir(parents=True, exist_ok=True)
+    evidence_path.write_text(
+        json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return evidence
+
+
 @torch.inference_mode()
 def evaluate(
     protocol_path: Path,
@@ -1005,6 +1100,7 @@ def main() -> int:
             "continue-identifier",
             "continue-pointer",
             "continue-transition-pointer",
+            "convert-self-transition",
             "evaluate",
         ),
     )
@@ -1061,6 +1157,19 @@ def main() -> int:
             else ROOT / args.initial_artifact
         )
         result = continue_transition_pointer(
+            protocol, initial_artifact, artifact, output
+        )
+    elif args.command == "convert-self-transition":
+        if args.initial_artifact is None:
+            parser.error(
+                "convert-self-transition requires --initial-artifact"
+            )
+        initial_artifact = (
+            args.initial_artifact
+            if args.initial_artifact.is_absolute()
+            else ROOT / args.initial_artifact
+        )
+        result = convert_self_gated_transition(
             protocol, initial_artifact, artifact, output
         )
     else:
