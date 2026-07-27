@@ -387,6 +387,54 @@
       "next_bounded_change": "Return to the preserved 48/64 semantic checkpoint. Supervise only the exact monotonic function-identifier span and decode each selected source token from the consecutive pre/post-token ABI-state transition. Keep inference as one hard gathered state pair.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "attentive-transition-copy-v4-seed9404",
+      "disposition": "REJECTED_LEXICAL_CONFORMANCE_AND_STRICT_QUALITY",
+      "architecture": {
+        "name": "attentive_host_residual",
+        "d_abi": 768,
+        "hidden_width": 384,
+        "layers": 1,
+        "heads": 6,
+        "copy_width": 64,
+        "copy_value_projection": true,
+        "selective_copy": true,
+        "transition_copy": true
+      },
+      "training": {
+        "seed": 9404,
+        "optimizer_steps": 1000,
+        "cpu_wall_seconds": 535.8223887000058,
+        "trainable_parameters": 3645315,
+        "best_selection_objective": 0.23319265246391296,
+        "best_response_cross_entropy": 0.09923582524061203,
+        "checkpoint_sha256": "99f19fa9197cf900f62bfff7fc14ab7ac0d128fef523c6ac16146e8a75b38b08",
+        "exact_span_cache_sha256": "4177a690c3f0b5d13ed3391eefa61add6da9e3a52ca4b038bd8953a073ba53cc"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "name_agnostic_functional_successes_diagnostic_only": 42,
+        "header_repair_functional_successes_diagnostic_only": 45,
+        "parseable_first_functions": 45,
+        "functional_error_rate": 1.0,
+        "median_time_to_first_output_seconds": 0.022448449992225505,
+        "median_total_latency_seconds": 1.2853220499964664,
+        "evidence_sha256": "8ad5788f42459c58c0ebc7903511f8a0ba6722b4644e2beeb1b36e171a040b3b"
+      },
+      "teacher_forced_exact_identifier_decomposition": {
+        "copyable_identifier_units": 504,
+        "identifier_pointer_top1_accuracy": 0.4087301587301587,
+        "identifier_true_source_value_top1_accuracy": 0.5833333333333334,
+        "identifier_hard_attended_value_top1_accuracy": 0.498015873015873,
+        "diagnostic_sha256": "6235e3e1829ca590fb03180e2bb5bdf720119cbecc1c66bd363b5328b5c4ba80",
+        "promotion_credit": 0
+      },
+      "measured_bottleneck": "Exact monotonic training labels repaired the label definition and recovered semantic behavior from 23/64 to 42/64 name-agnostic successes, but the learned semantic pointer and transition projection did not generalize to unseen identifier lexemes. Under teacher forcing, the pointer selected only 40.9% of exact held-out source positions and the true source transition decoded only 58.3% of held-out identifier units. A prohibited diagnostic header rewrite reached only 45/64, so lexical copying is not the sole remaining quality defect.",
+      "next_bounded_change": "Separate host-level lexical conformance from Python semantics: train the same canonical-ABI pointer/value path on a preregistered tokenizer-vocabulary coverage corpus with no promotion credit, then attach it to the preserved 48/64 semantic parent and add bounded generated-prefix recovery only if lexical conformance passes its held-out probe.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

@@ -128,27 +128,48 @@ def main() -> None:
         )
 
         identifier_pattern = tokenizer.encode(" " + row["function_name"])
-        identifier_start = _subsequence_start(response_ids, identifier_pattern)
-        if identifier_start is None:
+        prompt_identifier_start = _subsequence_start(
+            prompt_ids, identifier_pattern
+        )
+        response_identifier_start = _subsequence_start(
+            response_ids, identifier_pattern
+        )
+        if (
+            prompt_identifier_start is None
+            or response_identifier_start is None
+        ):
             identifier_pattern = tokenizer.encode(row["function_name"])
-            identifier_start = _subsequence_start(
+            prompt_identifier_start = _subsequence_start(
+                prompt_ids, identifier_pattern
+            )
+            response_identifier_start = _subsequence_start(
                 response_ids, identifier_pattern
             )
-        if identifier_start is None:
+        if (
+            prompt_identifier_start is None
+            or response_identifier_start is None
+        ):
             raise RuntimeError(
                 f"function identifier tokens not found for {row['id']}"
             )
         identifier_positions = torch.tensor(
             [
-                len(prompt_ids) - 1 + identifier_start + offset
+                len(prompt_ids)
+                - 1
+                + response_identifier_start
+                + offset
                 for offset in range(len(identifier_pattern))
             ],
             dtype=torch.long,
         )
-        identifier_copyable = labels[0, identifier_positions] >= 0
-        identifier_positions = identifier_positions[identifier_copyable]
         identifier_count = int(identifier_positions.numel())
-        identifier_true_positions = labels[0, identifier_positions]
+        identifier_true_positions = torch.tensor(
+            [
+                prompt_identifier_start + offset
+                for offset in range(identifier_count)
+            ],
+            dtype=torch.long,
+        )
         identifier_pointer_predictions = scores[
             0, identifier_positions
         ].argmax(dim=-1)
@@ -205,8 +226,11 @@ def main() -> None:
         )
 
     result = {
-        "format": "layercake-phase4-copy-alignment-diagnostic/1",
+        "format": "layercake-phase4-copy-alignment-diagnostic/2",
         "status": "DIAGNOSTIC_ONLY_NO_PROMOTION_CREDIT",
+        "identifier_label_protocol": (
+            "exact monotonic prompt/response function-identifier spans"
+        ),
         "split": args.split,
         "distinct_prompts": len(rows),
         "core_checkpoint_sha256": metadata["checkpoint"]["sha256"],

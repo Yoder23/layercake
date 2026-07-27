@@ -1,0 +1,78 @@
+{
+  "format": "layercake-phase4-lexical-conformance-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION",
+  "parent": "moonshot/phase4_transition_copy_preregistration.json",
+  "rejected_checkpoint_sha256": "99f19fa9197cf900f62bfff7fc14ab7ac0d128fef523c6ac16146e8a75b38b08",
+  "rejected_validation_evidence_sha256": "8ad5788f42459c58c0ebc7903511f8a0ba6722b4644e2beeb1b36e171a040b3b",
+  "preserved_semantic_parent": {
+    "checkpoint": "artifacts/moonshot/phase4/candidates/python-attentive-v3-screen-seed9404.safetensors",
+    "checkpoint_sha256": "16f78653e269737f3fefc6952db71f94a01a9f2a5c8b0f5557272820c9e0615b",
+    "strict_validation_successes": 0,
+    "name_agnostic_validation_successes": 48,
+    "name_agnostic_validation_prompts": 64,
+    "promotion_credit": 0
+  },
+  "measured_failure": {
+    "strict_validation_successes": 0,
+    "name_agnostic_validation_successes": 42,
+    "header_repair_validation_successes_diagnostic_only": 45,
+    "exact_identifier_units": 504,
+    "exact_identifier_pointer_top1_accuracy": 0.4087301587301587,
+    "true_source_transition_value_top1_accuracy": 0.5833333333333334,
+    "cause": "the Python-only cache lets the semantic pointer and transition projection memorize the restricted training identifier lexicon instead of learning host-level lexical conformance"
+  },
+  "single_bounded_change": {
+    "name": "copy-path-only lexical conformance before Python integration",
+    "semantic_parent_tensors_trainable": false,
+    "copy_path_trainable_tensors": [
+      "copy_query.weight",
+      "copy_key.weight",
+      "copy_gate.weight",
+      "copy_gate.bias",
+      "copy_transition_value.weight"
+    ],
+    "new_architecture_parameters": 1278721,
+    "core_or_head_parameters_changed": 0,
+    "private_host_token_ids_exposed_at_inference": false,
+    "runtime_graph_change": false
+  },
+  "lexical_conformance_data": {
+    "source": "the frozen declared GPT-2 tokenizer vocabulary only",
+    "functional_validation_or_test_rows_used": false,
+    "train_rows": 4096,
+    "heldout_probe_rows": 256,
+    "identifier_construction": "deterministic valid Python identifiers spanning independently selected leading and interior tokenizer units",
+    "prompt_templates": 8,
+    "target_token_id_sets_disjoint": true,
+    "synthetic_probe_promotion_credit": 0
+  },
+  "bounded_runs": {
+    "lexical_conformance_optimizer_steps": 1200,
+    "python_exact_span_continuation_optimizer_steps": 600,
+    "batch_size": 8,
+    "learning_rate": 0.0001,
+    "pointer_supervision_weight": 1.0,
+    "copy_gate_supervision_weight": 1.0,
+    "prompt_value_supervision_weight": 1.0,
+    "response_cross_entropy_weight": 1.0,
+    "training_device": "cpu",
+    "copy_path_only": true
+  },
+  "decision_rule": {
+    "lexical_probe_minimum_exact_identifier_pointer_top1_accuracy": 0.9,
+    "lexical_probe_minimum_true_source_transition_value_top1_accuracy": 0.9,
+    "lexical_probe_required_before_python_continuation": true,
+    "strict_minimum_functional_validation_success_rate": 0.8,
+    "test_split_access_allowed": false,
+    "other_seeds_authorized_only_after_functional_validation_pass": true,
+    "generated_prefix_recovery_authorized_by_this_contract": false,
+    "nearby_copy_width_weight_or_capacity_sweeps_authorized": false
+  },
+  "immutability": {
+    "phase2_core_sha256": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+    "canonical_abi_sha256": "d024de52144a2d797d0501acb7deb55575ffca7e33f72900beff599cf0a97761",
+    "phase4_functional_dataset_sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa",
+    "functional_validation_rows_unchanged": true,
+    "functional_test_rows_unchanged_and_unaccessed": true
+  }
+}
