@@ -16,6 +16,7 @@ from .canonical_anchors import canonical_byte_table, causal_byte_anchors
 
 PORTABLE_DOMAIN_FORMAT = "layercake-portable-domain/1"
 CANONICAL_ANCHOR_VERSION = "lc-causal-byte-anchor/1"
+POINTER_TRANSITION_OFFSETS = (-2, -1, 0, 1, 2, 3, 4)
 
 
 def canonical_json_hash(payload: dict) -> str:
@@ -46,6 +47,7 @@ class PortableDomainSpec:
             "anchor_mlp",
             "byte_gru",
             "byte_gru_pointer",
+            "byte_gru_pointer_transition",
         }:
             raise ValueError(f"unsupported decoder architecture: {self.architecture}")
         if self.embedding_width <= 0 or self.pointer_width <= 0:
@@ -98,7 +100,11 @@ class PortableDomainDecoder(nn.Module):
                 nn.GELU(),
                 nn.Linear(self.hidden_width, 256),
             )
-        elif architecture in {"byte_gru", "byte_gru_pointer"}:
+        elif architecture in {
+            "byte_gru",
+            "byte_gru_pointer",
+            "byte_gru_pointer_transition",
+        }:
             self.byte_embedding = nn.Embedding(256, embedding_width)
             self.recurrent = nn.GRU(
                 embedding_width + self.feature_width,
@@ -109,7 +115,10 @@ class PortableDomainDecoder(nn.Module):
                 nn.LayerNorm(self.hidden_width),
                 nn.Linear(self.hidden_width, 256),
             )
-            if architecture == "byte_gru_pointer":
+            if architecture in {
+                "byte_gru_pointer",
+                "byte_gru_pointer_transition",
+            }:
                 self.copy_query = nn.Linear(
                     self.hidden_width, pointer_width, bias=False
                 )
@@ -121,6 +130,15 @@ class PortableDomainDecoder(nn.Module):
                 nn.init.xavier_uniform_(self.copy_key.weight)
                 nn.init.zeros_(self.copy_gate.weight)
                 nn.init.constant_(self.copy_gate.bias, -4.0)
+                if architecture == "byte_gru_pointer_transition":
+                    self.copy_transition_logits = nn.Parameter(
+                        torch.zeros(len(POINTER_TRANSITION_OFFSETS))
+                    )
+                    self.copy_transition_gate = nn.Linear(
+                        self.hidden_width, 1
+                    )
+                    nn.init.zeros_(self.copy_transition_gate.weight)
+                    nn.init.constant_(self.copy_transition_gate.bias, -4.0)
         else:
             raise ValueError(f"unsupported decoder architecture: {architecture}")
 
@@ -134,25 +152,97 @@ class PortableDomainDecoder(nn.Module):
 
     def forward(self, byte_ids: torch.Tensor) -> torch.Tensor:
         anchors = causal_byte_anchors(byte_ids, self.feature_width)
-        if self.architecture in {"byte_gru", "byte_gru_pointer"}:
+        if self.architecture in {
+            "byte_gru",
+            "byte_gru_pointer",
+            "byte_gru_pointer_transition",
+        }:
             embedded = self.byte_embedding(byte_ids)
             hidden, _ = self.recurrent(torch.cat([embedded, anchors], dim=-1))
-            if self.architecture == "byte_gru_pointer":
+            if self.architecture in {
+                "byte_gru_pointer",
+                "byte_gru_pointer_transition",
+            }:
                 return self.pointer_forward(byte_ids, hidden)["logits"]
             return self.decoder(hidden)
         return self.decoder(anchors)
+
+    def _scatter_pointer_probabilities(
+        self,
+        probabilities: torch.Tensor,
+        byte_ids: torch.Tensor,
+    ) -> torch.Tensor:
+        output = probabilities.new_zeros(
+            *probabilities.shape[:-1], 256
+        )
+        values = byte_ids[:, None, :].expand_as(probabilities)
+        return output.scatter_add(2, values, probabilities)
 
     def _pointer_distribution(
         self,
         scores: torch.Tensor,
         byte_ids: torch.Tensor,
     ) -> torch.Tensor:
-        probabilities = torch.softmax(scores, dim=-1)
-        output = probabilities.new_zeros(
-            *probabilities.shape[:-1], 256
+        return self._scatter_pointer_probabilities(
+            torch.softmax(scores, dim=-1), byte_ids
         )
-        values = byte_ids[:, None, :].expand_as(scores)
-        return output.scatter_add(2, values, probabilities)
+
+    def _shift_pointer_probabilities(
+        self,
+        previous: torch.Tensor,
+        output_length: int,
+    ) -> torch.Tensor:
+        weights = torch.softmax(self.copy_transition_logits, dim=0)
+        result = previous.new_zeros(previous.shape[0], output_length)
+        source_length = previous.shape[1]
+        for weight, offset in zip(weights, POINTER_TRANSITION_OFFSETS):
+            source_start = max(0, -offset)
+            source_stop = min(source_length, output_length - offset)
+            if source_stop <= source_start:
+                continue
+            destination_start = source_start + offset
+            destination_stop = source_stop + offset
+            result[:, destination_start:destination_stop] += (
+                weight * previous[:, source_start:source_stop]
+            )
+        return result / result.sum(dim=-1, keepdim=True).clamp_min(1e-12)
+
+    def _transition_pointer_probabilities(
+        self,
+        content_probabilities: torch.Tensor,
+        recurrent: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        attention_steps = []
+        transition_gate_steps = []
+        previous = None
+        for index in range(content_probabilities.shape[1]):
+            content = content_probabilities[:, index, : index + 1]
+            gate_logits = self.copy_transition_gate(
+                recurrent[:, index]
+            )
+            if previous is None:
+                attention = content
+                gate_logits = torch.full_like(gate_logits, -30.0)
+            else:
+                transitioned = self._shift_pointer_probabilities(
+                    previous, index + 1
+                )
+                gate = torch.sigmoid(gate_logits)
+                attention = (1.0 - gate) * content + gate * transitioned
+                attention = attention / attention.sum(
+                    dim=-1, keepdim=True
+                ).clamp_min(1e-12)
+            padded = F.pad(
+                attention,
+                (0, content_probabilities.shape[2] - index - 1),
+            )
+            attention_steps.append(padded)
+            transition_gate_steps.append(gate_logits)
+            previous = attention
+        return (
+            torch.stack(attention_steps, dim=1),
+            torch.stack(transition_gate_steps, dim=1),
+        )
 
     def _mix_pointer_logits(
         self,
@@ -173,7 +263,10 @@ class PortableDomainDecoder(nn.Module):
         byte_ids: torch.Tensor,
         recurrent: torch.Tensor | None = None,
     ) -> dict[str, torch.Tensor]:
-        if self.architecture != "byte_gru_pointer":
+        if self.architecture not in {
+            "byte_gru_pointer",
+            "byte_gru_pointer_transition",
+        }:
             raise ValueError("neural pointer path is disabled")
         if recurrent is None:
             anchors = causal_byte_anchors(byte_ids, self.feature_width)
@@ -198,15 +291,32 @@ class PortableDomainDecoder(nn.Module):
         scores = scores.masked_fill(
             future, torch.finfo(scores.dtype).min
         )
-        pointer = self._pointer_distribution(scores, byte_ids)
+        content_probabilities = torch.softmax(scores, dim=-1)
+        transition_gate_logits = None
+        pointer_probabilities = content_probabilities
+        if self.architecture == "byte_gru_pointer_transition":
+            (
+                pointer_probabilities,
+                transition_gate_logits,
+            ) = self._transition_pointer_probabilities(
+                content_probabilities, recurrent
+            )
+        pointer = self._scatter_pointer_probabilities(
+            pointer_probabilities, byte_ids
+        )
         logits, gate_logits = self._mix_pointer_logits(
             recurrent, pointer
         )
         return {
             "logits": logits,
-            "pointer_scores": scores,
+            "pointer_scores": torch.log(
+                pointer_probabilities.clamp_min(1e-12)
+            ),
+            "content_pointer_scores": scores,
+            "pointer_attention": pointer_probabilities,
             "pointer_distribution": pointer,
             "gate_logits": gate_logits,
+            "transition_gate_logits": transition_gate_logits,
             "recurrent": recurrent,
         }
 
@@ -215,24 +325,65 @@ class PortableDomainDecoder(nn.Module):
         recurrent: torch.Tensor,
         pointer_keys: torch.Tensor,
         pointer_byte_ids: torch.Tensor,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
+        previous_pointer_attention: torch.Tensor | None = None,
+    ) -> tuple[
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor | None,
+    ]:
         query = self.copy_query(recurrent)
         scores = torch.matmul(
             query[:, None], pointer_keys.transpose(1, 2)
         ) / (self.pointer_width ** 0.5)
-        pointer = self._pointer_distribution(
-            scores, pointer_byte_ids
+        pointer_attention = torch.softmax(scores[:, 0], dim=-1)
+        transition_gate_logits = None
+        if self.architecture == "byte_gru_pointer_transition":
+            if previous_pointer_attention is None:
+                transition_gate_logits = torch.full(
+                    (recurrent.shape[0], 1),
+                    -30.0,
+                    dtype=recurrent.dtype,
+                    device=recurrent.device,
+                )
+            else:
+                transition_gate_logits = self.copy_transition_gate(
+                    recurrent
+                )
+                transitioned = self._shift_pointer_probabilities(
+                    previous_pointer_attention,
+                    pointer_attention.shape[1],
+                )
+                transition_gate = torch.sigmoid(transition_gate_logits)
+                pointer_attention = (
+                    (1.0 - transition_gate) * pointer_attention
+                    + transition_gate * transitioned
+                )
+                pointer_attention = pointer_attention / pointer_attention.sum(
+                    dim=-1, keepdim=True
+                ).clamp_min(1e-12)
+        pointer = self._scatter_pointer_probabilities(
+            pointer_attention[:, None], pointer_byte_ids
         )[:, 0]
         logits, gate_logits = self._mix_pointer_logits(
             recurrent, pointer
         )
-        return logits, gate_logits
+        return (
+            logits,
+            gate_logits,
+            pointer_attention,
+            transition_gate_logits,
+        )
 
     def prefill_incremental(
         self, byte_ids: torch.Tensor
     ) -> dict[str, torch.Tensor]:
         """Create persistent byte-GRU state without changing model mathematics."""
-        if self.architecture not in {"byte_gru", "byte_gru_pointer"}:
+        if self.architecture not in {
+            "byte_gru",
+            "byte_gru_pointer",
+            "byte_gru_pointer_transition",
+        }:
             raise ValueError("persistent incremental state requires byte_gru")
         if byte_ids.ndim != 2 or byte_ids.shape[1] == 0:
             raise ValueError("prefill requires non-empty [batch, sequence] bytes")
@@ -264,18 +415,41 @@ class PortableDomainDecoder(nn.Module):
             "recurrent_hidden": hidden,
             "next_logits": self.decoder(recurrent[:, -1]),
         }
-        if self.architecture == "byte_gru_pointer":
+        if self.architecture in {
+            "byte_gru_pointer",
+            "byte_gru_pointer_transition",
+        }:
             pointer_keys = self.copy_key(recurrent)
-            next_logits, gate_logits = self._pointer_step_logits(
-                recurrent[:, -1],
-                pointer_keys,
-                byte_ids,
-            )
+            if self.architecture == "byte_gru_pointer_transition":
+                pointer_result = self.pointer_forward(byte_ids, recurrent)
+                next_logits = pointer_result["logits"][:, -1]
+                gate_logits = pointer_result["gate_logits"][:, -1]
+                pointer_attention = pointer_result[
+                    "pointer_attention"
+                ][:, -1]
+                transition_gate_logits = pointer_result[
+                    "transition_gate_logits"
+                ][:, -1]
+            else:
+                (
+                    next_logits,
+                    gate_logits,
+                    pointer_attention,
+                    transition_gate_logits,
+                ) = self._pointer_step_logits(
+                    recurrent[:, -1],
+                    pointer_keys,
+                    byte_ids,
+                )
             result.update(
                 {
                     "pointer_keys": pointer_keys,
                     "pointer_byte_ids": byte_ids,
+                    "pointer_attention": pointer_attention,
                     "pointer_gate_logits": gate_logits,
+                    "pointer_transition_gate_logits": (
+                        transition_gate_logits
+                    ),
                     "next_logits": next_logits,
                 }
             )
@@ -287,7 +461,11 @@ class PortableDomainDecoder(nn.Module):
         state: dict[str, torch.Tensor],
     ) -> torch.Tensor:
         """Advance persistent state by one observed generated byte."""
-        if self.architecture not in {"byte_gru", "byte_gru_pointer"}:
+        if self.architecture not in {
+            "byte_gru",
+            "byte_gru_pointer",
+            "byte_gru_pointer_transition",
+        }:
             raise ValueError("persistent incremental state requires byte_gru")
         if byte_ids.ndim == 1:
             byte_ids = byte_ids[:, None]
@@ -312,7 +490,10 @@ class PortableDomainDecoder(nn.Module):
         )
         recurrent_last = recurrent[:, -1]
         logits = self.decoder(recurrent_last)
-        if self.architecture == "byte_gru_pointer":
+        if self.architecture in {
+            "byte_gru_pointer",
+            "byte_gru_pointer_transition",
+        }:
             pointer_keys = torch.cat(
                 (
                     state["pointer_keys"],
@@ -323,14 +504,24 @@ class PortableDomainDecoder(nn.Module):
             pointer_byte_ids = torch.cat(
                 (state["pointer_byte_ids"], byte_ids), dim=1
             )
-            logits, gate_logits = self._pointer_step_logits(
+            (
+                logits,
+                gate_logits,
+                pointer_attention,
+                transition_gate_logits,
+            ) = self._pointer_step_logits(
                 recurrent_last,
                 pointer_keys,
                 pointer_byte_ids,
+                state.get("pointer_attention"),
             )
             state["pointer_keys"] = pointer_keys
             state["pointer_byte_ids"] = pointer_byte_ids
+            state["pointer_attention"] = pointer_attention
             state["pointer_gate_logits"] = gate_logits
+            state["pointer_transition_gate_logits"] = (
+                transition_gate_logits
+            )
         state["anchor_state"] = anchor_state
         state["recurrent_hidden"] = hidden
         state["next_logits"] = logits

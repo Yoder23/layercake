@@ -235,3 +235,53 @@ def test_pointer_artifact_round_trip_preserves_logits():
     _, loaded = load_portable_artifact(artifact)
     prompt = torch.randint(0, 256, (2, 19))
     assert torch.equal(decoder(prompt), loaded(prompt))
+
+
+def test_transition_pointer_incremental_logits_match_full_prefix():
+    torch.manual_seed(37)
+    decoder = PortableDomainDecoder(
+        feature_width=16,
+        hidden_width=24,
+        architecture="byte_gru_pointer_transition",
+        embedding_width=8,
+        pointer_width=12,
+    ).eval()
+    with torch.no_grad():
+        decoder.copy_transition_gate.bias.fill_(1.25)
+        decoder.copy_transition_logits.copy_(
+            torch.tensor([-2.0, -1.0, 0.0, 3.0, 0.5, -0.5, -1.5])
+        )
+    prompt = torch.randint(0, 256, (2, 23))
+    state = decoder.prefill_incremental(prompt)
+    expected = decoder(prompt)[:, -1]
+    assert torch.allclose(state["next_logits"], expected, atol=1e-6, rtol=1e-6)
+
+    observed = torch.randint(0, 256, (2, 1))
+    actual = decoder.decode_incremental(observed, state)
+    expected = decoder(torch.cat([prompt, observed], dim=1))[:, -1]
+    assert torch.allclose(actual, expected, atol=1e-6, rtol=1e-6)
+
+
+def test_transition_pointer_artifact_round_trip_preserves_logits():
+    torch.manual_seed(41)
+    decoder = PortableDomainDecoder(
+        feature_width=16,
+        hidden_width=24,
+        architecture="byte_gru_pointer_transition",
+        embedding_width=8,
+        pointer_width=12,
+    ).eval()
+    artifact = build_portable_artifact(
+        decoder,
+        PortableDomainSpec(
+            "python",
+            feature_width=16,
+            hidden_width=24,
+            architecture="byte_gru_pointer_transition",
+            embedding_width=8,
+            pointer_width=12,
+        ),
+    )
+    _, loaded = load_portable_artifact(artifact)
+    prompt = torch.randint(0, 256, (2, 19))
+    assert torch.equal(decoder(prompt), loaded(prompt))

@@ -30,7 +30,10 @@ def portable_decoder_manifest_architecture(
         "embedding_width": int(embedding_width),
         "anchor_version": "lc-causal-byte-anchor/1",
     }
-    if architecture == "byte_gru_pointer":
+    if architecture in {
+        "byte_gru_pointer",
+        "byte_gru_pointer_transition",
+    }:
         result["pointer_width"] = int(pointer_width)
     return result
 
