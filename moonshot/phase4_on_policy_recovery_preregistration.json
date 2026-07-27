@@ -1,0 +1,64 @@
+{
+  "format": "layercake-phase4-on-policy-recovery-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION",
+  "parent": "moonshot/phase4_lexical_conformance_preregistration.json",
+  "closed_lexical_branch_checkpoint_sha256": "65c1123f676b58343aba32dd2d4efe4211399ce81c46668ecb3967c7ec89aee2",
+  "closed_lexical_branch_reason": "heldout true-source lexical reconstruction 0.8665 < 0.90; Python continuation forbidden",
+  "active_parent": {
+    "checkpoint": "artifacts/moonshot/phase4/candidates/python-attentive-v3-screen-seed9404.safetensors",
+    "checkpoint_sha256": "16f78653e269737f3fefc6952db71f94a01a9f2a5c8b0f5557272820c9e0615b",
+    "strict_validation_successes": 0,
+    "name_agnostic_validation_successes": 48,
+    "header_repair_validation_successes_diagnostic_only": 48,
+    "parseable_first_functions": 56,
+    "promotion_credit": 0
+  },
+  "measured_failure": {
+    "semantic_ceiling_under_diagnostic_header_repair": 0.75,
+    "minimum_functional_validation_rate": 0.8,
+    "autonomous_outputs": "correct short bodies frequently degrade after self-generated identifier and early-body errors",
+    "cause_under_test": "teacher-forced exposure bias in the semantic cake"
+  },
+  "single_bounded_change": {
+    "name": "cached self-generated-prefix recovery",
+    "generation_policy": "greedy argmax from the integrated frozen core plus active semantic parent",
+    "prefix_horizons": [
+      8,
+      32,
+      64
+    ],
+    "horizon_assignment": "deterministic round-robin over the 960 training rows",
+    "cache_input": "prompt plus genuinely autoregressive generated prefix plus remaining gold suffix",
+    "cache_target": "gold response at every response position",
+    "core_states_recomputed_for_generated_prefix": true,
+    "training_rows": 960,
+    "new_architecture_parameters": 0,
+    "copy_path_present": false,
+    "core_or_head_parameters_changed": 0
+  },
+  "bounded_run": {
+    "optimizer_steps": 800,
+    "batch_size": 8,
+    "learning_rate": 0.0001,
+    "prompt_retention_fraction": 0.5,
+    "prompt_retention_weight": 0.5,
+    "training_device": "cpu",
+    "initial_checkpoint_sha256": "16f78653e269737f3fefc6952db71f94a01a9f2a5c8b0f5557272820c9e0615b",
+    "dataset_sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa"
+  },
+  "decision_rule": {
+    "strict_minimum_functional_validation_success_rate": 0.8,
+    "name_agnostic_or_header_repair_diagnostic_promotion_credit": 0,
+    "test_split_access_allowed": false,
+    "other_seeds_authorized_only_after_strict_validation_pass": true,
+    "additional_recovery_horizon_or_probability_sweeps_authorized": false,
+    "closed_copy_path_may_be_reintroduced": false,
+    "failure_requires_materially_distinct_architecture": true
+  },
+  "immutability": {
+    "phase2_core_sha256": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+    "canonical_abi_sha256": "d024de52144a2d797d0501acb7deb55575ffca7e33f72900beff599cf0a97761",
+    "functional_validation_rows_unchanged": true,
+    "functional_test_rows_unchanged_and_unaccessed": true
+  }
+}
