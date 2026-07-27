@@ -1,0 +1,91 @@
+{
+  "format": "layercake-phase4-portable-transition-pointer-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_TRAINING",
+  "parent": "moonshot/phase4_portable_pointer_preregistration.json",
+  "parent_artifact": {
+    "path": "artifacts/moonshot/phase4/candidates/python-portable-pointer-seed9440.pt",
+    "file_sha256": "aefeb1a0c130b805ea4bab912be2d4492c51d90e43e4d83a0b0ffe51e38746e6",
+    "payload_hash": "0f6e759739908cb5d4382e233ff1042ff0b5f2ea1c84a30ad07ea6665904695d",
+    "semantic_parent_parameters": 379136,
+    "content_pointer_parameters": 33025,
+    "all_parent_parameters_frozen": true
+  },
+  "rejected_parent_result": {
+    "strict_functional_successes": 0,
+    "distinct_validation_prompts": 64,
+    "teacher_forced_first_identifier_pointer_position_accuracy": 0.9375,
+    "teacher_forced_all_identifier_pointer_position_accuracy": 0.46878981590270996,
+    "teacher_forced_identifier_next_byte_accuracy": 0.41464969515800476,
+    "diagnostic_evidence_sha256": "2d7563a42941dbaddf5c59edca0617f799fa5edd24a909e44025b88eab8b8450"
+  },
+  "measured_bottleneck": "The frozen content pointer locates the first unseen identifier byte on 60/64 prompts but independent content attention drifts across later bytes. The missing state is the previous neural pointer distribution, not package transfer, semantic-body capacity, pointer width, or loss weight.",
+  "single_bounded_change": {
+    "existing_class": "layercake.portable_domain.PortableDomainDecoder",
+    "architecture": "byte_gru_pointer_transition",
+    "previous_pointer_distribution_persisted": true,
+    "transition_offsets": [
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "transition_offset_probabilities": "learned softmax distribution",
+    "content_versus_transition_gate": "learned sigmoid from the frozen recurrent state",
+    "transition_parameters": 264,
+    "total_parameters": 412425,
+    "trainable_parameters": 264,
+    "frozen_parameters": 412161,
+    "new_model_class": false,
+    "deterministic_cursor": false,
+    "forced_source_position": false,
+    "output_rewrite": false
+  },
+  "training_data": {
+    "path": "data/moonshot/phase4/python_functional_v4.jsonl",
+    "sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa",
+    "training_split_sha256": "368a951ae6b084976b2e3443beeda1cb7f7e0cf0b4cf1bff28d710a4bcdf9e2b",
+    "rows": 960,
+    "validation_rows_unchanged": true,
+    "test_rows_unchanged": true
+  },
+  "bounded_run": {
+    "seed": 9740,
+    "device": "cpu",
+    "torch_threads": 8,
+    "optimizer": "AdamW",
+    "optimizer_steps": 1000,
+    "batch_size": 8,
+    "learning_rate": 0.001,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0,
+    "objective": "response neural negative log likelihood plus final pointer-position negative log likelihood plus transition-gate binary cross-entropy",
+    "transition_gate_positive_positions": "response identifier bytes after the first byte only",
+    "checkpoint_selection": "lowest deterministic combined training objective; validation evaluated once after training"
+  },
+  "neural_generation_contract": {
+    "every_output_byte_selected_from_model_distribution": true,
+    "pointer_motion_is_probabilistic_and_learned": true,
+    "content_transition_selection_is_learned": true,
+    "deterministic_header_or_cursor": false,
+    "prompt_parser": false,
+    "forced_copy_unit": false,
+    "template_retrieval_or_stored_answer": false
+  },
+  "validation": {
+    "path": "data/moonshot/phase4/python_functional_v1.jsonl",
+    "sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "distinct_prompts": 64,
+    "minimum_strict_functional_successes": 52,
+    "maximum_new_bytes": 320,
+    "generation_policy": "greedy_argmax_persistent_incremental_neural_transition_pointer_distribution",
+    "test_split_access_allowed": false
+  },
+  "decision_rule": {
+    "authorize_two_additional_preregistered_seeds_only_after_seed_9740_passes": true,
+    "if_failure": "Preserve the result. Do not sweep transition offsets, initialization, capacity, or loss weights without a new machine-measured bottleneck.",
+    "speed_quality_and_transfer_must_use_the_same_payload": true
+  }
+}
