@@ -683,6 +683,49 @@
       "pointer_width_or_loss_weight_sweeps_authorized": false,
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "portable-functional-transition-pointer-seed9740",
+      "disposition": "REJECTED_TRANSITION_GATE_GENERALIZATION",
+      "architecture": {
+        "name": "PortableDomainDecoder",
+        "architecture": "byte_gru_pointer_transition",
+        "parent_parameters_frozen": 412161,
+        "transition_parameters_trained": 264,
+        "total_parameters": 412425,
+        "deterministic_cursor_or_output_rewrite": false
+      },
+      "training": {
+        "seed": 9740,
+        "optimizer_steps": 1000,
+        "cpu_wall_seconds": 457.3765170999977,
+        "best_combined_objective": 0.336850643157959,
+        "learned_plus_one_offset_probability": 0.7133834362030029,
+        "artifact_file_sha256": "b9703b481c2c79330e15b0d9c1d2d1eb2588dc85b0e9761fdc7460c91532e080",
+        "payload_hash": "02d4067522d57a1b0c5b6807e22b3b9d7639152a703c0de9b28ac892e075cbb3",
+        "evidence_sha256": "778ced7212f9dbc18f4941c08f2267e861ec77280a06f2daffb14e935872ceb7"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "functional_error_rate": 1.0,
+        "median_time_to_first_output_seconds": 0.03299725000397302,
+        "median_total_latency_seconds": 0.2678322499996284,
+        "evidence_sha256": "cd6addebec582fcf6e6ceb003f47d298a3a0dbc3d2909f47a1013c78839325d6"
+      },
+      "teacher_forced_validation_diagnostic": {
+        "new_transition_gate_probability_on_identifier_continuations": 0.20887170732021332,
+        "frozen_copy_gate_probability_on_identifier_continuations": 0.6969854831695557,
+        "adjacent_copy_gate_conjunction_on_identifier_continuations": 0.5602394938468933,
+        "previous_copy_gate_probability_at_first_identifier_byte": 0.013256313279271126,
+        "evidence_sha256": "dacc40f443a7d77784ac331e0ca0b1a36e07e947236b0c1293259699a7f3c212",
+        "promotion_credit": 0
+      },
+      "measured_bottleneck": "The probabilistic offset transition learned the correct +1 movement, but its separately trained hidden-state gate activates on only 20.9% of held-out identifier continuations. The already-frozen copy gate activates on 69.7%, and its adjacent-step probabilistic conjunction is 56.0% on continuations versus a 1.3% prior-gate probability at the first identifier byte.",
+      "next_bounded_change": "Reuse the frozen neural copy-gate probabilities to select recurrent transition versus content attention. This is a parameter-free neural gate composition over the same exact artifact; do not retrain, add capacity, force positions, or rewrite output.",
+      "transition_offset_capacity_or_loss_sweeps_authorized": false,
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

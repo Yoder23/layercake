@@ -44,8 +44,11 @@ def main() -> int:
 
     payload = torch.load(artifact_path, map_location="cpu", weights_only=True)
     _, model = load_portable_artifact(payload, "cpu")
-    if model.architecture != "byte_gru_pointer":
-        raise ValueError("diagnostic requires a byte_gru_pointer artifact")
+    if model.architecture not in {
+        "byte_gru_pointer",
+        "byte_gru_pointer_transition",
+    }:
+        raise ValueError("diagnostic requires a neural-pointer artifact")
     rows = [
         row for row in _load_rows(dataset_path) if row["split"] == "validation"
     ]
@@ -60,6 +63,11 @@ def main() -> int:
     for row_index in range(len(rows)):
         first = int(torch.nonzero(identifier_mask[row_index])[0, 0])
         first_identifier[row_index, first] = True
+    previous_identifier = torch.zeros_like(identifier_mask)
+    previous_identifier[:, 1:] = identifier_mask[:, :-1]
+    identifier_continuation = identifier_mask & previous_identifier
+    copy_gate_previous = torch.zeros_like(gates)
+    copy_gate_previous[:, 1:] = gates[:, :-1]
     offsets = (
         pointer_positions[identifier_mask] - pointer_labels[identifier_mask]
     ).tolist()
@@ -69,10 +77,11 @@ def main() -> int:
         & (pointer_bytes == targets)
     )
     evidence = {
-        "format": "layercake-phase4-portable-pointer-diagnostic/1",
+        "format": "layercake-phase4-portable-pointer-diagnostic/2",
         "artifact": artifact_path.relative_to(ROOT).as_posix(),
         "artifact_file_sha256": _sha256(artifact_path),
         "payload_hash": payload["payload_hash"],
+        "architecture": model.architecture,
         "dataset": dataset_path.relative_to(ROOT).as_posix(),
         "dataset_sha256": _sha256(dataset_path),
         "split": "validation",
@@ -126,6 +135,15 @@ def main() -> int:
         "mean_nonidentifier_response_copy_gate_probability": float(
             gates[response_mask & ~identifier_mask].mean()
         ),
+        "mean_identifier_continuation_copy_gate_probability": float(
+            gates[identifier_continuation].mean()
+        ),
+        "mean_previous_copy_gate_at_first_identifier": float(
+            copy_gate_previous[first_identifier].mean()
+        ),
+        "mean_copy_gate_conjunction_at_identifier_continuation": float(
+            (gates * copy_gate_previous)[identifier_continuation].mean()
+        ),
         "wrong_position_but_correct_byte_units": int(
             wrong_position_right_byte.sum()
         ),
@@ -140,8 +158,36 @@ def main() -> int:
             "The next bounded change is a learned recurrent transition over the "
             "previous neural pointer distribution, not another capacity or loss "
             "sweep."
+            if model.architecture == "byte_gru_pointer"
+            else
+            "The learned +1 transition is present, but its new hidden-state gate "
+            "does not generalize to held-out identifier continuations. The "
+            "frozen copy gate does generalize, and its probabilistic conjunction "
+            "across adjacent steps separates identifier continuation from the "
+            "first identifier byte without a deterministic cursor."
         ),
     }
+    if result["transition_gate_logits"] is not None:
+        transition_gates = torch.sigmoid(
+            result["transition_gate_logits"].squeeze(-1)
+        )
+        evidence.update(
+            {
+                "mean_identifier_continuation_transition_gate_probability": (
+                    float(transition_gates[identifier_continuation].mean())
+                ),
+                "mean_first_identifier_transition_gate_probability": float(
+                    transition_gates[first_identifier].mean()
+                ),
+                "mean_nonidentifier_response_transition_gate_probability": (
+                    float(
+                        transition_gates[
+                            response_mask & ~identifier_mask
+                        ].mean()
+                    )
+                ),
+            }
+        )
     evidence["evidence_sha256"] = _canonical_sha(evidence)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
