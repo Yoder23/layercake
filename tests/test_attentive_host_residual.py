@@ -45,3 +45,6 @@ def test_attentive_copy_path_retains_raw_abi_history_incrementally():
     step, next_caches = cake.step(torch.randn(1, 8), caches)
     assert step.shape == (1, 8)
     assert next_caches[-1].shape == (1, 5, 8)
+    scores = cake.copy_scores(semantic)
+    assert scores.shape == (1, 4, 4)
+    assert scores[0, 0, 1] < -1.0e20

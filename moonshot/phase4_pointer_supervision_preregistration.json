@@ -1,0 +1,31 @@
+{
+  "format": "layercake-phase4-pointer-supervision-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_CONTINUATION",
+  "parent": "moonshot/phase4_semantic_pointer_preregistration.json",
+  "failed_checkpoint_sha256": "e4314704466cf16aeb8c779c2b1a291db14d050f1cf345408c42821ea99e69b8",
+  "failed_validation_evidence_sha256": "ab5d3323c63948c2b58153a9fa279a5832cf4357aa9cf8ae10bb3247073faf05",
+  "measured_bottleneck": {
+    "strict_validation_successes": 0,
+    "learned_copy_alpha": -0.21768690645694733,
+    "effective_copy_scale": -0.21431230008602142,
+    "finding": "The pointer exists physically but generic language loss did not align it to copyable prompt positions."
+  },
+  "single_training_change": {
+    "initialize_from_failed_checkpoint": true,
+    "additional_optimizer_steps": 600,
+    "learning_rate": 0.0001,
+    "pointer_supervision_weight": 1.0,
+    "pointer_label": "last earlier prompt ABI position whose next-token target equals the supervised response token",
+    "token_ids_used_at_inference": false,
+    "architecture_change": false,
+    "dataset_change": false,
+    "validation_change": false
+  },
+  "unchanged": {
+    "core_checkpoint_sha256": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+    "dataset_sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa",
+    "strict_minimum_validation_success_rate": 0.8,
+    "test_split_access_allowed": false,
+    "speed_gate": "unchanged"
+  }
+}

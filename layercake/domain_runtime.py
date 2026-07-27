@@ -175,9 +175,9 @@ class AttentiveHostResidualCake(nn.Module):
             self.copy_key = nn.Linear(d_abi, self.copy_width, bias=False)
             self.copy_alpha = nn.Parameter(torch.tensor(0.0))
 
-    def _copy_context(self, abi_state: torch.Tensor) -> torch.Tensor | None:
+    def copy_scores(self, abi_state: torch.Tensor) -> torch.Tensor:
         if self.copy_width <= 0:
-            return None
+            raise ValueError("semantic copy path is disabled")
         normalized = self.input_norm(abi_state)
         query = self.copy_query(normalized)
         key = self.copy_key(normalized)
@@ -191,7 +191,14 @@ class AttentiveHostResidualCake(nn.Module):
             ),
             diagonal=1,
         )
-        scores = scores.masked_fill(causal, torch.finfo(scores.dtype).min)
+        return scores.masked_fill(
+            causal, torch.finfo(scores.dtype).min
+        )
+
+    def _copy_context(self, abi_state: torch.Tensor) -> torch.Tensor | None:
+        if self.copy_width <= 0:
+            return None
+        scores = self.copy_scores(abi_state)
         return torch.matmul(torch.softmax(scores, dim=-1), abi_state)
 
     def _adapt(

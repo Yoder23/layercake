@@ -1338,6 +1338,7 @@ def train_recurrent_cake(
     heads: int = 6,
     expansion: int = 4,
     copy_width: int = 0,
+    pointer_supervision_weight: float = 0.0,
 ) -> dict[str, Any]:
     checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
     cache = cache if cache.is_absolute() else ROOT / cache
@@ -1438,6 +1439,45 @@ def train_recurrent_cake(
             batch_states[supervised].square().mean().clamp_min(1e-6)
         )
         objective = loss + 0.002 * stability
+        pointer_loss = None
+        pointer_labels_count = 0
+        if (
+            isinstance(cake, AttentiveHostResidualCake)
+            and cake.copy_width > 0
+            and pointer_supervision_weight > 0
+        ):
+            pointer_labels = torch.full(
+                batch_targets.shape, -100, dtype=torch.long
+            )
+            for batch_index in range(batch_size):
+                prompt_positions = torch.nonzero(
+                    batch_valid[batch_index] & ~batch_masks[batch_index],
+                    as_tuple=False,
+                ).flatten()
+                response_positions = torch.nonzero(
+                    batch_masks[batch_index], as_tuple=False
+                ).flatten()
+                prompt_targets = batch_targets[
+                    batch_index, prompt_positions
+                ]
+                for position in response_positions.tolist():
+                    matches = prompt_positions[
+                        prompt_targets == batch_targets[batch_index, position]
+                    ]
+                    if matches.numel():
+                        pointer_labels[batch_index, position] = matches[-1]
+            pointer_valid = pointer_labels >= 0
+            if pointer_valid.any():
+                pointer_scores = cake.copy_scores(batch_states)
+                pointer_loss = F.cross_entropy(
+                    pointer_scores[pointer_valid],
+                    pointer_labels[pointer_valid],
+                )
+                pointer_labels_count = int(pointer_valid.sum())
+                objective = (
+                    objective
+                    + pointer_supervision_weight * pointer_loss
+                )
         objective.backward()
         torch.nn.utils.clip_grad_norm_(cake.parameters(), 1.0)
         optimizer.step()
@@ -1455,6 +1495,18 @@ def train_recurrent_cake(
                 "full_vocabulary_cross_entropy": loss_value,
                 "stability_ratio": float(stability.detach()),
                 "alpha": float(cake.alpha.detach()),
+                "copy_alpha": (
+                    float(cake.copy_alpha.detach())
+                    if isinstance(cake, AttentiveHostResidualCake)
+                    and cake.copy_width > 0
+                    else None
+                ),
+                "pointer_cross_entropy": (
+                    float(pointer_loss.detach())
+                    if pointer_loss is not None
+                    else None
+                ),
+                "pointer_supervised_units": pointer_labels_count,
                 "wall_seconds": time.perf_counter() - started,
             }
             curves.append(record)
@@ -1507,6 +1559,7 @@ def train_recurrent_cake(
         "initial_checkpoint_sha256": initial_sha,
         "prompt_retention_fraction": prompt_retention_fraction,
         "prompt_retention_weight": prompt_retention_weight,
+        "pointer_supervision_weight": pointer_supervision_weight,
         "trainable_parameters": trainable,
         "active_parameter_seconds_to_quality": trainable * wall,
         "end_to_end_cpu_wall_seconds": wall,
@@ -2006,6 +2059,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     attentive.add_argument("--heads", type=int, default=6)
     attentive.add_argument("--expansion", type=int, default=4)
     attentive.add_argument("--copy-width", type=int, default=0)
+    attentive.add_argument("--initial-checkpoint", type=Path)
+    attentive.add_argument("--pointer-supervision-weight", type=float, default=0.0)
     attentive.add_argument("--max-residual", type=float, default=6.0)
     attentive.add_argument("--steps", type=int, default=800)
     attentive.add_argument("--batch-size", type=int, default=8)
@@ -2070,8 +2125,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             learning_rate=args.learning_rate,
             initial_checkpoint=(
                 args.initial_checkpoint
-                if args.command == "train-recurrent"
-                else None
             ),
             prompt_retention_fraction=args.prompt_retention_fraction,
             prompt_retention_weight=args.prompt_retention_weight,
@@ -2086,6 +2139,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             ),
             copy_width=(
                 args.copy_width if args.command == "train-attentive" else 0
+            ),
+            pointer_supervision_weight=(
+                args.pointer_supervision_weight
+                if args.command == "train-attentive"
+                else 0.0
             ),
         )
     else:

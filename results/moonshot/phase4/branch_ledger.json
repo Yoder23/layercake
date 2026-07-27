@@ -196,6 +196,36 @@
       "next_bounded_change": "Add a 64-wide direct semantic pointer over prior ABI states and make all 960 training identifiers unique.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "attentive-semantic-pointer64-v4-seed9404",
+      "disposition": "REJECTED_POINTER_ALIGNMENT",
+      "architecture": {
+        "name": "attentive_host_residual",
+        "d_abi": 768,
+        "hidden_width": 384,
+        "layers": 1,
+        "heads": 6,
+        "copy_width": 64
+      },
+      "training": {
+        "seed": 9404,
+        "optimizer_steps": 2000,
+        "cpu_wall_seconds": 399.1602765999851,
+        "checkpoint_sha256": "e4314704466cf16aeb8c779c2b1a291db14d050f1cf345408c42821ea99e69b8",
+        "learned_copy_alpha": -0.21768690645694733,
+        "effective_copy_scale": -0.21431230008602142
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "functional_error_rate": 1.0,
+        "evidence_sha256": "ab5d3323c63948c2b58153a9fa279a5832cf4357aa9cf8ae10bb3247073faf05"
+      },
+      "measured_bottleneck": "Generic language loss drove the semantic pointer to a negative scale and did not align its attention with prior prompt positions containing requested identifier tokens.",
+      "next_bounded_change": "Continue the same checkpoint with explicit prior-position pointer labels for response tokens that occur in the prompt; no capacity or data change.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }
