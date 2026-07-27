@@ -9,6 +9,7 @@ from layercake.training.phase4_python_cake import (
     generate_diverse_training_dataset,
     generate_dataset,
     generate_identifier_generalization_dataset,
+    generate_unique_identifier_dataset,
 )
 
 
@@ -50,6 +51,20 @@ def test_identifier_repair_keeps_heldout_rows_and_removes_family_shortcut(
     assert manifest["test_rows_unchanged"]
     first = json.loads(output.read_text(encoding="utf-8").splitlines()[0])
     assert first["family"] not in first["function_name"]
+
+
+def test_unique_identifier_repair_has_no_repeated_training_name(tmp_path: Path):
+    source = tmp_path / "v1" / "python.jsonl"
+    generate_dataset(source)
+    output = tmp_path / "v4" / "python.jsonl"
+    manifest = generate_unique_identifier_dataset(source, output)
+    assert manifest["validation_rows_unchanged"]
+    assert manifest["test_rows_unchanged"]
+    assert (
+        manifest["unique_training_identifiers"]
+        == manifest["training_identifier_count"]
+        == 960
+    )
 
 
 def test_safe_function_must_pass_real_unit_tests():

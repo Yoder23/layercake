@@ -167,6 +167,35 @@
       "next_bounded_change": "Use task-independent multi-token training identifiers so behavior comes from descriptions and names must be copied from prompts.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "attentive-host-residual-384-seed9404-curriculum-v3",
+      "disposition": "REJECTED_STRICT_ADHERENCE_SEMANTICS_NEAR_GATE",
+      "architecture": {
+        "name": "attentive_host_residual",
+        "d_abi": 768,
+        "hidden_width": 384,
+        "layers": 1,
+        "heads": 6
+      },
+      "training": {
+        "seed": 9404,
+        "optimizer_steps": 1600,
+        "cpu_wall_seconds": 277.8051850000047,
+        "checkpoint_sha256": "16f78653e269737f3fefc6952db71f94a01a9f2a5c8b0f5557272820c9e0615b"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "name_agnostic_functional_successes_diagnostic_only": 48,
+        "parseable_first_functions": 56,
+        "functional_error_rate": 1.0,
+        "evidence_sha256": "e5de724d45198215da7ad227deda13939763f7af96247add227b3df15174c8f8"
+      },
+      "measured_bottleneck": "Semantic unit-test success reached 75%, but the cake predicts a familiar training identifier instead of copying the requested unseen identifier.",
+      "next_bounded_change": "Add a 64-wide direct semantic pointer over prior ABI states and make all 960 training identifiers unique.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

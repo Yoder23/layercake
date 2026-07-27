@@ -1,0 +1,50 @@
+{
+  "format": "layercake-phase4-semantic-pointer-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_TRAINING",
+  "parent": "moonshot/phase4_identifier_generalization_preregistration.json",
+  "failed_checkpoint_sha256": "16f78653e269737f3fefc6952db71f94a01a9f2a5c8b0f5557272820c9e0615b",
+  "failed_validation_evidence_sha256": "e5de724d45198215da7ad227deda13939763f7af96247add227b3df15174c8f8",
+  "diagnostic_only": {
+    "name_agnostic_functional_successes": 48,
+    "parseable_first_functions": 56,
+    "tasks": 64,
+    "promotion_credit": 0
+  },
+  "measured_bottleneck": "The cake produces correct semantics for 75% of validation tasks but predicts familiar training identifiers rather than copying the requested unseen identifier.",
+  "single_architecture_change": {
+    "base_architecture": "attentive_host_residual-384x1-heads6",
+    "semantic_pointer_width": 64,
+    "pointer_keys_and_queries_consume_only_public_abi_state": true,
+    "pointer_values_are_prior_public_abi_states": true,
+    "private_host_token_ids_exposed": false,
+    "host_output_head_changed": false,
+    "host_core_changed": false,
+    "estimated_incremental_parameters": 98305
+  },
+  "dataset": {
+    "path": "data/moonshot/phase4/python_functional_v4.jsonl",
+    "sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa",
+    "training_split_sha256": "368a951ae6b084976b2e3443beeda1cb7f7e0cf0b4cf1bff28d710a4bcdf9e2b",
+    "validation_split_sha256": "233f09a202a7a28605952d9348fa36bfe538e5163ac8b41f46b3a965bc62c75d",
+    "test_split_sha256": "48c5a40e766c495655b4e83bcbe05baca5723d48a6ddfc931250dba31fd06b7e",
+    "unique_training_identifiers": 960,
+    "validation_rows_unchanged": true,
+    "test_rows_unchanged": true
+  },
+  "bounded_run": {
+    "seed": 9404,
+    "training_device": "cpu",
+    "optimizer_steps": 2000,
+    "batch_size": 8,
+    "learning_rate": 0.0003,
+    "prompt_token_sample_fraction": 0.5,
+    "prompt_token_loss_weight": 0.5
+  },
+  "stopping_rule": {
+    "strict_minimum_validation_success_rate": 0.8,
+    "name_agnostic_success_cannot_promote": true,
+    "test_split_access_allowed": false,
+    "other_seeds_authorized_only_after_pass": true,
+    "speed_gate_unchanged": true
+  }
+}

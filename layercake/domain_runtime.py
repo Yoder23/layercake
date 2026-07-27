@@ -144,6 +144,7 @@ class AttentiveHostResidualCake(nn.Module):
         heads: int = 6,
         expansion: int = 4,
         max_residual: float = 6.0,
+        copy_width: int = 0,
     ):
         super().__init__()
         if (
@@ -158,6 +159,7 @@ class AttentiveHostResidualCake(nn.Module):
         self.heads = int(heads)
         self.expansion = int(expansion)
         self.max_residual = float(max_residual)
+        self.copy_width = int(copy_width)
         self.input_norm = nn.LayerNorm(d_abi)
         self.input = nn.Linear(d_abi, hidden_width, bias=False)
         self.blocks = nn.ModuleList(
@@ -168,14 +170,43 @@ class AttentiveHostResidualCake(nn.Module):
         self.output = nn.Linear(hidden_width, d_abi, bias=False)
         self.alpha = nn.Parameter(torch.tensor(1.0))
         nn.init.zeros_(self.output.weight)
+        if self.copy_width > 0:
+            self.copy_query = nn.Linear(d_abi, self.copy_width, bias=False)
+            self.copy_key = nn.Linear(d_abi, self.copy_width, bias=False)
+            self.copy_alpha = nn.Parameter(torch.tensor(0.0))
+
+    def _copy_context(self, abi_state: torch.Tensor) -> torch.Tensor | None:
+        if self.copy_width <= 0:
+            return None
+        normalized = self.input_norm(abi_state)
+        query = self.copy_query(normalized)
+        key = self.copy_key(normalized)
+        scores = torch.matmul(query, key.transpose(1, 2)) / (
+            self.copy_width ** 0.5
+        )
+        length = abi_state.shape[1]
+        causal = torch.triu(
+            torch.ones(
+                length, length, dtype=torch.bool, device=abi_state.device
+            ),
+            diagonal=1,
+        )
+        scores = scores.masked_fill(causal, torch.finfo(scores.dtype).min)
+        return torch.matmul(torch.softmax(scores, dim=-1), abi_state)
 
     def _adapt(
-        self, abi_state: torch.Tensor, hidden: torch.Tensor
+        self,
+        abi_state: torch.Tensor,
+        hidden: torch.Tensor,
+        copy_context: torch.Tensor | None = None,
     ) -> torch.Tensor:
         residual = self.max_residual * torch.tanh(
             self.output(self.output_norm(hidden))
         )
-        return abi_state + self.alpha * residual
+        adapted = abi_state + self.alpha * residual
+        if copy_context is not None:
+            adapted = adapted + torch.tanh(self.copy_alpha) * copy_context
+        return adapted
 
     def forward(
         self, abi_state: torch.Tensor
@@ -190,7 +221,11 @@ class AttentiveHostResidualCake(nn.Module):
         for block in self.blocks:
             hidden, cache = block.prefill(hidden)
             caches.append(cache)
-        adapted = self._adapt(abi_state, hidden)
+        adapted = self._adapt(
+            abi_state, hidden, self._copy_context(abi_state)
+        )
+        if self.copy_width > 0:
+            caches.append(abi_state)
         if squeeze:
             adapted = adapted[:, 0]
         return adapted, tuple(caches)
@@ -199,7 +234,9 @@ class AttentiveHostResidualCake(nn.Module):
         hidden = self.input(self.input_norm(abi_state))
         for block in self.blocks:
             hidden = block(hidden)
-        return self._adapt(abi_state, hidden)
+        return self._adapt(
+            abi_state, hidden, self._copy_context(abi_state)
+        )
 
     def step(
         self,
@@ -209,11 +246,29 @@ class AttentiveHostResidualCake(nn.Module):
         if abi_state.ndim != 2:
             raise ValueError("incremental ABI state must be [batch, d_abi]")
         hidden = self.input(self.input_norm(abi_state))[:, None]
+        block_caches = (
+            caches[:-1] if self.copy_width > 0 else caches
+        )
         next_caches = []
-        for block, cache in zip(self.blocks, caches):
+        for block, cache in zip(self.blocks, block_caches):
             hidden, next_cache = block.step(hidden, cache)
             next_caches.append(next_cache)
-        adapted = self._adapt(abi_state[:, None], hidden)[:, 0]
+        copy_context = None
+        if self.copy_width > 0:
+            raw_memory = torch.cat((caches[-1], abi_state[:, None]), dim=1)
+            normalized_query = self.input_norm(abi_state[:, None])
+            normalized_memory = self.input_norm(raw_memory)
+            scores = torch.matmul(
+                self.copy_query(normalized_query),
+                self.copy_key(normalized_memory).transpose(1, 2),
+            ) / (self.copy_width ** 0.5)
+            copy_context = torch.matmul(
+                torch.softmax(scores, dim=-1), raw_memory
+            )
+            next_caches.append(raw_memory)
+        adapted = self._adapt(
+            abi_state[:, None], hidden, copy_context
+        )[:, 0]
         return adapted, tuple(next_caches)
 
     def parameter_count(self) -> int:

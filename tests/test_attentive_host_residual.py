@@ -26,3 +26,22 @@ def test_attentive_residual_starts_as_identity():
     semantic = torch.randn(1, 4, 8)
     adapted, _ = cake(semantic)
     torch.testing.assert_close(adapted, semantic)
+
+
+def test_attentive_copy_path_retains_raw_abi_history_incrementally():
+    cake = AttentiveHostResidualCake(
+        d_abi=8,
+        hidden_width=12,
+        layers=1,
+        heads=3,
+        expansion=2,
+        copy_width=4,
+    )
+    semantic = torch.randn(1, 4, 8)
+    adapted, caches = cake(semantic)
+    torch.testing.assert_close(adapted, semantic)
+    assert len(caches) == 2
+    assert caches[-1].shape == semantic.shape
+    step, next_caches = cake.step(torch.randn(1, 8), caches)
+    assert step.shape == (1, 8)
+    assert next_caches[-1].shape == (1, 5, 8)

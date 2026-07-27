@@ -81,6 +81,7 @@ def load_cake_module(package: CakePackage) -> nn.Module:
                 "heads",
                 "expansion",
                 "max_residual",
+                "copy_width",
             }
             and architecture.get("name") == "attentive_host_residual"
         ):
@@ -91,6 +92,7 @@ def load_cake_module(package: CakePackage) -> nn.Module:
                 heads=int(architecture["heads"]),
                 expansion=int(architecture["expansion"]),
                 max_residual=float(architecture["max_residual"]),
+                copy_width=int(architecture["copy_width"]),
             )
         else:
             raise ValueError("host residual architecture metadata is incomplete or ambiguous")

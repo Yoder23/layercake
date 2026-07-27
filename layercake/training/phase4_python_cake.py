@@ -861,6 +861,109 @@ def generate_identifier_generalization_dataset(
     return manifest
 
 
+def generate_unique_identifier_dataset(
+    source: Path,
+    output: Path,
+    *,
+    seed: int = 9434,
+) -> dict[str, Any]:
+    """Make every training identifier unique while preserving held-out rows."""
+
+    source = source if source.is_absolute() else ROOT / source
+    output = output if output.is_absolute() else ROOT / output
+    if output.exists():
+        raise RuntimeError(f"dataset artifact is immutable: {output}")
+    source_rows = _load_rows(source)
+    words = (
+        "amber",
+        "brisk",
+        "careful",
+        "delta",
+        "exact",
+        "lunar",
+        "quiet",
+        "silver",
+        "vector",
+        "willow",
+    )
+    rows = []
+    train_index = 0
+    for row in source_rows:
+        if row["split"] != "train":
+            rows.append(row)
+            continue
+        left = words[train_index % len(words)]
+        right = words[(train_index * 7 + 3) % len(words)]
+        nonce = (train_index * 7919 + seed) % 100_000
+        name = f"{left}_{right}_{train_index:04d}_{nonce:05d}"
+        old_name = row["function_name"]
+        rows.append(
+            {
+                **row,
+                "prompt": row["prompt"].replace(old_name, name),
+                "response": row["response"].replace(old_name, name, 1),
+                "function_name": name,
+            }
+        )
+        train_index += 1
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        "".join(
+            json.dumps(row, sort_keys=True, ensure_ascii=False) + "\n"
+            for row in rows
+        ),
+        encoding="utf-8",
+    )
+    def split_sha(items: list[dict[str, Any]], split: str) -> str:
+        return _canonical_sha([row for row in items if row["split"] == split])
+    training_names = [
+        row["function_name"] for row in rows if row["split"] == "train"
+    ]
+    manifest = {
+        "format": "layercake-phase4-python-functional-dataset/4",
+        "status": "PREREGISTERED_UNIQUE_IDENTIFIER_REPAIR",
+        "seed": seed,
+        "source_dataset": (
+            source.relative_to(ROOT).as_posix()
+            if source.is_relative_to(ROOT)
+            else str(source)
+        ),
+        "source_dataset_sha256": sha256_file(source),
+        "dataset": (
+            output.relative_to(ROOT).as_posix()
+            if output.is_relative_to(ROOT)
+            else str(output)
+        ),
+        "dataset_sha256": sha256_file(output),
+        "counts": {
+            split: sum(row["split"] == split for row in rows)
+            for split in ("train", "validation", "test")
+        },
+        "unique_training_identifiers": len(set(training_names)),
+        "training_identifier_count": len(training_names),
+        "split_hashes": {
+            split: split_sha(rows, split)
+            for split in ("train", "validation", "test")
+        },
+        "source_split_hashes": {
+            split: split_sha(source_rows, split)
+            for split in ("train", "validation", "test")
+        },
+        "validation_rows_unchanged": split_sha(rows, "validation")
+        == split_sha(source_rows, "validation"),
+        "test_rows_unchanged": split_sha(rows, "test")
+        == split_sha(source_rows, "test"),
+        "training_change": "every training function identifier is unique",
+        "test_definition_unchanged": True,
+    }
+    manifest["manifest_sha256"] = _canonical_sha(manifest)
+    output.with_name("manifest_v4.json").write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return manifest
+
+
 def _load_rows(dataset: Path) -> list[dict[str, Any]]:
     dataset = dataset if dataset.is_absolute() else ROOT / dataset
     return [
@@ -1234,6 +1337,7 @@ def train_recurrent_cake(
     architecture: str = "recurrent",
     heads: int = 6,
     expansion: int = 4,
+    copy_width: int = 0,
 ) -> dict[str, Any]:
     checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
     cache = cache if cache.is_absolute() else ROOT / cache
@@ -1268,6 +1372,7 @@ def train_recurrent_cake(
             heads=heads,
             expansion=expansion,
             max_residual=max_residual,
+            copy_width=copy_width,
         )
     else:
         raise ValueError(f"unknown semantic cake architecture: {architecture}")
@@ -1391,6 +1496,7 @@ def train_recurrent_cake(
             "max_residual": max_residual,
             **(
                 {"heads": heads, "expansion": expansion}
+                | {"copy_width": copy_width}
                 if isinstance(cake, AttentiveHostResidualCake)
                 else {}
             ),
@@ -1713,6 +1819,11 @@ def evaluate_functional(
                 layers=layers,
                 heads=heads,
                 expansion=expansion,
+                copy_width=(
+                    int(tensors["copy_query.weight"].shape[0])
+                    if "copy_query.weight" in tensors
+                    else 0
+                ),
             )
         elif "recurrent.weight_ih_l0" in tensors:
             hidden_width = int(tensors["recurrent.weight_hh_l0"].shape[1])
@@ -1844,6 +1955,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     generalize = sub.add_parser("generate-identifier-dataset")
     generalize.add_argument("--source", type=Path, required=True)
     generalize.add_argument("--output", type=Path, required=True)
+    unique = sub.add_parser("generate-unique-identifier-dataset")
+    unique.add_argument("--source", type=Path, required=True)
+    unique.add_argument("--output", type=Path, required=True)
     cache = sub.add_parser("cache")
     cache.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     cache.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
@@ -1891,6 +2005,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     attentive.add_argument("--layers", type=int, default=1)
     attentive.add_argument("--heads", type=int, default=6)
     attentive.add_argument("--expansion", type=int, default=4)
+    attentive.add_argument("--copy-width", type=int, default=0)
     attentive.add_argument("--max-residual", type=float, default=6.0)
     attentive.add_argument("--steps", type=int, default=800)
     attentive.add_argument("--batch-size", type=int, default=8)
@@ -1915,6 +2030,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
     elif args.command == "generate-identifier-dataset":
         result = generate_identifier_generalization_dataset(
+            args.source, args.output
+        )
+    elif args.command == "generate-unique-identifier-dataset":
+        result = generate_unique_identifier_dataset(
             args.source, args.output
         )
     elif args.command == "cache":
@@ -1964,6 +2083,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             heads=(args.heads if args.command == "train-attentive" else 6),
             expansion=(
                 args.expansion if args.command == "train-attentive" else 4
+            ),
+            copy_width=(
+                args.copy_width if args.command == "train-attentive" else 0
             ),
         )
     else:
