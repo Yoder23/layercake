@@ -489,6 +489,54 @@
       "next_bounded_change": "Return to the preserved semantic parent and attack autonomous semantic exposure bias independently. Do not continue this copy path into Python training and do not sweep copy width, loss weights, or nearby transition-projection capacity.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "attentive-v3-on-policy-recovery-seed9404",
+      "disposition": "REJECTED_AUTONOMOUS_ALIGNMENT_COLLAPSE",
+      "architecture": {
+        "name": "attentive_host_residual",
+        "d_abi": 768,
+        "hidden_width": 384,
+        "layers": 1,
+        "heads": 6,
+        "new_parameters": 0,
+        "initial_checkpoint_sha256": "16f78653e269737f3fefc6952db71f94a01a9f2a5c8b0f5557272820c9e0615b"
+      },
+      "on_policy_cache": {
+        "cache_sha256": "a45c36208e88c8f98e4f258eef3a03016b18a8d29f0665d9df66b7e38db17f26",
+        "rows": 960,
+        "prefix_horizons": [
+          8,
+          32,
+          64
+        ],
+        "rows_per_horizon": 320,
+        "generated_prefix_units": 24115,
+        "generated_prefix_mismatch_rate": 0.7984656852581381,
+        "cpu_wall_seconds": 327.419132799987
+      },
+      "training": {
+        "seed": 9404,
+        "optimizer_steps": 800,
+        "cpu_wall_seconds": 134.06364749997738,
+        "trainable_parameters": 2366593,
+        "best_cross_entropy": 0.44000864028930664,
+        "checkpoint_sha256": "09baed4f7f04cfbeb571fd35c39d3564435c69b1328cffe79f68f4bbe190bee7"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "name_agnostic_functional_successes_diagnostic_only": 0,
+        "header_repair_functional_successes_diagnostic_only": 0,
+        "parseable_first_functions": 0,
+        "functional_error_rate": 1.0,
+        "evidence_sha256": "fd5e62434922536456e6356e1594d2e45a99d4373c026d338c78b97610b40212"
+      },
+      "measured_bottleneck": "With 79.8% of generated prefix units differing from gold, retaining position-aligned gold targets after divergent variable-content prefixes created internally inconsistent recovery examples. Training loss fell, but autonomous code structure collapsed from 48/64 diagnostic semantic successes to zero parseable functions.",
+      "next_bounded_change": "Reject cached position-aligned on-policy correction and return to the preserved semantic parent. Any next lexical repair must preserve the token-embedding manifold and any future recovery method must align sequences rather than assume generated and gold prefixes remain positionally equivalent.",
+      "additional_recovery_sweeps_authorized": false,
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

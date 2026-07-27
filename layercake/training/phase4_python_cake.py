@@ -1017,6 +1017,25 @@ def _subsequence_start(values: list[int], pattern: list[int]) -> int | None:
     return None
 
 
+def _on_policy_recovery_sequence(
+    prompt_ids: list[int],
+    response_ids: list[int],
+    generated: list[int],
+) -> tuple[list[int], torch.Tensor, torch.Tensor]:
+    if len(generated) > len(response_ids):
+        raise ValueError("generated prefix is longer than the gold response")
+    sequence = prompt_ids + generated + response_ids[len(generated):]
+    targets = torch.tensor(sequence[1:], dtype=torch.long)
+    response_start = len(prompt_ids) - 1
+    response_stop = response_start + len(response_ids)
+    targets[response_start:response_stop] = torch.tensor(
+        response_ids, dtype=torch.long
+    )
+    mask = torch.zeros(len(targets), dtype=torch.bool)
+    mask[response_start:response_stop] = True
+    return sequence, targets, mask
+
+
 @torch.inference_mode()
 def cache_training_states(
     checkpoint: Path,
@@ -1405,6 +1424,183 @@ def cache_recurrent_training_states(
         "cpu_wall_seconds": time.perf_counter() - started,
         "peak_process_resident_memory_bytes": peak_rss,
         "device": "cpu",
+    }
+    evidence["evidence_sha256"] = _canonical_sha(evidence)
+    output.with_suffix(".json").write_text(
+        json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return evidence
+
+
+@torch.inference_mode()
+def cache_on_policy_recovery_states(
+    checkpoint: Path,
+    dataset: Path,
+    cake_checkpoint: Path,
+    output: Path,
+    *,
+    max_response_tokens: int = 160,
+    horizons: tuple[int, ...] = (8, 32, 64),
+) -> dict[str, Any]:
+    """Cache gold correction targets under real autonomous cake prefixes."""
+
+    checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
+    dataset = dataset if dataset.is_absolute() else ROOT / dataset
+    cake_checkpoint = (
+        cake_checkpoint
+        if cake_checkpoint.is_absolute()
+        else ROOT / cake_checkpoint
+    )
+    output = output if output.is_absolute() else ROOT / output
+    if output.exists():
+        raise RuntimeError(f"state cache artifact is immutable: {output}")
+    if not horizons or any(value <= 0 for value in horizons):
+        raise ValueError("on-policy recovery horizons must be positive")
+
+    process = psutil.Process()
+    peak_rss = int(process.memory_info().rss)
+    started = time.perf_counter()
+    model, tokenizer, metadata = load_student(checkpoint)
+    tensors = load_file(str(cake_checkpoint), device="cpu")
+    if "blocks.0.attention.in_proj_weight" not in tensors:
+        raise ValueError("on-policy recovery requires an attentive cake")
+    hidden_width = int(tensors["input.weight"].shape[0])
+    cake = AttentiveHostResidualCake(
+        d_abi=768,
+        hidden_width=hidden_width,
+        layers=len(
+            {
+                name.split(".")[1]
+                for name in tensors
+                if name.startswith("blocks.")
+            }
+        ),
+        heads=6,
+        expansion=int(
+            tensors["blocks.0.feedforward.0.weight"].shape[0]
+            / hidden_width
+        ),
+        copy_width=(
+            int(tensors["copy_query.weight"].shape[0])
+            if "copy_query.weight" in tensors
+            else 0
+        ),
+        copy_value_projection=(
+            "copy_value.weight" in tensors
+            or "copy_transition_value.weight" in tensors
+        ),
+        selective_copy="copy_gate.weight" in tensors,
+        transition_copy="copy_transition_value.weight" in tensors,
+    )
+    cake.load_state_dict(tensors, strict=True)
+    cake.eval()
+
+    all_states: list[torch.Tensor] = []
+    all_targets: list[torch.Tensor] = []
+    all_masks: list[torch.Tensor] = []
+    offsets = [0]
+    rows = [row for row in _load_rows(dataset) if row["split"] == "train"]
+    horizon_rows = {str(value): 0 for value in horizons}
+    generated_units = 0
+    mismatched_generated_units = 0
+    early_eos_rows = 0
+    for index, row in enumerate(rows):
+        prompt_ids = tokenizer.encode(row["prompt"] + "\n")
+        response_ids = tokenizer.encode(row["response"])[
+            :max_response_tokens
+        ]
+        horizon = horizons[index % len(horizons)]
+        requested = min(horizon, max(0, len(response_ids) - 1))
+        prompt_tensor = torch.tensor([prompt_ids], dtype=torch.long)
+        state = _domain_prefill(model, cake, prompt_tensor)
+        generated = []
+        for _ in range(requested):
+            token = state["next_logits"].argmax(dim=-1)
+            generated.append(int(token.item()))
+            _domain_decode(model, cake, state, token)
+            if token.item() == tokenizer.eos_token_id:
+                early_eos_rows += 1
+                break
+        generated_count = len(generated)
+        horizon_rows[str(horizon)] += 1
+        generated_units += generated_count
+        mismatched_generated_units += sum(
+            generated[position] != response_ids[position]
+            for position in range(generated_count)
+        )
+        (
+            sequence,
+            targets,
+            mask,
+        ) = _on_policy_recovery_sequence(
+            prompt_ids, response_ids, generated
+        )
+        ids = torch.tensor([sequence], dtype=torch.long)
+        result = model(
+            ids,
+            task_routes=state["task_routes"],
+            use_cache=False,
+        )
+        states = result["hidden"][0, :-1].half().cpu()
+        all_states.append(states)
+        all_targets.append(targets)
+        all_masks.append(mask)
+        offsets.append(offsets[-1] + len(targets))
+        peak_rss = max(peak_rss, int(process.memory_info().rss))
+        if (index + 1) % 50 == 0:
+            print(
+                json.dumps(
+                    {
+                        "cached_rows": index + 1,
+                        "generated_prefix_units": generated_units,
+                        "mismatched_generated_prefix_units": (
+                            mismatched_generated_units
+                        ),
+                        "wall_seconds": time.perf_counter() - started,
+                    }
+                ),
+                flush=True,
+            )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    save_file(
+        {
+            "semantic_states": torch.cat(all_states).contiguous(),
+            "target_ids": torch.cat(all_targets).contiguous(),
+            "response_mask": torch.cat(all_masks).contiguous(),
+            "row_offsets": torch.tensor(offsets, dtype=torch.int64),
+        },
+        str(output),
+    )
+    wall = time.perf_counter() - started
+    evidence = {
+        "format": "layercake-phase4-on-policy-recovery-cache/1",
+        "status": "COMPLETE",
+        "device": "cpu",
+        "checkpoint_sha256_before": metadata["checkpoint"]["sha256"],
+        "checkpoint_sha256_after": sha256_file(
+            checkpoint / "model.safetensors"
+        ),
+        "core_parameters_changed": 0,
+        "source_cake_checkpoint_sha256": sha256_file(cake_checkpoint),
+        "dataset_sha256": sha256_file(dataset),
+        "rows": len(rows),
+        "prefix_horizons": list(horizons),
+        "horizon_rows": horizon_rows,
+        "generation_policy": "greedy_argmax_integrated_core_plus_cake",
+        "generated_prefix_units": generated_units,
+        "mismatched_generated_prefix_units": mismatched_generated_units,
+        "generated_prefix_mismatch_rate": (
+            mismatched_generated_units / max(1, generated_units)
+        ),
+        "early_eos_rows": early_eos_rows,
+        "causal_units": offsets[-1],
+        "cache_path": output.relative_to(ROOT).as_posix(),
+        "cache_sha256": sha256_file(output),
+        "cache_bytes": output.stat().st_size,
+        "cpu_wall_seconds": wall,
+        "peak_process_resident_memory_bytes": peak_rss,
+        "test_split_used_for_generation_or_targets": False,
     }
     evidence["evidence_sha256"] = _canonical_sha(evidence)
     output.with_suffix(".json").write_text(
@@ -2392,6 +2588,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     recurrent_cache.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
     recurrent_cache.add_argument("--output", type=Path, required=True)
+    recovery_cache = sub.add_parser("cache-on-policy-recovery")
+    recovery_cache.add_argument(
+        "--checkpoint", type=Path, default=DEFAULT_CHECKPOINT
+    )
+    recovery_cache.add_argument(
+        "--dataset", type=Path, default=DEFAULT_DATASET
+    )
+    recovery_cache.add_argument("--cake-checkpoint", type=Path, required=True)
+    recovery_cache.add_argument("--output", type=Path, required=True)
+    recovery_cache.add_argument("--maximum-response-tokens", type=int, default=160)
+    recovery_cache.add_argument("--horizons", default="8,32,64")
     train = sub.add_parser("train")
     train.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     train.add_argument("--cache", type=Path, required=True)
@@ -2484,6 +2691,19 @@ def main(argv: Sequence[str] | None = None) -> int:
     elif args.command == "cache-recurrent":
         result = cache_recurrent_training_states(
             args.checkpoint, args.dataset, args.output
+        )
+    elif args.command == "cache-on-policy-recovery":
+        result = cache_on_policy_recovery_states(
+            args.checkpoint,
+            args.dataset,
+            args.cake_checkpoint,
+            args.output,
+            max_response_tokens=args.maximum_response_tokens,
+            horizons=tuple(
+                int(value)
+                for value in args.horizons.split(",")
+                if value.strip()
+            ),
         )
     elif args.command == "train":
         result = train_cake(

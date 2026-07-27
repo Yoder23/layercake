@@ -9,12 +9,24 @@ from layercake.training.phase4_python_cake import (
     _causal_copy_labels,
     _execute_tests,
     _extract_function,
+    _on_policy_recovery_sequence,
     _prompt_post_token_pairs,
     generate_diverse_training_dataset,
     generate_dataset,
     generate_identifier_generalization_dataset,
     generate_unique_identifier_dataset,
 )
+
+
+def test_on_policy_recovery_uses_generated_inputs_and_gold_targets():
+    sequence, targets, mask = _on_policy_recovery_sequence(
+        [10, 11, 12],
+        [20, 21, 22, 23],
+        [90, 91],
+    )
+    assert sequence == [10, 11, 12, 90, 91, 22, 23]
+    assert targets.tolist() == [11, 12, 20, 21, 22, 23]
+    assert mask.tolist() == [False, False, True, True, True, True]
 
 
 def test_copy_labels_select_first_state_after_observed_prompt_token():
