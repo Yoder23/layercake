@@ -1,0 +1,83 @@
+{
+  "format": "layercake-phase4-existing-portable-audit-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_EVALUATION",
+  "purpose": "Determine whether an already-trained exact portable Python decoder satisfies the current locked Phase 4 semantic gate before any further capability training.",
+  "source_commit": "b58d544",
+  "parent_protocol": "moonshot/phase4_python_functional_protocol.json",
+  "parent_protocol_dataset_sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+  "dataset": {
+    "path": "data/moonshot/phase4/python_functional_v1.jsonl",
+    "sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "split": "validation",
+    "distinct_prompts": 64,
+    "test_split_access_allowed": false
+  },
+  "fixed_generation": {
+    "policy": "greedy_argmax_from_neural_next_byte_logits",
+    "prompt_suffix": "\n",
+    "maximum_new_bytes": 320,
+    "context_bytes": 128,
+    "templates_retrieval_stored_answers_or_forced_units_allowed": false
+  },
+  "screened_artifacts_in_order": [
+    {
+      "path": "runs_experiment/portable_python_d64_h256_v1.pt",
+      "file_sha256": "97507df6a9840df7d80a414e8c0756e292022b99519f3fcf8e00bf0e2102c022",
+      "training_seed": 6060,
+      "lineage": "anchor-mlp-legacy"
+    },
+    {
+      "path": "runs_experiment/portable_python_gru148k_v1.pt",
+      "file_sha256": "97550d7a54456de9049b5eba50fc726cb5fa1154d1aa551e79ddb3abddbef593",
+      "training_seed": 6060,
+      "lineage": "byte-gru-fp32"
+    },
+    {
+      "path": "runs_experiment/portable_python_gru148k_int8_v1.pt",
+      "file_sha256": "5bd6a7ed6a7a361bb504a4958f75ce181d93ce3fe2ee368ba1a77f0dd6f3dca9",
+      "training_seed": 6060,
+      "lineage": "byte-gru-int8"
+    },
+    {
+      "path": "runs_experiment/portable_python_gru148k_seed6061.pt",
+      "file_sha256": "af49154080e63df14ba5990066301c1f5a7a55ec5630bf1e4ebe31dc68692ef9",
+      "training_seed": 6061,
+      "lineage": "byte-gru-fp32"
+    },
+    {
+      "path": "runs_experiment/portable_python_gru148k_seed6061_int8.pt",
+      "file_sha256": "5bfd490d0e493132c1216d01bb34e521fa7fdc0cb025fd49cc8e2736298814c0",
+      "training_seed": 6061,
+      "lineage": "byte-gru-int8"
+    }
+  ],
+  "excluded_historical_artifacts": [
+    {
+      "path": "runs_experiment/portable_python_d64_h256.pt",
+      "file_sha256": "1b892510cbddf77a36de1725e28e22f4933f67e82bf34f8b7e72ab5b6f2cb8f9",
+      "reason": "Malformed pre-versioned research artifact: missing authenticated spec and payload hashes."
+    },
+    {
+      "path": "examples/python.cake",
+      "file_sha256": "3e581ad8faab1788709504a085ed0aa863ceb61892f23a57be99ad7d4ce656a8",
+      "reason": "Manifest declares UNTRAINED_SMOKE and domain_quality_claimed=false."
+    },
+    {
+      "path": "artifacts/cakes/python.cake",
+      "file_sha256": "2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2",
+      "reason": "Signed portable-fusion candidate targets an older ABI and declares CANDIDATE_NOT_PROMOTED."
+    }
+  ],
+  "semantic_gate": {
+    "minimum_functional_success_rate": 0.8,
+    "minimum_functional_successes": 52,
+    "expected_function_name_required": true,
+    "every_unit_test_must_pass": true,
+    "syntax_only_counts_as_success": false
+  },
+  "decision_rule": {
+    "existing_artifact_promotion": "An artifact is eligible for the remaining Phase 4 package and receiver certification only if it reaches at least 52 of 64 strict validation successes.",
+    "failure": "If none passes, preserve the mathematical transfer result as PASS and record semantic capability acquisition as the only failed gate. Any subsequent training must use the existing portable-domain architecture and package path unless separately preregistered evidence proves it inadequate.",
+    "test_split_after_failure_allowed": false
+  }
+}
