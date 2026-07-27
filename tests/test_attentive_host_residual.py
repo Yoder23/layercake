@@ -3,6 +3,10 @@ from __future__ import annotations
 import torch
 
 from layercake.domain_runtime import AttentiveHostResidualCake
+from layercake.training.phase4_python_cake import (
+    _configure_copy_path_only,
+    _tensor_subset_sha256,
+)
 
 
 def test_attentive_residual_prefill_and_step_preserve_abi_shape():
@@ -108,3 +112,35 @@ def test_transition_copy_starts_as_current_state_projection():
     torch.testing.assert_close(
         projected, semantic[0, torch.tensor([1, 3])]
     )
+
+
+def test_copy_path_only_freezes_semantic_parent():
+    cake = AttentiveHostResidualCake(
+        d_abi=768,
+        hidden_width=384,
+        layers=1,
+        heads=6,
+        copy_width=64,
+        copy_value_projection=True,
+        selective_copy=True,
+        transition_copy=True,
+    )
+    trainable = set(_configure_copy_path_only(cake))
+    assert trainable == {
+        "copy_query.weight",
+        "copy_key.weight",
+        "copy_gate.weight",
+        "copy_gate.bias",
+        "copy_transition_value.weight",
+    }
+    assert all(
+        parameter.requires_grad == (name in trainable)
+        for name, parameter in cake.named_parameters()
+    )
+
+
+def test_frozen_subset_hash_supports_scalar_parameters():
+    state = {"alpha": torch.tensor(0.0), "weight": torch.eye(2)}
+    first = _tensor_subset_sha256(state, set(state))
+    second = _tensor_subset_sha256(state, set(state))
+    assert first == second

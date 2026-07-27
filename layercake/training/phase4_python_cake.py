@@ -48,6 +48,15 @@ DEFAULT_CHECKPOINT = (
 DEFAULT_DATASET = (
     ROOT / "data" / "moonshot" / "phase4" / "python_functional_v1.jsonl"
 )
+_COPY_PATH_PARAMETER_NAMES = frozenset(
+    {
+        "copy_query.weight",
+        "copy_key.weight",
+        "copy_gate.weight",
+        "copy_gate.bias",
+        "copy_transition_value.weight",
+    }
+)
 
 
 def _canonical_sha(value: Any) -> str:
@@ -65,6 +74,34 @@ def _jsonable(value: Any) -> Any:
     if isinstance(value, dict):
         return {str(key): _jsonable(item) for key, item in value.items()}
     return value
+
+
+def _tensor_subset_sha256(
+    state: dict[str, torch.Tensor], names: set[str]
+) -> str:
+    digest = hashlib.sha256()
+    for name in sorted(names):
+        value = state[name].detach().cpu().contiguous()
+        digest.update(name.encode("utf-8"))
+        digest.update(str(value.dtype).encode("ascii"))
+        digest.update(json.dumps(list(value.shape)).encode("ascii"))
+        digest.update(value.numpy().tobytes())
+    return digest.hexdigest()
+
+
+def _configure_copy_path_only(
+    cake: AttentiveHostResidualCake,
+) -> tuple[str, ...]:
+    available = {name for name, _ in cake.named_parameters()}
+    missing = _COPY_PATH_PARAMETER_NAMES - available
+    if missing:
+        raise ValueError(
+            "copy-path-only training requires selective transition copy; "
+            f"missing {sorted(missing)}"
+        )
+    for name, parameter in cake.named_parameters():
+        parameter.requires_grad_(name in _COPY_PATH_PARAMETER_NAMES)
+    return tuple(sorted(_COPY_PATH_PARAMETER_NAMES))
 
 
 @dataclass(frozen=True)
@@ -1470,6 +1507,7 @@ def train_recurrent_cake(
     copy_gate_supervision_weight: float = 0.0,
     prompt_value_supervision_weight: float = 0.0,
     transition_copy: bool = False,
+    copy_path_only: bool = False,
 ) -> dict[str, Any]:
     checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
     cache = cache if cache.is_absolute() else ROOT / cache
@@ -1564,9 +1602,30 @@ def train_recurrent_cake(
             with torch.no_grad():
                 cake.copy_alpha.zero_()
         initial_sha = sha256_file(initial_checkpoint)
+    trainable_parameter_names = tuple(
+        name for name, _ in cake.named_parameters()
+    )
+    frozen_parameter_names: set[str] = set()
+    frozen_parameters_sha256_before = None
+    if copy_path_only:
+        if not isinstance(cake, AttentiveHostResidualCake):
+            raise ValueError(
+                "copy-path-only training requires the attentive architecture"
+            )
+        trainable_parameter_names = _configure_copy_path_only(cake)
+        frozen_parameter_names = (
+            set(cake.state_dict()) - set(trainable_parameter_names)
+        )
+        frozen_parameters_sha256_before = _tensor_subset_sha256(
+            cake.state_dict(), frozen_parameter_names
+        )
     cake.train()
+    trainable_parameters = [
+        parameter for parameter in cake.parameters()
+        if parameter.requires_grad
+    ]
     optimizer = torch.optim.AdamW(
-        cake.parameters(), lr=learning_rate, weight_decay=0.01
+        trainable_parameters, lr=learning_rate, weight_decay=0.01
     )
     curves: list[dict[str, Any]] = []
     best_loss = float("inf")
@@ -1727,7 +1786,7 @@ def train_recurrent_cake(
                     * prompt_value_loss
                 )
         objective.backward()
-        torch.nn.utils.clip_grad_norm_(cake.parameters(), 1.0)
+        torch.nn.utils.clip_grad_norm_(trainable_parameters, 1.0)
         optimizer.step()
         loss_value = float(loss.detach())
         objective_value = float(objective.detach())
@@ -1789,6 +1848,17 @@ def train_recurrent_cake(
             print(json.dumps(record), flush=True)
     assert best_state is not None
     cake.load_state_dict(best_state)
+    frozen_parameters_sha256_after = (
+        _tensor_subset_sha256(cake.state_dict(), frozen_parameter_names)
+        if copy_path_only
+        else None
+    )
+    if (
+        copy_path_only
+        and frozen_parameters_sha256_after
+        != frozen_parameters_sha256_before
+    ):
+        raise RuntimeError("copy-path-only training mutated a frozen tensor")
     output.parent.mkdir(parents=True, exist_ok=True)
     save_file(
         {
@@ -1798,7 +1868,11 @@ def train_recurrent_cake(
         str(output),
     )
     wall = time.perf_counter() - started
-    trainable = cake.parameter_count()
+    trainable = sum(
+        parameter.numel()
+        for parameter in cake.parameters()
+        if parameter.requires_grad
+    )
     evidence = {
         "format": "layercake-phase4-recurrent-host-residual-training/1",
         "status": "COMPLETE",
@@ -1842,6 +1916,14 @@ def train_recurrent_cake(
         "copy_value_supervision_weight": copy_value_supervision_weight,
         "copy_gate_supervision_weight": copy_gate_supervision_weight,
         "prompt_value_supervision_weight": prompt_value_supervision_weight,
+        "copy_path_only": copy_path_only,
+        "trainable_parameter_names": list(trainable_parameter_names),
+        "frozen_parameters_sha256_before": (
+            frozen_parameters_sha256_before
+        ),
+        "frozen_parameters_sha256_after": (
+            frozen_parameters_sha256_after
+        ),
         "trainable_parameters": trainable,
         "active_parameter_seconds_to_quality": trainable * wall,
         "end_to_end_cpu_wall_seconds": wall,
@@ -2364,6 +2446,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     attentive.add_argument("--selective-copy", action="store_true")
     attentive.add_argument("--transition-copy", action="store_true")
+    attentive.add_argument("--copy-path-only", action="store_true")
     attentive.add_argument("--max-residual", type=float, default=6.0)
     attentive.add_argument("--steps", type=int, default=800)
     attentive.add_argument("--batch-size", type=int, default=8)
@@ -2475,6 +2558,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             ),
             transition_copy=(
                 args.transition_copy
+                if args.command == "train-attentive"
+                else False
+            ),
+            copy_path_only=(
+                args.copy_path_only
                 if args.command == "train-attentive"
                 else False
             ),

@@ -435,6 +435,60 @@
       "next_bounded_change": "Separate host-level lexical conformance from Python semantics: train the same canonical-ABI pointer/value path on a preregistered tokenizer-vocabulary coverage corpus with no promotion credit, then attach it to the preserved 48/64 semantic parent and add bounded generated-prefix recovery only if lexical conformance passes its held-out probe.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "attentive-copy-path-lexical-conformance-v1-seed9404",
+      "disposition": "REJECTED_HELDOUT_LEXICAL_VALUE_CONFORMANCE",
+      "architecture": {
+        "name": "attentive_host_residual",
+        "semantic_parent_sha256": "16f78653e269737f3fefc6952db71f94a01a9f2a5c8b0f5557272820c9e0615b",
+        "copy_width": 64,
+        "selective_copy": true,
+        "transition_copy": true,
+        "copy_path_only_training": true
+      },
+      "data": {
+        "dataset_sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+        "train_rows": 4096,
+        "heldout_probe_rows": 256,
+        "train_target_token_units": 8192,
+        "heldout_target_token_units": 512,
+        "target_token_id_sets_disjoint": true,
+        "functional_validation_rows_used": 0,
+        "functional_test_rows_used": 0,
+        "promotion_credit": 0
+      },
+      "training": {
+        "seed": 9404,
+        "optimizer_steps": 1200,
+        "cpu_wall_seconds": 507.88621750002494,
+        "trainable_parameters": 1278721,
+        "checkpoint_sha256": "65c1123f676b58343aba32dd2d4efe4211399ce81c46668ecb3967c7ec89aee2",
+        "frozen_parameters_sha256_before": "4c524b2022ef815f7d0e72dab8b9cff7a309e43de0d5742a348edb8a615f7b2a",
+        "frozen_parameters_sha256_after": "4c524b2022ef815f7d0e72dab8b9cff7a309e43de0d5742a348edb8a615f7b2a"
+      },
+      "heldout_lexical_probe": {
+        "distinct_prompts": 256,
+        "exact_identifier_units": 1536,
+        "identifier_pointer_top1_accuracy": 0.939453125,
+        "identifier_true_source_value_top1_accuracy": 0.8665364583333334,
+        "identifier_hard_attended_value_top1_accuracy": 0.8313802083333334,
+        "pointer_gate_passed": true,
+        "true_source_value_gate_passed": false,
+        "python_continuation_permitted": false,
+        "promotion_credit": 0
+      },
+      "implementation_failure_before_training": {
+        "failure": "scalar tensor hashing used a byte view that PyTorch rejects for rank-zero tensors",
+        "optimizer_steps_completed": 0,
+        "checkpoint_written": false,
+        "repair": "serialize contiguous NumPy bytes for tensors of every rank",
+        "same_preregistered_command_rerun": true
+      },
+      "measured_bottleneck": "A copy-only curriculum made the semantic pointer generalize to disjoint lexical probes, but the linear ABI-transition projection still failed to reconstruct 90% of unseen identifier units through the frozen tied head. The failure occurs under teacher forcing and therefore precedes autonomous exposure bias.",
+      "next_bounded_change": "Return to the preserved semantic parent and attack autonomous semantic exposure bias independently. Do not continue this copy path into Python training and do not sweep copy width, loss weights, or nearby transition-projection capacity.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }
