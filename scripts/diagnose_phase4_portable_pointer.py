@@ -47,6 +47,7 @@ def main() -> int:
     if model.architecture not in {
         "byte_gru_pointer",
         "byte_gru_pointer_transition",
+        "byte_gru_pointer_self_transition",
     }:
         raise ValueError("diagnostic requires a neural-pointer artifact")
     rows = [
@@ -152,20 +153,29 @@ def main() -> int:
             for offset, count in Counter(offsets).most_common()
         ],
         "test_split_accessed": False,
-        "conclusion": (
-            "The learned content pointer finds the first unseen identifier byte "
-            "on 60/64 prompts but loses monotonic source position thereafter. "
-            "The next bounded change is a learned recurrent transition over the "
-            "previous neural pointer distribution, not another capacity or loss "
-            "sweep."
-            if model.architecture == "byte_gru_pointer"
-            else
-            "The learned +1 transition is present, but its new hidden-state gate "
-            "does not generalize to held-out identifier continuations. The "
-            "frozen copy gate does generalize, and its probabilistic conjunction "
-            "across adjacent steps separates identifier continuation from the "
-            "first identifier byte without a deterministic cursor."
-        ),
+        "conclusion": {
+            "byte_gru_pointer": (
+                "The learned content pointer finds the first unseen identifier "
+                "byte on 60/64 prompts but loses monotonic source position "
+                "thereafter. The next bounded change is a learned recurrent "
+                "transition over the previous neural pointer distribution, not "
+                "another capacity or loss sweep."
+            ),
+            "byte_gru_pointer_transition": (
+                "The learned +1 transition is present, but its new hidden-state "
+                "gate does not generalize to held-out identifier continuations. "
+                "The frozen copy gate does generalize, and its probabilistic "
+                "conjunction across adjacent steps separates identifier "
+                "continuation from the first identifier byte without a "
+                "deterministic cursor."
+            ),
+            "byte_gru_pointer_self_transition": (
+                "Composing the frozen neural copy gates improves neither exact "
+                "held-out identifier retention nor autonomous functional "
+                "success enough to promote. The content pointer itself requires "
+                "held-out lexical conformance before another functional screen."
+            ),
+        }[model.architecture],
     }
     if result["transition_gate_logits"] is not None:
         transition_gates = torch.sigmoid(

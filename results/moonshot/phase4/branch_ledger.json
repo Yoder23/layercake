@@ -726,6 +726,46 @@
       "transition_offset_capacity_or_loss_sweeps_authorized": false,
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "portable-functional-self-gated-transition-pointer",
+      "disposition": "REJECTED_HELDOUT_LEXICAL_CONFORMANCE",
+      "architecture": {
+        "name": "PortableDomainDecoder",
+        "architecture": "byte_gru_pointer_self_transition",
+        "parameters": 412425,
+        "new_parameters": 0,
+        "trained_parameters": 0,
+        "parent_parameter_tensors_bit_identical": true,
+        "parent_and_converted_payload_hash": "02d4067522d57a1b0c5b6807e22b3b9d7639152a703c0de9b28ac892e075cbb3"
+      },
+      "conversion": {
+        "optimizer_steps": 0,
+        "training_rows_accessed": 0,
+        "validation_rows_accessed": 0,
+        "artifact_file_sha256": "165d64184b599b47daa4d492f1cdc90bbc3d659807e0769f093e06e525307650",
+        "evidence_sha256": "647117fa4411b707892aca521392b9396ba7bd7c58ba1c6de35bb3ac5fe9dc5e"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "functional_error_rate": 1.0,
+        "median_time_to_first_output_seconds": 0.033993949997238815,
+        "median_total_latency_seconds": 0.2710740500042448,
+        "evidence_sha256": "6c3dfd410a3ff495be7325d2c19721533de49e3d79f490827820895f49c813c0"
+      },
+      "teacher_forced_validation_diagnostic": {
+        "identifier_pointer_position_accuracy": 0.5853503346443176,
+        "identifier_pointer_byte_accuracy": 0.5974522233009338,
+        "identifier_next_byte_accuracy": 0.4847133755683899,
+        "evidence_sha256": "7bec4fb0d8c886c4de81bbd7e22752b12bd4dac3544fa504393fb658a68d69bf",
+        "promotion_credit": 0
+      },
+      "measured_bottleneck": "Parameter-free composition improved held-out exact pointer-position accuracy from 49.0% to 58.5%, but remained far below lossless lexical conformance and produced no strict functional success. The content pointer was trained only on the functional identifiers and has not earned held-out lexical generalization.",
+      "next_bounded_change": "Return to the frozen 64/64 semantic parent and train only the existing raw-byte content pointer and copy gate on the already-preserved 4096-row lexical-conformance training split. Require held-out lexical conformance before another functional screen.",
+      "gate_composition_or_decoding_threshold_sweeps_authorized": false,
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }
