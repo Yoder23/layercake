@@ -1,0 +1,37 @@
+{
+  "format": "layercake-phase4-curriculum-repair-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_TRAINING",
+  "parent": "moonshot/phase4_attentive_cake_preregistration.json",
+  "failed_checkpoint_sha256": "ffdbd397b100f1e730118254e79951d75b58d4ccfeae007fbd4beecb5789e91b",
+  "failed_validation_evidence_sha256": "d5b8eee9deb2d6e2528b7a1563f34278f79f4098e1317097f485f48fe51b1a2c",
+  "measured_bottleneck": "All training prompts used one wording and all function names leaked the _train_## split marker; attentive outputs copied partial held-out names but retained that marker.",
+  "source_dataset": {
+    "path": "data/moonshot/phase4/python_functional_v1.jsonl",
+    "sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3"
+  },
+  "repaired_dataset": {
+    "path": "data/moonshot/phase4/python_functional_v2.jsonl",
+    "sha256": "9fa9a746191dabdda9ecabac3629a80ecfa66c5feaea9047771a13a5eaebbe15",
+    "training_split_sha256": "d8ba3a7bdf72d451d6dc686cf8d0b9b494acaab3233d867746308dc148212a5c",
+    "validation_split_sha256": "233f09a202a7a28605952d9348fa36bfe538e5163ac8b41f46b3a965bc62c75d",
+    "test_split_sha256": "48c5a40e766c495655b4e83bcbe05baca5723d48a6ddfc931250dba31fd06b7e",
+    "validation_rows_unchanged": true,
+    "test_rows_unchanged": true,
+    "training_change_only": "six prompt phrasings and four identifier patterns"
+  },
+  "bounded_run": {
+    "architecture_unchanged": "attentive_host_residual-384x1-heads6",
+    "seed": 9404,
+    "training_device": "cpu",
+    "optimizer_steps": 800,
+    "batch_size": 8,
+    "learning_rate": 0.0003,
+    "prompt_token_sample_fraction": 0.25,
+    "prompt_token_loss_weight": 0.25
+  },
+  "stopping_rule": {
+    "minimum_validation_success_rate": 0.8,
+    "test_split_access_allowed": false,
+    "other_seeds_authorized_only_after_pass": true
+  }
+}

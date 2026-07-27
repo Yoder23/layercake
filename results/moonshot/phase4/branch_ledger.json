@@ -110,6 +110,34 @@
       "next_bounded_change": "Replace compressed recurrence with one small causal-attention layer over immutable ABI-state history; retain exact prompts instead of adding capacity to the failed GRU.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "attentive-host-residual-384-seed9404-curriculum-v1",
+      "disposition": "REJECTED_QUALITY_CURRICULUM_BOTTLENECK",
+      "architecture": {
+        "name": "attentive_host_residual",
+        "d_abi": 768,
+        "hidden_width": 384,
+        "layers": 1,
+        "heads": 6
+      },
+      "training": {
+        "seed": 9404,
+        "optimizer_steps": 800,
+        "cpu_wall_seconds": 127.4987337999919,
+        "trainable_parameters": 2366593,
+        "checkpoint_sha256": "ffdbd397b100f1e730118254e79951d75b58d4ccfeae007fbd4beecb5789e91b"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "functional_successes": 0,
+        "functional_error_rate": 1.0,
+        "evidence_sha256": "d5b8eee9deb2d6e2528b7a1563f34278f79f4098e1317097f485f48fe51b1a2c"
+      },
+      "measured_bottleneck": "The training curriculum exposes one prompt wording and a _train_## identifier marker; attentive outputs copy partial validation identifiers but continue emitting the leaked split marker.",
+      "next_bounded_change": "Keep architecture and held-out rows fixed; vary only training prompt wording and identifier patterns.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

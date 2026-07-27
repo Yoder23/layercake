@@ -613,6 +613,126 @@ def generate_dataset(output: Path, *, seed: int = 9404) -> dict[str, Any]:
     return manifest
 
 
+def generate_diverse_training_dataset(
+    source: Path,
+    output: Path,
+    *,
+    seed: int = 9414,
+) -> dict[str, Any]:
+    """Repair only the training curriculum; preserve held-out rows byte-for-byte."""
+
+    source = source if source.is_absolute() else ROOT / source
+    output = output if output.is_absolute() else ROOT / output
+    if output.exists():
+        raise RuntimeError(f"dataset artifact is immutable: {output}")
+    source_rows = _load_rows(source)
+    families = {family.family_id: family for family in _families()}
+    adjectives = (
+        "amber",
+        "calm",
+        "delta",
+        "exact",
+        "green",
+        "lunar",
+        "rapid",
+        "silver",
+    )
+    templates = (
+        "Write only valid Python code. Define {name}({parameters}) that {description}.",
+        "Return only Python source. Implement {name}({parameters}); it {description}.",
+        "No prose. Create a Python function called {name} with parameters {parameters} that {description}.",
+        "Produce valid code for {name}({parameters}). The function {description}.",
+        "Define the Python callable {name}({parameters}) so it {description}. Return code only.",
+        "Generate only a function named {name} taking {parameters}; it {description}.",
+    )
+    rows = []
+    for row in source_rows:
+        if row["split"] != "train":
+            # Object reuse plus canonical serialization below guarantees the
+            # semantic held-out records are identical, which the manifest hashes.
+            rows.append(row)
+            continue
+        family = families[row["family"]]
+        index = int(row["id"].rsplit("-", 1)[1])
+        pattern = index % 4
+        if pattern == 0:
+            name = f"{family.family_id}_{adjectives[index % len(adjectives)]}_{index:02d}"
+        elif pattern == 1:
+            name = f"compute_{family.family_id}_{100 + index}"
+        elif pattern == 2:
+            name = f"lc_{adjectives[index % len(adjectives)]}_{family.family_id}"
+        else:
+            name = f"{family.family_id}_implementation_{index:02d}"
+        description = family.descriptions[index % len(family.descriptions)]
+        prompt = templates[index % len(templates)].format(
+            name=name,
+            parameters=", ".join(family.parameters),
+            description=description,
+        )
+        rows.append(
+            {
+                **row,
+                "prompt": prompt,
+                "response": _render_response(name, family),
+                "function_name": name,
+            }
+        )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        "".join(
+            json.dumps(row, sort_keys=True, ensure_ascii=False) + "\n"
+            for row in rows
+        ),
+        encoding="utf-8",
+    )
+    def split_sha(items: list[dict[str, Any]], split: str) -> str:
+        return _canonical_sha([row for row in items if row["split"] == split])
+    manifest = {
+        "format": "layercake-phase4-python-functional-dataset/2",
+        "status": "PREREGISTERED_TRAINING_ONLY_REPAIR",
+        "seed": seed,
+        "source_dataset": (
+            source.relative_to(ROOT).as_posix()
+            if source.is_relative_to(ROOT)
+            else str(source)
+        ),
+        "source_dataset_sha256": sha256_file(source),
+        "dataset": (
+            output.relative_to(ROOT).as_posix()
+            if output.is_relative_to(ROOT)
+            else str(output)
+        ),
+        "dataset_sha256": sha256_file(output),
+        "counts": {
+            split: sum(row["split"] == split for row in rows)
+            for split in ("train", "validation", "test")
+        },
+        "split_hashes": {
+            split: split_sha(rows, split)
+            for split in ("train", "validation", "test")
+        },
+        "source_split_hashes": {
+            split: split_sha(source_rows, split)
+            for split in ("train", "validation", "test")
+        },
+        "validation_rows_unchanged": split_sha(rows, "validation")
+        == split_sha(source_rows, "validation"),
+        "test_rows_unchanged": split_sha(rows, "test")
+        == split_sha(source_rows, "test"),
+        "training_change": (
+            "six instruction phrasings and four identifier patterns replace "
+            "the leaked _train_## marker"
+        ),
+        "test_definition_unchanged": True,
+    }
+    manifest["manifest_sha256"] = _canonical_sha(manifest)
+    output.with_name("manifest_v2.json").write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return manifest
+
+
 def _load_rows(dataset: Path) -> list[dict[str, Any]]:
     dataset = dataset if dataset.is_absolute() else ROOT / dataset
     return [
@@ -1590,6 +1710,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     generate = sub.add_parser("generate-dataset")
     generate.add_argument("--output", type=Path, default=DEFAULT_DATASET)
+    diversify = sub.add_parser("generate-diverse-dataset")
+    diversify.add_argument("--source", type=Path, default=DEFAULT_DATASET)
+    diversify.add_argument("--output", type=Path, required=True)
     cache = sub.add_parser("cache")
     cache.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     cache.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
@@ -1655,6 +1778,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "generate-dataset":
         result = generate_dataset(args.output)
+    elif args.command == "generate-diverse-dataset":
+        result = generate_diverse_training_dataset(
+            args.source, args.output
+        )
     elif args.command == "cache":
         result = cache_training_states(
             args.checkpoint, args.dataset, args.output

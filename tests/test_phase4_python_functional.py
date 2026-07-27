@@ -5,6 +5,7 @@ from pathlib import Path
 from layercake.training.phase4_python_cake import (
     _execute_tests,
     _extract_function,
+    generate_diverse_training_dataset,
     generate_dataset,
 )
 
@@ -18,6 +19,20 @@ def test_generated_dataset_has_disjoint_promoted_depth(tmp_path: Path):
     }
     assert manifest["training_test_prompt_overlap"] == 0
     assert not manifest["syntax_only_counts_as_success"]
+
+
+def test_diverse_repair_changes_only_training_rows(tmp_path: Path):
+    source = tmp_path / "v1" / "python.jsonl"
+    generate_dataset(source)
+    manifest = generate_diverse_training_dataset(
+        source, tmp_path / "v2" / "python.jsonl"
+    )
+    assert manifest["validation_rows_unchanged"]
+    assert manifest["test_rows_unchanged"]
+    assert (
+        manifest["split_hashes"]["train"]
+        != manifest["source_split_hashes"]["train"]
+    )
 
 
 def test_safe_function_must_pass_real_unit_tests():
