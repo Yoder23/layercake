@@ -610,6 +610,37 @@
       "next_bounded_change": "Continue the identical payload lineage with extra cross-entropy weight only on exact response identifier bytes. No architecture, data, runtime rewrite, pointer, or deterministic copying change.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "portable-functional-identifier-weight-seed9440",
+      "disposition": "REJECTED_IDENTIFIER_GENERALIZATION",
+      "architecture": {
+        "parent_payload_hash": "ab1733c73585833095164306deccd3103c6c80b21001f7f26214cee221fff882",
+        "architecture_changed": false,
+        "parameters_changed": 0
+      },
+      "training": {
+        "seed": 9540,
+        "optimizer_steps": 800,
+        "cpu_wall_seconds": 157.07202170000528,
+        "identifier_loss_weight": 4.0,
+        "artifact_file_sha256": "2029833022996472791b8bb18548d1b62d39f76725513de1bf18fd0d60898b2b",
+        "payload_hash": "6206a3c010b1055cc85f9548186ca2aad99a7108d3e6530dd65508904788cc0d"
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "name_agnostic_functional_successes_diagnostic_only": 64,
+        "teacher_forced_identifier_byte_accuracy_diagnostic_only": 0.1394904458598726,
+        "teacher_forced_first_identifier_byte_accuracy_diagnostic_only": 0.046875,
+        "functional_error_rate": 1.0,
+        "evidence_sha256": "9de64790b7f2ba3fd653cd34c5940398ae9f5054d5659f349815ad4e7abe3384"
+      },
+      "measured_bottleneck": "Identifier weighting raised training-batch identifier accuracy but generalized teacher-forced identifier accuracy remained 13.9% and the first unseen identifier byte was correct on only 3/64 prompts. The fixed-width recurrent state memorizes training names instead of representing a lossless prompt byte sequence.",
+      "next_bounded_change": "Add one neural pointer-generator over the decoder's own prior raw-byte states and values. Train only its query, key, and gate against exact prompt positions while preserving the 64/64 semantic parent and exact portable artifact path.",
+      "identifier_weight_sweeps_authorized": false,
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }
