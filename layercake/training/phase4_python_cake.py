@@ -977,6 +977,9 @@ def train_recurrent_cake(
     steps: int = 1600,
     batch_size: int = 8,
     learning_rate: float = 3.0e-4,
+    initial_checkpoint: Path | None = None,
+    prompt_retention_fraction: float = 0.0,
+    prompt_retention_weight: float = 0.25,
 ) -> dict[str, Any]:
     checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
     cache = cache if cache.is_absolute() else ROOT / cache
@@ -1002,6 +1005,17 @@ def train_recurrent_cake(
         layers=layers,
         max_residual=max_residual,
     )
+    initial_sha = None
+    if initial_checkpoint is not None:
+        initial_checkpoint = (
+            initial_checkpoint
+            if initial_checkpoint.is_absolute()
+            else ROOT / initial_checkpoint
+        )
+        cake.load_state_dict(
+            load_file(str(initial_checkpoint), device="cpu"), strict=True
+        )
+        initial_sha = sha256_file(initial_checkpoint)
     cake.train()
     optimizer = torch.optim.AdamW(
         cake.parameters(), lr=learning_rate, weight_decay=0.01
@@ -1017,18 +1031,33 @@ def train_recurrent_cake(
         batch_states = torch.zeros(batch_size, length, 768)
         batch_targets = torch.zeros(batch_size, length, dtype=torch.long)
         batch_masks = torch.zeros(batch_size, length, dtype=torch.bool)
+        batch_valid = torch.zeros(batch_size, length, dtype=torch.bool)
         for batch_index, row in enumerate(selected):
             start, stop = offsets[row], offsets[row + 1]
             count = stop - start
             batch_states[batch_index, :count] = states[start:stop].float()
             batch_targets[batch_index, :count] = targets[start:stop]
             batch_masks[batch_index, :count] = masks[start:stop]
+            batch_valid[batch_index, :count] = True
         optimizer.zero_grad(set_to_none=True)
         adapted, _ = cake(batch_states)
-        selected_adapted = adapted[batch_masks]
-        selected_targets = batch_targets[batch_masks]
+        supervised = batch_masks.clone()
+        prompt_selected = torch.zeros_like(batch_masks)
+        if prompt_retention_fraction > 0:
+            prompt_candidates = batch_valid & ~batch_masks
+            prompt_selected = prompt_candidates & (
+                torch.rand(prompt_candidates.shape)
+                < prompt_retention_fraction
+            )
+            supervised |= prompt_selected
+        selected_adapted = adapted[supervised]
+        selected_targets = batch_targets[supervised]
         logits = F.linear(selected_adapted, embedding)
-        loss = F.cross_entropy(logits, selected_targets)
+        losses = F.cross_entropy(logits, selected_targets, reduction="none")
+        weights = torch.ones_like(losses)
+        if prompt_selected.any():
+            weights[prompt_selected[supervised]] = prompt_retention_weight
+        loss = (losses * weights).sum() / weights.sum()
         residual = selected_adapted - batch_states[batch_masks]
         stability = residual.square().mean() / (
             batch_states[batch_masks].square().mean().clamp_min(1e-6)
@@ -1090,6 +1119,9 @@ def train_recurrent_cake(
         "optimizer_steps": steps,
         "batch_size": batch_size,
         "training_objective": "full_vocabulary_cross_entropy",
+        "initial_checkpoint_sha256": initial_sha,
+        "prompt_retention_fraction": prompt_retention_fraction,
+        "prompt_retention_weight": prompt_retention_weight,
         "trainable_parameters": trainable,
         "active_parameter_seconds_to_quality": trainable * wall,
         "end_to_end_cpu_wall_seconds": wall,
@@ -1268,21 +1300,28 @@ def _extract_function(text: str, expected_name: str) -> tuple[str | None, str]:
     ]
     for start in starts:
         candidate = cleaned[start:]
-        try:
-            tree = ast.parse(candidate)
-        except SyntaxError:
-            continue
-        matches = [
-            node
-            for node in tree.body
-            if isinstance(node, ast.FunctionDef) and node.name == expected_name
-        ]
-        if not matches:
-            continue
-        node = matches[0]
         lines = candidate.splitlines()
-        source = "\n".join(lines[: node.end_lineno]) + "\n"
-        return source, "PARSED"
+        # Autonomous decoders often continue after a complete answer.  Search
+        # longest-first for a valid prefix so harmless trailing prose/junk
+        # cannot turn an already complete function into a syntax failure.
+        for end in range(len(lines), 1, -1):
+            source = "\n".join(lines[:end]) + "\n"
+            try:
+                tree = ast.parse(source)
+            except SyntaxError:
+                continue
+            matches = [
+                node
+                for node in tree.body
+                if isinstance(node, ast.FunctionDef)
+                and node.name == expected_name
+            ]
+            if matches:
+                node = matches[0]
+                function_source = (
+                    "\n".join(lines[: node.end_lineno]) + "\n"
+                )
+                return function_source, "PARSED"
     return None, "NO_EXPECTED_FUNCTION"
 
 
@@ -1527,6 +1566,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     recurrent.add_argument("--steps", type=int, default=1600)
     recurrent.add_argument("--batch-size", type=int, default=8)
     recurrent.add_argument("--learning-rate", type=float, default=3.0e-4)
+    recurrent.add_argument("--initial-checkpoint", type=Path)
+    recurrent.add_argument("--prompt-retention-fraction", type=float, default=0.0)
+    recurrent.add_argument("--prompt-retention-weight", type=float, default=0.25)
     evaluate = sub.add_parser("evaluate")
     evaluate.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     evaluate.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
@@ -1571,6 +1613,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             steps=args.steps,
             batch_size=args.batch_size,
             learning_rate=args.learning_rate,
+            initial_checkpoint=args.initial_checkpoint,
+            prompt_retention_fraction=args.prompt_retention_fraction,
+            prompt_retention_weight=args.prompt_retention_weight,
         )
     else:
         result = evaluate_functional(

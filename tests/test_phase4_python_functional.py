@@ -55,3 +55,12 @@ def test_extracts_only_the_expected_function():
     )
     assert status == "PARSED"
     assert source == "def wanted(value):\n    return value * 2\n"
+
+
+def test_extracts_complete_function_before_invalid_trailing_generation():
+    source, status = _extract_function(
+        "def wanted(value):\n    return value * 2\nthis is invalid prose (\n",
+        "wanted",
+    )
+    assert status == "PARSED"
+    assert source == "def wanted(value):\n    return value * 2\n"

@@ -1,0 +1,25 @@
+{
+  "format": "layercake-phase4-identifier-retention-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_CONTINUATION",
+  "parent": "moonshot/phase4_recurrent_cake_preregistration.json",
+  "failed_checkpoint_sha256": "43de9d3d1472c07c9cbf2eb457fb1bc120a7af1eedea77f3efe98bf96a76b3fd",
+  "failed_validation_evidence_sha256": "f6484f353a801ca67725fceb1cdb18882ce5b927e3fff5964a80555e05a5e127",
+  "measured_bottleneck": "Correct-looking family bodies are emitted under memorized training identifiers rather than the exact held-out function name and signature.",
+  "single_bounded_change": {
+    "initialize_from_failed_checkpoint": true,
+    "additional_optimizer_steps": 600,
+    "training_device": "cpu",
+    "batch_size": 8,
+    "learning_rate": 0.0001,
+    "response_loss": "full-vocabulary cross-entropy",
+    "prompt_token_sample_fraction": 0.25,
+    "prompt_token_loss_weight": 0.25,
+    "capacity_change": 0,
+    "data_or_validation_change": false
+  },
+  "stopping_rule": {
+    "minimum_validation_success_rate": 0.8,
+    "if_failed": "Reject the current semantic-residual representation; do not launch the other two seeds.",
+    "test_split_access_allowed": false
+  }
+}
