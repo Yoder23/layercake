@@ -1,0 +1,51 @@
+{
+  "format": "layercake-phase4-recurrent-cake-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_RECURRENT_TRAINING",
+  "parent_protocol": "moonshot/phase4_python_functional_protocol.json",
+  "parent_protocol_sha256": "b739778f99dab8f7da53122677b3fa67caca853dd0dd3bbce5086cc40fd26d31",
+  "failed_branches": [
+    {
+      "id": "host-residual-rank768-sampled-softmax-seed9404",
+      "validation_successes": 0,
+      "validation_prompts": 64,
+      "evidence_sha256": "2baf3232df50fc3b2d371a2b62c3998aa9ebb7ac071e82c316dea32c5a70f236"
+    },
+    {
+      "id": "host-residual-rank768-full-vocabulary-screen-seed9404",
+      "validation_successes": 0,
+      "validation_prompts": 64,
+      "evidence_sha256": "bac17004fb5977f97bce1bd16ff5353f99a5b1f4fd4bb9176ef25e0af727240b"
+    }
+  ],
+  "measured_reason_for_pivot": "A memoryless semantic residual reached low teacher-forced cross-entropy but did not retain requested function identity or a coherent code plan under autonomous decoding.",
+  "bounded_architecture": {
+    "name": "recurrent_host_residual",
+    "canonical_input_width": 768,
+    "canonical_output_width": 768,
+    "private_recurrent_hidden_width": 1024,
+    "recurrent_layers": 1,
+    "maximum_residual": 6.0,
+    "host_core_trainable_parameters": 0,
+    "host_output_head_trainable_parameters": 0,
+    "teacher_at_inference": false
+  },
+  "bounded_screen": {
+    "training_seed": 9404,
+    "training_device": "cpu",
+    "optimizer_steps": 1600,
+    "batch_size": 8,
+    "objective": "full_vocabulary_cross_entropy on response units",
+    "validation_prompts": 64,
+    "minimum_validation_success_rate_to_authorize_three_seeds": 0.8,
+    "test_split_access_allowed": false
+  },
+  "unchanged_gates": {
+    "functional_error_reduction_over_core_min": 5.0,
+    "phase2_throughput_retention_min": 0.9,
+    "optimized_cpu_transformer_ratio_min": 2.0,
+    "identical_package_receiver_hosts": 3,
+    "receiver_training_or_calibration": 0,
+    "core_parameters_changed": 0,
+    "inactive_cake_neural_compute": 0
+  }
+}

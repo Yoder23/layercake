@@ -7,6 +7,7 @@ from typing import Any
 from torch import nn
 
 from layercake.cake.package import CakePackage
+from layercake.domain_runtime import RecurrentHostResidualCake
 from layercake.portable_domain import PortableDomainDecoder
 
 from .portable_fusion import PortableFusionCake, PortableFusionConfig
@@ -48,9 +49,27 @@ def load_cake_module(package: CakePackage) -> nn.Module:
             embedding_width=int(architecture["embedding_width"]),
         )
     elif manifest.cake_type == "host_residual":
-        if set(architecture) != {"name", "d_abi", "rank"} or architecture.get("name") != "host_residual":
+        if (
+            set(architecture) == {"name", "d_abi", "rank"}
+            and architecture.get("name") == "host_residual"
+        ):
+            model = HostResidualCake(
+                d_abi=int(architecture["d_abi"]),
+                rank=int(architecture["rank"]),
+            )
+        elif (
+            set(architecture)
+            == {"name", "d_abi", "hidden_width", "layers", "max_residual"}
+            and architecture.get("name") == "recurrent_host_residual"
+        ):
+            model = RecurrentHostResidualCake(
+                d_abi=int(architecture["d_abi"]),
+                hidden_width=int(architecture["hidden_width"]),
+                layers=int(architecture["layers"]),
+                max_residual=float(architecture["max_residual"]),
+            )
+        else:
             raise ValueError("host residual architecture metadata is incomplete or ambiguous")
-        model = HostResidualCake(d_abi=int(architecture["d_abi"]), rank=int(architecture["rank"]))
     elif manifest.cake_type == "portable_fusion":
         allowed = {
             "name", "abi_width", "byte_width", "hidden_width", "rank",

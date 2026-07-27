@@ -5,6 +5,69 @@ import re
 from pathlib import Path
 from typing import Iterable
 
+import torch
+from torch import nn
+import torch.nn.functional as F
+
+
+class RecurrentHostResidualCake(nn.Module):
+    """Stateful semantic residual for an unchanged canonical host ABI.
+
+    The cake receives only the host's public semantic state.  Its private GRU
+    state is incremental execution state, not a copied host token stream.  The
+    returned tensor has the same shape and coordinate basis as the host state.
+    """
+
+    def __init__(
+        self,
+        d_abi: int = 768,
+        hidden_width: int = 1024,
+        layers: int = 1,
+        max_residual: float = 6.0,
+    ):
+        super().__init__()
+        if min(d_abi, hidden_width, layers) <= 0 or max_residual <= 0:
+            raise ValueError("recurrent host residual dimensions must be positive")
+        self.d_abi = int(d_abi)
+        self.hidden_width = int(hidden_width)
+        self.layers = int(layers)
+        self.max_residual = float(max_residual)
+        self.input_norm = nn.LayerNorm(self.d_abi)
+        self.recurrent = nn.GRU(
+            self.d_abi,
+            self.hidden_width,
+            num_layers=self.layers,
+            batch_first=True,
+        )
+        self.output_norm = nn.LayerNorm(self.hidden_width)
+        self.output = nn.Linear(self.hidden_width, self.d_abi, bias=False)
+        self.alpha = nn.Parameter(torch.tensor(1.0))
+        nn.init.zeros_(self.output.weight)
+
+    def forward(
+        self,
+        abi_state: torch.Tensor,
+        recurrent_state: torch.Tensor | None = None,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        squeeze = abi_state.ndim == 2
+        if squeeze:
+            abi_state = abi_state[:, None]
+        if abi_state.ndim != 3 or abi_state.shape[-1] != self.d_abi:
+            raise ValueError("host ABI state must be [batch, sequence, d_abi]")
+        hidden, recurrent_state = self.recurrent(
+            self.input_norm(abi_state), recurrent_state
+        )
+        residual = self.max_residual * torch.tanh(
+            self.output(self.output_norm(hidden))
+        )
+        adapted = abi_state + self.alpha * residual
+        if squeeze:
+            adapted = adapted[:, 0]
+        return adapted, recurrent_state
+
+    def parameter_count(self) -> int:
+        return sum(parameter.numel() for parameter in self.parameters())
+
 
 _QA_RE = re.compile(
     r"Question:\s*(?P<question>.*?)\s*Answer:\s*(?P<answer>.*)",

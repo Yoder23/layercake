@@ -28,6 +28,7 @@ import torch.nn.functional as F
 from safetensors.torch import load_file, save_file
 
 from layercake.models.routed_cakes import HostResidualCake
+from layercake.domain_runtime import RecurrentHostResidualCake
 from layercake.training.data import sha256_file
 from layercake.training.phase2_shallow_sparse import load_student
 
@@ -766,16 +767,22 @@ def train_cake(
         )
         hidden = states.index_select(0, indexes).float()
         target = targets.index_select(0, indexes)
-        random_ids = torch.randint(
-            embedding.shape[0], (negative_count,), generator=rng
-        )
-        candidate_ids = torch.unique(torch.cat((target, random_ids)))
-        candidate_embedding = embedding.index_select(0, candidate_ids)
-        target_positions = torch.searchsorted(candidate_ids, target)
         optimizer.zero_grad(set_to_none=True)
         adapted = cake(hidden)
-        logits = F.linear(adapted, candidate_embedding)
-        loss = F.cross_entropy(logits, target_positions)
+        if negative_count > 0:
+            random_ids = torch.randint(
+                embedding.shape[0], (negative_count,), generator=rng
+            )
+            candidate_ids = torch.unique(torch.cat((target, random_ids)))
+            candidate_embedding = embedding.index_select(0, candidate_ids)
+            target_positions = torch.searchsorted(candidate_ids, target)
+            logits = F.linear(adapted, candidate_embedding)
+            loss = F.cross_entropy(logits, target_positions)
+        else:
+            # A zero sampled-negative count intentionally means authoritative
+            # full-vocabulary cross-entropy, not a zero-negative approximation.
+            logits = F.linear(adapted, embedding)
+            loss = F.cross_entropy(logits, target)
         # Keep the residual bounded relative to its host state so portability
         # cannot be obtained by erasing the English representation.
         residual = adapted - hidden
@@ -795,7 +802,7 @@ def train_cake(
         if step == 1 or step % 100 == 0:
             record = {
                 "step": step,
-                "sampled_cross_entropy": loss_value,
+                "cross_entropy": loss_value,
                 "stability_ratio": float(stability.detach()),
                 "alpha": float(cake.alpha.detach()),
                 "wall_seconds": time.perf_counter() - started,
@@ -831,12 +838,264 @@ def train_cake(
         "optimizer_steps": steps,
         "batch_size": batch_size,
         "negative_vocabulary_samples_per_step": negative_count,
+        "training_objective": (
+            "sampled_vocabulary_cross_entropy"
+            if negative_count > 0
+            else "full_vocabulary_cross_entropy"
+        ),
         "trainable_parameters": trainable,
         "active_parameter_seconds_to_quality": trainable * wall,
         "end_to_end_cpu_wall_seconds": wall,
         "peak_process_resident_memory_bytes": peak_rss,
         "learning_curves": curves,
-        "best_sampled_cross_entropy": best_loss,
+        "best_cross_entropy": best_loss,
+        "energy_to_quality": {
+            "status": "UNAVAILABLE",
+            "reason": "no calibrated package energy meter is exposed",
+        },
+    }
+    evidence["evidence_sha256"] = _canonical_sha(evidence)
+    output.with_suffix(".json").write_text(
+        json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return evidence
+
+
+@torch.inference_mode()
+def cache_recurrent_training_states(
+    checkpoint: Path,
+    dataset: Path,
+    output: Path,
+    *,
+    max_response_tokens: int = 160,
+) -> dict[str, Any]:
+    """Cache complete prompt/response semantic sequences and response masks."""
+
+    checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
+    dataset = dataset if dataset.is_absolute() else ROOT / dataset
+    output = output if output.is_absolute() else ROOT / output
+    if output.exists():
+        raise RuntimeError(f"state cache artifact is immutable: {output}")
+    process = psutil.Process()
+    peak_rss = int(process.memory_info().rss)
+    started = time.perf_counter()
+    model, tokenizer, metadata = load_student(checkpoint)
+    model.eval()
+    all_states: list[torch.Tensor] = []
+    all_targets: list[torch.Tensor] = []
+    all_masks: list[torch.Tensor] = []
+    offsets = [0]
+    rows = [row for row in _load_rows(dataset) if row["split"] == "train"]
+    raw_bytes = 0
+    visible_tokens = 0
+    prompt_routes: dict[str, int] = {}
+    for index, row in enumerate(rows):
+        prompt_ids = tokenizer.encode(row["prompt"] + "\n")
+        response_ids = tokenizer.encode(row["response"])[:max_response_tokens]
+        prompt_result = model(
+            torch.tensor([prompt_ids], dtype=torch.long),
+            prompt_lengths=torch.tensor([len(prompt_ids)]),
+        )
+        route = prompt_result["task_routes"]
+        ids = torch.tensor([prompt_ids + response_ids], dtype=torch.long)
+        result = model(ids, task_routes=route)
+        states = result["hidden"][0, :-1].half().cpu()
+        targets = ids[0, 1:].cpu()
+        mask = torch.zeros(len(targets), dtype=torch.bool)
+        mask[max(0, len(prompt_ids) - 1):] = True
+        all_states.append(states)
+        all_targets.append(targets)
+        all_masks.append(mask)
+        offsets.append(offsets[-1] + len(targets))
+        prompt_routes[str(int(route.item()))] = (
+            prompt_routes.get(str(int(route.item())), 0) + 1
+        )
+        raw_bytes += len((row["prompt"] + "\n" + row["response"]).encode("utf-8"))
+        visible_tokens += len(ids[0])
+        peak_rss = max(peak_rss, int(process.memory_info().rss))
+        if (index + 1) % 100 == 0:
+            print(
+                json.dumps(
+                    {
+                        "cached_rows": index + 1,
+                        "causal_units": offsets[-1],
+                        "wall_seconds": time.perf_counter() - started,
+                    }
+                ),
+                flush=True,
+            )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    save_file(
+        {
+            "semantic_states": torch.cat(all_states).contiguous(),
+            "target_ids": torch.cat(all_targets).contiguous(),
+            "response_mask": torch.cat(all_masks).contiguous(),
+            "row_offsets": torch.tensor(offsets, dtype=torch.int64),
+        },
+        str(output),
+    )
+    evidence = {
+        "format": "layercake-phase4-recurrent-semantic-cache/1",
+        "status": "COMPLETE",
+        "checkpoint_sha256_before": metadata["checkpoint"]["sha256"],
+        "checkpoint_sha256_after": sha256_file(checkpoint / "model.safetensors"),
+        "core_parameters_changed": 0,
+        "dataset_sha256": sha256_file(dataset),
+        "rows": len(rows),
+        "causal_units": offsets[-1],
+        "response_training_units": int(torch.cat(all_masks).sum()),
+        "state_width": 768,
+        "state_dtype": "torch.float16",
+        "raw_utf8_training_bytes_exposed": raw_bytes,
+        "model_visible_nonpadding_units": visible_tokens,
+        "prompt_routes": prompt_routes,
+        "cache_path": output.relative_to(ROOT).as_posix(),
+        "cache_sha256": sha256_file(output),
+        "cache_bytes": output.stat().st_size,
+        "cpu_wall_seconds": time.perf_counter() - started,
+        "peak_process_resident_memory_bytes": peak_rss,
+        "device": "cpu",
+    }
+    evidence["evidence_sha256"] = _canonical_sha(evidence)
+    output.with_suffix(".json").write_text(
+        json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return evidence
+
+
+def train_recurrent_cake(
+    checkpoint: Path,
+    cache: Path,
+    output: Path,
+    *,
+    seed: int,
+    hidden_width: int = 1024,
+    layers: int = 1,
+    max_residual: float = 6.0,
+    steps: int = 1600,
+    batch_size: int = 8,
+    learning_rate: float = 3.0e-4,
+) -> dict[str, Any]:
+    checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
+    cache = cache if cache.is_absolute() else ROOT / cache
+    output = output if output.is_absolute() else ROOT / output
+    if output.exists():
+        raise RuntimeError(f"cake checkpoint artifact is immutable: {output}")
+    torch.manual_seed(seed)
+    rng = random.Random(seed)
+    process = psutil.Process()
+    peak_rss = int(process.memory_info().rss)
+    started = time.perf_counter()
+    core, _, metadata = load_student(checkpoint)
+    embedding = core.output_weight.detach().float().cpu()
+    del core
+    cached = load_file(str(cache), device="cpu")
+    states = cached["semantic_states"]
+    targets = cached["target_ids"].long()
+    masks = cached["response_mask"].bool()
+    offsets = cached["row_offsets"].long().tolist()
+    cake = RecurrentHostResidualCake(
+        d_abi=768,
+        hidden_width=hidden_width,
+        layers=layers,
+        max_residual=max_residual,
+    )
+    cake.train()
+    optimizer = torch.optim.AdamW(
+        cake.parameters(), lr=learning_rate, weight_decay=0.01
+    )
+    curves: list[dict[str, Any]] = []
+    best_loss = float("inf")
+    best_state = None
+    row_count = len(offsets) - 1
+    for step in range(1, steps + 1):
+        selected = [rng.randrange(row_count) for _ in range(batch_size)]
+        lengths = [offsets[row + 1] - offsets[row] for row in selected]
+        length = max(lengths)
+        batch_states = torch.zeros(batch_size, length, 768)
+        batch_targets = torch.zeros(batch_size, length, dtype=torch.long)
+        batch_masks = torch.zeros(batch_size, length, dtype=torch.bool)
+        for batch_index, row in enumerate(selected):
+            start, stop = offsets[row], offsets[row + 1]
+            count = stop - start
+            batch_states[batch_index, :count] = states[start:stop].float()
+            batch_targets[batch_index, :count] = targets[start:stop]
+            batch_masks[batch_index, :count] = masks[start:stop]
+        optimizer.zero_grad(set_to_none=True)
+        adapted, _ = cake(batch_states)
+        selected_adapted = adapted[batch_masks]
+        selected_targets = batch_targets[batch_masks]
+        logits = F.linear(selected_adapted, embedding)
+        loss = F.cross_entropy(logits, selected_targets)
+        residual = selected_adapted - batch_states[batch_masks]
+        stability = residual.square().mean() / (
+            batch_states[batch_masks].square().mean().clamp_min(1e-6)
+        )
+        objective = loss + 0.002 * stability
+        objective.backward()
+        torch.nn.utils.clip_grad_norm_(cake.parameters(), 1.0)
+        optimizer.step()
+        loss_value = float(loss.detach())
+        if loss_value < best_loss:
+            best_loss = loss_value
+            best_state = {
+                name: value.detach().cpu().clone()
+                for name, value in cake.state_dict().items()
+            }
+        peak_rss = max(peak_rss, int(process.memory_info().rss))
+        if step == 1 or step % 100 == 0:
+            record = {
+                "step": step,
+                "full_vocabulary_cross_entropy": loss_value,
+                "stability_ratio": float(stability.detach()),
+                "alpha": float(cake.alpha.detach()),
+                "wall_seconds": time.perf_counter() - started,
+            }
+            curves.append(record)
+            print(json.dumps(record), flush=True)
+    assert best_state is not None
+    cake.load_state_dict(best_state)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    save_file(
+        {
+            name: value.detach().cpu().contiguous()
+            for name, value in cake.state_dict().items()
+        },
+        str(output),
+    )
+    wall = time.perf_counter() - started
+    trainable = cake.parameter_count()
+    evidence = {
+        "format": "layercake-phase4-recurrent-host-residual-training/1",
+        "status": "COMPLETE",
+        "seed": seed,
+        "device": "cpu",
+        "core_checkpoint_sha256_before": metadata["checkpoint"]["sha256"],
+        "core_checkpoint_sha256_after": sha256_file(
+            checkpoint / "model.safetensors"
+        ),
+        "core_parameters_changed": 0,
+        "cache_sha256": sha256_file(cache),
+        "cake_checkpoint": output.relative_to(ROOT).as_posix(),
+        "cake_checkpoint_sha256": sha256_file(output),
+        "architecture": {
+            "name": "recurrent_host_residual",
+            "d_abi": 768,
+            "hidden_width": hidden_width,
+            "layers": layers,
+            "max_residual": max_residual,
+        },
+        "optimizer_steps": steps,
+        "batch_size": batch_size,
+        "training_objective": "full_vocabulary_cross_entropy",
+        "trainable_parameters": trainable,
+        "active_parameter_seconds_to_quality": trainable * wall,
+        "end_to_end_cpu_wall_seconds": wall,
+        "peak_process_resident_memory_bytes": peak_rss,
+        "learning_curves": curves,
+        "best_cross_entropy": best_loss,
         "energy_to_quality": {
             "status": "UNAVAILABLE",
             "reason": "no calibrated package energy meter is exposed",
@@ -858,12 +1117,18 @@ def _domain_prefill(model, cake, input_ids: torch.Tensor) -> dict[str, Any]:
         ),
         use_cache=True,
     )
-    adapted = cake(result["hidden"][:, -1])
+    cake_state = None
+    if isinstance(cake, RecurrentHostResidualCake):
+        adapted_sequence, cake_state = cake(result["hidden"])
+        adapted = adapted_sequence[:, -1]
+    else:
+        adapted = cake(result["hidden"][:, -1])
     return {
         "past_key_values": result["past_key_values"],
         "task_routes": result["task_routes"],
         "next_logits": F.linear(adapted, model.output_weight),
         "generated_ids": input_ids[:, :0],
+        "cake_state": cake_state,
     }
 
 
@@ -875,7 +1140,14 @@ def _domain_decode(model, cake, state: dict[str, Any], token: torch.Tensor) -> N
         use_cache=True,
     )
     state["past_key_values"] = result["past_key_values"]
-    state["next_logits"] = F.linear(cake(result["hidden"][:, -1]), model.output_weight)
+    if isinstance(cake, RecurrentHostResidualCake):
+        adapted, cake_state = cake(
+            result["hidden"][:, -1], state["cake_state"]
+        )
+        state["cake_state"] = cake_state
+    else:
+        adapted = cake(result["hidden"][:, -1])
+    state["next_logits"] = F.linear(adapted, model.output_weight)
     state["generated_ids"] = torch.cat(
         (state["generated_ids"], token[:, None]), dim=1
     )
@@ -1098,8 +1370,20 @@ def evaluate_functional(
             else ROOT / cake_checkpoint
         )
         tensors = load_file(str(cake_checkpoint), device="cpu")
-        rank = int(tensors["down.weight"].shape[0])
-        cake = HostResidualCake(d_abi=768, rank=rank)
+        if "recurrent.weight_ih_l0" in tensors:
+            hidden_width = int(tensors["recurrent.weight_hh_l0"].shape[1])
+            layers = sum(
+                name.startswith("recurrent.weight_ih_l")
+                for name in tensors
+            )
+            cake = RecurrentHostResidualCake(
+                d_abi=768,
+                hidden_width=hidden_width,
+                layers=layers,
+            )
+        else:
+            rank = int(tensors["down.weight"].shape[0])
+            cake = HostResidualCake(d_abi=768, rank=rank)
         cake.load_state_dict(tensors, strict=True)
         cake.eval()
         cake_sha = sha256_file(cake_checkpoint)
@@ -1214,6 +1498,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     cache.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     cache.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
     cache.add_argument("--output", type=Path, required=True)
+    recurrent_cache = sub.add_parser("cache-recurrent")
+    recurrent_cache.add_argument(
+        "--checkpoint", type=Path, default=DEFAULT_CHECKPOINT
+    )
+    recurrent_cache.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
+    recurrent_cache.add_argument("--output", type=Path, required=True)
     train = sub.add_parser("train")
     train.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     train.add_argument("--cache", type=Path, required=True)
@@ -1224,6 +1514,19 @@ def main(argv: Sequence[str] | None = None) -> int:
     train.add_argument("--batch-size", type=int, default=512)
     train.add_argument("--negative-count", type=int, default=1536)
     train.add_argument("--learning-rate", type=float, default=8.0e-4)
+    recurrent = sub.add_parser("train-recurrent")
+    recurrent.add_argument(
+        "--checkpoint", type=Path, default=DEFAULT_CHECKPOINT
+    )
+    recurrent.add_argument("--cache", type=Path, required=True)
+    recurrent.add_argument("--output", type=Path, required=True)
+    recurrent.add_argument("--seed", type=int, required=True)
+    recurrent.add_argument("--hidden-width", type=int, default=1024)
+    recurrent.add_argument("--layers", type=int, default=1)
+    recurrent.add_argument("--max-residual", type=float, default=6.0)
+    recurrent.add_argument("--steps", type=int, default=1600)
+    recurrent.add_argument("--batch-size", type=int, default=8)
+    recurrent.add_argument("--learning-rate", type=float, default=3.0e-4)
     evaluate = sub.add_parser("evaluate")
     evaluate.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     evaluate.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
@@ -1240,6 +1543,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         result = cache_training_states(
             args.checkpoint, args.dataset, args.output
         )
+    elif args.command == "cache-recurrent":
+        result = cache_recurrent_training_states(
+            args.checkpoint, args.dataset, args.output
+        )
     elif args.command == "train":
         result = train_cake(
             args.checkpoint,
@@ -1250,6 +1557,19 @@ def main(argv: Sequence[str] | None = None) -> int:
             steps=args.steps,
             batch_size=args.batch_size,
             negative_count=args.negative_count,
+            learning_rate=args.learning_rate,
+        )
+    elif args.command == "train-recurrent":
+        result = train_recurrent_cake(
+            args.checkpoint,
+            args.cache,
+            args.output,
+            seed=args.seed,
+            hidden_width=args.hidden_width,
+            layers=args.layers,
+            max_residual=args.max_residual,
+            steps=args.steps,
+            batch_size=args.batch_size,
             learning_rate=args.learning_rate,
         )
     else:
