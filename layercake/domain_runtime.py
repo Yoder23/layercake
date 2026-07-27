@@ -147,6 +147,7 @@ class AttentiveHostResidualCake(nn.Module):
         copy_width: int = 0,
         copy_value_projection: bool = False,
         selective_copy: bool = False,
+        transition_copy: bool = False,
     ):
         super().__init__()
         if (
@@ -154,6 +155,8 @@ class AttentiveHostResidualCake(nn.Module):
             or hidden_width % heads
             or max_residual <= 0
             or (selective_copy and copy_width <= 0)
+            or (transition_copy and not selective_copy)
+            or (transition_copy and not copy_value_projection)
         ):
             raise ValueError("attentive host residual dimensions are invalid")
         self.d_abi = int(d_abi)
@@ -165,6 +168,7 @@ class AttentiveHostResidualCake(nn.Module):
         self.copy_width = int(copy_width)
         self.copy_value_projection = bool(copy_value_projection)
         self.selective_copy = bool(selective_copy)
+        self.transition_copy = bool(transition_copy)
         self.input_norm = nn.LayerNorm(d_abi)
         self.input = nn.Linear(d_abi, hidden_width, bias=False)
         self.blocks = nn.ModuleList(
@@ -180,8 +184,18 @@ class AttentiveHostResidualCake(nn.Module):
             self.copy_key = nn.Linear(d_abi, self.copy_width, bias=False)
             self.copy_alpha = nn.Parameter(torch.tensor(0.0))
             if self.copy_value_projection:
-                self.copy_value = nn.Linear(d_abi, d_abi, bias=False)
-                nn.init.eye_(self.copy_value.weight)
+                if self.transition_copy:
+                    self.copy_transition_value = nn.Linear(
+                        2 * d_abi, d_abi, bias=False
+                    )
+                    with torch.no_grad():
+                        self.copy_transition_value.weight.zero_()
+                        self.copy_transition_value.weight[
+                            :, d_abi:
+                        ].copy_(torch.eye(d_abi))
+                else:
+                    self.copy_value = nn.Linear(d_abi, d_abi, bias=False)
+                    nn.init.eye_(self.copy_value.weight)
             if self.selective_copy:
                 self.copy_gate = nn.Linear(d_abi, 1)
                 nn.init.zeros_(self.copy_gate.weight)
@@ -211,25 +225,45 @@ class AttentiveHostResidualCake(nn.Module):
         if self.copy_width <= 0:
             return None
         scores = self.copy_scores(abi_state)
+        probabilities = torch.softmax(scores, dim=-1)
+        if self.selective_copy:
+            selected = probabilities.argmax(dim=-1)
+            batch_indexes = torch.arange(
+                abi_state.shape[0], device=abi_state.device
+            )[:, None].expand_as(selected)
+            return self.project_copy_positions(
+                abi_state,
+                batch_indexes,
+                selected,
+            )
         values = (
             self.copy_value(abi_state)
             if self.copy_value_projection
             else abi_state
         )
-        probabilities = torch.softmax(scores, dim=-1)
-        if self.selective_copy:
-            hard = F.one_hot(
-                probabilities.argmax(dim=-1),
-                num_classes=probabilities.shape[-1],
-            ).to(probabilities.dtype)
-            weights = (
-                hard + probabilities - probabilities.detach()
-                if self.training
-                else hard
+        return torch.matmul(probabilities, values)
+
+    def project_copy_positions(
+        self,
+        abi_state: torch.Tensor,
+        batch_indexes: torch.Tensor,
+        positions: torch.Tensor,
+    ) -> torch.Tensor:
+        current = abi_state[batch_indexes, positions]
+        if self.transition_copy:
+            previous_positions = (positions - 1).clamp_min(0)
+            previous = abi_state[batch_indexes, previous_positions]
+            previous = torch.where(
+                (positions > 0)[..., None],
+                previous,
+                torch.zeros_like(previous),
             )
-        else:
-            weights = probabilities
-        return torch.matmul(weights, values)
+            return self.copy_transition_value(
+                torch.cat((previous, current), dim=-1)
+            )
+        if self.copy_value_projection:
+            return self.copy_value(current)
+        return current
 
     def copy_gate_logits(self, abi_state: torch.Tensor) -> torch.Tensor:
         if not self.selective_copy:
@@ -310,20 +344,24 @@ class AttentiveHostResidualCake(nn.Module):
                 self.copy_query(normalized_query),
                 self.copy_key(normalized_memory).transpose(1, 2),
             ) / (self.copy_width ** 0.5)
-            values = (
-                self.copy_value(raw_memory)
-                if self.copy_value_projection
-                else raw_memory
-            )
             probabilities = torch.softmax(scores, dim=-1)
             if self.selective_copy:
-                weights = F.one_hot(
-                    probabilities.argmax(dim=-1),
-                    num_classes=probabilities.shape[-1],
-                ).to(probabilities.dtype)
+                selected = probabilities.argmax(dim=-1)
+                batch_indexes = torch.arange(
+                    raw_memory.shape[0], device=raw_memory.device
+                )[:, None]
+                copy_context = self.project_copy_positions(
+                    raw_memory,
+                    batch_indexes,
+                    selected,
+                )
             else:
-                weights = probabilities
-            copy_context = torch.matmul(weights, values)
+                values = (
+                    self.copy_value(raw_memory)
+                    if self.copy_value_projection
+                    else raw_memory
+                )
+                copy_context = torch.matmul(probabilities, values)
             next_caches.append(raw_memory)
         adapted = self._adapt(
             abi_state[:, None], hidden, copy_context

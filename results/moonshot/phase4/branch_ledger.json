@@ -344,6 +344,49 @@
       "next_bounded_change": "Use one supervised per-unit copy gate, straight-through hard top-1 lexical routing, and prompt-wide post-token lexical conformance on the same data and capacity lineage. This adds only a 769-parameter gate and makes the active copy read physically sparse.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "attentive-selective-hard-copy-v4-seed9404",
+      "disposition": "REJECTED_AUTONOMOUS_SEMANTIC_COLLAPSE",
+      "architecture": {
+        "name": "attentive_host_residual",
+        "d_abi": 768,
+        "hidden_width": 384,
+        "layers": 1,
+        "heads": 6,
+        "copy_width": 64,
+        "copy_value_projection": true,
+        "selective_copy": true
+      },
+      "training": {
+        "seed": 9404,
+        "additional_optimizer_steps": 800,
+        "cpu_wall_seconds": 735.9508221999859,
+        "trainable_parameters": 3055491,
+        "checkpoint_sha256": "cc02ecf06abb5fc7e5047bc7e7a194972b9b29c43dc291b29149b9b650212557",
+        "best_selection_objective": 0.4157332479953766
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "name_agnostic_functional_successes_diagnostic_only": 23,
+        "parseable_first_functions": 35,
+        "functional_error_rate": 1.0,
+        "median_time_to_first_output_seconds": 0.02198630002385471,
+        "median_total_latency_seconds": 1.3016244500031462,
+        "evidence_sha256": "48b45755ef734a63c683f2b66d0d8b5cabd3edad16de6831f67346d61652cdf3"
+      },
+      "teacher_forced_copy_decomposition": {
+        "copyable_identifier_units": 504,
+        "identifier_pointer_top1_accuracy": 0.30158730158730157,
+        "identifier_true_source_value_top1_accuracy": 0.623015873015873,
+        "identifier_hard_attended_value_top1_accuracy": 0.2876984126984127,
+        "promotion_credit": 0
+      },
+      "measured_bottleneck": "Generic repeated-token pointer labels are ambiguous inside multi-token identifiers, and the gate activates for every repeated response token rather than only the requested function-name span. This perturbs code bodies: the preserved v3 semantic checkpoint scored 48/64 name-agnostic successes, while this continuation fell to 23/64.",
+      "next_bounded_change": "Return to the preserved 48/64 semantic checkpoint. Supervise only the exact monotonic function-identifier span and decode each selected source token from the consecutive pre/post-token ABI-state transition. Keep inference as one hard gathered state pair.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

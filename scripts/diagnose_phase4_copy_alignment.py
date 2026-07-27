@@ -56,8 +56,12 @@ def main() -> None:
             tensors["blocks.0.feedforward.0.weight"].shape[0] / hidden_width
         ),
         copy_width=int(tensors["copy_query.weight"].shape[0]),
-        copy_value_projection="copy_value.weight" in tensors,
+        copy_value_projection=(
+            "copy_value.weight" in tensors
+            or "copy_transition_value.weight" in tensors
+        ),
         selective_copy="copy_gate.weight" in tensors,
+        transition_copy="copy_transition_value.weight" in tensors,
     )
     cake.load_state_dict(tensors, strict=True)
     cake.eval()
@@ -105,22 +109,17 @@ def main() -> None:
             (predicted_positions == true_positions).sum()
         )
         batch_indexes, _ = torch.nonzero(copyable, as_tuple=True)
-        true_source_states = states[batch_indexes, true_positions]
-        true_values = (
-            cake.copy_value(true_source_states)
-            if cake.copy_value_projection
-            else true_source_states
+        true_values = cake.project_copy_positions(
+            states,
+            batch_indexes,
+            true_positions,
         )
         value_predictions = F.linear(true_values, embedding).argmax(dim=-1)
         expected = targets[copyable]
         row_value_correct = int((value_predictions == expected).sum())
 
-        all_values = (
-            cake.copy_value(states)
-            if cake.copy_value_projection
-            else states
-        )
-        attended = torch.matmul(torch.softmax(scores, dim=-1), all_values)
+        attended = cake._copy_context(states)
+        assert attended is not None
         attended_predictions = F.linear(
             attended[copyable], embedding
         ).argmax(dim=-1)
@@ -159,13 +158,10 @@ def main() -> None:
                 == identifier_true_positions
             ).sum()
         )
-        identifier_source_states = states[
-            0, identifier_true_positions
-        ]
-        identifier_values = (
-            cake.copy_value(identifier_source_states)
-            if cake.copy_value_projection
-            else identifier_source_states
+        identifier_values = cake.project_copy_positions(
+            states,
+            torch.zeros_like(identifier_true_positions),
+            identifier_true_positions,
         )
         identifier_expected = targets[0, identifier_positions]
         row_identifier_value = int(

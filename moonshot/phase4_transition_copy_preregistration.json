@@ -1,0 +1,50 @@
+{
+  "format": "layercake-phase4-transition-copy-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_CONTINUATION",
+  "parent": "moonshot/phase4_selective_hard_copy_preregistration.json",
+  "rejected_checkpoint_sha256": "cc02ecf06abb5fc7e5047bc7e7a194972b9b29c43dc291b29149b9b650212557",
+  "rejected_validation_evidence_sha256": "48b45755ef734a63c683f2b66d0d8b5cabd3edad16de6831f67346d61652cdf3",
+  "preserved_semantic_parent": {
+    "checkpoint": "artifacts/moonshot/phase4/candidates/python-attentive-v3-screen-seed9404.safetensors",
+    "checkpoint_sha256": "16f78653e269737f3fefc6952db71f94a01a9f2a5c8b0f5557272820c9e0615b",
+    "strict_validation_successes": 0,
+    "name_agnostic_validation_successes": 48,
+    "name_agnostic_validation_prompts": 64,
+    "promotion_credit": 0
+  },
+  "measured_failure": {
+    "selective_hard_name_agnostic_successes": 23,
+    "generic_identifier_pointer_top1_accuracy": 0.30158730158730157,
+    "true_source_value_top1_accuracy": 0.623015873015873,
+    "cause": "ambiguous repeated-token labels and a gate target broader than the exact identifier span perturbed previously correct semantic bodies"
+  },
+  "single_integrated_repair": {
+    "copy_label": "exact monotonic source and response function-identifier token spans",
+    "gate_positive_units": "only response function-identifier units",
+    "copy_value_input": "concatenated ABI state immediately before and immediately after the selected observed prompt token",
+    "copy_value_output": "one ABI-width vector scored by the unchanged frozen tied head",
+    "inference_routing": "hard top-1 prompt-state pair gather",
+    "transition_projection_shape": [768, 1536],
+    "new_copy_path_parameters": 1278722,
+    "private_token_ids_exposed_at_inference": false,
+    "core_or_head_parameters_changed": 0
+  },
+  "bounded_run": {
+    "training_parent": "preserved semantic parent, not the rejected selective-hard checkpoint",
+    "optimizer_steps": 1000,
+    "batch_size": 8,
+    "learning_rate": 0.0001,
+    "pointer_supervision_weight": 1.0,
+    "copy_gate_supervision_weight": 1.0,
+    "prompt_value_supervision_weight": 1.0,
+    "training_device": "cpu",
+    "dataset_sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa",
+    "new_cache_adds_labels_only": true
+  },
+  "stopping_rule": {
+    "strict_minimum_validation_success_rate": 0.8,
+    "test_split_access_allowed": false,
+    "other_seeds_authorized_only_after_pass": true,
+    "speed_memory_ttft_gates_unchanged": true
+  }
+}

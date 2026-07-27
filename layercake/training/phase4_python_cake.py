@@ -973,6 +973,13 @@ def _load_rows(dataset: Path) -> list[dict[str, Any]]:
     ]
 
 
+def _subsequence_start(values: list[int], pattern: list[int]) -> int | None:
+    for start in range(len(values) - len(pattern) + 1):
+        if values[start : start + len(pattern)] == pattern:
+            return start
+    return None
+
+
 @torch.inference_mode()
 def cache_training_states(
     checkpoint: Path,
@@ -1239,6 +1246,7 @@ def cache_recurrent_training_states(
     all_states: list[torch.Tensor] = []
     all_targets: list[torch.Tensor] = []
     all_masks: list[torch.Tensor] = []
+    all_lexical_copy_labels: list[torch.Tensor] = []
     offsets = [0]
     rows = [row for row in _load_rows(dataset) if row["split"] == "train"]
     raw_bytes = 0
@@ -1258,9 +1266,53 @@ def cache_recurrent_training_states(
         targets = ids[0, 1:].cpu()
         mask = torch.zeros(len(targets), dtype=torch.bool)
         mask[max(0, len(prompt_ids) - 1):] = True
+        lexical_copy_labels = torch.full(
+            (len(targets),), -100, dtype=torch.int64
+        )
+        identifier_pattern = tokenizer.encode(" " + row["function_name"])
+        prompt_identifier_start = _subsequence_start(
+            prompt_ids, identifier_pattern
+        )
+        response_identifier_start = _subsequence_start(
+            response_ids, identifier_pattern
+        )
+        if (
+            prompt_identifier_start is None
+            or response_identifier_start is None
+        ):
+            identifier_pattern = tokenizer.encode(row["function_name"])
+            prompt_identifier_start = _subsequence_start(
+                prompt_ids, identifier_pattern
+            )
+            response_identifier_start = _subsequence_start(
+                response_ids, identifier_pattern
+            )
+        if (
+            prompt_identifier_start is None
+            or response_identifier_start is None
+        ):
+            raise RuntimeError(
+                f"function identifier span not found for {row['id']}"
+            )
+        for identifier_offset in range(len(identifier_pattern)):
+            response_target_position = (
+                len(prompt_ids)
+                - 1
+                + response_identifier_start
+                + identifier_offset
+            )
+            source_state_position = (
+                prompt_identifier_start + identifier_offset
+            )
+            if response_target_position >= len(targets):
+                break
+            lexical_copy_labels[
+                response_target_position
+            ] = source_state_position
         all_states.append(states)
         all_targets.append(targets)
         all_masks.append(mask)
+        all_lexical_copy_labels.append(lexical_copy_labels)
         offsets.append(offsets[-1] + len(targets))
         prompt_routes[str(int(route.item()))] = (
             prompt_routes.get(str(int(route.item())), 0) + 1
@@ -1285,6 +1337,9 @@ def cache_recurrent_training_states(
             "semantic_states": torch.cat(all_states).contiguous(),
             "target_ids": torch.cat(all_targets).contiguous(),
             "response_mask": torch.cat(all_masks).contiguous(),
+            "lexical_copy_labels": torch.cat(
+                all_lexical_copy_labels
+            ).contiguous(),
             "row_offsets": torch.tensor(offsets, dtype=torch.int64),
         },
         str(output),
@@ -1299,6 +1354,9 @@ def cache_recurrent_training_states(
         "rows": len(rows),
         "causal_units": offsets[-1],
         "response_training_units": int(torch.cat(all_masks).sum()),
+        "lexical_copy_training_units": int(
+            (torch.cat(all_lexical_copy_labels) >= 0).sum()
+        ),
         "state_width": 768,
         "state_dtype": "torch.float16",
         "raw_utf8_training_bytes_exposed": raw_bytes,
@@ -1411,6 +1469,7 @@ def train_recurrent_cake(
     selective_copy: bool = False,
     copy_gate_supervision_weight: float = 0.0,
     prompt_value_supervision_weight: float = 0.0,
+    transition_copy: bool = False,
 ) -> dict[str, Any]:
     checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
     cache = cache if cache.is_absolute() else ROOT / cache
@@ -1429,6 +1488,11 @@ def train_recurrent_cake(
     states = cached["semantic_states"]
     targets = cached["target_ids"].long()
     masks = cached["response_mask"].bool()
+    lexical_copy_labels = (
+        cached["lexical_copy_labels"].long()
+        if "lexical_copy_labels" in cached
+        else None
+    )
     offsets = cached["row_offsets"].long().tolist()
     if architecture == "recurrent":
         cake = RecurrentHostResidualCake(
@@ -1448,6 +1512,7 @@ def train_recurrent_cake(
             copy_width=copy_width,
             copy_value_projection=copy_value_projection,
             selective_copy=selective_copy,
+            transition_copy=transition_copy,
         )
     else:
         raise ValueError(f"unknown semantic cake architecture: {architecture}")
@@ -1459,20 +1524,26 @@ def train_recurrent_cake(
             else ROOT / initial_checkpoint
         )
         initial_tensors = load_file(str(initial_checkpoint), device="cpu")
-        expected_missing = set()
-        if (
-            isinstance(cake, AttentiveHostResidualCake)
-            and cake.copy_value_projection
-            and "copy_value.weight" not in initial_tensors
-        ):
-            expected_missing.add("copy_value.weight")
-        if (
-            isinstance(cake, AttentiveHostResidualCake)
-            and cake.selective_copy
-            and "copy_gate.weight" not in initial_tensors
-        ):
-            expected_missing.update(
-                {"copy_gate.weight", "copy_gate.bias"}
+        target_keys = set(cake.state_dict())
+        source_keys = set(initial_tensors)
+        expected_missing = target_keys - source_keys
+        allowed_new_copy_tensors = {
+            "copy_alpha",
+            "copy_query.weight",
+            "copy_key.weight",
+            "copy_value.weight",
+            "copy_transition_value.weight",
+            "copy_gate.weight",
+            "copy_gate.bias",
+        }
+        if not expected_missing <= allowed_new_copy_tensors:
+            raise RuntimeError(
+                "initial checkpoint is missing non-copy-path tensors"
+            )
+        unexpected_source = source_keys - target_keys
+        if unexpected_source:
+            raise RuntimeError(
+                "initial checkpoint has incompatible source tensors"
             )
         incompatible = cake.load_state_dict(
             initial_tensors, strict=not expected_missing
@@ -1486,7 +1557,10 @@ def train_recurrent_cake(
                 raise RuntimeError(
                     "copy-path migration has unexpected source tensors"
                 )
-        if "copy_value.weight" in expected_missing:
+        if (
+            "copy_value.weight" in expected_missing
+            or "copy_transition_value.weight" in expected_missing
+        ):
             with torch.no_grad():
                 cake.copy_alpha.zero_()
         initial_sha = sha256_file(initial_checkpoint)
@@ -1507,6 +1581,9 @@ def train_recurrent_cake(
         batch_targets = torch.zeros(batch_size, length, dtype=torch.long)
         batch_masks = torch.zeros(batch_size, length, dtype=torch.bool)
         batch_valid = torch.zeros(batch_size, length, dtype=torch.bool)
+        batch_lexical_copy_labels = torch.full(
+            (batch_size, length), -100, dtype=torch.long
+        )
         for batch_index, row in enumerate(selected):
             start, stop = offsets[row], offsets[row + 1]
             count = stop - start
@@ -1514,6 +1591,10 @@ def train_recurrent_cake(
             batch_targets[batch_index, :count] = targets[start:stop]
             batch_masks[batch_index, :count] = masks[start:stop]
             batch_valid[batch_index, :count] = True
+            if lexical_copy_labels is not None:
+                batch_lexical_copy_labels[
+                    batch_index, :count
+                ] = lexical_copy_labels[start:stop]
         optimizer.zero_grad(set_to_none=True)
         adapted = (
             cake.training_forward(batch_states)
@@ -1558,10 +1639,14 @@ def train_recurrent_cake(
                 or prompt_value_supervision_weight > 0
             )
         ):
-            pointer_labels = _causal_copy_labels(
-                batch_targets,
-                batch_valid,
-                batch_masks,
+            pointer_labels = (
+                batch_lexical_copy_labels
+                if lexical_copy_labels is not None
+                else _causal_copy_labels(
+                    batch_targets,
+                    batch_valid,
+                    batch_masks,
+                )
             )
             pointer_valid = pointer_labels >= 0
             if pointer_valid.any():
@@ -1584,10 +1669,11 @@ def train_recurrent_cake(
                         pointer_valid, as_tuple=True
                     )
                     source_positions = pointer_labels[pointer_valid]
-                    source_states = batch_states[
-                        batch_indexes, source_positions
-                    ]
-                    projected_values = cake.copy_value(source_states)
+                    projected_values = cake.project_copy_positions(
+                        batch_states,
+                        batch_indexes,
+                        source_positions,
+                    )
                     copied_logits = F.linear(projected_values, embedding)
                     copy_value_loss = F.cross_entropy(
                         copied_logits,
@@ -1623,11 +1709,13 @@ def train_recurrent_cake(
                     batch_valid,
                     batch_masks,
                 )
-                prompt_source_states = batch_states[
-                    prompt_batch_indexes, prompt_source_positions
-                ]
                 prompt_value_logits = F.linear(
-                    cake.copy_value(prompt_source_states), embedding
+                    cake.project_copy_positions(
+                        batch_states,
+                        prompt_batch_indexes,
+                        prompt_source_positions,
+                    ),
+                    embedding,
                 )
                 prompt_value_loss = F.cross_entropy(
                     prompt_value_logits, prompt_value_targets
@@ -1739,6 +1827,7 @@ def train_recurrent_cake(
                 | {"copy_width": copy_width}
                 | {"copy_value_projection": copy_value_projection}
                 | {"selective_copy": selective_copy}
+                | {"transition_copy": transition_copy}
                 if isinstance(cake, AttentiveHostResidualCake)
                 else {}
             ),
@@ -2071,8 +2160,12 @@ def evaluate_functional(
                     if "copy_query.weight" in tensors
                     else 0
                 ),
-                copy_value_projection="copy_value.weight" in tensors,
+                copy_value_projection=(
+                    "copy_value.weight" in tensors
+                    or "copy_transition_value.weight" in tensors
+                ),
                 selective_copy="copy_gate.weight" in tensors,
+                transition_copy="copy_transition_value.weight" in tensors,
             )
         elif "recurrent.weight_ih_l0" in tensors:
             hidden_width = int(tensors["recurrent.weight_hh_l0"].shape[1])
@@ -2270,6 +2363,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--copy-value-projection", action="store_true"
     )
     attentive.add_argument("--selective-copy", action="store_true")
+    attentive.add_argument("--transition-copy", action="store_true")
     attentive.add_argument("--max-residual", type=float, default=6.0)
     attentive.add_argument("--steps", type=int, default=800)
     attentive.add_argument("--batch-size", type=int, default=8)
@@ -2378,6 +2472,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.prompt_value_supervision_weight
                 if args.command == "train-attentive"
                 else 0.0
+            ),
+            transition_copy=(
+                args.transition_copy
+                if args.command == "train-attentive"
+                else False
             ),
         )
     else:

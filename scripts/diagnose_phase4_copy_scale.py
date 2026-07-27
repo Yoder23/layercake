@@ -56,8 +56,12 @@ def main() -> None:
             / tensors["input.weight"].shape[0]
         ),
         copy_width=int(tensors["copy_query.weight"].shape[0]),
-        copy_value_projection="copy_value.weight" in tensors,
+        copy_value_projection=(
+            "copy_value.weight" in tensors
+            or "copy_transition_value.weight" in tensors
+        ),
         selective_copy="copy_gate.weight" in tensors,
+        transition_copy="copy_transition_value.weight" in tensors,
     )
     cake.load_state_dict(tensors, strict=True)
     cake.eval()

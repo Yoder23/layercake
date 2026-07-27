@@ -85,3 +85,26 @@ def test_selective_copy_starts_closed_and_uses_hard_value_read_in_eval():
             torch.equal(context[0, position], semantic[0, source])
             for source in range(position + 1)
         )
+
+
+def test_transition_copy_starts_as_current_state_projection():
+    cake = AttentiveHostResidualCake(
+        d_abi=8,
+        hidden_width=12,
+        layers=1,
+        heads=3,
+        expansion=2,
+        copy_width=4,
+        copy_value_projection=True,
+        selective_copy=True,
+        transition_copy=True,
+    ).eval()
+    semantic = torch.randn(1, 4, 8)
+    projected = cake.project_copy_positions(
+        semantic,
+        torch.tensor([0, 0]),
+        torch.tensor([1, 3]),
+    )
+    torch.testing.assert_close(
+        projected, semantic[0, torch.tensor([1, 3])]
+    )

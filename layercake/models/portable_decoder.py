@@ -94,6 +94,18 @@ def load_cake_module(package: CakePackage) -> nn.Module:
                 "copy_width",
                 "copy_value_projection",
                 "selective_copy",
+            }, {
+                "name",
+                "d_abi",
+                "hidden_width",
+                "layers",
+                "heads",
+                "expansion",
+                "max_residual",
+                "copy_width",
+                "copy_value_projection",
+                "selective_copy",
+                "transition_copy",
             })
             and architecture.get("name") == "attentive_host_residual"
         ):
@@ -110,6 +122,9 @@ def load_cake_module(package: CakePackage) -> nn.Module:
                 ),
                 selective_copy=bool(
                     architecture.get("selective_copy", False)
+                ),
+                transition_copy=bool(
+                    architecture.get("transition_copy", False)
                 ),
             )
         else:
