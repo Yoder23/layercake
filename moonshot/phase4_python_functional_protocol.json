@@ -1,0 +1,58 @@
+{
+  "format": "layercake-phase4-python-functional-protocol/1",
+  "status": "PREREGISTERED_BEFORE_TRAINING",
+  "parent_phase2_tag": "layercake-moonshot-phase2-r3",
+  "phase3_tag": "layercake-moonshot-phase3",
+  "core_checkpoint": "artifacts/moonshot/phase2_shallow_sparse_pretrained/student2400-seed-9824",
+  "core_checkpoint_sha256": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+  "canonical_semantic_abi": "moonshot/phase2_canonical_semantic_abi_r3.json",
+  "canonical_semantic_abi_sha256": "d024de52144a2d797d0501acb7deb55575ffca7e33f72900beff599cf0a97761",
+  "dataset": "data/moonshot/phase4/python_functional_v1.jsonl",
+  "dataset_sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+  "splits": {
+    "train": 960,
+    "validation": 64,
+    "test": 128
+  },
+  "screening_policy": {
+    "validation_only_until_candidate_locked": true,
+    "test_access_before_candidate_lock_allowed": false,
+    "autonomous_generation_required": true,
+    "every_task_must_pass_all_unit_tests": true,
+    "syntax_only_is_diagnostic": true,
+    "teacher_forced_accuracy_is_diagnostic": true,
+    "functional_error_reduction_over_core_min": 5.0
+  },
+  "bounded_first_branch": {
+    "architecture": {
+      "name": "host_residual",
+      "d_abi": 768,
+      "rank": 768
+    },
+    "training_device": "cpu",
+    "optimizer_steps_per_seed": 2400,
+    "training_seeds": [
+      9404,
+      9405,
+      9406
+    ],
+    "negative_vocabulary_samples_per_step": 1536,
+    "major_scale_expansion_before_validation_pass_allowed": false
+  },
+  "promotion_requirements": {
+    "phase4_contract": "moonshot/phase4_cpu_cake_training_lock.json",
+    "phase4_contract_sha256": "3264af09fa0552407b0f7ec25e3267a0e1b94bcd49a84ca93675d5935346a9cc",
+    "identical_package_on_three_receiver_hosts": true,
+    "receiver_training_or_calibration": 0,
+    "fused_native_runtime_required": true,
+    "phase2_speed_memory_and_ttft_sentinels_required": true,
+    "core_and_abi_hashes_must_remain_identical": true
+  },
+  "anti_gaming": {
+    "test_prompt_training_allowed": false,
+    "stored_answer_or_template_runtime_allowed": false,
+    "external_execution_or_retrieval_path_allowed": false,
+    "different_model_for_quality_and_speed_allowed": false,
+    "failed_families_seeds_or_hosts_may_be_omitted": false
+  }
+}

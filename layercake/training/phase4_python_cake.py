@@ -1,0 +1,1269 @@
+"""Phase 4 frozen-core training and functional evaluation for a Python cake.
+
+This module deliberately keeps the Phase 2 model immutable.  It trains only a
+``HostResidualCake`` over the canonical 768-wide semantic state and evaluates
+autonomous code with held-out prompts and executable unit tests.  Syntax,
+perplexity, and teacher-forced token accuracy are diagnostics, never functional
+successes.
+"""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import builtins
+from dataclasses import dataclass
+import hashlib
+import json
+import math
+from pathlib import Path
+import random
+import statistics
+import time
+from typing import Any, Callable, Sequence
+
+import psutil
+import torch
+import torch.nn.functional as F
+from safetensors.torch import load_file, save_file
+
+from layercake.models.routed_cakes import HostResidualCake
+from layercake.training.data import sha256_file
+from layercake.training.phase2_shallow_sparse import load_student
+
+
+ROOT = Path(__file__).resolve().parents[2]
+ABI_PATH = ROOT / "moonshot" / "phase2_canonical_semantic_abi_r3.json"
+DEFAULT_CHECKPOINT = (
+    ROOT
+    / "artifacts"
+    / "moonshot"
+    / "phase2_shallow_sparse_pretrained"
+    / "student2400-seed-9824"
+)
+DEFAULT_DATASET = (
+    ROOT / "data" / "moonshot" / "phase4" / "python_functional_v1.jsonl"
+)
+
+
+def _canonical_sha(value: Any) -> str:
+    raw = json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _jsonable(value: Any) -> Any:
+    if isinstance(value, tuple):
+        return [_jsonable(item) for item in value]
+    if isinstance(value, list):
+        return [_jsonable(item) for item in value]
+    if isinstance(value, dict):
+        return {str(key): _jsonable(item) for key, item in value.items()}
+    return value
+
+
+@dataclass(frozen=True)
+class Family:
+    family_id: str
+    parameters: tuple[str, ...]
+    descriptions: tuple[str, ...]
+    body: tuple[str, ...]
+    cases: Callable[[random.Random], list[list[Any]]]
+    oracle: Callable[..., Any]
+
+
+def _families() -> tuple[Family, ...]:
+    pair = lambda rng: [
+        [rng.randint(-50, 50), rng.randint(-50, 50)] for _ in range(4)
+    ]
+    numbers = lambda rng: [
+        [[rng.randint(-20, 20) for _ in range(size)]]
+        for size in (0, 1, 5, 9)
+    ]
+    words = ("Layer Cake", "  quiet bridge  ", "Red BLUE red", "a  b   c")
+    return (
+        Family(
+            "add",
+            ("a", "b"),
+            ("returns the sum of the two values", "adds both numbers"),
+            ("return a + b",),
+            pair,
+            lambda a, b: a + b,
+        ),
+        Family(
+            "subtract",
+            ("a", "b"),
+            ("subtracts the second value from the first", "returns a minus b"),
+            ("return a - b",),
+            pair,
+            lambda a, b: a - b,
+        ),
+        Family(
+            "multiply",
+            ("a", "b"),
+            ("returns the product of the two values", "multiplies both numbers"),
+            ("return a * b",),
+            pair,
+            lambda a, b: a * b,
+        ),
+        Family(
+            "absolute_difference",
+            ("a", "b"),
+            ("returns the absolute difference between two numbers",),
+            ("return abs(a - b)",),
+            pair,
+            lambda a, b: abs(a - b),
+        ),
+        Family(
+            "clamp",
+            ("value", "low", "high"),
+            ("clamps value to the inclusive low and high bounds",),
+            ("return max(low, min(value, high))",),
+            lambda rng: [[-4, 0, 10], [4, 0, 10], [14, 0, 10], [3, 3, 3]],
+            lambda value, low, high: max(low, min(value, high)),
+        ),
+        Family(
+            "is_even",
+            ("number",),
+            ("returns True exactly when number is even",),
+            ("return number % 2 == 0",),
+            lambda rng: [[value] for value in (-11, 0, 8, 17)],
+            lambda number: number % 2 == 0,
+        ),
+        Family(
+            "palindrome",
+            ("text",),
+            ("ignores letter case and returns whether text is a palindrome",),
+            (
+                "normalized = text.lower()",
+                "return normalized == normalized[::-1]",
+            ),
+            lambda rng: [[value] for value in ("Level", "Python", "", "Rotor")],
+            lambda text: text.lower() == text.lower()[::-1],
+        ),
+        Family(
+            "reverse_text",
+            ("text",),
+            ("returns the characters of text in reverse order",),
+            ("return text[::-1]",),
+            lambda rng: [[value] for value in ("cake", "", "abc def", "x")],
+            lambda text: text[::-1],
+        ),
+        Family(
+            "count_vowels",
+            ("text",),
+            ("counts vowels in text without regard to case",),
+            ("return sum(1 for char in text.lower() if char in \"aeiou\")",),
+            lambda rng: [[value] for value in ("LayerCake", "", "rhythm", "AEIOU")],
+            lambda text: sum(1 for char in text.lower() if char in "aeiou"),
+        ),
+        Family(
+            "factorial",
+            ("number",),
+            ("returns the factorial of a nonnegative integer",),
+            (
+                "result = 1",
+                "for value in range(2, number + 1):",
+                "    result *= value",
+                "return result",
+            ),
+            lambda rng: [[value] for value in (0, 1, 5, 7)],
+            math.factorial,
+        ),
+        Family(
+            "fibonacci",
+            ("count",),
+            ("returns a list containing the first count Fibonacci numbers",),
+            (
+                "values = []",
+                "a, b = 0, 1",
+                "for _ in range(count):",
+                "    values.append(a)",
+                "    a, b = b, a + b",
+                "return values",
+            ),
+            lambda rng: [[value] for value in (0, 1, 5, 8)],
+            lambda count: (
+                lambda values: values
+            )(_fibonacci(count)),
+        ),
+        Family(
+            "is_prime",
+            ("number",),
+            ("returns whether number is prime",),
+            (
+                "if number < 2:",
+                "    return False",
+                "for divisor in range(2, int(number ** 0.5) + 1):",
+                "    if number % divisor == 0:",
+                "        return False",
+                "return True",
+            ),
+            lambda rng: [[value] for value in (1, 2, 17, 21)],
+            _is_prime,
+        ),
+        Family(
+            "deduplicate",
+            ("values",),
+            ("removes duplicate values while preserving first-seen order",),
+            (
+                "result = []",
+                "for value in values:",
+                "    if value not in result:",
+                "        result.append(value)",
+                "return result",
+            ),
+            lambda rng: [
+                [[1, 2, 1, 3, 2]],
+                [[]],
+                [["a", "a", "b"]],
+                [[4, 4, 4]],
+            ],
+            lambda values: list(dict.fromkeys(values)),
+        ),
+        Family(
+            "running_totals",
+            ("values",),
+            ("returns the running totals of a numeric list",),
+            (
+                "result = []",
+                "total = 0",
+                "for value in values:",
+                "    total += value",
+                "    result.append(total)",
+                "return result",
+            ),
+            numbers,
+            lambda values: _running_totals(values),
+        ),
+        Family(
+            "flatten_once",
+            ("groups",),
+            ("flattens one level of nested lists",),
+            (
+                "result = []",
+                "for group in groups:",
+                "    result.extend(group)",
+                "return result",
+            ),
+            lambda rng: [
+                [[[1, 2], [3], []]],
+                [[["a"], ["b", "c"]]],
+                [[]],
+                [[[0], [1, 2, 3]]],
+            ],
+            lambda groups: [item for group in groups for item in group],
+        ),
+        Family(
+            "maximum",
+            ("values",),
+            ("returns the largest item in a nonempty list",),
+            ("return max(values)",),
+            lambda rng: [[[1]], [[-2, -9, -1]], [[3, 7, 2]], [[0, 0]]],
+            max,
+        ),
+        Family(
+            "minimum",
+            ("values",),
+            ("returns the smallest item in a nonempty list",),
+            ("return min(values)",),
+            lambda rng: [[[1]], [[-2, -9, -1]], [[3, 7, 2]], [[0, 0]]],
+            min,
+        ),
+        Family(
+            "average",
+            ("values",),
+            ("returns the arithmetic mean of a nonempty numeric list",),
+            ("return sum(values) / len(values)",),
+            lambda rng: [[[2]], [[1, 2, 3]], [[-2, 2]], [[1.5, 2.5]]],
+            lambda values: sum(values) / len(values),
+        ),
+        Family(
+            "word_count",
+            ("text",),
+            ("counts whitespace-separated words in text",),
+            ("return len(text.split())",),
+            lambda rng: [[value] for value in words],
+            lambda text: len(text.split()),
+        ),
+        Family(
+            "slugify",
+            ("text",),
+            ("strips text, lowercases it, and replaces spaces with hyphens",),
+            ("return \"-\".join(text.strip().lower().split())",),
+            lambda rng: [[value] for value in words],
+            lambda text: "-".join(text.strip().lower().split()),
+        ),
+        Family(
+            "merge_mappings",
+            ("left", "right"),
+            ("returns a new dictionary where right-hand values override left",),
+            ("return {**left, **right}",),
+            lambda rng: [
+                [{}, {}],
+                [{"a": 1}, {"b": 2}],
+                [{"a": 1}, {"a": 2}],
+                [{"x": 0, "y": 1}, {"y": 4}],
+            ],
+            lambda left, right: {**left, **right},
+        ),
+        Family(
+            "invert_mapping",
+            ("mapping",),
+            ("swaps the keys and values of a dictionary",),
+            ("return {value: key for key, value in mapping.items()}",),
+            lambda rng: [
+                [{}],
+                [{"a": 1}],
+                [{"a": 1, "b": 2}],
+                [{"x": "red", "y": "blue"}],
+            ],
+            lambda mapping: {value: key for key, value in mapping.items()},
+        ),
+        Family(
+            "character_frequencies",
+            ("text",),
+            ("returns a dictionary counting every character in text",),
+            (
+                "counts = {}",
+                "for char in text:",
+                "    counts[char] = counts.get(char, 0) + 1",
+                "return counts",
+            ),
+            lambda rng: [[value] for value in ("", "aba", "cake", "a a")],
+            lambda text: _frequencies(text),
+        ),
+        Family(
+            "safe_divide",
+            ("numerator", "denominator"),
+            ("returns None for a zero denominator and the quotient otherwise",),
+            (
+                "if denominator == 0:",
+                "    return None",
+                "return numerator / denominator",
+            ),
+            lambda rng: [[4, 2], [1, 0], [-9, 3], [0, 5]],
+            lambda numerator, denominator: (
+                None if denominator == 0 else numerator / denominator
+            ),
+        ),
+        Family(
+            "chunks",
+            ("values", "size"),
+            ("splits values into consecutive lists of at most size items",),
+            (
+                "return [values[index:index + size] for index in range(0, len(values), size)]",
+            ),
+            lambda rng: [
+                [[1, 2, 3, 4, 5], 2],
+                [[], 3],
+                [[1, 2], 5],
+                [["a", "b", "c"], 1],
+            ],
+            lambda values, size: [
+                values[index:index + size]
+                for index in range(0, len(values), size)
+            ],
+        ),
+        Family(
+            "rotate_left",
+            ("values", "places"),
+            ("rotates a nonempty list left by places positions",),
+            (
+                "offset = places % len(values)",
+                "return values[offset:] + values[:offset]",
+            ),
+            lambda rng: [
+                [[1, 2, 3], 1],
+                [[1, 2, 3], 4],
+                [["a"], 9],
+                [[0, 1, 2, 3], 2],
+            ],
+            lambda values, places: (
+                values[places % len(values):] + values[:places % len(values)]
+            ),
+        ),
+        Family(
+            "find_index",
+            ("values", "target"),
+            ("returns the first index of target or minus one when absent",),
+            (
+                "for index, value in enumerate(values):",
+                "    if value == target:",
+                "        return index",
+                "return -1",
+            ),
+            lambda rng: [
+                [[1, 2, 3], 2],
+                [[1, 2, 1], 1],
+                [[], 4],
+                [["a", "b"], "x"],
+            ],
+            lambda values, target: (
+                values.index(target) if target in values else -1
+            ),
+        ),
+        Family(
+            "all_positive",
+            ("values",),
+            ("returns whether every numeric value is strictly positive",),
+            ("return all(value > 0 for value in values)",),
+            lambda rng: [[[1, 2]], [[1, 0]], [[-1, 2]], [[]]],
+            lambda values: all(value > 0 for value in values),
+        ),
+        Family(
+            "balanced_parentheses",
+            ("text",),
+            ("returns whether parentheses in text are balanced",),
+            (
+                "depth = 0",
+                "for char in text:",
+                "    if char == \"(\":",
+                "        depth += 1",
+                "    elif char == \")\":",
+                "        depth -= 1",
+                "        if depth < 0:",
+                "            return False",
+                "return depth == 0",
+            ),
+            lambda rng: [[value] for value in ("()", "(())", "(()", ")(")],
+            _balanced_parentheses,
+        ),
+        Family(
+            "title_words",
+            ("text",),
+            ("returns text converted to title case",),
+            ("return text.title()",),
+            lambda rng: [[value] for value in words],
+            lambda text: text.title(),
+        ),
+        Family(
+            "remove_none",
+            ("values",),
+            ("returns a list with every None item removed",),
+            ("return [value for value in values if value is not None]",),
+            lambda rng: [
+                [[1, None, 2]],
+                [[None]],
+                [[]],
+                [["a", None, "b"]],
+            ],
+            lambda values: [value for value in values if value is not None],
+        ),
+        Family(
+            "sort_values",
+            ("values",),
+            ("returns the values in ascending order without changing the input",),
+            ("return sorted(values)",),
+            numbers,
+            sorted,
+        ),
+    )
+
+
+def _fibonacci(count: int) -> list[int]:
+    values: list[int] = []
+    a, b = 0, 1
+    for _ in range(count):
+        values.append(a)
+        a, b = b, a + b
+    return values
+
+
+def _is_prime(number: int) -> bool:
+    if number < 2:
+        return False
+    for divisor in range(2, int(number ** 0.5) + 1):
+        if number % divisor == 0:
+            return False
+    return True
+
+
+def _running_totals(values: list[float]) -> list[float]:
+    result = []
+    total = 0
+    for value in values:
+        total += value
+        result.append(total)
+    return result
+
+
+def _frequencies(text: str) -> dict[str, int]:
+    result: dict[str, int] = {}
+    for char in text:
+        result[char] = result.get(char, 0) + 1
+    return result
+
+
+def _balanced_parentheses(text: str) -> bool:
+    depth = 0
+    for char in text:
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth < 0:
+                return False
+    return depth == 0
+
+
+def _render_response(name: str, family: Family) -> str:
+    lines = [f"def {name}({', '.join(family.parameters)}):"]
+    lines.extend(f"    {line}" if line else "" for line in family.body)
+    return "\n".join(lines) + "\n"
+
+
+def generate_dataset(output: Path, *, seed: int = 9404) -> dict[str, Any]:
+    """Create disjoint train/validation/test prompts before model training."""
+
+    output = output if output.is_absolute() else ROOT / output
+    if output.exists():
+        raise RuntimeError(f"dataset artifact is immutable: {output}")
+    rng = random.Random(seed)
+    rows: list[dict[str, Any]] = []
+    for family in _families():
+        for index in range(30):
+            name = f"{family.family_id}_train_{index:02d}"
+            description = family.descriptions[index % len(family.descriptions)]
+            prompt = (
+                f"Write only valid Python code. Define {name}"
+                f"({', '.join(family.parameters)}) that {description}."
+            )
+            rows.append(
+                {
+                    "id": f"train-{family.family_id}-{index:02d}",
+                    "split": "train",
+                    "family": family.family_id,
+                    "prompt": prompt,
+                    "response": _render_response(name, family),
+                    "function_name": name,
+                    "tests": [],
+                }
+            )
+        for split, count, start in (("validation", 2, 30), ("test", 4, 32)):
+            for offset in range(count):
+                index = start + offset
+                name = f"{family.family_id}_{split}_{offset:02d}"
+                description = family.descriptions[
+                    (index + 1) % len(family.descriptions)
+                ]
+                prompt = (
+                    f"Return code only. Create a Python function named {name}"
+                    f" with parameters {', '.join(family.parameters)}. It {description}."
+                )
+                cases = []
+                for arguments in family.cases(rng):
+                    cases.append(
+                        {
+                            "args": _jsonable(arguments),
+                            "expected": _jsonable(family.oracle(*arguments)),
+                        }
+                    )
+                rows.append(
+                    {
+                        "id": f"{split}-{family.family_id}-{offset:02d}",
+                        "split": split,
+                        "family": family.family_id,
+                        "prompt": prompt,
+                        "response": _render_response(name, family),
+                        "function_name": name,
+                        "tests": cases,
+                    }
+                )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    raw = "".join(
+        json.dumps(row, sort_keys=True, ensure_ascii=False) + "\n"
+        for row in rows
+    )
+    output.write_text(raw, encoding="utf-8")
+    counts = {
+        split: sum(row["split"] == split for row in rows)
+        for split in ("train", "validation", "test")
+    }
+    manifest = {
+        "format": "layercake-phase4-python-functional-dataset/1",
+        "status": "PREREGISTERED",
+        "seed": seed,
+        "dataset": (
+            output.relative_to(ROOT).as_posix()
+            if output.is_relative_to(ROOT)
+            else str(output)
+        ),
+        "dataset_sha256": sha256_file(output),
+        "counts": counts,
+        "families": len(_families()),
+        "test_definition": (
+            "autonomous generated function passes every held-out unit test"
+        ),
+        "syntax_only_counts_as_success": False,
+        "teacher_forced_metrics_count_as_success": False,
+        "training_test_prompt_overlap": 0,
+    }
+    manifest["manifest_sha256"] = _canonical_sha(manifest)
+    manifest_path = output.with_name("manifest.json")
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return manifest
+
+
+def _load_rows(dataset: Path) -> list[dict[str, Any]]:
+    dataset = dataset if dataset.is_absolute() else ROOT / dataset
+    return [
+        json.loads(line)
+        for line in dataset.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
+@torch.inference_mode()
+def cache_training_states(
+    checkpoint: Path,
+    dataset: Path,
+    output: Path,
+    *,
+    max_response_tokens: int = 160,
+) -> dict[str, Any]:
+    """Cache only frozen-core semantic states used to fit the external cake."""
+
+    checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
+    dataset = dataset if dataset.is_absolute() else ROOT / dataset
+    output = output if output.is_absolute() else ROOT / output
+    if output.exists():
+        raise RuntimeError(f"state cache artifact is immutable: {output}")
+    process = psutil.Process()
+    peak_rss = int(process.memory_info().rss)
+    started = time.perf_counter()
+    model, tokenizer, metadata = load_student(checkpoint)
+    model.eval()
+    states: list[torch.Tensor] = []
+    targets: list[torch.Tensor] = []
+    prompt_routes: dict[str, int] = {}
+    rows = [row for row in _load_rows(dataset) if row["split"] == "train"]
+    raw_bytes = 0
+    visible_tokens = 0
+    for index, row in enumerate(rows):
+        prompt_ids = tokenizer.encode(row["prompt"] + "\n")
+        response_ids = tokenizer.encode(row["response"])[:max_response_tokens]
+        prompt_tensor = torch.tensor([prompt_ids], dtype=torch.long)
+        prompt_result = model(
+            prompt_tensor,
+            prompt_lengths=torch.tensor([len(prompt_ids)]),
+            use_cache=False,
+        )
+        route = prompt_result["task_routes"]
+        sequence = prompt_ids + response_ids
+        ids = torch.tensor([sequence], dtype=torch.long)
+        result = model(ids, task_routes=route)
+        # Hidden at position t predicts target token t+1.  Only response tokens
+        # contribute; the core and its output embedding remain frozen.
+        start = len(prompt_ids) - 1
+        stop = len(sequence) - 1
+        states.append(result["hidden"][0, start:stop].half().cpu())
+        targets.append(ids[0, start + 1:stop + 1].cpu())
+        prompt_routes[str(int(route.item()))] = (
+            prompt_routes.get(str(int(route.item())), 0) + 1
+        )
+        raw_bytes += len((row["prompt"] + "\n" + row["response"]).encode("utf-8"))
+        visible_tokens += len(sequence)
+        peak_rss = max(peak_rss, int(process.memory_info().rss))
+        if (index + 1) % 100 == 0:
+            print(
+                json.dumps(
+                    {
+                        "cached_rows": index + 1,
+                        "semantic_training_units": sum(
+                            item.shape[0] for item in states
+                        ),
+                        "wall_seconds": time.perf_counter() - started,
+                    }
+                ),
+                flush=True,
+            )
+    state_tensor = torch.cat(states)
+    target_tensor = torch.cat(targets)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    save_file(
+        {
+            "semantic_states": state_tensor.contiguous(),
+            "target_ids": target_tensor.contiguous(),
+        },
+        str(output),
+    )
+    evidence = {
+        "format": "layercake-phase4-frozen-semantic-cache/1",
+        "status": "COMPLETE",
+        "checkpoint_sha256_before": metadata["checkpoint"]["sha256"],
+        "checkpoint_sha256_after": sha256_file(checkpoint / "model.safetensors"),
+        "core_parameters_changed": 0,
+        "dataset_sha256": sha256_file(dataset),
+        "rows": len(rows),
+        "semantic_training_units": int(state_tensor.shape[0]),
+        "state_width": int(state_tensor.shape[1]),
+        "state_dtype": str(state_tensor.dtype),
+        "raw_utf8_training_bytes_exposed": raw_bytes,
+        "model_visible_nonpadding_units": visible_tokens,
+        "prompt_routes": prompt_routes,
+        "cache_path": output.relative_to(ROOT).as_posix(),
+        "cache_sha256": sha256_file(output),
+        "cache_bytes": output.stat().st_size,
+        "cpu_wall_seconds": time.perf_counter() - started,
+        "peak_process_resident_memory_bytes": peak_rss,
+        "device": "cpu",
+    }
+    evidence["evidence_sha256"] = _canonical_sha(evidence)
+    evidence_path = output.with_suffix(".json")
+    evidence_path.write_text(
+        json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return evidence
+
+
+def train_cake(
+    checkpoint: Path,
+    cache: Path,
+    output: Path,
+    *,
+    seed: int,
+    rank: int = 768,
+    steps: int = 2400,
+    batch_size: int = 512,
+    negative_count: int = 1536,
+    learning_rate: float = 8.0e-4,
+) -> dict[str, Any]:
+    """Fit only the portable residual with sampled frozen-vocabulary contrast."""
+
+    checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
+    cache = cache if cache.is_absolute() else ROOT / cache
+    output = output if output.is_absolute() else ROOT / output
+    if output.exists():
+        raise RuntimeError(f"cake checkpoint artifact is immutable: {output}")
+    torch.manual_seed(seed)
+    rng = torch.Generator(device="cpu").manual_seed(seed)
+    process = psutil.Process()
+    peak_rss = int(process.memory_info().rss)
+    started = time.perf_counter()
+    core, _, metadata = load_student(checkpoint)
+    embedding = core.output_weight.detach().float().cpu()
+    del core
+    cached = load_file(str(cache), device="cpu")
+    states = cached["semantic_states"]
+    targets = cached["target_ids"].long()
+    cake = HostResidualCake(d_abi=states.shape[1], rank=rank)
+    cake.train()
+    optimizer = torch.optim.AdamW(
+        cake.parameters(), lr=learning_rate, weight_decay=0.01
+    )
+    curves: list[dict[str, Any]] = []
+    best_loss = float("inf")
+    best_state: dict[str, torch.Tensor] | None = None
+    for step in range(1, steps + 1):
+        indexes = torch.randint(
+            len(states), (batch_size,), generator=rng
+        )
+        hidden = states.index_select(0, indexes).float()
+        target = targets.index_select(0, indexes)
+        random_ids = torch.randint(
+            embedding.shape[0], (negative_count,), generator=rng
+        )
+        candidate_ids = torch.unique(torch.cat((target, random_ids)))
+        candidate_embedding = embedding.index_select(0, candidate_ids)
+        target_positions = torch.searchsorted(candidate_ids, target)
+        optimizer.zero_grad(set_to_none=True)
+        adapted = cake(hidden)
+        logits = F.linear(adapted, candidate_embedding)
+        loss = F.cross_entropy(logits, target_positions)
+        # Keep the residual bounded relative to its host state so portability
+        # cannot be obtained by erasing the English representation.
+        residual = adapted - hidden
+        stability = residual.square().mean() / hidden.square().mean().clamp_min(1e-6)
+        objective = loss + 0.01 * stability
+        objective.backward()
+        torch.nn.utils.clip_grad_norm_(cake.parameters(), 1.0)
+        optimizer.step()
+        loss_value = float(loss.detach())
+        if loss_value < best_loss:
+            best_loss = loss_value
+            best_state = {
+                name: value.detach().cpu().clone()
+                for name, value in cake.state_dict().items()
+            }
+        peak_rss = max(peak_rss, int(process.memory_info().rss))
+        if step == 1 or step % 100 == 0:
+            record = {
+                "step": step,
+                "sampled_cross_entropy": loss_value,
+                "stability_ratio": float(stability.detach()),
+                "alpha": float(cake.alpha.detach()),
+                "wall_seconds": time.perf_counter() - started,
+            }
+            curves.append(record)
+            print(json.dumps(record), flush=True)
+    assert best_state is not None
+    cake.load_state_dict(best_state)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    save_file(
+        {
+            name: value.detach().cpu().contiguous()
+            for name, value in cake.state_dict().items()
+        },
+        str(output),
+    )
+    wall = time.perf_counter() - started
+    trainable = sum(parameter.numel() for parameter in cake.parameters())
+    evidence = {
+        "format": "layercake-phase4-python-host-residual-training/1",
+        "status": "COMPLETE",
+        "seed": seed,
+        "device": "cpu",
+        "core_checkpoint_sha256_before": metadata["checkpoint"]["sha256"],
+        "core_checkpoint_sha256_after": sha256_file(
+            checkpoint / "model.safetensors"
+        ),
+        "core_parameters_changed": 0,
+        "cache_sha256": sha256_file(cache),
+        "cake_checkpoint": output.relative_to(ROOT).as_posix(),
+        "cake_checkpoint_sha256": sha256_file(output),
+        "architecture": {"name": "host_residual", "d_abi": 768, "rank": rank},
+        "optimizer_steps": steps,
+        "batch_size": batch_size,
+        "negative_vocabulary_samples_per_step": negative_count,
+        "trainable_parameters": trainable,
+        "active_parameter_seconds_to_quality": trainable * wall,
+        "end_to_end_cpu_wall_seconds": wall,
+        "peak_process_resident_memory_bytes": peak_rss,
+        "learning_curves": curves,
+        "best_sampled_cross_entropy": best_loss,
+        "energy_to_quality": {
+            "status": "UNAVAILABLE",
+            "reason": "no calibrated package energy meter is exposed",
+        },
+    }
+    evidence["evidence_sha256"] = _canonical_sha(evidence)
+    output.with_suffix(".json").write_text(
+        json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return evidence
+
+
+def _domain_prefill(model, cake, input_ids: torch.Tensor) -> dict[str, Any]:
+    result = model(
+        input_ids,
+        prompt_lengths=torch.full(
+            (input_ids.shape[0],), input_ids.shape[1], dtype=torch.long
+        ),
+        use_cache=True,
+    )
+    adapted = cake(result["hidden"][:, -1])
+    return {
+        "past_key_values": result["past_key_values"],
+        "task_routes": result["task_routes"],
+        "next_logits": F.linear(adapted, model.output_weight),
+        "generated_ids": input_ids[:, :0],
+    }
+
+
+def _domain_decode(model, cake, state: dict[str, Any], token: torch.Tensor) -> None:
+    result = model(
+        token[:, None],
+        task_routes=state["task_routes"],
+        past_key_values=state["past_key_values"],
+        use_cache=True,
+    )
+    state["past_key_values"] = result["past_key_values"]
+    state["next_logits"] = F.linear(cake(result["hidden"][:, -1]), model.output_weight)
+    state["generated_ids"] = torch.cat(
+        (state["generated_ids"], token[:, None]), dim=1
+    )
+
+
+@torch.inference_mode()
+def _generate_code(
+    model,
+    tokenizer,
+    prompt: str,
+    *,
+    cake: HostResidualCake | None,
+    maximum_tokens: int = 192,
+) -> dict[str, Any]:
+    prompt_ids = tokenizer.encode(prompt + "\n")
+    ids = torch.tensor([prompt_ids], dtype=torch.long)
+    started = time.perf_counter()
+    if cake is None:
+        state = model.prefill(ids)
+    else:
+        state = _domain_prefill(model, cake, ids)
+    generated: list[int] = []
+    first = None
+    for _ in range(maximum_tokens):
+        token = state["next_logits"].argmax(dim=-1)
+        generated.append(int(token.item()))
+        if first is None:
+            first = time.perf_counter()
+        text = tokenizer.decode(
+            generated,
+            skip_special_tokens=True,
+            clean_up_tokenization_spaces=False,
+        )
+        if token.item() == tokenizer.eos_token_id:
+            break
+        if len(text.encode("utf-8")) >= 2048:
+            break
+        if cake is None:
+            _, state = model.decode_step(state, next_token=token)
+        else:
+            _domain_decode(model, cake, state, token)
+    completed = time.perf_counter()
+    return {
+        "text": tokenizer.decode(
+            generated,
+            skip_special_tokens=True,
+            clean_up_tokenization_spaces=False,
+        ),
+        "generated_tokens": len(generated),
+        "time_to_first_output_seconds": (first or completed) - started,
+        "total_latency_seconds": completed - started,
+    }
+
+
+_ALLOWED_CALLS = {
+    "abs",
+    "all",
+    "any",
+    "bool",
+    "dict",
+    "enumerate",
+    "float",
+    "int",
+    "len",
+    "list",
+    "max",
+    "min",
+    "range",
+    "round",
+    "set",
+    "sorted",
+    "str",
+    "sum",
+    "tuple",
+    "zip",
+}
+_ALLOWED_METHODS = {
+    "append",
+    "count",
+    "extend",
+    "get",
+    "index",
+    "items",
+    "join",
+    "lower",
+    "replace",
+    "reverse",
+    "split",
+    "strip",
+    "title",
+    "upper",
+}
+_FORBIDDEN_NODES = (
+    ast.AsyncFunctionDef,
+    ast.Await,
+    ast.ClassDef,
+    ast.Delete,
+    ast.Global,
+    ast.Import,
+    ast.ImportFrom,
+    ast.Lambda,
+    ast.Nonlocal,
+    ast.Raise,
+    ast.Try,
+    ast.While,
+    ast.With,
+    ast.Yield,
+    ast.YieldFrom,
+)
+
+
+def _extract_function(text: str, expected_name: str) -> tuple[str | None, str]:
+    cleaned = text.replace("```python", "").replace("```", "")
+    starts = [
+        index
+        for index in range(len(cleaned))
+        if cleaned.startswith("def ", index)
+    ]
+    for start in starts:
+        candidate = cleaned[start:]
+        try:
+            tree = ast.parse(candidate)
+        except SyntaxError:
+            continue
+        matches = [
+            node
+            for node in tree.body
+            if isinstance(node, ast.FunctionDef) and node.name == expected_name
+        ]
+        if not matches:
+            continue
+        node = matches[0]
+        lines = candidate.splitlines()
+        source = "\n".join(lines[: node.end_lineno]) + "\n"
+        return source, "PARSED"
+    return None, "NO_EXPECTED_FUNCTION"
+
+
+def _validate_safe_function(source: str, expected_name: str) -> tuple[bool, str]:
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return False, "SYNTAX_ERROR"
+    functions = [
+        node for node in tree.body if isinstance(node, ast.FunctionDef)
+    ]
+    if len(functions) != 1 or functions[0].name != expected_name:
+        return False, "FUNCTION_CONTRACT"
+    for node in ast.walk(tree):
+        if isinstance(node, _FORBIDDEN_NODES):
+            return False, f"FORBIDDEN_{type(node).__name__}"
+        if isinstance(node, ast.Name) and node.id.startswith("__"):
+            return False, "DUNDER_NAME"
+        if isinstance(node, ast.Attribute):
+            if node.attr.startswith("__") or node.attr not in _ALLOWED_METHODS:
+                return False, "ATTRIBUTE_NOT_ALLOWED"
+        if isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name):
+                if node.func.id not in _ALLOWED_CALLS and node.func.id != expected_name:
+                    return False, "CALL_NOT_ALLOWED"
+            elif not isinstance(node.func, ast.Attribute):
+                return False, "CALL_TARGET_NOT_ALLOWED"
+    return True, "SAFE"
+
+
+def _execute_tests(
+    source: str, function_name: str, cases: list[dict[str, Any]]
+) -> tuple[bool, list[dict[str, Any]]]:
+    safe, reason = _validate_safe_function(source, function_name)
+    if not safe:
+        return False, [{"status": reason}]
+    safe_builtins = {
+        name: getattr(builtins, name)
+        for name in _ALLOWED_CALLS
+    }
+    namespace: dict[str, Any] = {"__builtins__": safe_builtins}
+    try:
+        exec(compile(source, "<generated-python-cake>", "exec"), namespace)
+        function = namespace[function_name]
+    except Exception as exc:
+        return False, [{"status": "LOAD_ERROR", "error": type(exc).__name__}]
+    records = []
+    for case in cases:
+        try:
+            actual = _jsonable(function(*case["args"]))
+            passed = actual == case["expected"]
+            records.append(
+                {
+                    "status": "PASS" if passed else "WRONG_RESULT",
+                    "actual": actual,
+                    "expected": case["expected"],
+                }
+            )
+        except Exception as exc:
+            records.append(
+                {"status": "RUNTIME_ERROR", "error": type(exc).__name__}
+            )
+    return bool(records) and all(row["status"] == "PASS" for row in records), records
+
+
+def evaluate_functional(
+    checkpoint: Path,
+    dataset: Path,
+    output: Path,
+    *,
+    cake_checkpoint: Path | None,
+    split: str = "validation",
+    maximum_tokens: int = 192,
+) -> dict[str, Any]:
+    checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
+    dataset = dataset if dataset.is_absolute() else ROOT / dataset
+    output = output if output.is_absolute() else ROOT / output
+    model, tokenizer, metadata = load_student(checkpoint)
+    cake = None
+    cake_sha = None
+    if cake_checkpoint is not None:
+        cake_checkpoint = (
+            cake_checkpoint
+            if cake_checkpoint.is_absolute()
+            else ROOT / cake_checkpoint
+        )
+        tensors = load_file(str(cake_checkpoint), device="cpu")
+        rank = int(tensors["down.weight"].shape[0])
+        cake = HostResidualCake(d_abi=768, rank=rank)
+        cake.load_state_dict(tensors, strict=True)
+        cake.eval()
+        cake_sha = sha256_file(cake_checkpoint)
+    rows = [row for row in _load_rows(dataset) if row["split"] == split]
+    process = psutil.Process()
+    records = []
+    for index, row in enumerate(rows):
+        generated = _generate_code(
+            model,
+            tokenizer,
+            row["prompt"],
+            cake=cake,
+            maximum_tokens=maximum_tokens,
+        )
+        source, parse_status = _extract_function(
+            generated["text"], row["function_name"]
+        )
+        passed = False
+        tests = [{"status": parse_status}]
+        if source is not None:
+            passed, tests = _execute_tests(
+                source, row["function_name"], row["tests"]
+            )
+        records.append(
+            {
+                "id": row["id"],
+                "family": row["family"],
+                "prompt": row["prompt"],
+                "prompt_sha256": hashlib.sha256(
+                    row["prompt"].encode("utf-8")
+                ).hexdigest(),
+                "expected_function": row["function_name"],
+                "generated_text": generated["text"],
+                "generated_text_sha256": hashlib.sha256(
+                    generated["text"].encode("utf-8")
+                ).hexdigest(),
+                "extracted_source": source,
+                "functional_success": passed,
+                "tests": tests,
+                "generated_tokens": generated["generated_tokens"],
+                "time_to_first_output_seconds": generated[
+                    "time_to_first_output_seconds"
+                ],
+                "total_latency_seconds": generated["total_latency_seconds"],
+            }
+        )
+        print(
+            json.dumps(
+                {
+                    "evaluated": index + 1,
+                    "total": len(rows),
+                    "successes": sum(
+                        item["functional_success"] for item in records
+                    ),
+                }
+            ),
+            flush=True,
+        )
+    successes = sum(row["functional_success"] for row in records)
+    document = {
+        "format": "layercake-phase4-python-functional-evaluation/1",
+        "status": "COMPLETE",
+        "split": split,
+        "system": "frozen_core_plus_cake" if cake else "frozen_core",
+        "checkpoint_sha256": metadata["checkpoint"]["sha256"],
+        "cake_checkpoint_sha256": cake_sha,
+        "dataset_sha256": sha256_file(dataset),
+        "distinct_prompts": len(rows),
+        "functional_successes": successes,
+        "functional_failures": len(rows) - successes,
+        "functional_success_rate": successes / max(1, len(rows)),
+        "functional_error_rate": (len(rows) - successes) / max(1, len(rows)),
+        "median_time_to_first_output_seconds": statistics.median(
+            row["time_to_first_output_seconds"] for row in records
+        ),
+        "median_total_latency_seconds": statistics.median(
+            row["total_latency_seconds"] for row in records
+        ),
+        "resident_memory_bytes_after": int(process.memory_info().rss),
+        "maximum_generation_tokens": maximum_tokens,
+        "autonomous_generation": True,
+        "teacher_at_inference": False,
+        "syntax_only_counted_as_success": False,
+        "every_task_requires_all_unit_tests": True,
+        "records": records,
+    }
+    document["evidence_sha256"] = _canonical_sha(document)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        json.dumps(document, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return {
+        key: document[key]
+        for key in (
+            "status",
+            "system",
+            "distinct_prompts",
+            "functional_successes",
+            "functional_error_rate",
+            "evidence_sha256",
+        )
+    }
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = argparse.ArgumentParser()
+    sub = parser.add_subparsers(dest="command", required=True)
+    generate = sub.add_parser("generate-dataset")
+    generate.add_argument("--output", type=Path, default=DEFAULT_DATASET)
+    cache = sub.add_parser("cache")
+    cache.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
+    cache.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
+    cache.add_argument("--output", type=Path, required=True)
+    train = sub.add_parser("train")
+    train.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
+    train.add_argument("--cache", type=Path, required=True)
+    train.add_argument("--output", type=Path, required=True)
+    train.add_argument("--seed", type=int, required=True)
+    train.add_argument("--rank", type=int, default=768)
+    train.add_argument("--steps", type=int, default=2400)
+    train.add_argument("--batch-size", type=int, default=512)
+    train.add_argument("--negative-count", type=int, default=1536)
+    train.add_argument("--learning-rate", type=float, default=8.0e-4)
+    evaluate = sub.add_parser("evaluate")
+    evaluate.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
+    evaluate.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
+    evaluate.add_argument("--output", type=Path, required=True)
+    evaluate.add_argument("--cake-checkpoint", type=Path)
+    evaluate.add_argument(
+        "--split", choices=("validation", "test"), default="validation"
+    )
+    evaluate.add_argument("--maximum-tokens", type=int, default=192)
+    args = parser.parse_args(argv)
+    if args.command == "generate-dataset":
+        result = generate_dataset(args.output)
+    elif args.command == "cache":
+        result = cache_training_states(
+            args.checkpoint, args.dataset, args.output
+        )
+    elif args.command == "train":
+        result = train_cake(
+            args.checkpoint,
+            args.cache,
+            args.output,
+            seed=args.seed,
+            rank=args.rank,
+            steps=args.steps,
+            batch_size=args.batch_size,
+            negative_count=args.negative_count,
+            learning_rate=args.learning_rate,
+        )
+    else:
+        result = evaluate_functional(
+            args.checkpoint,
+            args.dataset,
+            args.output,
+            cake_checkpoint=args.cake_checkpoint,
+            split=args.split,
+            maximum_tokens=args.maximum_tokens,
+        )
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
