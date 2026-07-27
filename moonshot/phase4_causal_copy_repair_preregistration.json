@@ -1,0 +1,41 @@
+{
+  "format": "layercake-phase4-causal-copy-repair-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_CONTINUATION",
+  "parent": "moonshot/phase4_copy_value_preregistration.json",
+  "failed_checkpoint_sha256": "2bdc438a462b6e95673420655805c1e251e75504dc56f8821e19f53277f4512e",
+  "failed_validation_evidence_sha256": "7e8659f1b269b49f9060fd28c9465919687e5a3e3e2e5ba73a3ad00d453ef285",
+  "measured_failure": {
+    "strict_validation_successes": 0,
+    "strict_validation_prompts": 64,
+    "raw_copy_alpha": 0.000005974696250632405,
+    "effective_copy_scale": 0.000005974696250561327,
+    "copy_value_identity_rmse": 0.0010900679044425488,
+    "causal_alignment_defect": "Pointer label j matched target[j] but selected hidden[j], which is the state before target[j] is observed. The first state causally containing that source token is hidden[j+1]."
+  },
+  "bounded_repair": {
+    "pointer_source_state": "one causal position after the matched prompt target",
+    "copy_value_objective": "full-vocabulary cross-entropy through the unchanged frozen tied head",
+    "copy_value_supervision_weight": 1.0,
+    "initialize_all_tensors_from_failed_checkpoint": true,
+    "additional_optimizer_steps": 600,
+    "training_device": "cpu",
+    "batch_size": 8,
+    "learning_rate": 0.0001,
+    "dataset_sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa",
+    "new_parameters": 0,
+    "core_or_head_parameters_changed": 0
+  },
+  "controlled_constants": {
+    "architecture_capacity_unchanged": true,
+    "training_rows_unchanged": true,
+    "validation_rows_unchanged": true,
+    "decoder_and_sampling_policy_unchanged": true,
+    "maximum_generation_tokens": 96,
+    "test_split_access_allowed": false
+  },
+  "stopping_rule": {
+    "strict_minimum_validation_success_rate": 0.8,
+    "other_seeds_authorized_only_after_pass": true,
+    "phase2_speed_memory_and_ttft_gates_unchanged": true
+  }
+}

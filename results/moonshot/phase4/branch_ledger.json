@@ -261,6 +261,41 @@
       "next_bounded_change": "Add one identity-initialized ABI-to-ABI copy-value projection; retain pointer keys, queries, data, core, head, and validation.",
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "attentive-copy-value-v4-seed9404",
+      "disposition": "REJECTED_CAUSAL_ALIGNMENT_AND_INACTIVE_COPY_PATH",
+      "architecture": {
+        "name": "attentive_host_residual",
+        "d_abi": 768,
+        "hidden_width": 384,
+        "layers": 1,
+        "heads": 6,
+        "copy_width": 64,
+        "copy_value_projection": true
+      },
+      "training": {
+        "seed": 9404,
+        "additional_optimizer_steps": 800,
+        "cpu_wall_seconds": 198.126468500006,
+        "trainable_parameters": 3054722,
+        "checkpoint_sha256": "2bdc438a462b6e95673420655805c1e251e75504dc56f8821e19f53277f4512e",
+        "raw_copy_alpha": 0.000005974696250632405,
+        "effective_copy_scale": 0.000005974696250561327,
+        "copy_value_identity_rmse": 0.0010900679044425488
+      },
+      "validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "functional_error_rate": 1.0,
+        "median_time_to_first_output_seconds": 0.02198030000727158,
+        "median_total_latency_seconds": 1.3074238499975763,
+        "evidence_sha256": "7e8659f1b269b49f9060fd28c9465919687e5a3e3e2e5ba73a3ad00d453ef285"
+      },
+      "measured_bottleneck": "The supervised pointer label selected the ABI state immediately before the matched source token. Because hidden state t predicts token t+1, the observed source token is first represented one causal state later. Starting copy_alpha at zero also made the language-loss gradient into copy_value vanish; the saved best-loss checkpoint left the copy path effectively inactive.",
+      "next_bounded_change": "Shift lexical pointer labels to the post-token ABI state and explicitly train the copy-value projection to reconstruct the matched token through the unchanged frozen tied head. Continue the same checkpoint, data, capacity, and validation suite.",
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

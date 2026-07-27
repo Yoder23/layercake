@@ -3,7 +3,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import torch
+
 from layercake.training.phase4_python_cake import (
+    _causal_copy_labels,
     _execute_tests,
     _extract_function,
     generate_diverse_training_dataset,
@@ -11,6 +14,16 @@ from layercake.training.phase4_python_cake import (
     generate_identifier_generalization_dataset,
     generate_unique_identifier_dataset,
 )
+
+
+def test_copy_labels_select_first_state_after_observed_prompt_token():
+    # hidden[j] predicts targets[j].  A copied token at target position 1
+    # is therefore represented by hidden[2], not hidden[1].
+    targets = torch.tensor([[10, 42, 11, 42, 12]])
+    valid = torch.ones_like(targets, dtype=torch.bool)
+    response = torch.tensor([[False, False, False, True, True]])
+    labels = _causal_copy_labels(targets, valid, response)
+    assert labels.tolist() == [[-100, -100, -100, 2, -100]]
 
 
 def test_generated_dataset_has_disjoint_promoted_depth(tmp_path: Path):

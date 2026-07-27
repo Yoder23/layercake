@@ -1319,6 +1319,45 @@ def cache_recurrent_training_states(
     return evidence
 
 
+def _causal_copy_labels(
+    targets: torch.Tensor,
+    valid: torch.Tensor,
+    response_mask: torch.Tensor,
+) -> torch.Tensor:
+    """Locate the post-token prompt state for response tokens copied from input.
+
+    Cached hidden state j predicts targets[j], so it precedes that target.
+    The state at j + 1 is the first causal ABI state that has observed it.
+    """
+
+    if targets.shape != valid.shape or targets.shape != response_mask.shape:
+        raise ValueError("copy-label tensors must have identical shapes")
+    labels = torch.full(targets.shape, -100, dtype=torch.long)
+    for batch_index in range(targets.shape[0]):
+        prompt_target_positions = torch.nonzero(
+            valid[batch_index] & ~response_mask[batch_index],
+            as_tuple=False,
+        ).flatten()
+        response_positions = torch.nonzero(
+            valid[batch_index] & response_mask[batch_index],
+            as_tuple=False,
+        ).flatten()
+        prompt_targets = targets[batch_index, prompt_target_positions]
+        for position in response_positions.tolist():
+            matches = prompt_target_positions[
+                prompt_targets == targets[batch_index, position]
+            ]
+            if not matches.numel():
+                continue
+            post_token_position = int(matches[-1]) + 1
+            if (
+                post_token_position <= position
+                and bool(valid[batch_index, post_token_position])
+            ):
+                labels[batch_index, position] = post_token_position
+    return labels
+
+
 def train_recurrent_cake(
     checkpoint: Path,
     cache: Path,
@@ -1340,6 +1379,7 @@ def train_recurrent_cake(
     copy_width: int = 0,
     pointer_supervision_weight: float = 0.0,
     copy_value_projection: bool = False,
+    copy_value_supervision_weight: float = 0.0,
 ) -> dict[str, Any]:
     checkpoint = checkpoint if checkpoint.is_absolute() else ROOT / checkpoint
     cache = cache if cache.is_absolute() else ROOT / cache
@@ -1409,6 +1449,7 @@ def train_recurrent_cake(
     )
     curves: list[dict[str, Any]] = []
     best_loss = float("inf")
+    best_cross_entropy = float("inf")
     best_state = None
     row_count = len(offsets) - 1
     for step in range(1, steps + 1):
@@ -1455,32 +1496,18 @@ def train_recurrent_cake(
         )
         objective = loss + 0.002 * stability
         pointer_loss = None
+        copy_value_loss = None
         pointer_labels_count = 0
         if (
             isinstance(cake, AttentiveHostResidualCake)
             and cake.copy_width > 0
             and pointer_supervision_weight > 0
         ):
-            pointer_labels = torch.full(
-                batch_targets.shape, -100, dtype=torch.long
+            pointer_labels = _causal_copy_labels(
+                batch_targets,
+                batch_valid,
+                batch_masks,
             )
-            for batch_index in range(batch_size):
-                prompt_positions = torch.nonzero(
-                    batch_valid[batch_index] & ~batch_masks[batch_index],
-                    as_tuple=False,
-                ).flatten()
-                response_positions = torch.nonzero(
-                    batch_masks[batch_index], as_tuple=False
-                ).flatten()
-                prompt_targets = batch_targets[
-                    batch_index, prompt_positions
-                ]
-                for position in response_positions.tolist():
-                    matches = prompt_positions[
-                        prompt_targets == batch_targets[batch_index, position]
-                    ]
-                    if matches.numel():
-                        pointer_labels[batch_index, position] = matches[-1]
             pointer_valid = pointer_labels >= 0
             if pointer_valid.any():
                 pointer_scores = cake.copy_scores(batch_states)
@@ -1493,12 +1520,40 @@ def train_recurrent_cake(
                     objective
                     + pointer_supervision_weight * pointer_loss
                 )
+                if (
+                    copy_value_supervision_weight > 0
+                    and cake.copy_value_projection
+                ):
+                    batch_indexes, _ = torch.nonzero(
+                        pointer_valid, as_tuple=True
+                    )
+                    source_positions = pointer_labels[pointer_valid]
+                    source_states = batch_states[
+                        batch_indexes, source_positions
+                    ]
+                    projected_values = cake.copy_value(source_states)
+                    copied_logits = F.linear(projected_values, embedding)
+                    copy_value_loss = F.cross_entropy(
+                        copied_logits,
+                        batch_targets[pointer_valid],
+                    )
+                    objective = (
+                        objective
+                        + copy_value_supervision_weight * copy_value_loss
+                    )
         objective.backward()
         torch.nn.utils.clip_grad_norm_(cake.parameters(), 1.0)
         optimizer.step()
         loss_value = float(loss.detach())
-        if loss_value < best_loss:
-            best_loss = loss_value
+        objective_value = float(objective.detach())
+        selection_loss = (
+            objective_value
+            if copy_value_supervision_weight > 0
+            else loss_value
+        )
+        if selection_loss < best_loss:
+            best_loss = selection_loss
+            best_cross_entropy = loss_value
             best_state = {
                 name: value.detach().cpu().clone()
                 for name, value in cake.state_dict().items()
@@ -1522,6 +1577,12 @@ def train_recurrent_cake(
                     else None
                 ),
                 "pointer_supervised_units": pointer_labels_count,
+                "copy_value_cross_entropy": (
+                    float(copy_value_loss.detach())
+                    if copy_value_loss is not None
+                    else None
+                ),
+                "selection_objective": objective_value,
                 "wall_seconds": time.perf_counter() - started,
             }
             curves.append(record)
@@ -1576,12 +1637,14 @@ def train_recurrent_cake(
         "prompt_retention_fraction": prompt_retention_fraction,
         "prompt_retention_weight": prompt_retention_weight,
         "pointer_supervision_weight": pointer_supervision_weight,
+        "copy_value_supervision_weight": copy_value_supervision_weight,
         "trainable_parameters": trainable,
         "active_parameter_seconds_to_quality": trainable * wall,
         "end_to_end_cpu_wall_seconds": wall,
         "peak_process_resident_memory_bytes": peak_rss,
         "learning_curves": curves,
-        "best_cross_entropy": best_loss,
+        "best_cross_entropy": best_cross_entropy,
+        "best_selection_objective": best_loss,
         "energy_to_quality": {
             "status": "UNAVAILABLE",
             "reason": "no calibrated package energy meter is exposed",
@@ -2079,6 +2142,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     attentive.add_argument("--initial-checkpoint", type=Path)
     attentive.add_argument("--pointer-supervision-weight", type=float, default=0.0)
     attentive.add_argument(
+        "--copy-value-supervision-weight", type=float, default=0.0
+    )
+    attentive.add_argument(
         "--copy-value-projection", action="store_true"
     )
     attentive.add_argument("--max-residual", type=float, default=6.0)
@@ -2169,6 +2235,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.copy_value_projection
                 if args.command == "train-attentive"
                 else False
+            ),
+            copy_value_supervision_weight=(
+                args.copy_value_supervision_weight
+                if args.command == "train-attentive"
+                else 0.0
             ),
         )
     else:
