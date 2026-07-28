@@ -1,0 +1,91 @@
+{
+  "format": "layercake-phase4-semantic-transition-identity-codec-preregistration/1",
+  "date": "2026-07-27",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_TRAINING",
+  "measured_parent": {
+    "artifact": "artifacts/moonshot/phase4/candidates/python-semantic-action-plan-lexical-repair-seed10440.pt",
+    "artifact_file_sha256": "a8211523110f8e69c851a65fefe63a5bb95ab487fda56980301fe28056215f64",
+    "payload_hash": "2862d39f39cef57ac631665b3ffcc0011ee3fd8967eb774d1ffdc821362b1ef0",
+    "lexical_validation": "results/moonshot/phase4/python-semantic-action-plan-lexical-repair-seed10440-lexical-validation.json",
+    "lexical_validation_evidence_sha256": "606d2b67a38e895a1e8d7dcea3676fddbec17ff3237033e6925c375be8b57586",
+    "action_diagnostic": "results/moonshot/phase4/python-semantic-action-plan-lexical-repair-seed10440-action-diagnostic.json",
+    "action_diagnostic_file_sha256": "94340e1d3f16ab9b9863cbbe5e79624896f35e45752e8c2ae2a45cc5a884b1e5",
+    "action_diagnostic_evidence_sha256": "de9ce0f0b495bc2a65720fbee1e8275ce80fc9c9d0ae228977d63e44e6a6a0ed"
+  },
+  "measured_limiter": {
+    "exact_action_sequences": 255,
+    "action_sequence_prompts": 256,
+    "exact_action_sequence_rate": 0.99609375,
+    "exact_responses": 189,
+    "exact_response_rate_given_exact_action_sequence": 0.7411764705882353,
+    "attribution": "The controller and variable identifier span boundary are solved on the held-out lexical screen. The linear single-state copy value does not losslessly recover the identity carried by a correctly selected source semantic state."
+  },
+  "materially_distinct_architecture": {
+    "name": "causal_semantic_transition_identity_codec",
+    "input": "the selected causal semantic ABI state minus its immediately preceding semantic ABI state",
+    "reason": "The adjacent-state transition isolates information added when the selected source unit entered the frozen causal host, reducing prompt-context interference that a single-state linear value cannot remove.",
+    "codec": "LayerNorm(768), Linear(768,512), GELU, Linear(512,768,bias=False)",
+    "composition": "the transition codec adds a learned correction to the frozen parent copy semantic value before the existing bounded same-shape residual",
+    "new_runtime_parameters": 788480,
+    "active_only_for_pointer_realization": true,
+    "raw_prompt_bytes_exposed": false,
+    "private_host_token_ids_exposed": false,
+    "host_tokenizer_invoked_inside_cake": false,
+    "template_retrieval_or_output_rewrite": false,
+    "canonical_semantic_abi_unchanged": true,
+    "teacher_at_inference": false
+  },
+  "frozen_boundary": {
+    "all_parent_action_planner_tensors_frozen": true,
+    "all_parent_fixed_realization_tensors_frozen": true,
+    "all_parent_pointer_and_linear_copy_tensors_frozen": true,
+    "all_core_and_output_head_tensors_frozen": true,
+    "trainable_tensors": [
+      "copy_transition_norm.weight",
+      "copy_transition_norm.bias",
+      "copy_transition_input.weight",
+      "copy_transition_input.bias",
+      "copy_transition_output.weight"
+    ],
+    "parent_tensor_subset_hash_before_after_must_match": true
+  },
+  "training": {
+    "seed": 10540,
+    "primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "cpu_fallback_required": true,
+    "precision": "fp32",
+    "cache": "artifacts/moonshot/phase4/cache/seed9824-lexical-conformance-v1-train.safetensors",
+    "cache_sha256": "ee0488a5f407c1fbd1cb8383c8de5d27ee955042e05d9b1713b2b584051bcf79",
+    "train_rows": 4096,
+    "pointer_training_units": 24908,
+    "maximum_optimizer_steps": 2000,
+    "batch_size": 64,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.01,
+    "loss": "authoritative frozen-host full-vocabulary cross-entropy on pointer realization units only",
+    "selection": "minimum observed training pointer realization cross-entropy"
+  },
+  "screens": {
+    "lexical_validation_first": true,
+    "lexical_dataset": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+    "lexical_dataset_sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+    "lexical_distinct_prompts": 256,
+    "lexical_exact_response_successes_minimum": 231,
+    "python_validation_only_if_lexical_screen_passes": true,
+    "python_dataset": "data/moonshot/phase4/python_functional_v1.jsonl",
+    "python_dataset_sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "python_distinct_prompts": 64,
+    "python_strict_functional_successes_minimum": 52,
+    "test_split_accessed": false
+  },
+  "decision_rule": {
+    "maximum_initial_runs": 1,
+    "nearby_codec_width_depth_activation_loss_weight_or_step_sweeps_authorized": false,
+    "replication_authorized_only_after_both_initial_screens_pass": true,
+    "replication_requirement": "If both screens pass, run two independently initialized full staged semantic-transition-codec lineages so final promotion evidence contains three paired seeds rather than three codec heads on one frozen planner.",
+    "on_failure": "Preserve the artifact and evidence, close the transition codec branch, and do not claim Phase 4.",
+    "on_pass": "Execute two full-lineage replications, then preregister held-out test, signed package transfer across CPU-only and CUDA-capable receivers, semantic retention, and matched CPU inference certification.",
+    "phase4_before_all_gates_pass": "OPEN",
+    "phase5_before_phase4_seal": "LOCKED"
+  }
+}
