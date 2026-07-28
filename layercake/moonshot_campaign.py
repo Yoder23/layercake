@@ -861,6 +861,18 @@ def _phase0_inputs(root: Path, contracts: Mapping[str, Mapping[str, Any]]) -> tu
 
 
 def _phase_evidence_files(root: Path, phase: int) -> list[Path]:
+    if phase == 4:
+        try:
+            from .evaluation.phase4_evidence import (
+                Phase4EvidenceError,
+                phase4_evidence_files,
+            )
+
+            return phase4_evidence_files(root)
+        except Phase4EvidenceError as error:
+            raise CampaignVerificationError(
+                f"Phase 4 evidence manifest failed: {error}"
+            ) from error
     excluded = {
         "candidate.json", "candidate_verification.json", "release_certificate.json",
         "handoff.json", "seal.json",
@@ -952,6 +964,32 @@ def _verify_phase_evidence(root: Path, phase: int, contracts: Mapping[str, Mappi
         except Phase3RetirementEvidenceError as error:
             raise CampaignVerificationError(
                 f"Phase 3 retirement evidence failed: {error}"
+            ) from error
+    if phase == 4:
+        try:
+            from .evaluation.phase4_evidence import (
+                Phase4EvidenceError,
+                validate_phase4_bundle,
+            )
+
+            summary = validate_phase4_bundle(
+                root, _phase_dir(root, 4)
+            )
+            payload = read_document(
+                _lifecycle_path(root, 4, "certificate_payload.json")
+            )
+            validate_required_gates(
+                root, 4, payload, contracts["claim_contract.yaml"]
+            )
+            validate_matched_quality(
+                {"phase": 4, **payload},
+                contracts["benchmark_contract.yaml"],
+            )
+            validate_semantic_portability(payload)
+            return summary
+        except Phase4EvidenceError as error:
+            raise CampaignVerificationError(
+                f"Phase 4 typed evidence failed: {error}"
             ) from error
     raise CampaignVerificationError(
         f"Phase {phase} requires its phase-specific typed verifier before candidate construction"
@@ -1157,6 +1195,50 @@ def promote_phase(root: Path, phase: int) -> dict[str, Any]:
         validate_required_gates(
             root, 3, certificate, contracts["claim_contract.yaml"]
         )
+    if phase == 4:
+        payload = read_document(
+            _lifecycle_path(root, 4, "certificate_payload.json")
+        )
+        payload_lineage = payload.get("lineage")
+        if not isinstance(payload_lineage, dict):
+            raise CampaignVerificationError(
+                "Phase 4 payload has no integrated lineage"
+            )
+        campaign["lineage"].update(
+            {
+                "abi_hash": payload["abi_hash"],
+                "cake_package_hashes": payload_lineage[
+                    "cake_package_hashes"
+                ],
+                "runtime_hashes": payload_lineage["runtime_hashes"],
+            }
+        )
+        certificate["claims"] = payload["claims"]
+        certificate["headline_claims"] = payload["headline_claims"]
+        certificate["quality_match"] = payload["quality_match"]
+        certificate["semantic_portability"] = payload[
+            "semantic_portability"
+        ]
+        certificate["package"] = payload["package"]
+        certificate["lineage"] = {
+            **campaign["lineage"],
+            **payload_lineage,
+            "abi_hash": payload["abi_hash"],
+        }
+        certificate["abi_version"] = payload["abi_version"]
+        certificate["abi_hash"] = payload["abi_hash"]
+        certificate["semantic_residual_fusion_claimed"] = payload[
+            "semantic_residual_fusion_claimed"
+        ]
+        validate_required_gates(
+            root, 4, certificate, contracts["claim_contract.yaml"]
+        )
+        validate_matched_quality(
+            {"phase": 4, **certificate},
+            contracts["benchmark_contract.yaml"],
+        )
+        validate_semantic_portability(certificate)
+        validate_lineage_consistency(campaign, certificate, 4)
     certificate_path = _lifecycle_path(root, phase, "release_certificate.json")
     _atomic_write(certificate_path, certificate)
     handoff = {
@@ -1195,7 +1277,18 @@ def prepare_seal(root: Path, phase: int) -> dict[str, Any]:
         raise CampaignVerificationError("release evidence must be committed in a clean worktree before sealing")
     release_commit = _git(root, "rev-parse", "HEAD")
     tag, _ = _completion_tag(root, contracts["claim_contract.yaml"], phase)
-    phase_files = [path for path in _phase_dir(root, phase).rglob("*") if path.is_file() and path.name != "seal.json"]
+    phase_files = list(_phase_evidence_files(root, phase))
+    phase_files.extend(
+        path
+        for name in (
+            "candidate.json",
+            "candidate_verification.json",
+            "release_certificate.json",
+            "handoff.json",
+        )
+        if (path := _lifecycle_path(root, phase, name)).is_file()
+    )
+    phase_files = sorted(set(phase_files))
     committed_hashes = {
         path.relative_to(root).as_posix(): hashlib.sha256(
             _git_blob(root, release_commit, path.relative_to(root).as_posix())
