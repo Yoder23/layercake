@@ -57,6 +57,7 @@ class SemanticActionPlanResidual(nn.Module):
         copy_transition_replaces_linear: bool = False,
         copy_coordinate_width: int = 0,
         copy_coordinate_scale: float = 16.0,
+        copy_coordinate_blend: float = 1.0,
         dropout: float = 0.1,
         maximum_prompt_units: int = 128,
         maximum_response_units: int = 192,
@@ -90,10 +91,18 @@ class SemanticActionPlanResidual(nn.Module):
             raise ValueError(
                 "transition replacement requires a non-zero codec width"
             )
-        if copy_coordinate_width < 0 or copy_coordinate_scale <= 0:
+        if (
+            copy_coordinate_width < 0
+            or copy_coordinate_scale <= 0
+            or not 0.0 <= copy_coordinate_blend <= 1.0
+        ):
             raise ValueError(
                 "copy coordinate width must be non-negative and its scale "
-                "must be positive"
+                "must be positive; its blend must be in [0, 1]"
+            )
+        if copy_coordinate_blend != 1.0 and not copy_coordinate_width:
+            raise ValueError(
+                "coordinate blending requires a non-zero coordinate codec"
             )
         if model_width % attention_heads:
             raise ValueError("model width must divide attention heads")
@@ -116,6 +125,7 @@ class SemanticActionPlanResidual(nn.Module):
         )
         self.copy_coordinate_width = int(copy_coordinate_width)
         self.copy_coordinate_scale = float(copy_coordinate_scale)
+        self.copy_coordinate_blend = float(copy_coordinate_blend)
         self.dropout = float(dropout)
         self.maximum_prompt_units = int(maximum_prompt_units)
         self.maximum_response_units = int(maximum_response_units)
@@ -233,6 +243,7 @@ class SemanticActionPlanResidual(nn.Module):
             ),
             "copy_coordinate_width": self.copy_coordinate_width,
             "copy_coordinate_scale": self.copy_coordinate_scale,
+            "copy_coordinate_blend": self.copy_coordinate_blend,
             "dropout": self.dropout,
             "maximum_prompt_units": self.maximum_prompt_units,
             "maximum_response_units": self.maximum_response_units,
@@ -439,8 +450,12 @@ class SemanticActionPlanResidual(nn.Module):
             semantic_value + correction
         )
         if coordinate_residual is not None:
+            pointer_residual = (
+                self.copy_coordinate_blend * coordinate_residual
+                + (1.0 - self.copy_coordinate_blend) * residual
+            )
             residual = torch.where(
-                fixed[:, :, None], residual, coordinate_residual
+                fixed[:, :, None], residual, pointer_residual
             )
         return {
             "residual": residual,

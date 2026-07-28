@@ -89,6 +89,9 @@ TRAINABLE_TENSORS = frozenset(
 LEXICAL_EVALUATION_FORMAT = (
     "layercake-phase4-semantic-action-plan-lexical-evaluation/1"
 )
+LEXICAL_EVALUATION_SPLIT = "validation"
+LEXICAL_EXPECTED_ROWS = 256
+LEXICAL_MINIMUM_EXACT_RESPONSES = 231
 PYTHON_EVALUATION_FORMAT = (
     "layercake-phase4-semantic-action-plan-lexical-repair-python-evaluation/1"
 )
@@ -429,10 +432,13 @@ def evaluate_lexical(args: argparse.Namespace) -> dict[str, Any]:
     rows = [
         row
         for row in _load_rows(LEXICAL_DATASET)
-        if row["split"] == "validation"
+        if row["split"] == LEXICAL_EVALUATION_SPLIT
     ]
-    if len(rows) != 256:
-        raise RuntimeError(f"expected 256 lexical validation rows, got {len(rows)}")
+    if len(rows) != LEXICAL_EXPECTED_ROWS:
+        raise RuntimeError(
+            f"expected {LEXICAL_EXPECTED_ROWS} lexical "
+            f"{LEXICAL_EVALUATION_SPLIT} rows, got {len(rows)}"
+        )
     records = []
     for index, row in enumerate(rows):
         generated = _generate(
@@ -493,7 +499,7 @@ def evaluate_lexical(args: argparse.Namespace) -> dict[str, Any]:
     functional_successes = sum(
         record["functional_identity"] for record in records
     )
-    minimum = 231
+    minimum = LEXICAL_MINIMUM_EXACT_RESPONSES
     evidence = {
         "format": LEXICAL_EVALUATION_FORMAT,
         "status": "PASS" if exact_successes >= minimum else "FAIL",
@@ -507,7 +513,7 @@ def evaluate_lexical(args: argparse.Namespace) -> dict[str, Any]:
         "core_checkpoint_sha256": core_metadata["checkpoint"]["sha256"],
         "dataset": LEXICAL_DATASET.relative_to(ROOT).as_posix(),
         "dataset_sha256": _sha256(LEXICAL_DATASET),
-        "split": "validation",
+        "split": LEXICAL_EVALUATION_SPLIT,
         "evaluation_device": str(device),
         "evaluation_device_name": (
             torch.cuda.get_device_name(device)

@@ -148,3 +148,54 @@ def test_coordinate_replacement_is_bounded_and_bypasses_copy_value():
         pointer_action, decoded, current, prompt
     )
     assert torch.equal(result["residual"], changed["residual"])
+
+
+def test_coordinate_blend_reuses_parent_and_coordinate_residuals():
+    config = _model().canonical_config()
+    config["copy_coordinate_width"] = 8
+    coordinate = SemanticActionPlanResidual(**config).eval()
+    blended_config = coordinate.canonical_config()
+    blended_config["copy_coordinate_blend"] = 0.73
+    blended = SemanticActionPlanResidual(**blended_config).eval()
+    blended.load_state_dict(coordinate.state_dict(), strict=True)
+    prompt = torch.randn(1, 4, 24)
+    current = torch.randn(1, 1, 24)
+    decoded = torch.randn(1, 1, 24)
+    pointer_action = torch.tensor(
+        [[coordinate.fixed_action_count + 2]]
+    )
+    coordinate_residual = coordinate._realize(
+        pointer_action, decoded, current, prompt
+    )["residual"]
+    parent_config = coordinate.canonical_config()
+    parent_config["copy_coordinate_width"] = 0
+    parent = SemanticActionPlanResidual(**parent_config).eval()
+    parent.load_state_dict(
+        {
+            name: value
+            for name, value in coordinate.state_dict().items()
+            if not name.startswith("copy_coordinate_")
+        },
+        strict=True,
+    )
+    parent_residual = parent._realize(
+        pointer_action, decoded, current, prompt
+    )["residual"]
+    blended_residual = blended._realize(
+        pointer_action, decoded, current, prompt
+    )["residual"]
+    assert torch.allclose(
+        blended_residual,
+        0.73 * coordinate_residual + 0.27 * parent_residual,
+    )
+
+
+def test_coordinate_blend_requires_coordinate_codec():
+    config = _model().canonical_config()
+    config["copy_coordinate_blend"] = 0.73
+    try:
+        SemanticActionPlanResidual(**config)
+    except ValueError as error:
+        assert "requires a non-zero coordinate codec" in str(error)
+    else:
+        raise AssertionError("invalid coordinate blend was accepted")
