@@ -1,0 +1,68 @@
+{
+  "format": "layercake-phase4-semantic-residual-blend-decision/1",
+  "date": "2026-07-27",
+  "status": "FRESH_LEXICAL_PASS_PYTHON_FAIL_BLEND_BRANCH_CLOSED",
+  "protocol": {
+    "path": "moonshot/phase4_semantic_residual_blend_preregistration.json",
+    "sha256": "fc87932032f6478904ec209f8a29c86e4682d5f92468852c6f6f186de27e8e9a"
+  },
+  "conversion": {
+    "artifact": "artifacts/moonshot/phase4/candidates/python-semantic-residual-blend-seed10840.pt",
+    "artifact_file_sha256": "918c578f71e7b336f4d4a7da9a43cc74ab3db8e8266d459178b0d92a38520b72",
+    "evidence": "artifacts/moonshot/phase4/candidates/python-semantic-residual-blend-seed10840.json",
+    "evidence_file_sha256": "4aad60dc2899fd13a040b61f4689914e4e97fad6face8bb189c102b8e3703798",
+    "evidence_sha256": "a93832dfdd03200a438bcb349b619b001111eb72795e9e3be485a11c61196aec",
+    "coordinate_blend": 0.73,
+    "parent_linear_blend": 0.27,
+    "optimizer_steps": 0,
+    "training_examples": 0,
+    "new_runtime_parameters": 0,
+    "new_matrix_operations": 0,
+    "all_tensors_identical_to_parent": true,
+    "payload_hash": "d2f9565ba239045cdbfaa49ba6a0e9eb619214f81c482640fbd485252c5e845f",
+    "cpu_fallback_smoke": "PASS",
+    "cpu_cuda_maximum_residual_difference": 0.00041496753692626953
+  },
+  "fresh_lexical_screen": {
+    "evidence": "results/moonshot/phase4/python-semantic-residual-blend-seed10840-fresh-lexical.json",
+    "evidence_file_sha256": "e9708064c485fe52c09c900f07397ca3c675d8d12689217090d917c76d82fd5b",
+    "evidence_sha256": "b04301d025078b4be561bf18b281a3c53494334e3e61e99bcf0420e816ac72b7",
+    "distinct_prompts": 256,
+    "exact_response_successes": 244,
+    "functional_identity_successes": 244,
+    "minimum_exact_response_successes": 231,
+    "status": "PASS"
+  },
+  "python_screen": {
+    "evidence": "results/moonshot/phase4/python-semantic-residual-blend-seed10840-python-validation.json",
+    "evidence_file_sha256": "cc2db4887096e00e3e163c5a152a0e0bca427e1a15e359c2ad6f57dc92d0dc0d",
+    "evidence_sha256": "2d5ea8876cbddf4285f499a43eeabccf9e8bb474278f3c71f422702952eb7eab",
+    "distinct_prompts": 64,
+    "functional_successes": 0,
+    "minimum_functional_successes": 52,
+    "status": "FAIL"
+  },
+  "measured_limiter": {
+    "action_diagnostic": "results/moonshot/phase4/python-semantic-residual-blend-seed10840-action-diagnostic.json",
+    "action_diagnostic_file_sha256": "30dc8bfe87dd132e897cec731d1e4998b5c13c0eea7796d03853f43eaa474136",
+    "action_diagnostic_evidence_sha256": "289113bf34d03d97471dfc6fa0162bd9f5b73d7397015e1ce5623a0115904951",
+    "autonomous_action_accuracy": 0.2328159645232816,
+    "autonomous_pointer_action_accuracy": 0.11507936507936507,
+    "autonomous_fixed_action_accuracy": 0.259763851044505,
+    "autonomous_exact_action_sequences": 0,
+    "teacher_forced_action_accuracy": 0.8802660753880266,
+    "teacher_forced_pointer_realization_accuracy": 0.8670634920634921,
+    "teacher_forced_realization_accuracy": 0.9375461936437546,
+    "interpretation": "The blend solved disjoint lexical identity. The remaining Python failure is the autoregressive semantic action planner: prompt-template grounding and early action errors cause sequence-wide action exposure drift. It is not a transfer, package, ABI-carriage, identity-coordinate, GPU, or CPU-fallback failure."
+  },
+  "decision": {
+    "replication_authorized": false,
+    "test_split_accessed": false,
+    "blend_branch_closed": true,
+    "nearby_alpha_gate_width_depth_scale_loss_weight_or_step_sweeps_authorized": false,
+    "phase4_campaign_state": "OPEN",
+    "phase5_campaign_state": "LOCKED",
+    "phase4_seal_or_tag_allowed_now": false,
+    "next_architecture_constraint": "A continuation must remove autonomous action exposure drift while preserving the proven 0.73 residual realization, canonical semantic ABI, and zero receiver learning. A prompt-only parallel plan is evidence-supported because it makes the entire action sequence a deterministic function of immutable prompt semantic states and removes previous predicted actions from the plan state."
+  }
+}
