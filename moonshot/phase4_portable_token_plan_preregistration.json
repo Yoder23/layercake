@@ -1,0 +1,119 @@
+{
+  "format": "layercake-phase4-portable-token-plan-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_TRAINING",
+  "parent_governance": "moonshot/phase4_gpu_first_acquisition_amendment.json",
+  "measured_basis": {
+    "rejected_branch": "portable-attentive-seq2seq-seed10040",
+    "branch_ledger": "results/moonshot/phase4/branch_ledger.json",
+    "lexical_autonomous_exact_prefix_rate": 0.99609375,
+    "strict_functional_successes": 0,
+    "functional_prompts": 64,
+    "causal_handoff_through_identifier_successes": 0,
+    "causal_handoff_through_open_parenthesis_successes": 2,
+    "measured_bottleneck": "Long byte-level identity and program semantics remain causally entangled. The model copies novel identifiers but mixes memorized program fragments, while the preserved semantic GRU cannot recover after an externally correct identifier prefix."
+  },
+  "representation_decision": {
+    "new_materially_distinct_representation": "lossless lexeme-level Transformer plan decoder with a dynamic neural source-position pointer action",
+    "identity_factorization": "Every training response function identifier is excluded from the fixed vocabulary and must be generated as one neural pointer to the exact prompt lexeme. Pointer selection is part of the model distribution, not a parser-forced output.",
+    "semantic_factorization": "All Python keywords, syntax, whitespace, parameters, operators, literals, and body lexemes are autonomously generated from the learned fixed-vocabulary distribution.",
+    "external_input_output": "UTF-8 bytes",
+    "tokenizer_realization": "Selected fixed or source-pointer lexemes are losslessly decoded to their exact stored UTF-8 bytes.",
+    "templates_retrieval_stored_answers_or_body_rewrite_allowed": false,
+    "function_name_injection_or_oracle_pointer_allowed": false,
+    "nearby_byte_pointer_gate_loss_width_or_decoder_sweep": false
+  },
+  "tokenizer_contract": {
+    "format": "layercake-lossless-python-lexeme-pointer/1",
+    "construction_data": "training splits only",
+    "lexeme_pattern": "[A-Za-z_][A-Za-z0-9_]*|\\d+(?:\\.\\d+)?|==|!=|<=|>=|//|\\*\\*|->|\\s+|.",
+    "fixed_vocabulary_order": "special tokens first, then unique non-function-name training lexemes ordered by UTF-8 byte sequence",
+    "excluded_from_fixed_vocabulary": "every function_name value from either training dataset",
+    "unknown_prompt_lexeme": "model-visible UNK id while exact source bytes remain available only through a selected neural pointer action",
+    "maximum_source_lexemes": 64,
+    "maximum_target_actions_including_eos": 96,
+    "lossless_roundtrip_test_required": true,
+    "phase2_canonical_tokenizer": {
+      "path": "artifacts/moonshot/phase2/final_core/seed-9824/tokenizer.json",
+      "sha256": "d1c03801fd9559b8586490733a3788439ff230bf5f09666a0abb7ddb615e9f10",
+      "changed": false,
+      "reason_recorded_not_used_for_private_plan": "The private lossless plan representation is hidden behind the unchanged byte-facing external boundary and does not alter the host semantic ABI."
+    }
+  },
+  "architecture": {
+    "name": "portable_token_plan_pointer_transformer",
+    "model_width": 192,
+    "attention_heads": 6,
+    "encoder_layers": 2,
+    "decoder_layers": 2,
+    "feedforward_width": 768,
+    "dropout": 0.1,
+    "pointer_width": 128,
+    "position_embeddings": "learned source and target",
+    "output_distribution": "learned gate mixture over fixed lexeme vocabulary and masked source-position attention",
+    "decoder_state": "causal self-attention over prior selected actions plus cross-attention to the encoded prompt",
+    "host_core_parameters_trainable": 0,
+    "canonical_abi_changed": false,
+    "package_or_transfer_mechanism_changed_before_quality_pass": false
+  },
+  "training_data": {
+    "functional": {
+      "path": "data/moonshot/phase4/python_functional_v4.jsonl",
+      "sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa",
+      "train_rows": 960
+    },
+    "lexical_conformance": {
+      "path": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+      "sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+      "train_rows": 4096,
+      "functional_promotion_credit": 0
+    },
+    "sampling_per_batch": {
+      "functional_rows": 32,
+      "lexical_rows": 32,
+      "total_rows": 64
+    },
+    "validation_rows_used_during_training": 0,
+    "test_rows_used": 0
+  },
+  "gpu_first_bounded_run": {
+    "seed": 10140,
+    "primary_device": "cuda:0",
+    "required_device_name": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "precision": "fp32",
+    "optimizer": "AdamW",
+    "optimizer_steps": 3000,
+    "batch_size": 64,
+    "learning_rate": 0.0005,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0,
+    "objective": "negative log likelihood of the exact extended-vocabulary action, including the exact supervised prompt position for every response function-name action",
+    "checkpoint_selection": "lowest deterministic combined training objective; no validation access during training",
+    "cpu_fallback": "The identical model must complete one separately recorded CPU forward/backward/optimizer smoke step; full CPU training is not required."
+  },
+  "validation_sequence": {
+    "first": {
+      "name": "heldout lexical conformance",
+      "dataset": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+      "distinct_prompts": 256,
+      "minimum_autonomous_exact_def_name_open_parenthesis_prefixes": 231,
+      "functional_promotion_credit": 0
+    },
+    "second_only_if_first_passes": {
+      "name": "locked Python functional validation",
+      "dataset": "data/moonshot/phase4/python_functional_v1.jsonl",
+      "dataset_sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+      "distinct_prompts": 64,
+      "minimum_strict_functional_successes": 52,
+      "maximum_output_actions": 96,
+      "maximum_output_bytes": 320
+    },
+    "test_split_access_allowed": false
+  },
+  "decision_rule": {
+    "authorize_seeds_10141_and_10142_only_after_seed_10140_passes_both_validation_gates": true,
+    "if_seed_10140_fails": "Preserve all raw evidence and identify one measured bottleneck; no blind tokenizer, width, depth, learning-rate, step-count, data-mixture, or loss-weight sweep.",
+    "if_three_seeds_pass": "Integrate this exact artifact format with the existing signed portable package and installer, then run device-independent hash, three-receiver, semantic-retention, CPU-inference, TTFT, RSS, inactive-compute, and Phase 2 sentinel certification.",
+    "speed_quality_and_transfer_must_use_the_same_final_payload": true,
+    "cpu_inference_gates_unchanged": true
+  }
+}
