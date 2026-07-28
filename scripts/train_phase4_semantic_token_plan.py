@@ -63,6 +63,10 @@ def _git_head() -> str:
     ).strip()
 
 
+def _rooted(path: Path) -> Path:
+    return path if path.is_absolute() else ROOT / path
+
+
 def _row_tensors(
     cached: dict[str, torch.Tensor],
     offsets: list[int],
@@ -129,6 +133,7 @@ def _batch(
 
 
 def train(args: argparse.Namespace) -> dict[str, Any]:
+    args.output = _rooted(args.output)
     device = torch.device(args.device)
     if device.type == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is unavailable")
@@ -283,6 +288,17 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
             else "declared laptop CPU"
         ),
         "precision": "fp32",
+        "gpu_wall_seconds": wall if device.type == "cuda" else 0.0,
+        "cpu_wall_seconds": wall if device.type == "cpu" else 0.0,
+        "peak_accelerator_memory_bytes": peak_accelerator,
+        "peak_process_resident_memory_bytes": peak_rss,
+        "raw_utf8_training_bytes_exposed": 224000,
+        "model_visible_nonpadding_units": 73825,
+        "active_parameter_seconds_to_quality": (
+            model.parameter_count() * wall
+        ),
+        "best_selection_objective": best_loss,
+        "learning_curves": curves,
     }
     artifact = build_semantic_token_plan_artifact(
         model.cpu(),
@@ -411,6 +427,8 @@ def _generate(
 
 
 def evaluate(args: argparse.Namespace) -> dict[str, Any]:
+    args.artifact = _rooted(args.artifact)
+    args.output = _rooted(args.output)
     device = torch.device(args.device)
     if device.type == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is unavailable")

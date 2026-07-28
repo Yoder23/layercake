@@ -1,0 +1,30 @@
+{
+  "format": "layercake-phase4-semantic-token-plan-post-training-serialization-failure/1",
+  "date": "2026-07-27",
+  "status": "CHECKPOINT_COMPLETE_EVIDENCE_SERIALIZATION_FAILED",
+  "seed": 10240,
+  "source_commit": "c9681a1a15e86d70e3c55da1d98c9ac16a68848f",
+  "artifact": "artifacts/moonshot/phase4/candidates/python-semantic-token-plan-seed10240.pt",
+  "artifact_file_sha256": "50b49f27d408ab2e3ca77fa8bd3656b939f30e586a0a8b620ac5b93c96555456",
+  "artifact_bytes": 12917757,
+  "payload_hash": "7425c257ef1af392cfd768b8212fa03cdd0017d03bdf4450f7cbd169860f2f22",
+  "spec_sha256": "1117fc1a33e11ff1522157ad040c0e2a9343d00aaa4a695cba2784f206643eb5",
+  "optimizer_steps_completed": 3000,
+  "last_reported_gpu_wall_seconds": 126.6852157000103,
+  "last_reported_metrics": {
+    "full_vocabulary_cross_entropy": 0.0001886876707430929,
+    "pointer_cross_entropy": 0.00026468877331353724,
+    "copy_value_cross_entropy": 0.00005024081110605039,
+    "copy_gate_binary_cross_entropy": 0.001248092739842832,
+    "stability_ratio": 1.097616195678711,
+    "selection_objective": 0.00285340822301805
+  },
+  "failure": {
+    "stage": "evidence JSON path rendering after checkpoint write",
+    "exception": "ValueError from pathlib.Path.relative_to on a relative output path and absolute repository root",
+    "checkpoint_affected": false,
+    "optimizer_state_or_weights_affected": false
+  },
+  "decision": "Preserve the immutable checkpoint and screen its exact state. It cannot be promoted without a fully accounted rerun because the complete in-process learning curve and peak-memory evidence were not serialized.",
+  "test_split_accessed": false
+}
