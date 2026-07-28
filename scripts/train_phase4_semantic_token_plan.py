@@ -453,9 +453,8 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
         source = _extract_function(
             generated["text"], row["function_name"]
         )
-        tests = _execute_tests(source, row)
-        passed = bool(source) and all(
-            test["status"] == "PASS" for test in tests
+        passed, tests = _execute_tests(
+            source, row["function_name"], row["tests"]
         )
         records.append(
             {
