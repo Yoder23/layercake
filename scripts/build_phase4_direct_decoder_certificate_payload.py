@@ -71,7 +71,7 @@ def _claim(
         "promoted": True,
         "value": value,
         "raw_artifact": GATE_OBSERVATIONS.as_posix(),
-        "raw_artifact_sha256": gate_file_sha256,
+        "raw_sha256": gate_file_sha256,
         "derivation": {
             "operation": "mean",
             "field": "value",
@@ -132,7 +132,6 @@ def build() -> dict[str, Any]:
     if (
         (ROOT / GATE_OBSERVATIONS).exists()
         or (ROOT / PAYLOAD).exists()
-        or (ROOT / REGRESSION_SUMMARY).exists()
     ):
         raise RuntimeError("Phase 4 certificate inputs are immutable")
     derived = derive_phase4_metrics(ROOT)
@@ -294,7 +293,15 @@ def build() -> dict[str, Any]:
         ),
     }
     _write_immutable(ROOT / PAYLOAD, payload)
-    _write_immutable(ROOT / REGRESSION_SUMMARY, regression)
+    regression_path = ROOT / REGRESSION_SUMMARY
+    if regression_path.exists():
+        existing_regression = json.loads(
+            regression_path.read_text(encoding="utf-8")
+        )
+        if existing_regression != regression:
+            raise RuntimeError("Phase 4 regression summary changed")
+    else:
+        _write_immutable(regression_path, regression)
     return {
         "status": "EVIDENCE_READY",
         "gate_observations": GATE_OBSERVATIONS.as_posix(),

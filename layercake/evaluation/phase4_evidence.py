@@ -58,10 +58,10 @@ BASELINE = Path(
     "results/moonshot/phase4/baseline_validation_seed9824.json"
 )
 GATE_OBSERVATIONS = Path(
-    "results/moonshot/phase4/gate_observations.json"
+    "results/moonshot/phase4/raw_runs/gate_observations.json"
 )
 PAYLOAD = Path(
-    "results/moonshot/phase4/certificate_payload.json"
+    "results/moonshot/phase4/certificate_payload_v2.json"
 )
 REGRESSION_SUMMARY = Path(
     "results/moonshot/phase4/regression_tests.json"
@@ -161,6 +161,7 @@ def phase4_evidence_files(root: Path) -> list[Path]:
         Path("moonshot/phase4_direct_decoder_interface_amendment.json"),
         Path("moonshot/phase4_direct_decoder_release_preregistration.json"),
         Path("moonshot/phase4_direct_decoder_runtime_protocol.json"),
+        Path("moonshot/phase4_certificate_payload_path_correction.json"),
         Path("moonshot/phase4_cpu_cake_training_lock.json"),
     ]
     for seed in (10140, 10141, 10142):

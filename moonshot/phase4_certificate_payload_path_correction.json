@@ -1,0 +1,27 @@
+{
+  "format": "layercake-phase4-certificate-payload-path-correction/1",
+  "date": "2026-07-27",
+  "status": "LOCKED_BEFORE_CANDIDATE_CONSTRUCTION",
+  "failed_candidate_build": {
+    "command": "python -m layercake.moonshot_campaign build-candidate 4",
+    "optimizer_or_benchmark_work_performed": false,
+    "campaign_state_changed": false,
+    "error": "headline raw artifact is outside the phase raw_runs directory"
+  },
+  "superseded_derived_files": {
+    "gate_observations": "results/moonshot/phase4/gate_observations.json",
+    "gate_observations_sha256": "e1a1e1db7097f86304d8f3e2d4a2b68796946247da85912f727f56c8b536e932",
+    "certificate_payload": "results/moonshot/phase4/certificate_payload.json",
+    "certificate_payload_sha256": "e681830f4dfb3b3076166fdc029c15691eb2fc69661c61146823fabfd40f39be",
+    "history_policy": "preserved as failed derived evidence; raw experiments, package, transfer certificate, benchmark, values, and thresholds are unchanged"
+  },
+  "correction": {
+    "gate_observations": "results/moonshot/phase4/raw_runs/gate_observations.json",
+    "certificate_payload": "results/moonshot/phase4/certificate_payload_v2.json",
+    "claim_hash_field": "raw_sha256",
+    "reason": "The generic campaign verifier requires promoted derivation inputs under results/moonshot/phase4/raw_runs and names their content hash raw_sha256.",
+    "scientific_values_changed": false,
+    "candidate_selection_changed": false,
+    "test_or_benchmark_access_added": false
+  }
+}
