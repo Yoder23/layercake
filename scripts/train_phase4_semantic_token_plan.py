@@ -452,7 +452,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
         )
         source = _extract_function(
             generated["text"], row["function_name"]
-        )
+        ) or ""
         passed, tests = _execute_tests(
             source, row["function_name"], row["tests"]
         )
