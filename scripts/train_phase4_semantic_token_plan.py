@@ -37,6 +37,9 @@ ABI_SHA256 = "d024de52144a2d797d0501acb7deb55575ffca7e33f72900beff599cf0a97761"
 PREREGISTRATION = (
     ROOT / "moonshot/phase4_semantic_token_plan_preregistration.json"
 )
+AMENDMENT = (
+    ROOT / "moonshot/phase4_semantic_token_plan_cache_amendment.json"
+)
 CHECKPOINT = (
     ROOT
     / "artifacts/moonshot/phase2_shallow_sparse_pretrained"
@@ -45,7 +48,7 @@ CHECKPOINT = (
 CACHE = (
     ROOT
     / "artifacts/moonshot/phase4/cache"
-    / "seed9824-attentive-v4-train.safetensors"
+    / "seed9824-attentive-v4-exact-span-train.safetensors"
 )
 DATASET = ROOT / "data/moonshot/phase4/python_functional_v1.jsonl"
 
@@ -261,6 +264,7 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         "seed": args.seed,
         "source_commit": _git_head(),
         "preregistration_sha256": _sha256(PREREGISTRATION),
+        "cache_amendment_sha256": _sha256(AMENDMENT),
         "core_checkpoint_sha256": core_metadata["checkpoint"]["sha256"],
         "cache_sha256": _sha256(CACHE),
         "optimizer_steps": args.steps,
@@ -293,6 +297,8 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         "status": "TRAINED",
         "protocol": PREREGISTRATION.relative_to(ROOT).as_posix(),
         "protocol_sha256": _sha256(PREREGISTRATION),
+        "cache_amendment": AMENDMENT.relative_to(ROOT).as_posix(),
+        "cache_amendment_sha256": _sha256(AMENDMENT),
         "source_commit": training["source_commit"],
         "seed": args.seed,
         "artifact": args.output.relative_to(ROOT).as_posix(),
@@ -469,6 +475,8 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
         "status": "PASS" if successes >= minimum else "FAIL",
         "protocol": PREREGISTRATION.relative_to(ROOT).as_posix(),
         "protocol_sha256": _sha256(PREREGISTRATION),
+        "cache_amendment": AMENDMENT.relative_to(ROOT).as_posix(),
+        "cache_amendment_sha256": _sha256(AMENDMENT),
         "artifact": args.artifact.relative_to(ROOT).as_posix(),
         "artifact_file_sha256": _sha256(args.artifact),
         "payload_hash": artifact["payload_hash"],

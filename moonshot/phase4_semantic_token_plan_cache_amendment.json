@@ -1,0 +1,52 @@
+{
+  "format": "layercake-phase4-semantic-token-plan-cache-amendment/1",
+  "date": "2026-07-27",
+  "status": "PREREGISTERED_BEFORE_FIRST_OPTIMIZER_STEP",
+  "parent": {
+    "path": "moonshot/phase4_semantic_token_plan_preregistration.json",
+    "sha256": "3d203d3592ba83c3a48237bdabe35792afaca6120593bda8a7ed2d5faa39aaca"
+  },
+  "superseded_cache_binding": {
+    "path": "artifacts/moonshot/phase4/cache/seed9824-attentive-v4-train.safetensors",
+    "sha256": "1ec99ec9bf188abfd4546884dd1272aac864045305397520aac4d6cd538ec184",
+    "reason": "This historical cache predates the lexical_copy_labels tensor required by the preregistered pointer loss."
+  },
+  "replacement_cache_binding": {
+    "path": "artifacts/moonshot/phase4/cache/seed9824-attentive-v4-exact-span-train.safetensors",
+    "sha256": "4177a690c3f0b5d13ed3391eefa61add6da9e3a52ca4b038bd8953a073ba53cc",
+    "evidence": "artifacts/moonshot/phase4/cache/seed9824-attentive-v4-exact-span-train.json",
+    "evidence_sha256": "8ff81fe58ea6d60f0101dbe8cf00998ca7a01e75452aa9d82254e6a9fdf65df6",
+    "dataset_sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa",
+    "frozen_core_checkpoint_sha256": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+    "rows": 960,
+    "causal_units": 72865,
+    "response_training_units": 41605,
+    "lexical_copy_training_units": 9535
+  },
+  "scope": {
+    "architecture_changed": false,
+    "data_rows_changed": false,
+    "semantic_states_changed_by_this_task": false,
+    "losses_or_weights_changed": false,
+    "seed_or_step_budget_changed": false,
+    "validation_or_test_accessed": false
+  },
+  "preflight_history": [
+    {
+      "launch": 1,
+      "optimizer_steps": 0,
+      "result": "CUDA memory-counter argument rejected before data load"
+    },
+    {
+      "launch": 2,
+      "optimizer_steps": 0,
+      "result": "CUDA memory-counter argument rejected before data load"
+    },
+    {
+      "launch": 3,
+      "optimizer_steps": 0,
+      "result": "required lexical_copy_labels key absent before first batch forward"
+    }
+  ],
+  "decision": "Replace only the unusable cache binding, commit the amendment and implementation change, then begin seed 10240 from initialization."
+}
