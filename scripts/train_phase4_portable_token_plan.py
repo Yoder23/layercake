@@ -637,20 +637,34 @@ def evaluate_functional(
 ) -> dict[str, Any]:
     if output_path.exists():
         raise RuntimeError("token-plan functional evidence is immutable")
+    protocol_document = json.loads(
+        protocol_path.read_text(encoding="utf-8")
+    )
+    expected_status = (
+        "PREREGISTERED_BEFORE_FINAL_TEST_EVALUATION"
+        if "evaluation" in protocol_document
+        else "PREREGISTERED_BEFORE_FUNCTIONAL_EVALUATION"
+    )
     protocol, artifact, tokenizer, model, device = _load_evaluation(
         protocol_path,
         artifact_path,
-        expected_status="PREREGISTERED_BEFORE_FUNCTIONAL_EVALUATION",
+        expected_status=expected_status,
     )
-    dataset_path = ROOT / protocol["validation"]["path"]
-    if _sha256(dataset_path) != protocol["validation"]["sha256"]:
+    evaluation = protocol.get("evaluation", protocol.get("validation"))
+    if not isinstance(evaluation, dict):
+        raise ValueError("token-plan functional protocol has no evaluation")
+    split = str(evaluation.get("split", "validation"))
+    if split not in {"validation", "test"}:
+        raise ValueError("token-plan functional split is unsupported")
+    dataset_path = ROOT / evaluation["path"]
+    if _sha256(dataset_path) != evaluation["sha256"]:
         raise ValueError("token-plan functional dataset hash mismatch")
     rows = [
         row
         for row in _load_rows(dataset_path)
-        if row["split"] == "validation"
+        if row["split"] == split
     ]
-    if len(rows) != protocol["validation"]["distinct_prompts"]:
+    if len(rows) != evaluation["distinct_prompts"]:
         raise ValueError("token-plan functional row count mismatch")
     sources = [
         tokenizer.encode_source(row["prompt"] + "\n") for row in rows
@@ -666,7 +680,7 @@ def evaluate_functional(
     started = time.perf_counter()
     actions = model.generate_actions(
         source_tensor,
-        maximum_actions=int(protocol["validation"]["maximum_output_actions"]),
+        maximum_actions=int(evaluation["maximum_output_actions"]),
     )
     if device.type == "cuda":
         torch.cuda.synchronize(device.index)
@@ -676,8 +690,8 @@ def evaluate_functional(
         rows, actions, sources
     ):
         raw = tokenizer.decode_actions(action_row, source_lexemes)
-        if len(raw) > int(protocol["validation"]["maximum_output_bytes"]):
-            raw = raw[: int(protocol["validation"]["maximum_output_bytes"])]
+        if len(raw) > int(evaluation["maximum_output_bytes"]):
+            raw = raw[: int(evaluation["maximum_output_bytes"])]
         text = raw.decode("utf-8", errors="replace")
         source, parse_status = _extract_function(text, row["function_name"])
         passed = False
@@ -700,7 +714,7 @@ def evaluate_functional(
             }
         )
     successes = sum(record["functional_success"] for record in records)
-    minimum = int(protocol["validation"]["minimum_functional_successes"])
+    minimum = int(evaluation["minimum_functional_successes"])
     evidence = {
         "format": "layercake-phase4-portable-token-plan-functional/1",
         "status": "PASS" if successes >= minimum else "FAIL",
@@ -712,7 +726,7 @@ def evaluate_functional(
         "tokenizer_sha256": tokenizer.hash(),
         "dataset": dataset_path.relative_to(ROOT).as_posix(),
         "dataset_sha256": _sha256(dataset_path),
-        "split": "validation",
+        "split": split,
         "distinct_prompts": len(records),
         "functional_successes": successes,
         "functional_failures": len(records) - successes,
@@ -726,7 +740,7 @@ def evaluate_functional(
         "autonomous_neural_generation": True,
         "dynamic_pointer_actions_neurally_selected": True,
         "teacher_at_inference": False,
-        "test_split_accessed": False,
+        "test_split_accessed": split == "test",
         "records": records,
     }
     evidence["evidence_sha256"] = _canonical_sha(evidence)
