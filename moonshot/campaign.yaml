@@ -13,7 +13,7 @@
       "reason": "separate same-scale/product comparisons; single-request cold timing; authoritative token accounting; promoted 100-prompt depth"
     }
   ],
-  "current_phase": 4,
+  "current_phase": 5,
   "forward_contract_amendments": [
     {
       "amendment_id": "phase4-python-functional-protocol/1",
@@ -309,7 +309,15 @@
       "handoff_sha256": "7e167fe8328da1a620d47f9ce81c02e0829a4908e5c4de68259a0ba5f78dea76",
       "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
       "phase_implementation_commit": "25888c9374b2b05878996de101cf7c75fbd665fa",
-      "raw_evidence_manifest_sha256": "8f09a08b28e5764fdb031b1d912db951ca145e3e9a6b6ef6b8266719cfb21fce"
+      "phase_release_commit": "219b04a612a835608f2fde844f76d6a6288400fa",
+      "phase_tag": "layercake-moonshot-phase4",
+      "raw_evidence_manifest_sha256": "8f09a08b28e5764fdb031b1d912db951ca145e3e9a6b6ef6b8266719cfb21fce",
+      "seal": "results/moonshot/phase4/seal.json",
+      "working_tree_clean_at_release": {
+        "command": "git status --porcelain=v1",
+        "porcelain": "",
+        "status": "CLEAN"
+      }
     }
   },
   "phases": {
@@ -317,8 +325,8 @@
     "phase1_benchmark_truth": "SEALED",
     "phase2_cpu_quality_speed": "SEALED",
     "phase3_training_speed": "SEALED",
-    "phase4_portable_domain": "PASS",
-    "phase5_multi_domain": "LOCKED",
+    "phase4_portable_domain": "SEALED",
+    "phase5_multi_domain": "OPEN",
     "phase6_orchestration": "LOCKED",
     "phase7_integrated_performance": "LOCKED",
     "phase8_independent_verification": "LOCKED"
