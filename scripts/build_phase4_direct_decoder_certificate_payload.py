@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import sys
 from typing import Any
+import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -21,6 +22,8 @@ from layercake.evaluation.phase4_evidence import (
     PACKAGE_SHA256,
     PAYLOAD,
     QWEN_DIGEST,
+    REGRESSION_JUNIT,
+    REGRESSION_SUMMARY,
     derive_phase4_metrics,
 )
 
@@ -78,10 +81,64 @@ def _claim(
     }
 
 
+def _regression_summary() -> dict[str, Any]:
+    junit_path = ROOT / REGRESSION_JUNIT
+    if not junit_path.is_file():
+        raise RuntimeError("Phase 4 regression JUnit evidence is absent")
+    document = ET.parse(junit_path)
+    root = document.getroot()
+    suites = [root] if root.tag == "testsuite" else list(
+        root.findall("testsuite")
+    )
+    totals = {
+        "tests": sum(int(row.attrib.get("tests", 0)) for row in suites),
+        "failures": sum(
+            int(row.attrib.get("failures", 0)) for row in suites
+        ),
+        "errors": sum(int(row.attrib.get("errors", 0)) for row in suites),
+        "skipped": sum(
+            int(row.attrib.get("skipped", 0)) for row in suites
+        ),
+        "duration_seconds": sum(
+            float(row.attrib.get("time", 0.0)) for row in suites
+        ),
+    }
+    return {
+        "format": "layercake-phase4-regression-tests/1",
+        "status": (
+            "PASS"
+            if totals["tests"] > 0
+            and totals["failures"] == 0
+            and totals["errors"] == 0
+            else "FAIL"
+        ),
+        "command": (
+            "pytest -q --junitxml="
+            "results/moonshot/phase4/regression_tests.xml"
+        ),
+        **totals,
+        "passed": (
+            totals["tests"]
+            - totals["failures"]
+            - totals["errors"]
+            - totals["skipped"]
+        ),
+        "junit": REGRESSION_JUNIT.as_posix(),
+        "junit_sha256": _sha256(junit_path),
+    }
+
+
 def build() -> dict[str, Any]:
-    if (ROOT / GATE_OBSERVATIONS).exists() or (ROOT / PAYLOAD).exists():
+    if (
+        (ROOT / GATE_OBSERVATIONS).exists()
+        or (ROOT / PAYLOAD).exists()
+        or (ROOT / REGRESSION_SUMMARY).exists()
+    ):
         raise RuntimeError("Phase 4 certificate inputs are immutable")
     derived = derive_phase4_metrics(ROOT)
+    regression = _regression_summary()
+    if regression["status"] != "PASS":
+        raise RuntimeError("Phase 4 regression suite failed")
     observations = {
         "format": "layercake-phase4-gate-observations/1",
         "status": "RAW_DERIVED",
@@ -237,6 +294,7 @@ def build() -> dict[str, Any]:
         ),
     }
     _write_immutable(ROOT / PAYLOAD, payload)
+    _write_immutable(ROOT / REGRESSION_SUMMARY, regression)
     return {
         "status": "EVIDENCE_READY",
         "gate_observations": GATE_OBSERVATIONS.as_posix(),
