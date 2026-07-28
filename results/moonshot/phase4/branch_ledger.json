@@ -766,6 +766,50 @@
       "gate_composition_or_decoding_threshold_sweeps_authorized": false,
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "portable-lexical-content-pointer-seed9840",
+      "disposition": "REJECTED_AUTONOMOUS_LEXICAL_EXPOSURE_DRIFT",
+      "architecture": {
+        "name": "PortableDomainDecoder",
+        "architecture": "byte_gru_pointer",
+        "semantic_parent_parameters_frozen": 379136,
+        "pointer_parameters_trained": 33025,
+        "total_parameters": 412161
+      },
+      "training": {
+        "seed": 9840,
+        "optimizer_steps": 1200,
+        "cpu_wall_seconds": 40.76145250000991,
+        "artifact_file_sha256": "90192d3ceec4c07b81d4f0773a6da22c12cc87aee510eff1a1ca41548052c902",
+        "payload_hash": "414d002aa646c23cb03805fdb27dbf0da1b151408d02f798b6e2f0dc2bdb1fbd",
+        "evidence_sha256": "33d2ee325c650be10ff495eff70faf1fb666ec623da58c358b0cb60c02c8e641"
+      },
+      "heldout_lexical_teacher_forced_probe": {
+        "distinct_prompts": 256,
+        "identifier_pointer_position_accuracy": 0.9824298024177551,
+        "identifier_pointer_byte_accuracy": 0.9824298024177551,
+        "identifier_next_byte_accuracy": 0.9586458206176758,
+        "copy_gate_probability_on_identifier_continuations": 0.9262420535087585,
+        "adjacent_copy_gate_conjunction_on_identifier_continuations": 0.8812645077705383,
+        "previous_copy_gate_probability_at_first_identifier_byte": 0.017725063487887383,
+        "evidence_sha256": "967f90e3f5fa19e8f3615f0b6ba53891f271120589b6ee0141ba0b76187804e5",
+        "promotion_credit": 0
+      },
+      "heldout_lexical_autonomous_probe": {
+        "distinct_prompts": 256,
+        "exact_def_name_open_parenthesis_prefixes": 84,
+        "exact_prefix_rate": 0.328125,
+        "required_exact_prefixes": 231,
+        "evidence_sha256": "96757e6254253feecd2a379972fb03b82425aefa5fee2a24061a2c3ef908bcd4",
+        "promotion_credit": 0
+      },
+      "measured_bottleneck": "The existing content pointer passes held-out teacher-forced lexical conformance but autonomous exact copying falls to 32.8%, proving exposure drift across independently selected positions. The frozen adjacent copy-gate conjunction already separates held-out identifier continuations at 88.1% from the first identifier byte at 1.8%.",
+      "next_bounded_change": "Close content-only attention. Combine the frozen lexical pointer and frozen semantic parent with a recurrent probabilistic transition, training only seven global offset logits on the same lexical training split. This uses the measured continuation state; it does not add semantic capacity, a cursor, forced units, or output rewriting.",
+      "content_pointer_width_weight_step_or_data_size_sweeps_authorized": false,
+      "functional_validation_accessed": false,
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

@@ -1,0 +1,109 @@
+{
+  "architecture": "byte_gru_pointer",
+  "artifact": "artifacts/moonshot/phase4/candidates/python-portable-lexical-pointer-seed9440.pt",
+  "artifact_file_sha256": "90192d3ceec4c07b81d4f0773a6da22c12cc87aee510eff1a1ca41548052c902",
+  "conclusion": "The learned content pointer finds the first unseen identifier byte on 60/64 prompts but loses monotonic source position thereafter. The next bounded change is a learned recurrent transition over the previous neural pointer distribution, not another capacity or loss sweep.",
+  "dataset": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+  "dataset_sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+  "distinct_prompts": 256,
+  "evidence_sha256": "967f90e3f5fa19e8f3615f0b6ba53891f271120589b6ee0141ba0b76187804e5",
+  "format": "layercake-phase4-portable-pointer-diagnostic/2",
+  "mean_copy_gate_conjunction_at_identifier_continuation": 0.8812645077705383,
+  "mean_identifier_continuation_copy_gate_probability": 0.9262420535087585,
+  "mean_identifier_copy_gate_probability": 0.9302703738212585,
+  "mean_nonidentifier_response_copy_gate_probability": 0.0761771947145462,
+  "mean_previous_copy_gate_at_first_identifier": 0.017725063487887383,
+  "payload_hash": "414d002aa646c23cb03805fdb27dbf0da1b151408d02f798b6e2f0dc2bdb1fbd",
+  "pointer_offset_histogram": [
+    {
+      "count": 4585,
+      "offset": 0
+    },
+    {
+      "count": 38,
+      "offset": 1
+    },
+    {
+      "count": 7,
+      "offset": -1
+    },
+    {
+      "count": 6,
+      "offset": 2
+    },
+    {
+      "count": 6,
+      "offset": 4
+    },
+    {
+      "count": 4,
+      "offset": 7
+    },
+    {
+      "count": 4,
+      "offset": -5
+    },
+    {
+      "count": 3,
+      "offset": -2
+    },
+    {
+      "count": 2,
+      "offset": 10
+    },
+    {
+      "count": 2,
+      "offset": 5
+    },
+    {
+      "count": 1,
+      "offset": -6
+    },
+    {
+      "count": 1,
+      "offset": 3
+    },
+    {
+      "count": 1,
+      "offset": -13
+    },
+    {
+      "count": 1,
+      "offset": -9
+    },
+    {
+      "count": 1,
+      "offset": -16
+    },
+    {
+      "count": 1,
+      "offset": 71
+    },
+    {
+      "count": 1,
+      "offset": 8
+    },
+    {
+      "count": 1,
+      "offset": -7
+    },
+    {
+      "count": 1,
+      "offset": 22
+    },
+    {
+      "count": 1,
+      "offset": -4
+    }
+  ],
+  "split": "validation",
+  "teacher_forced_first_identifier_pointer_byte_accuracy": 1.0,
+  "teacher_forced_first_identifier_pointer_position_accuracy": 1.0,
+  "teacher_forced_identifier_next_byte_accuracy": 0.9586458206176758,
+  "teacher_forced_identifier_pointer_byte_accuracy": 0.9824298024177551,
+  "teacher_forced_identifier_pointer_position_accuracy": 0.9824298024177551,
+  "teacher_forced_identifier_units": 4667,
+  "teacher_forced_response_next_byte_accuracy": 0.935206949710846,
+  "test_split_accessed": false,
+  "wrong_position_but_correct_byte_units": 0
+}
