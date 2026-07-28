@@ -1,0 +1,44 @@
+{
+  "format": "layercake-phase4-semantic-identity-recoverability-decision/1",
+  "date": "2026-07-27",
+  "status": "RECOVERABLE_COORDINATE_STATE_REPLACEMENT_AUTHORIZED",
+  "validation_cache": {
+    "path": "artifacts/moonshot/phase4/cache/seed9824-lexical-conformance-v1-validation-identity.safetensors",
+    "sha256": "aaa443ff0ac37407d457af0886d0f0d436177e338abbdf5e2d7c94aed737fbf6",
+    "evidence_sha256": "caa4106af271ac03763195632dfd037d2569171b6238d4e7777cee47402b86ca",
+    "identity_units": 1536,
+    "used_for_optimizer_training": false
+  },
+  "audit": {
+    "path": "results/moonshot/phase4/semantic-identity-recoverability-audit-v2.json",
+    "file_sha256": "c34ce2ecd2739a5fafa1914662d11572d40fe3e56fe842c0a709d9c4947694f1",
+    "evidence_sha256": "89eff92c024cf0c1e017f07f04feb66102ab03a3be54f9a17bd3375f62189614",
+    "fit_identity_units": 24908,
+    "evaluation_identity_units": 1536,
+    "heldout_only_identity_units": 527,
+    "validation_used_for_optimizer_training": false,
+    "test_split_accessed": false
+  },
+  "findings": {
+    "normalized_tied_coordinate_self_recovery": 1.0,
+    "bounded_oracle_state_replacement_unit_accuracy": 0.9993489583333334,
+    "bounded_oracle_state_replacement_exact_rows": 255,
+    "bounded_oracle_state_replacement_rows": 256,
+    "bounded_oracle_state_replacement_exact_row_rate": 0.99609375,
+    "bounded_oracle_state_replacement_heldout_only_accuracy": 0.9981024667931688,
+    "affine_selected_state_coordinate_heldout_only_accuracy": 0.635673624288425,
+    "affine_transition_coordinate_heldout_only_accuracy": 0.3870967741935484,
+    "interpretation": "The frozen semantic ABI retains enough information for lossless held-out identity: when the correct normalized tied-head coordinate is supplied through the bounded residual contract, 255/256 complete held-out rows are exact. Adjacent-state subtraction is inferior to the selected semantic state, while a single affine map is underpowered. The remaining limiter is nonlinear recovery of the tied coordinate, not the ABI output contract or action planner."
+  },
+  "decision": {
+    "canonical_semantic_abi_declared_lossy": false,
+    "state_replacement_coordinate_codec_authorized": true,
+    "architecture": "A selected-semantic-state nonlinear codec is supervised directly toward the frozen normalized tied-head coordinate, then returns a bounded residual that replaces the current host state toward that coordinate using the training-selected scale 16.",
+    "validation_cache_allowed_as_training_data": false,
+    "nearby_transition_or_linear_copy_sweeps_authorized": false,
+    "maximum_coordinate_codec_initial_runs": 1,
+    "phase4_campaign_state": "OPEN",
+    "phase5_campaign_state": "LOCKED",
+    "phase4_seal_or_tag_allowed_now": false
+  }
+}
