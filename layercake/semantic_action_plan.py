@@ -53,6 +53,7 @@ class SemanticActionPlanResidual(nn.Module):
         decoder_layers: int = 2,
         feedforward_width: int = 768,
         pointer_width: int = 128,
+        copy_transition_width: int = 0,
         dropout: float = 0.1,
         maximum_prompt_units: int = 128,
         maximum_response_units: int = 192,
@@ -73,11 +74,15 @@ class SemanticActionPlanResidual(nn.Module):
             encoder_layers,
             decoder_layers,
             feedforward_width,
-            pointer_width,
             maximum_prompt_units,
             maximum_response_units,
         ) <= 0:
             raise ValueError("semantic action-plan dimensions must be positive")
+        if pointer_width <= 0 or copy_transition_width < 0:
+            raise ValueError(
+                "pointer width must be positive and copy transition width "
+                "must be non-negative"
+            )
         if model_width % attention_heads:
             raise ValueError("model width must divide attention heads")
         if max_residual <= 0:
@@ -93,6 +98,7 @@ class SemanticActionPlanResidual(nn.Module):
         self.decoder_layers = int(decoder_layers)
         self.feedforward_width = int(feedforward_width)
         self.pointer_width = int(pointer_width)
+        self.copy_transition_width = int(copy_transition_width)
         self.dropout = float(dropout)
         self.maximum_prompt_units = int(maximum_prompt_units)
         self.maximum_response_units = int(maximum_response_units)
@@ -159,6 +165,19 @@ class SemanticActionPlanResidual(nn.Module):
         self.copy_semantic_value = nn.Linear(
             self.d_abi, self.d_abi, bias=False
         )
+        if self.copy_transition_width:
+            self.copy_transition_norm = nn.LayerNorm(self.d_abi)
+            self.copy_transition_input = nn.Linear(
+                self.d_abi, self.copy_transition_width
+            )
+            self.copy_transition_output = nn.Linear(
+                self.copy_transition_width, self.d_abi, bias=False
+            )
+            nn.init.zeros_(self.copy_transition_output.weight)
+        else:
+            self.copy_transition_norm = None
+            self.copy_transition_input = None
+            self.copy_transition_output = None
         self.plan_correction = nn.Linear(
             self.model_width, self.d_abi, bias=False
         )
@@ -179,6 +198,7 @@ class SemanticActionPlanResidual(nn.Module):
             "decoder_layers": self.decoder_layers,
             "feedforward_width": self.feedforward_width,
             "pointer_width": self.pointer_width,
+            "copy_transition_width": self.copy_transition_width,
             "dropout": self.dropout,
             "maximum_prompt_units": self.maximum_prompt_units,
             "maximum_response_units": self.maximum_response_units,
@@ -341,6 +361,22 @@ class SemanticActionPlanResidual(nn.Module):
             copy_value = self.copy_semantic_value(
                 self.input_norm(selected)
             )
+            if self.copy_transition_width:
+                previous_positions = (positions - 1).clamp(min=0)
+                previous = torch.gather(
+                    prompt_states,
+                    1,
+                    previous_positions[:, :, None].expand(
+                        -1, -1, prompt_states.shape[-1]
+                    ),
+                )
+                transition = self.copy_transition_norm(
+                    selected - previous
+                )
+                transition_value = self.copy_transition_output(
+                    F.gelu(self.copy_transition_input(transition))
+                )
+                copy_value = copy_value + transition_value
             semantic_value = torch.where(
                 fixed[:, :, None], semantic_value, copy_value
             )

@@ -64,3 +64,45 @@ def test_artifact_round_trip_preserves_abi_binding():
     assert restored.canonical_config() == model.canonical_config()
     assert payload["abi_version"] == "lc-test/1"
     assert payload["abi_sha256"] == "b" * 64
+
+
+def test_transition_codec_is_zero_initialized_and_uses_adjacent_states():
+    torch.manual_seed(11)
+    parent = _model()
+    config = parent.canonical_config()
+    config["copy_transition_width"] = 8
+    codec = SemanticActionPlanResidual(**config)
+    missing, unexpected = codec.load_state_dict(
+        parent.state_dict(), strict=False
+    )
+    assert not unexpected
+    assert set(missing) == {
+        "copy_transition_norm.weight",
+        "copy_transition_norm.bias",
+        "copy_transition_input.weight",
+        "copy_transition_input.bias",
+        "copy_transition_output.weight",
+    }
+    prompt = torch.randn(1, 4, 24)
+    current = torch.randn(1, 1, 24)
+    decoded = torch.randn(1, 1, 24)
+    pointer_action = torch.tensor([[parent.fixed_action_count + 2]])
+    parent_value = parent._realize(
+        pointer_action, decoded, current, prompt
+    )["residual"]
+    codec_value = codec._realize(
+        pointer_action, decoded, current, prompt
+    )["residual"]
+    assert torch.equal(parent_value, codec_value)
+
+    with torch.no_grad():
+        codec.copy_transition_output.weight.fill_(0.1)
+    changed_previous = prompt.clone()
+    changed_previous[:, 1] += 3.0
+    original = codec._realize(
+        pointer_action, decoded, current, prompt
+    )["residual"]
+    changed = codec._realize(
+        pointer_action, decoded, current, changed_previous
+    )["residual"]
+    assert not torch.equal(original, changed)
