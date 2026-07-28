@@ -23,6 +23,7 @@ from .portable_domain import canonical_json_hash, state_dict_hash
 
 TOKEN_PLAN_FORMAT = "layercake-portable-token-plan/1"
 TOKENIZER_FORMAT = "layercake-lossless-python-lexeme-pointer/1"
+GENERIC_TOKENIZER_FORMAT = "layercake-lossless-lexeme-pointer/2"
 LEXEME_PATTERN = (
     rb"[A-Za-z_][A-Za-z0-9_]*|\d+(?:\.\d+)?|==|!=|<=|>=|//|\*\*|->|\s+|."
 )
@@ -44,7 +45,12 @@ def _canonical_hash(payload: Any) -> str:
 class LosslessLexemePointerTokenizer:
     """Training-locked fixed lexemes plus exact dynamic source lexemes."""
 
-    def __init__(self, fixed_lexemes: Iterable[bytes]) -> None:
+    def __init__(
+        self,
+        fixed_lexemes: Iterable[bytes],
+        *,
+        format_version: str = TOKENIZER_FORMAT,
+    ) -> None:
         values = tuple(fixed_lexemes)
         if any(not value for value in values):
             raise ValueError("fixed lexemes must be non-empty")
@@ -52,7 +58,13 @@ class LosslessLexemePointerTokenizer:
             raise ValueError("fixed lexemes must be unique")
         if tuple(sorted(values)) != values:
             raise ValueError("fixed lexemes must use canonical byte ordering")
+        if format_version not in {
+            TOKENIZER_FORMAT,
+            GENERIC_TOKENIZER_FORMAT,
+        }:
+            raise ValueError("unsupported lossless lexeme tokenizer format")
         self.fixed_lexemes = values
+        self.format_version = format_version
         self.lexeme_to_id = {
             value: index
             for index, value in enumerate(values, start=SPECIAL_COUNT)
@@ -79,6 +91,13 @@ class LosslessLexemePointerTokenizer:
 
     @classmethod
     def build(cls, rows: Iterable[Mapping[str, Any]]):
+        """Build the locked Phase 4 Python tokenizer.
+
+        This compatibility constructor intentionally preserves the exact
+        Phase 4 document format. New configuration-driven domains use
+        :meth:`build_generic`.
+        """
+
         rows = list(rows)
         excluded = {
             str(row["function_name"]).encode("utf-8") for row in rows
@@ -93,6 +112,53 @@ class LosslessLexemePointerTokenizer:
                 )
         return cls(sorted(values))
 
+    @classmethod
+    def build_generic(
+        cls,
+        rows: Iterable[Mapping[str, Any]],
+    ) -> "LosslessLexemePointerTokenizer":
+        """Build a domain-neutral tokenizer from declared copy lexemes."""
+
+        rows = list(rows)
+        excluded: set[bytes] = set()
+        for row in rows:
+            copy_lexemes = row.get("copy_lexemes")
+            if (
+                not isinstance(copy_lexemes, list)
+                or not copy_lexemes
+                or any(
+                    not isinstance(value, str) or not value
+                    for value in copy_lexemes
+                )
+            ):
+                raise ValueError(
+                    "generic rows require non-empty string copy_lexemes"
+                )
+            for value in copy_lexemes:
+                pieces = cls.split(value)
+                if pieces != [value.encode("utf-8")]:
+                    raise ValueError(
+                        "each copy lexeme must be exactly one lossless lexeme"
+                    )
+                excluded.add(pieces[0])
+        values: set[bytes] = set()
+        for row in rows:
+            for field in ("prompt", "response"):
+                value = row.get(field)
+                if not isinstance(value, str):
+                    raise ValueError(
+                        f"generic row {field} must be a string"
+                    )
+                values.update(
+                    piece
+                    for piece in cls.split(value)
+                    if piece not in excluded
+                )
+        return cls(
+            sorted(values),
+            format_version=GENERIC_TOKENIZER_FORMAT,
+        )
+
     def encode_source(
         self, value: bytes | str
     ) -> tuple[list[int], list[bytes]]:
@@ -105,24 +171,44 @@ class LosslessLexemePointerTokenizer:
         self,
         response: bytes | str,
         *,
-        function_name: str,
+        function_name: str | None = None,
+        copy_lexemes: Iterable[str] | None = None,
         source_lexemes: list[bytes],
     ) -> list[int]:
-        identifier = function_name.encode("utf-8")
-        source_positions = [
-            index
-            for index, value in enumerate(source_lexemes)
-            if value == identifier
-        ]
-        if len(source_positions) != 1:
+        if function_name is not None and copy_lexemes is not None:
             raise ValueError(
-                "function identifier must occur exactly once as a source lexeme"
+                "declare function_name or copy_lexemes, not both"
             )
-        pointer_action = self.vocab_size + source_positions[0]
+        if copy_lexemes is None:
+            if function_name is None:
+                raise ValueError(
+                    "target encoding requires declared copy lexemes"
+                )
+            copy_lexemes = (function_name,)
+        dynamic: dict[bytes, int] = {}
+        for value in copy_lexemes:
+            if not isinstance(value, str) or not value:
+                raise ValueError("copy lexemes must be non-empty strings")
+            pieces = self.split(value)
+            if pieces != [value.encode("utf-8")]:
+                raise ValueError(
+                    "each copy lexeme must be exactly one lossless lexeme"
+                )
+            lexeme = pieces[0]
+            source_positions = [
+                index
+                for index, source in enumerate(source_lexemes)
+                if source == lexeme
+            ]
+            if len(source_positions) != 1:
+                raise ValueError(
+                    "each copy lexeme must occur exactly once in the source"
+                )
+            dynamic[lexeme] = self.vocab_size + source_positions[0]
         actions = []
         for piece in self.split(response):
-            if piece == identifier:
-                actions.append(pointer_action)
+            if piece in dynamic:
+                actions.append(dynamic[piece])
                 continue
             try:
                 actions.append(self.lexeme_to_id[piece])
@@ -159,7 +245,7 @@ class LosslessLexemePointerTokenizer:
 
     def canonical_dict(self) -> dict[str, Any]:
         return {
-            "format": TOKENIZER_FORMAT,
+            "format": self.format_version,
             "lexeme_pattern_ascii": LEXEME_PATTERN.decode("ascii"),
             "special_ids": {
                 "pad": PAD_ID,
@@ -190,7 +276,11 @@ class LosslessLexemePointerTokenizer:
             raise ValueError(
                 "token-plan tokenizer document is incomplete or ambiguous"
             )
-        if document.get("format") != TOKENIZER_FORMAT:
+        format_version = document.get("format")
+        if format_version not in {
+            TOKENIZER_FORMAT,
+            GENERIC_TOKENIZER_FORMAT,
+        }:
             raise ValueError("unsupported token-plan tokenizer format")
         if document.get("lexeme_pattern_ascii") != LEXEME_PATTERN.decode(
             "ascii"
@@ -222,9 +312,7 @@ class LosslessLexemePointerTokenizer:
             raise ValueError(
                 "token-plan fixed lexemes contain invalid hex"
             ) from error
-        return cls(
-            fixed_lexemes
-        )
+        return cls(fixed_lexemes, format_version=str(format_version))
 
     def hash(self) -> str:
         return _canonical_hash(self.canonical_dict())

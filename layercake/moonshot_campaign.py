@@ -873,6 +873,18 @@ def _phase_evidence_files(root: Path, phase: int) -> list[Path]:
             raise CampaignVerificationError(
                 f"Phase 4 evidence manifest failed: {error}"
             ) from error
+    if phase == 5:
+        try:
+            from .evaluation.phase5_evidence import (
+                Phase5EvidenceError,
+                phase5_evidence_files,
+            )
+
+            return phase5_evidence_files(root)
+        except Phase5EvidenceError as error:
+            raise CampaignVerificationError(
+                f"Phase 5 evidence manifest failed: {error}"
+            ) from error
     excluded = {
         "candidate.json", "candidate_verification.json", "release_certificate.json",
         "handoff.json", "seal.json",
@@ -990,6 +1002,27 @@ def _verify_phase_evidence(root: Path, phase: int, contracts: Mapping[str, Mappi
         except Phase4EvidenceError as error:
             raise CampaignVerificationError(
                 f"Phase 4 typed evidence failed: {error}"
+            ) from error
+    if phase == 5:
+        try:
+            from .evaluation.phase5_evidence import (
+                Phase5EvidenceError,
+                validate_phase5_bundle,
+            )
+
+            summary = validate_phase5_bundle(
+                root, _phase_dir(root, 5)
+            )
+            payload = read_document(
+                _lifecycle_path(root, 5, "certificate_payload.json")
+            )
+            validate_required_gates(
+                root, 5, payload, contracts["claim_contract.yaml"]
+            )
+            return summary
+        except Phase5EvidenceError as error:
+            raise CampaignVerificationError(
+                f"Phase 5 typed evidence failed: {error}"
             ) from error
     raise CampaignVerificationError(
         f"Phase {phase} requires its phase-specific typed verifier before candidate construction"
@@ -1239,6 +1272,45 @@ def promote_phase(root: Path, phase: int) -> dict[str, Any]:
         )
         validate_semantic_portability(certificate)
         validate_lineage_consistency(campaign, certificate, 4)
+    if phase == 5:
+        payload = read_document(
+            _lifecycle_path(root, 5, "certificate_payload.json")
+        )
+        payload_lineage = payload.get("lineage")
+        if not isinstance(payload_lineage, dict):
+            raise CampaignVerificationError(
+                "Phase 5 payload has no integrated lineage"
+            )
+        campaign["lineage"].update(
+            {
+                "abi_hash": payload["abi_hash"],
+                "cake_package_hashes": payload_lineage[
+                    "cake_package_hashes"
+                ],
+                "data_hashes": payload_lineage["data_hashes"],
+                "runtime_hashes": {
+                    **campaign["lineage"]["runtime_hashes"],
+                    **payload_lineage["runtime_hashes"],
+                },
+            }
+        )
+        certificate["claims"] = payload["claims"]
+        certificate["headline_claims"] = payload["headline_claims"]
+        certificate["claim_boundary"] = payload["claim_boundary"]
+        certificate["domains"] = payload["domains"]
+        certificate["package"] = payload["package"]
+        certificate["abi_version"] = payload["abi_version"]
+        certificate["abi_hash"] = payload["abi_hash"]
+        certificate["lineage"] = {
+            **campaign["lineage"],
+            "framework_commit": payload_lineage[
+                "framework_commit"
+            ],
+        }
+        validate_required_gates(
+            root, 5, certificate, contracts["claim_contract.yaml"]
+        )
+        validate_lineage_consistency(campaign, certificate, 5)
     certificate_path = _lifecycle_path(root, phase, "release_certificate.json")
     _atomic_write(certificate_path, certificate)
     handoff = {
@@ -1414,6 +1486,18 @@ def verify_sealed(root: Path, phase: int) -> dict[str, Any]:
                 raise CampaignVerificationError(
                     f"sealed Phase 2 typed evidence failed structural verification: {error}"
                 ) from error
+    if phase == 5:
+        try:
+            from .evaluation.phase5_evidence import (
+                Phase5EvidenceError,
+                validate_phase5_bundle,
+            )
+
+            validate_phase5_bundle(root, _phase_dir(root, 5))
+        except Phase5EvidenceError as error:
+            raise CampaignVerificationError(
+                f"sealed Phase 5 typed evidence failed: {error}"
+            ) from error
     remote = _git(root, "ls-remote", "--tags", "origin", f"refs/tags/{tag}", check=False)
     remote_status = "PUBLISHED" if remote else "NOT_VERIFIED_OR_NOT_PUBLISHED"
     return {
