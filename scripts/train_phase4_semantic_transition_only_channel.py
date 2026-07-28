@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-
-import scripts.train_phase4_semantic_transition_identity_codec as channel
+import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+import scripts.train_phase4_semantic_transition_identity_codec as channel
 
 
 def _configure_branch() -> None:
