@@ -1,16 +1,23 @@
 {
-  "format": "layercake-phase4-portable-python-cake-lock/4",
+  "format": "layercake-phase4-portable-python-cake-lock/5",
   "status": "OPEN",
   "scope": "One useful, lossless, portable Python cake attached to the sealed Phase 2 r3 English core",
   "supersedes": {
-    "format": "layercake-phase4-cpu-cake-training-lock/1",
-    "sha256": "2cdbe292fc0126aed898495dda4481a216211e111b6e24d0ba6a3098059410d2",
-    "reason": "Faster training is retired as a product gate; all training costs remain measured.",
+    "format": "layercake-phase4-portable-python-cake-lock/4",
+    "sha256": "3264af09fa0552407b0f7ec25e3267a0e1b94bcd49a84ca93675d5935346a9cc",
+    "reason": "Capability acquisition and certification preparation are GPU-first with CPU fallback; production CPU inference and portable transfer gates are unchanged.",
     "history_policy": "preserved in git history; no prior evidence is silently relabeled"
   },
   "current_acquisition_path": {
     "id": "direct_layercake_python_cake_training",
-    "device": "declared commodity CPU",
+    "device_priority": [
+      "compatible CUDA GPU",
+      "declared commodity CPU fallback"
+    ],
+    "declared_primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU, 16 GiB, CUDA capability 8.6",
+    "cpu_fallback_required": true,
+    "cpu_only_acquisition_is_promotion_gate": false,
+    "acquisition_device_changes_inference_contract": false,
     "external_abi_required": false,
     "future_independently_certified_abi_artifact_allowed": true,
     "future_abi_artifact_changes_current_evidence": false
@@ -24,6 +31,16 @@
     "cake_mutation_during_transfer_allowed": false,
     "teacher_or_source_model_required_at_inference": false,
     "inactive_cake_neural_compute_allowed": false
+  },
+  "device_portability_contract": {
+    "package_bytes_device_independent": true,
+    "tensor_hashes_device_independent": true,
+    "gpu_only_package_state_allowed": false,
+    "gpu_runtime_required_at_deployed_cpu_inference": false,
+    "cpu_only_host_installation_required": true,
+    "gpu_capable_host_installation_required": true,
+    "receiver_learning_on_either_host_allowed": false,
+    "same_payload_must_supply_cpu_quality_and_speed_evidence": true
   },
   "promotion_gates": {
     "functional_error_reduction_over_frozen_core_min": 5.0,
@@ -48,7 +65,10 @@
     "optimizer_steps",
     "trainable_parameters",
     "active_parameter_seconds_to_quality",
-    "end_to_end_cpu_wall_time_to_quality",
+    "end_to_end_acquisition_wall_time_to_quality",
+    "acquisition_device_name_and_precision",
+    "peak_accelerator_memory_bytes_when_used",
+    "cpu_fallback_command_and_measured_smoke_result",
     "peak_process_resident_memory_bytes",
     "energy_to_quality_when_meter_available",
     "all_seed_learning_curves",

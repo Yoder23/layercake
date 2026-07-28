@@ -151,6 +151,14 @@ preserved inference dominance, and physical activation of only the selected
 cake. The same rules apply to Java and every later domain. Weak functional
 evidence or synthetic proxy success cannot pass.
 
+Phase 4 acquisition is GPU-first on compatible hardware, with CPU as a required
+fallback. Acquisition device and wall time are measured but are not promotion
+gates. This changes no production requirement: the identical final payload must
+retain the sealed Phase 2 optimized-CPU inference advantage, low TTFT, lower
+active memory, persistent incremental state, and direct one-cake execution.
+Package bytes remain device-independent and must install without receiver
+learning on CPU-only and GPU-capable compatible hosts.
+
 The machine-readable version of this lock is
 `moonshot/phase4_cpu_cake_training_lock.json`.
 

@@ -187,3 +187,22 @@ the invalidation matrix and must recertify every dependent phase.
 From-scratch LayerCake training remains available as bounded research and
 fallback control, but faster training is not a product promotion gate and must
 not consume additional major campaign compute.
+
+## Phase 4 acquisition-device rule
+
+Phase 4 capability acquisition, cake training, bridge fitting, conformance
+training, and certification preparation are GPU-first when a compatible GPU is
+available. CPU execution is the required fallback and must remain supported,
+but CPU-only acquisition is not a promotion gate.
+
+This device policy does not relax the production inference contract. The same
+promoted cake payload must still pass the locked optimized-CPU throughput,
+latency, TTFT, active-memory, incremental-state, package-identity, semantic
+retention, and lossless-transfer gates. Training or evaluating a different
+payload on CPU cannot supply those inference results.
+
+Package transfer remains device-independent: identical authenticated package
+bytes and tensor hashes must install without receiver learning on both CPU-only
+and GPU-capable compatible hosts. GPU use may accelerate acquisition and
+certification, but it may not introduce a GPU-only package format, private
+device state, or inference dependency.

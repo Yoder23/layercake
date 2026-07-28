@@ -1,0 +1,54 @@
+{
+  "format": "layercake-phase4-gpu-first-acquisition-amendment/1",
+  "status": "ACTIVE_BEFORE_NEW_GPU_EXPERIMENTS",
+  "date": "2026-07-27",
+  "scope": "Phase 4 capability acquisition, cake training, conformance fitting, and certification preparation",
+  "user_directive": "Prioritize GPU to complete Phase 4; retain CPU fallback and maximize CPU inference speed.",
+  "detected_primary_hardware": {
+    "framework": "torch 2.7.1+cu118",
+    "cuda_available": true,
+    "cuda_runtime": "11.8",
+    "device_index": 0,
+    "device_name": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "total_memory_bytes": 17179344896,
+    "compute_capability": [
+      8,
+      6
+    ]
+  },
+  "device_policy": {
+    "acquisition_priority": [
+      "cuda:0",
+      "cpu"
+    ],
+    "cpu_fallback_required": true,
+    "cpu_only_acquisition_required_for_promotion": false,
+    "completed_cpu_experiments_reclassified": false,
+    "historical_evidence_modified": false
+  },
+  "unchanged_promotion_gates": {
+    "same_final_payload_for_quality_and_speed": true,
+    "optimized_cpu_inference_ratio_min": 2.0,
+    "phase2_cpu_throughput_retention_min": 0.9,
+    "cpu_ttft_and_memory_advantages_required": true,
+    "persistent_incremental_state_required": true,
+    "identical_package_bytes_across_hosts": true,
+    "mathematical_and_semantic_transfer_losslessness_required": true,
+    "receiver_training_or_calibration_allowed": false
+  },
+  "package_portability": {
+    "gpu_specific_package_state_allowed": false,
+    "cpu_only_install_and_inference_required": true,
+    "gpu_host_install_required": true,
+    "identical_payload_hash_required": true
+  },
+  "superseded_active_contract": {
+    "format": "layercake-phase4-portable-python-cake-lock/4",
+    "sha256": "3264af09fa0552407b0f7ec25e3267a0e1b94bcd49a84ca93675d5935346a9cc"
+  },
+  "active_contract": {
+    "path": "moonshot/phase4_cpu_cake_training_lock.json",
+    "format": "layercake-phase4-portable-python-cake-lock/5",
+    "sha256": "d9ee237548f6ce3e68ef546567da9ffa135e1e0b9409573d9a8b02664f54f91f"
+  }
+}
