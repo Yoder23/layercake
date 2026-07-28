@@ -387,16 +387,7 @@ def _generate(
         generated.append(int(token.item()))
         if first_output is None:
             first_output = time.perf_counter()
-        text = tokenizer.decode(
-            generated,
-            skip_special_tokens=True,
-            clean_up_tokenization_spaces=False,
-        )
-        if (
-            token.item() == tokenizer.eos_token_id
-            or "\n\n" in text
-            or (text.count("\n") >= 2 and text.endswith("\n"))
-        ):
+        if token.item() == tokenizer.eos_token_id:
             break
         result = core(
             token[:, None],
