@@ -1,0 +1,37 @@
+{
+  "format": "layercake-phase4-portable-token-plan-functional-protocol/1",
+  "status": "PREREGISTERED_BEFORE_FUNCTIONAL_EVALUATION",
+  "parent": "moonshot/phase4_portable_token_plan_preregistration.json",
+  "authorization": {
+    "lexical_evidence": "results/moonshot/phase4/python-portable-token-plan-seed10140-lexical.json",
+    "evidence_sha256": "a67471681a304002f3b58367b15b7d36ba3545bec8e083499abceccca25b0b79",
+    "exact_prefix_successes": 256,
+    "required_successes": 231,
+    "gate_passed": true
+  },
+  "artifact": {
+    "path": "artifacts/moonshot/phase4/candidates/python-portable-token-plan-seed10140.pt",
+    "file_sha256": "1aa4826ee1e83e17535b4e07d7518b9fedfd3188f0688fab874addcfc41d3ad7",
+    "payload_hash": "d0d57d58f17cdb58db049ed0bfb9e6d428909d90306c70c14f9d4530f64c5fec",
+    "spec_hash": "653561ca11ff58cc066550475a04583792203d3f9ee149e1604e80f8446596c1",
+    "tokenizer_sha256": "cac61492515c2dd94e9d2ce0e73ff9bd1b13415f3b4c7d0a920ecc962d5fda9c"
+  },
+  "validation": {
+    "path": "data/moonshot/phase4/python_functional_v1.jsonl",
+    "sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "split_sha256": "233f09a202a7a28605952d9348fa36bfe538e5163ac8b41f46b3a965bc62c75d",
+    "distinct_prompts": 64,
+    "generation_policy": "greedy_argmax_autoregressive_extended_vocabulary_actions",
+    "maximum_output_actions": 96,
+    "maximum_output_bytes": 320,
+    "minimum_functional_successes": 52,
+    "expected_function_name_required": true,
+    "every_unit_test_must_pass": true
+  },
+  "evaluation_device": "cuda:0",
+  "decision_rule": {
+    "authorize_seeds_10141_and_10142_only_if_this_gate_passes": true,
+    "test_split_access_allowed": false,
+    "transfer_or_speed_claim_from_a_different_payload_allowed": false
+  }
+}
