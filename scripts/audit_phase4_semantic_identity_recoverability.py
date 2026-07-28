@@ -464,6 +464,38 @@ def audit(args: argparse.Namespace) -> dict[str, Any]:
         torch.tensor(unique_targets, dtype=torch.long),
         normalized_weight,
     )
+    train_target_set = set(train_targets.tolist())
+    heldout_only_mask = [
+        int(target) not in train_target_set
+        for target in validation_targets.tolist()
+    ]
+    heldout_only_units = sum(heldout_only_mask)
+
+    def heldout_correct(predictions: list[int]) -> int:
+        return sum(
+            include and prediction == int(target)
+            for include, prediction, target in zip(
+                heldout_only_mask,
+                predictions,
+                validation_targets.tolist(),
+                strict=True,
+            )
+        )
+
+    def exact_rows(predictions: list[int]) -> int:
+        by_row: dict[int, list[bool]] = {}
+        for row_index, prediction, target in zip(
+            validation["row_indices"].tolist(),
+            predictions,
+            validation_targets.tolist(),
+            strict=True,
+        ):
+            by_row.setdefault(int(row_index), []).append(
+                prediction == int(target)
+            )
+        return sum(all(values) for values in by_row.values())
+
+    row_count = int(validation["unit_offsets"].numel() - 1)
     wall = time.perf_counter() - started
     records = [
         {
@@ -501,8 +533,9 @@ def audit(args: argparse.Namespace) -> dict[str, Any]:
         "evaluation_identity_units": int(unit_count),
         "evaluation_unique_target_ids": len(unique_targets),
         "target_id_sets_disjoint": not bool(
-            set(train_targets.tolist()) & set(validation_targets.tolist())
+            train_target_set & set(validation_targets.tolist())
         ),
+        "heldout_only_identity_units": heldout_only_units,
         "ridge_rule": {
             "formula": "lambda = 1e-3 * mean diagonal of centered X transpose X",
             "selected_state_lambda": float(selected_fit["ridge"]),
@@ -529,26 +562,86 @@ def audit(args: argparse.Namespace) -> dict[str, Any]:
             "correct": oracle_correct,
             "units": unit_count,
             "accuracy": oracle_correct / unit_count,
+            "heldout_only_correct": heldout_correct(oracle_predictions),
+            "heldout_only_units": heldout_only_units,
+            "heldout_only_accuracy": (
+                heldout_correct(oracle_predictions) / heldout_only_units
+            ),
+            "exact_rows": exact_rows(oracle_predictions),
+            "rows": row_count,
+            "exact_row_rate": exact_rows(oracle_predictions) / row_count,
         },
         "heldout_affine_selected_state_coordinate_recovery": {
             "correct": selected_coordinate_correct,
             "units": unit_count,
             "accuracy": selected_coordinate_correct / unit_count,
+            "heldout_only_correct": heldout_correct(
+                selected_coordinate_predictions
+            ),
+            "heldout_only_units": heldout_only_units,
+            "heldout_only_accuracy": (
+                heldout_correct(selected_coordinate_predictions)
+                / heldout_only_units
+            ),
+            "exact_rows": exact_rows(selected_coordinate_predictions),
+            "rows": row_count,
+            "exact_row_rate": (
+                exact_rows(selected_coordinate_predictions) / row_count
+            ),
         },
         "heldout_affine_transition_coordinate_recovery": {
             "correct": transition_coordinate_correct,
             "units": unit_count,
             "accuracy": transition_coordinate_correct / unit_count,
+            "heldout_only_correct": heldout_correct(
+                transition_coordinate_predictions
+            ),
+            "heldout_only_units": heldout_only_units,
+            "heldout_only_accuracy": (
+                heldout_correct(transition_coordinate_predictions)
+                / heldout_only_units
+            ),
+            "exact_rows": exact_rows(transition_coordinate_predictions),
+            "rows": row_count,
+            "exact_row_rate": (
+                exact_rows(transition_coordinate_predictions) / row_count
+            ),
         },
         "heldout_affine_selected_state_bounded_replacement": {
             "correct": selected_replacement_correct,
             "units": unit_count,
             "accuracy": selected_replacement_correct / unit_count,
+            "heldout_only_correct": heldout_correct(
+                selected_replacement_predictions
+            ),
+            "heldout_only_units": heldout_only_units,
+            "heldout_only_accuracy": (
+                heldout_correct(selected_replacement_predictions)
+                / heldout_only_units
+            ),
+            "exact_rows": exact_rows(selected_replacement_predictions),
+            "rows": row_count,
+            "exact_row_rate": (
+                exact_rows(selected_replacement_predictions) / row_count
+            ),
         },
         "heldout_affine_transition_bounded_replacement": {
             "correct": transition_replacement_correct,
             "units": unit_count,
             "accuracy": transition_replacement_correct / unit_count,
+            "heldout_only_correct": heldout_correct(
+                transition_replacement_predictions
+            ),
+            "heldout_only_units": heldout_only_units,
+            "heldout_only_accuracy": (
+                heldout_correct(transition_replacement_predictions)
+                / heldout_only_units
+            ),
+            "exact_rows": exact_rows(transition_replacement_predictions),
+            "rows": row_count,
+            "exact_row_rate": (
+                exact_rows(transition_replacement_predictions) / row_count
+            ),
         },
         "device": str(device),
         "device_name": (
