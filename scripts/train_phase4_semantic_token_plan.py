@@ -136,7 +136,7 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
     process = psutil.Process()
     peak_rss = int(process.memory_info().rss)
     if device.type == "cuda":
-        torch.cuda.reset_peak_memory_stats(device.index or 0)
+        torch.cuda.reset_peak_memory_stats()
     core, _, core_metadata = load_student(CHECKPOINT)
     embedding = core.output_weight.detach().float().to(device)
     del core
@@ -253,7 +253,7 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         raise RuntimeError("CPU fallback smoke produced non-finite residuals")
     wall = time.perf_counter() - started
     peak_accelerator = (
-        int(torch.cuda.max_memory_allocated(device.index or 0))
+        int(torch.cuda.max_memory_allocated())
         if device.type == "cuda"
         else 0
     )
