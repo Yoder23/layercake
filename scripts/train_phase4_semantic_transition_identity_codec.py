@@ -76,6 +76,16 @@ LEXICAL_DATASET_SHA256 = (
     "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb"
 )
 COPY_TRANSITION_WIDTH = 512
+COPY_TRANSITION_REPLACES_LINEAR = False
+TRAINING_FORMAT = (
+    "layercake-phase4-semantic-transition-identity-codec-training/1"
+)
+LEXICAL_EVALUATION_FORMAT = (
+    "layercake-phase4-semantic-transition-identity-codec-lexical-evaluation/1"
+)
+PYTHON_EVALUATION_FORMAT = (
+    "layercake-phase4-semantic-transition-identity-codec-python-evaluation/1"
+)
 TRAINABLE_TENSORS = frozenset(
     {
         "copy_transition_norm.weight",
@@ -134,6 +144,9 @@ def _new_model_from_parent() -> tuple[
     if config["copy_transition_width"] != 0:
         raise RuntimeError("parent already contains a transition codec")
     config["copy_transition_width"] = COPY_TRANSITION_WIDTH
+    config["copy_transition_replaces_linear"] = (
+        COPY_TRANSITION_REPLACES_LINEAR
+    )
     model = SemanticActionPlanResidual(**config)
     missing, unexpected = model.load_state_dict(
         parent.state_dict(), strict=False
@@ -279,7 +292,7 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         else 0
     )
     training = {
-        "format": "layercake-phase4-semantic-transition-identity-codec-training/1",
+        "format": TRAINING_FORMAT,
         "source_commit": _git_head(),
         "preregistration_sha256": _sha256(PREREGISTRATION),
         "parent_artifact_sha256": PARENT_SHA256,
@@ -319,7 +332,7 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
     output.parent.mkdir(parents=True, exist_ok=True)
     torch.save(artifact, output)
     evidence = {
-        "format": "layercake-phase4-semantic-transition-identity-codec-training/1",
+        "format": TRAINING_FORMAT,
         "status": "TRAINED",
         "protocol": PREREGISTRATION.relative_to(ROOT).as_posix(),
         "protocol_sha256": _sha256(PREREGISTRATION),
@@ -372,7 +385,11 @@ def _load_for_evaluation(
     artifact_path: Path, device: torch.device
 ) -> tuple[Any, Any, SemanticActionPlanResidual, dict[str, Any], dict[str, Any]]:
     cake, artifact = load_semantic_action_plan_artifact(artifact_path)
-    if cake.copy_transition_width != COPY_TRANSITION_WIDTH:
+    if (
+        cake.copy_transition_width != COPY_TRANSITION_WIDTH
+        or cake.copy_transition_replaces_linear
+        != COPY_TRANSITION_REPLACES_LINEAR
+    ):
         raise RuntimeError("artifact does not contain the locked transition codec")
     cake.to(device).eval()
     core, tokenizer, core_metadata = load_student(CHECKPOINT)
@@ -453,7 +470,7 @@ def evaluate_lexical(args: argparse.Namespace) -> dict[str, Any]:
     )
     minimum = 231
     evidence = {
-        "format": "layercake-phase4-semantic-transition-identity-codec-lexical-evaluation/1",
+        "format": LEXICAL_EVALUATION_FORMAT,
         "status": "PASS" if exact_successes >= minimum else "FAIL",
         "protocol": PREREGISTRATION.relative_to(ROOT).as_posix(),
         "protocol_sha256": _sha256(PREREGISTRATION),
@@ -564,7 +581,7 @@ def evaluate_python(args: argparse.Namespace) -> dict[str, Any]:
     successes = sum(record["functional_success"] for record in records)
     minimum = 52
     evidence = {
-        "format": "layercake-phase4-semantic-transition-identity-codec-python-evaluation/1",
+        "format": PYTHON_EVALUATION_FORMAT,
         "status": "PASS" if successes >= minimum else "FAIL",
         "protocol": PREREGISTRATION.relative_to(ROOT).as_posix(),
         "protocol_sha256": _sha256(PREREGISTRATION),

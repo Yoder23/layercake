@@ -54,6 +54,7 @@ class SemanticActionPlanResidual(nn.Module):
         feedforward_width: int = 768,
         pointer_width: int = 128,
         copy_transition_width: int = 0,
+        copy_transition_replaces_linear: bool = False,
         dropout: float = 0.1,
         maximum_prompt_units: int = 128,
         maximum_response_units: int = 192,
@@ -83,6 +84,10 @@ class SemanticActionPlanResidual(nn.Module):
                 "pointer width must be positive and copy transition width "
                 "must be non-negative"
             )
+        if copy_transition_replaces_linear and not copy_transition_width:
+            raise ValueError(
+                "transition replacement requires a non-zero codec width"
+            )
         if model_width % attention_heads:
             raise ValueError("model width must divide attention heads")
         if max_residual <= 0:
@@ -99,6 +104,9 @@ class SemanticActionPlanResidual(nn.Module):
         self.feedforward_width = int(feedforward_width)
         self.pointer_width = int(pointer_width)
         self.copy_transition_width = int(copy_transition_width)
+        self.copy_transition_replaces_linear = bool(
+            copy_transition_replaces_linear
+        )
         self.dropout = float(dropout)
         self.maximum_prompt_units = int(maximum_prompt_units)
         self.maximum_response_units = int(maximum_response_units)
@@ -199,6 +207,9 @@ class SemanticActionPlanResidual(nn.Module):
             "feedforward_width": self.feedforward_width,
             "pointer_width": self.pointer_width,
             "copy_transition_width": self.copy_transition_width,
+            "copy_transition_replaces_linear": (
+                self.copy_transition_replaces_linear
+            ),
             "dropout": self.dropout,
             "maximum_prompt_units": self.maximum_prompt_units,
             "maximum_response_units": self.maximum_response_units,
@@ -376,7 +387,11 @@ class SemanticActionPlanResidual(nn.Module):
                 transition_value = self.copy_transition_output(
                     F.gelu(self.copy_transition_input(transition))
                 )
-                copy_value = copy_value + transition_value
+                copy_value = (
+                    transition_value
+                    if self.copy_transition_replaces_linear
+                    else copy_value + transition_value
+                )
             semantic_value = torch.where(
                 fixed[:, :, None], semantic_value, copy_value
             )

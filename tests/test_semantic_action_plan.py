@@ -106,3 +106,23 @@ def test_transition_codec_is_zero_initialized_and_uses_adjacent_states():
         pointer_action, decoded, current, changed_previous
     )["residual"]
     assert not torch.equal(original, changed)
+
+
+def test_transition_only_channel_does_not_use_parent_linear_copy_value():
+    config = _model().canonical_config()
+    config["copy_transition_width"] = 8
+    config["copy_transition_replaces_linear"] = True
+    model = SemanticActionPlanResidual(**config).eval()
+    prompt = torch.randn(1, 4, 24)
+    current = torch.randn(1, 1, 24)
+    decoded = torch.randn(1, 1, 24)
+    pointer_action = torch.tensor([[model.fixed_action_count + 2]])
+    before = model._realize(
+        pointer_action, decoded, current, prompt
+    )["residual"]
+    with torch.no_grad():
+        model.copy_semantic_value.weight.normal_(mean=50.0, std=10.0)
+    after = model._realize(
+        pointer_action, decoded, current, prompt
+    )["residual"]
+    assert torch.equal(before, after)
