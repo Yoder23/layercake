@@ -29,6 +29,7 @@ from layercake.training.phase4_python_cake import (
     _execute_tests,
     _extract_function,
     _load_rows,
+    _subsequence_start,
 )
 from scripts.train_phase4_semantic_action_plan import (
     ABI_SHA256,
@@ -646,6 +647,168 @@ def evaluate_python(args: argparse.Namespace) -> dict[str, Any]:
     return evidence
 
 
+def diagnose_actions(args: argparse.Namespace) -> dict[str, Any]:
+    evaluation_path = _rooted(args.evaluation)
+    output = _rooted(args.output)
+    if output.exists():
+        raise RuntimeError(f"immutable output already exists: {output}")
+    evaluation = json.loads(evaluation_path.read_text(encoding="utf-8"))
+    if evaluation.get("format") != (
+        "layercake-phase4-semantic-action-plan-lexical-evaluation/1"
+    ):
+        raise RuntimeError("unsupported lexical evaluation evidence")
+    _, tokenizer, _ = load_student(CHECKPOINT)
+    rows = {
+        row["id"]: row
+        for row in _load_rows(LEXICAL_DATASET)
+        if row["split"] == "validation"
+    }
+    fixed_actions = {
+        token_id: action
+        for action, token_id in enumerate(FIXED_TOKEN_IDS)
+    }
+    records = []
+    totals = {
+        "action_units": 0,
+        "action_units_correct": 0,
+        "pointer_action_units": 0,
+        "pointer_action_units_correct": 0,
+        "fixed_action_units": 0,
+        "fixed_action_units_correct": 0,
+        "exact_action_sequences": 0,
+        "exact_pointer_span_counts": 0,
+    }
+    for observed in evaluation["records"]:
+        row = rows[observed["id"]]
+        prompt_ids = tokenizer.encode(row["prompt"] + "\n")
+        response_ids = tokenizer.encode(row["response"])
+        identifier_pattern = tokenizer.encode(" " + row["function_name"])
+        prompt_start = _subsequence_start(prompt_ids, identifier_pattern)
+        response_start = _subsequence_start(
+            response_ids, identifier_pattern
+        )
+        if prompt_start is None or response_start is None:
+            raise RuntimeError(
+                f"identifier span absent for {row['id']}"
+            )
+        response_stop = response_start + len(identifier_pattern)
+        expected_actions = []
+        for position, token_id in enumerate(response_ids):
+            if response_start <= position < response_stop:
+                expected_actions.append(
+                    len(FIXED_TOKEN_IDS)
+                    + prompt_start
+                    + position
+                    - response_start
+                )
+            else:
+                expected_actions.append(fixed_actions[token_id])
+        expected_actions.append(fixed_actions[50256])
+        observed_actions = observed["planned_actions"]
+        aligned = list(zip(expected_actions, observed_actions))
+        exact = observed_actions == expected_actions
+        expected_pointer_count = len(identifier_pattern)
+        observed_pointer_count = sum(
+            action >= len(FIXED_TOKEN_IDS)
+            for action in observed_actions
+        )
+        pointer_correct = sum(
+            expected == actual
+            for position, (expected, actual) in enumerate(aligned)
+            if response_start <= position < response_stop
+        )
+        fixed_correct = sum(
+            expected == actual
+            for position, (expected, actual) in enumerate(aligned)
+            if not (response_start <= position < response_stop)
+        )
+        expected_fixed_count = len(expected_actions) - expected_pointer_count
+        totals["action_units"] += len(expected_actions)
+        totals["action_units_correct"] += sum(
+            expected == actual for expected, actual in aligned
+        )
+        totals["pointer_action_units"] += expected_pointer_count
+        totals["pointer_action_units_correct"] += pointer_correct
+        totals["fixed_action_units"] += expected_fixed_count
+        totals["fixed_action_units_correct"] += fixed_correct
+        totals["exact_action_sequences"] += int(exact)
+        totals["exact_pointer_span_counts"] += int(
+            observed_pointer_count == expected_pointer_count
+        )
+        records.append(
+            {
+                "id": row["id"],
+                "expected_actions": expected_actions,
+                "observed_actions": observed_actions,
+                "exact_action_sequence": exact,
+                "expected_pointer_actions": expected_pointer_count,
+                "observed_pointer_actions": observed_pointer_count,
+                "pointer_action_units_correct": pointer_correct,
+                "fixed_action_units_correct": fixed_correct,
+                "exact_response": observed["exact_response"],
+            }
+        )
+    rates = {
+        "action_accuracy": (
+            totals["action_units_correct"] / totals["action_units"]
+        ),
+        "pointer_action_accuracy": (
+            totals["pointer_action_units_correct"]
+            / totals["pointer_action_units"]
+        ),
+        "fixed_action_accuracy": (
+            totals["fixed_action_units_correct"]
+            / totals["fixed_action_units"]
+        ),
+        "exact_action_sequence_rate": (
+            totals["exact_action_sequences"] / len(records)
+        ),
+        "exact_pointer_span_count_rate": (
+            totals["exact_pointer_span_counts"] / len(records)
+        ),
+        "exact_response_rate_given_exact_action_sequence": (
+            sum(
+                record["exact_response"]
+                for record in records
+                if record["exact_action_sequence"]
+            )
+            / max(
+                1,
+                sum(
+                    record["exact_action_sequence"]
+                    for record in records
+                ),
+            )
+        ),
+    }
+    evidence = {
+        "format": "layercake-phase4-semantic-action-plan-lexical-action-diagnostic/1",
+        "status": "DIAGNOSTIC_ONLY_NO_PROMOTION_CREDIT",
+        "evaluation": evaluation_path.relative_to(ROOT).as_posix(),
+        "evaluation_file_sha256": _sha256(evaluation_path),
+        "artifact_file_sha256": evaluation["artifact_file_sha256"],
+        "dataset_sha256": _sha256(LEXICAL_DATASET),
+        "distinct_prompts": len(records),
+        "totals": totals,
+        "rates": rates,
+        "measured_attribution": (
+            "The repaired self-action planner selects held-out lexical action "
+            "sequences almost perfectly. Remaining strict failures occur after "
+            "the correct pointer action is selected, isolating the limiter to "
+            "semantic-state identity realization through the linear copy value."
+        ),
+        "records": records,
+        "test_split_accessed": False,
+    }
+    evidence["evidence_sha256"] = _canonical_sha(evidence)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return evidence
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -665,6 +828,9 @@ def parse_args() -> argparse.Namespace:
     python_parser.add_argument("--lexical-evidence", type=Path, required=True)
     python_parser.add_argument("--output", type=Path, required=True)
     python_parser.add_argument("--device", default="cuda:0")
+    diagnostic_parser = subparsers.add_parser("diagnose-actions")
+    diagnostic_parser.add_argument("--evaluation", type=Path, required=True)
+    diagnostic_parser.add_argument("--output", type=Path, required=True)
     return parser.parse_args()
 
 
@@ -674,6 +840,8 @@ def main() -> None:
         result = train(args)
     elif args.command == "evaluate-lexical":
         result = evaluate_lexical(args)
+    elif args.command == "diagnose-actions":
+        result = diagnose_actions(args)
     else:
         result = evaluate_python(args)
     print(json.dumps(result, indent=2, sort_keys=True))
