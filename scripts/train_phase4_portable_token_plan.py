@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -44,6 +45,43 @@ def _git_head() -> str:
         capture_output=True,
         text=True,
     ).stdout.strip()
+
+
+def _load_training_protocol(
+    protocol_path: Path,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    declared = json.loads(protocol_path.read_text(encoding="utf-8"))
+    if declared.get("format") != (
+        "layercake-phase4-portable-token-plan-replication/1"
+    ):
+        return declared, declared
+    base_path = ROOT / declared["base_protocol"]["path"]
+    if _sha256(base_path) != declared["base_protocol"]["sha256"]:
+        raise ValueError("token-plan replication base protocol hash mismatch")
+    authorization_path = ROOT / declared["authorization"]["path"]
+    if _sha256(authorization_path) != declared["authorization"][
+        "file_sha256"
+    ]:
+        raise ValueError("token-plan replication authorization hash mismatch")
+    authorization = json.loads(
+        authorization_path.read_text(encoding="utf-8")
+    )
+    if (
+        authorization.get("status") != "PASS"
+        or authorization.get("evidence_sha256")
+        != declared["authorization"]["evidence_sha256"]
+    ):
+        raise ValueError("token-plan replication is not authorized")
+    protocol = copy.deepcopy(
+        json.loads(base_path.read_text(encoding="utf-8"))
+    )
+    if declared["only_change"] != "gpu_first_bounded_run.seed":
+        raise ValueError("token-plan replication changes more than the seed")
+    protocol["status"] = declared["status"]
+    protocol["gpu_first_bounded_run"]["seed"] = int(declared["seed"])
+    protocol["replication_authorization"] = declared["authorization"]
+    protocol["resolved_base_protocol"] = declared["base_protocol"]
+    return protocol, declared
 
 
 class _BalancedSampler:
@@ -234,7 +272,7 @@ def train(
     artifact_path: Path,
     evidence_path: Path,
 ) -> dict[str, Any]:
-    protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+    protocol, declared_protocol = _load_training_protocol(protocol_path)
     if (
         protocol["status"]
         != "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_TRAINING"
@@ -446,6 +484,11 @@ def train(
         "spec_hash": artifact["spec_hash"],
         "payload_hash": artifact["payload_hash"],
         "history": history,
+        "declared_protocol_format": declared_protocol["format"],
+        "resolved_base_protocol": protocol.get("resolved_base_protocol"),
+        "replication_authorization": protocol.get(
+            "replication_authorization"
+        ),
         "functional_validation_accessed_during_training": False,
         "lexical_validation_accessed_during_training": False,
         "test_split_accessed": False,
