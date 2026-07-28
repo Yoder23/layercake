@@ -1,0 +1,48 @@
+{
+  "architecture": "byte_gru_pointer_markov",
+  "artifact": "artifacts/moonshot/phase4/candidates/python-portable-markov-pointer-seed9440.pt",
+  "artifact_file_sha256": "bb4fe21a4fa650f31616840018476d8763015202865d50f25c8834a98a2f103a",
+  "conclusion": "The recurrent lexical pointer retains the frozen content pointer, copy gate, and semantic parent while learning only the probabilistic source-position transition.",
+  "dataset": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+  "dataset_sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+  "distinct_prompts": 256,
+  "evidence_sha256": "5846bbb80872881e7f82c94593167dd6bba66e503f3ca6586476cbac0b010f71",
+  "format": "layercake-phase4-portable-pointer-diagnostic/2",
+  "mean_copy_gate_conjunction_at_identifier_continuation": 0.8812645077705383,
+  "mean_first_identifier_transition_gate_probability": 0.017721937969326973,
+  "mean_identifier_continuation_copy_gate_probability": 0.9262420535087585,
+  "mean_identifier_continuation_transition_gate_probability": 0.8812645077705383,
+  "mean_identifier_copy_gate_probability": 0.9302703738212585,
+  "mean_nonidentifier_response_copy_gate_probability": 0.0761771947145462,
+  "mean_nonidentifier_response_transition_gate_probability": 0.01656326837837696,
+  "mean_previous_copy_gate_at_first_identifier": 0.017725063487887383,
+  "payload_hash": "363e2913f2c8b1ea0fc3cf87e9f54c4b28dff3a65ad3ecc25eb6064f18177c0b",
+  "pointer_offset_histogram": [
+    {
+      "count": 4656,
+      "offset": 0
+    },
+    {
+      "count": 8,
+      "offset": 1
+    },
+    {
+      "count": 2,
+      "offset": -5
+    },
+    {
+      "count": 1,
+      "offset": 2
+    }
+  ],
+  "split": "validation",
+  "teacher_forced_first_identifier_pointer_byte_accuracy": 1.0,
+  "teacher_forced_first_identifier_pointer_position_accuracy": 1.0,
+  "teacher_forced_identifier_next_byte_accuracy": 0.7602314352989197,
+  "teacher_forced_identifier_pointer_byte_accuracy": 0.9976430535316467,
+  "teacher_forced_identifier_pointer_position_accuracy": 0.9976430535316467,
+  "teacher_forced_identifier_units": 4667,
+  "teacher_forced_response_next_byte_accuracy": 0.8594800233840942,
+  "test_split_accessed": false,
+  "wrong_position_but_correct_byte_units": 0
+}
