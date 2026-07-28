@@ -1,0 +1,67 @@
+{
+  "format": "layercake-phase4-portable-max-projection-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_CONVERSION",
+  "parent": "moonshot/phase4_portable_markov_pointer_preregistration.json",
+  "parent_artifact": {
+    "path": "artifacts/moonshot/phase4/candidates/python-portable-markov-pointer-seed9440.pt",
+    "file_sha256": "bb4fe21a4fa650f31616840018476d8763015202865d50f25c8834a98a2f103a",
+    "payload_hash": "363e2913f2c8b1ea0fc3cf87e9f54c4b28dff3a65ad3ecc25eb6064f18177c0b",
+    "parameters": 412168,
+    "all_parameter_tensors_must_remain_bit_identical": true
+  },
+  "measured_parent_failure": {
+    "heldout_identifier_top_position_accuracy": 0.9976430535316467,
+    "heldout_identifier_top_position_byte_accuracy": 0.9976430535316467,
+    "heldout_identifier_next_byte_accuracy_after_sum_aggregation": 0.7602314352989197,
+    "heldout_autonomous_exact_prefix_rate": 0.015625,
+    "teacher_forced_evidence_sha256": "5846bbb80872881e7f82c94593167dd6bba66e503f3ca6586476cbac0b010f71",
+    "autonomous_evidence_sha256": "0cc070cc75b39f5ac1fc6fc825533e8a6ec8867a67fb132f169c4fc32975f4ce"
+  },
+  "measured_bottleneck": "The recurrent neural pointer selects the correct source position on 99.76% of held-out identifier units, but summing probability mass across all repeated occurrences of each raw byte lets repeated wrong byte values outvote the single correct top position.",
+  "single_bounded_change": {
+    "existing_class": "layercake.portable_domain.PortableDomainDecoder",
+    "architecture": "byte_gru_pointer_markov_max",
+    "position_to_byte_projection": "maximum neural log-attention score among source positions carrying each byte value, followed by softmax normalization over 256 byte values",
+    "previous_pointer_state": "unchanged probabilistic Markov pointer",
+    "copy_gate": "unchanged frozen neural copy gate",
+    "new_parameters": 0,
+    "trained_parameters": 0,
+    "parent_parameters_changed": 0,
+    "training_rows_accessed": 0,
+    "validation_rows_accessed_during_conversion": 0,
+    "hard_argmax_position_gather": false,
+    "deterministic_cursor": false,
+    "forced_source_position_or_output_unit": false,
+    "output_rewrite": false
+  },
+  "neural_generation_contract": {
+    "every_output_byte_selected_from_normalized_neural_byte_distribution": true,
+    "position_scores_remain_neural_and_probabilistic": true,
+    "max_pooling_is_before_byte_distribution_normalization": true,
+    "greedy_argmax_is_only_the_declared_final_decoding_policy": true,
+    "template_retrieval_forcing_or_stored_answer": false
+  },
+  "lexical_validation": {
+    "dataset": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+    "dataset_sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+    "distinct_prompts": 256,
+    "minimum_teacher_forced_pointer_byte_accuracy": 0.95,
+    "minimum_teacher_forced_identifier_next_byte_accuracy": 0.9,
+    "minimum_autonomous_exact_prefix_successes": 231,
+    "functional_promotion_credit": 0,
+    "test_split_access_allowed": false
+  },
+  "functional_validation": {
+    "path": "data/moonshot/phase4/python_functional_v1.jsonl",
+    "sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "distinct_prompts": 64,
+    "minimum_strict_functional_successes": 52,
+    "authorized_only_if_both_lexical_gates_pass": true,
+    "test_split_access_allowed": false
+  },
+  "decision_rule": {
+    "if_lexical_probe_fails": "Preserve and close this recurrent raw-byte pointer lineage. Do not tune pooling, temperature, thresholds, gates, offsets, or decoding.",
+    "if_lexical_probe_passes": "Run the locked functional validation once and authorize two additional preregistered semantic seeds only after 52/64 functional success.",
+    "speed_quality_and_transfer_must_use_the_same_final_payload": true
+  }
+}
