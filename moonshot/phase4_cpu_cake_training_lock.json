@@ -1,11 +1,11 @@
 {
-  "format": "layercake-phase4-portable-python-cake-lock/5",
+  "format": "layercake-phase4-portable-python-cake-lock/6",
   "status": "OPEN",
   "scope": "One useful, lossless, portable Python cake attached to the sealed Phase 2 r3 English core",
   "supersedes": {
-    "format": "layercake-phase4-portable-python-cake-lock/4",
-    "sha256": "3264af09fa0552407b0f7ec25e3267a0e1b94bcd49a84ca93675d5935346a9cc",
-    "reason": "Capability acquisition and certification preparation are GPU-first with CPU fallback; production CPU inference and portable transfer gates are unchanged.",
+    "format": "layercake-phase4-portable-python-cake-lock/5",
+    "sha256": "d9ee237548f6ce3e68ef546567da9ffa135e1e0b9409573d9a8b02664f54f91f",
+    "reason": "Recognize the already implemented direct neural-decoder host path as a separately versioned canonical one-cake interface without relabeling it as semantic residual fusion. GPU-first acquisition and every production CPU, package, transfer, behavior-retention, and immutability gate remain unchanged.",
     "history_policy": "preserved in git history; no prior evidence is silently relabeled"
   },
   "current_acquisition_path": {
@@ -22,9 +22,28 @@
     "future_independently_certified_abi_artifact_allowed": true,
     "future_abi_artifact_changes_current_evidence": false
   },
+  "canonical_attachment_modes": {
+    "semantic_residual": {
+      "contract": "moonshot/phase2_canonical_semantic_abi_r3.json",
+      "sha256": "d024de52144a2d797d0501acb7deb55575ffca7e33f72900beff599cf0a97761",
+      "version": "lc-semantic-gpt2-768/1",
+      "scope": "same-shape residual fusion before the frozen tied output head"
+    },
+    "direct_neural_decoder": {
+      "contract": "moonshot/phase4_canonical_direct_decoder_abi_v1.json",
+      "sha256": "de765899700aefe22bfe6c9d00ed5b0c1f87a7ef864cf7211aa8aa4491a0742a",
+      "version": "lc-direct-neural-decoder/1",
+      "scope": "one explicitly selected neural cake with UTF-8 input/output and persistent incremental state",
+      "semantic_residual_fusion_claimed": false,
+      "phase5_or_phase6_credit_granted": false
+    },
+    "exactly_one_mode_must_be_certified_for_phase4": true,
+    "mode_may_not_be_relabelled": true
+  },
   "execution_contract": {
     "english_core_weights_must_remain_byte_identical": true,
     "canonical_semantic_abi_must_remain_byte_identical": true,
+    "canonical_direct_decoder_abi_must_remain_byte_identical_when_used": true,
     "receiver_training_allowed_during_transfer": false,
     "receiver_domain_data_allowed_during_transfer": false,
     "receiver_specific_calibration_allowed": false,
@@ -57,7 +76,9 @@
     "core_only_operation_preserved": true,
     "direct_one_cake_operation_without_router": true,
     "inactive_installed_cake_neural_compute": 0,
-    "minimum_independent_training_seeds_and_receiver_hosts": 3
+    "minimum_independent_training_seeds_and_receiver_hosts": 3,
+    "canonical_attachment_mode_conformance": true,
+    "direct_mode_claims_semantic_residual_fusion": false
   },
   "required_accounting": [
     "raw_utf8_training_bytes_exposed",
@@ -90,6 +111,8 @@
     "synthetic_proxy_success_counts_as_python_functional_success": false,
     "installation_time_receiver_learning_counts_as_lossless_transfer": false,
     "phase4_may_begin_before_phase3_is_sealed": false,
-    "unmeasured_training_cost_called_free_allowed": false
+    "unmeasured_training_cost_called_free_allowed": false,
+    "direct_decoder_relabelled_as_semantic_residual_allowed": false,
+    "direct_one_cake_evidence_counts_as_phase5_or_phase6_allowed": false
   }
 }

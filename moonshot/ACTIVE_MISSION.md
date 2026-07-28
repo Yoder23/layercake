@@ -55,10 +55,14 @@ compared under both fixed raw-byte exposure and fixed wall-clock or compute
 exposure. Unavoidable differences are explicit. Promoted branches require at
 least three independent seeds.
 
-Portable cakes consume a versioned canonical semantic ABI rather than private
-host token IDs. Compatibility may honestly be limited to one tokenizer class,
-ABI version, and fusion contract. Cross-representation portability cannot be
-claimed without identical conformance tests.
+Portable cakes consume a versioned canonical interface. Fused residual cakes
+consume the semantic ABI rather than private host token IDs. A directly
+selected one-cake neural decoder may instead use the separately locked
+byte-facing direct-decoder ABI; that mode is not semantic fusion and earns no
+top-k, routing, or multi-domain credit. Compatibility may honestly be limited
+to one tokenizer class, ABI version, and execution contract.
+Cross-representation portability cannot be claimed without identical
+conformance tests.
 
 Phase 3 began only after the corrected Phase 2 release was committed, sealed
 under `layercake-moonshot-phase2-r3`, and independently verified. Its
@@ -101,9 +105,11 @@ encyclopedic recall to the core.
 
 Adding a cake must not require core retraining. The core must operate alone,
 with one directly selected cake and no router, or with routed installed cakes.
-Inactive cakes receive no neural compute. All cakes attach through the
-versioned canonical semantic ABI while the external boundary remains UTF-8
-bytes.
+Inactive cakes receive no neural compute. Fused cakes attach through the
+versioned canonical semantic ABI. A directly selected neural decoder may use
+the canonical direct-decoder ABI for the one-cake path, while the external
+boundary remains UTF-8 bytes. Later multi-domain composition and routing remain
+separate gates.
 
 The machine-readable boundary is
 `moonshot/phase2_core_cake_boundary.json`.
@@ -148,8 +154,11 @@ Phase 4 proves useful Python behavior, safe installation, package and core
 immutability, identical package transfer, mathematical equivalence, 100%
 retention of the locked source-host success set, no receiver learning,
 preserved inference dominance, and physical activation of only the selected
-cake. The same rules apply to Java and every later domain. Weak functional
-evidence or synthetic proxy success cannot pass.
+cake. It may do so through the unchanged semantic-residual ABI or through the
+separately locked direct neural-decoder ABI. Direct mode proves only explicit
+one-cake execution; it cannot borrow credit for later fusion, multi-domain, or
+routing gates. The same rules apply to Java and every later domain. Weak
+functional evidence or synthetic proxy success cannot pass.
 
 Phase 4 acquisition is GPU-first on compatible hardware, with CPU as a required
 fallback. Acquisition device and wall time are measured but are not promotion

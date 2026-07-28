@@ -155,6 +155,11 @@ implementation is not a hard limit.
   is a measured, certified property.
 * Semantic portability requires a non-empty, frozen source-host success set. Structural or
   mathematical identity alone cannot satisfy it.
+* Phase 4 may use either the locked same-shape semantic-residual ABI or the locked
+  direct neural-decoder ABI. The latter is valid only for an explicitly selected
+  one-cake path and cannot claim fusion, top-k composition, routing, or multi-domain
+  proof. Both modes require autonomous neural generation, exact signed transfer,
+  receiver behavior retention, and the same CPU inference gates.
 * Synthetic tasks or packages may be used only where the contract explicitly permits them;
   they never become real functional evidence through relabeling.
 * Never edit a generated release certificate to change a result. Regenerate it from raw data.
@@ -206,3 +211,21 @@ bytes and tensor hashes must install without receiver learning on both CPU-only
 and GPU-capable compatible hosts. GPU use may accelerate acquisition and
 certification, but it may not introduce a GPU-only package format, private
 device state, or inference dependency.
+
+## Phase 4 canonical attachment modes
+
+Phase 4 certifies one useful Python cake through one of two explicit,
+content-addressed interfaces:
+
+* `lc-semantic-gpt2-768/1` for a same-shape residual fused before the frozen
+  English-core head; or
+* `lc-direct-neural-decoder/1` for one explicitly selected neural cake that
+  accepts and returns UTF-8 bytes while preserving persistent incremental
+  neural state.
+
+The direct mode is not a semantic-residual claim and must never be relabeled as
+one. It is nevertheless a valid LayerCake host path when the installed package
+is non-executable, signed, immutable, autonomously neural, lossless at the byte
+boundary, device-independent, and behavior-identical across certified
+receivers. It does not satisfy later multi-domain fusion or routing gates;
+Phases 5 and 6 remain responsible for those proofs.
