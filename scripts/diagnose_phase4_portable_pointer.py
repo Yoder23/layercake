@@ -49,6 +49,7 @@ def main() -> int:
         "byte_gru_pointer_transition",
         "byte_gru_pointer_self_transition",
         "byte_gru_pointer_markov",
+        "byte_gru_pointer_markov_max",
     }:
         raise ValueError("diagnostic requires a neural-pointer artifact")
     rows = [
@@ -180,6 +181,11 @@ def main() -> int:
                 "The recurrent lexical pointer retains the frozen content "
                 "pointer, copy gate, and semantic parent while learning only "
                 "the probabilistic source-position transition."
+            ),
+            "byte_gru_pointer_markov_max": (
+                "The recurrent lexical pointer uses max-pooled neural "
+                "position-to-byte projection so repeated source-byte values "
+                "cannot outvote the highest-attention source position."
             ),
         }[model.architecture],
     }

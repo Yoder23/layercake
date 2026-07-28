@@ -50,6 +50,7 @@ class PortableDomainSpec:
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
             "byte_gru_pointer_markov",
+            "byte_gru_pointer_markov_max",
         }:
             raise ValueError(f"unsupported decoder architecture: {self.architecture}")
         if self.embedding_width <= 0 or self.pointer_width <= 0:
@@ -108,6 +109,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
             "byte_gru_pointer_markov",
+            "byte_gru_pointer_markov_max",
         }:
             self.byte_embedding = nn.Embedding(256, embedding_width)
             self.recurrent = nn.GRU(
@@ -124,6 +126,7 @@ class PortableDomainDecoder(nn.Module):
                 "byte_gru_pointer_transition",
                 "byte_gru_pointer_self_transition",
                 "byte_gru_pointer_markov",
+                "byte_gru_pointer_markov_max",
             }:
                 self.copy_query = nn.Linear(
                     self.hidden_width, pointer_width, bias=False
@@ -140,6 +143,7 @@ class PortableDomainDecoder(nn.Module):
                     "byte_gru_pointer_transition",
                     "byte_gru_pointer_self_transition",
                     "byte_gru_pointer_markov",
+                    "byte_gru_pointer_markov_max",
                 }:
                     self.copy_transition_logits = nn.Parameter(
                         torch.zeros(len(POINTER_TRANSITION_OFFSETS))
@@ -172,6 +176,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
             "byte_gru_pointer_markov",
+            "byte_gru_pointer_markov_max",
         }:
             embedded = self.byte_embedding(byte_ids)
             hidden, _ = self.recurrent(torch.cat([embedded, anchors], dim=-1))
@@ -180,6 +185,7 @@ class PortableDomainDecoder(nn.Module):
                 "byte_gru_pointer_transition",
                 "byte_gru_pointer_self_transition",
                 "byte_gru_pointer_markov",
+                "byte_gru_pointer_markov_max",
             }:
                 return self.pointer_forward(byte_ids, hidden)["logits"]
             return self.decoder(hidden)
@@ -204,6 +210,26 @@ class PortableDomainDecoder(nn.Module):
         return self._scatter_pointer_probabilities(
             torch.softmax(scores, dim=-1), byte_ids
         )
+
+    def _max_pointer_distribution(
+        self,
+        probabilities: torch.Tensor,
+        byte_ids: torch.Tensor,
+    ) -> torch.Tensor:
+        log_probabilities = torch.log(probabilities.clamp_min(1e-12))
+        output = log_probabilities.new_full(
+            (*log_probabilities.shape[:-1], 256),
+            torch.finfo(log_probabilities.dtype).min,
+        )
+        values = byte_ids[:, None, :].expand_as(log_probabilities)
+        output.scatter_reduce_(
+            2,
+            values,
+            log_probabilities,
+            reduce="amax",
+            include_self=True,
+        )
+        return torch.softmax(output, dim=-1)
 
     def _shift_pointer_probabilities(
         self,
@@ -251,6 +277,7 @@ class PortableDomainDecoder(nn.Module):
                     in {
                         "byte_gru_pointer_self_transition",
                         "byte_gru_pointer_markov",
+                        "byte_gru_pointer_markov_max",
                     }
                 ):
                     gate = (
@@ -303,6 +330,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
             "byte_gru_pointer_markov",
+            "byte_gru_pointer_markov_max",
         }:
             raise ValueError("neural pointer path is disabled")
         if recurrent is None:
@@ -335,6 +363,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
             "byte_gru_pointer_markov",
+            "byte_gru_pointer_markov_max",
         }:
             (
                 pointer_probabilities,
@@ -342,9 +371,14 @@ class PortableDomainDecoder(nn.Module):
             ) = self._transition_pointer_probabilities(
                 content_probabilities, recurrent
             )
-        pointer = self._scatter_pointer_probabilities(
-            pointer_probabilities, byte_ids
-        )
+        if self.architecture == "byte_gru_pointer_markov_max":
+            pointer = self._max_pointer_distribution(
+                pointer_probabilities, byte_ids
+            )
+        else:
+            pointer = self._scatter_pointer_probabilities(
+                pointer_probabilities, byte_ids
+            )
         logits, gate_logits = self._mix_pointer_logits(
             recurrent, pointer
         )
@@ -388,6 +422,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
             "byte_gru_pointer_markov",
+            "byte_gru_pointer_markov_max",
         }:
             if previous_pointer_attention is None:
                 transition_gate_logits = torch.full(
@@ -406,6 +441,7 @@ class PortableDomainDecoder(nn.Module):
                     in {
                         "byte_gru_pointer_self_transition",
                         "byte_gru_pointer_markov",
+                        "byte_gru_pointer_markov_max",
                     }
                 ):
                     if previous_copy_gate_probability is None:
@@ -431,9 +467,14 @@ class PortableDomainDecoder(nn.Module):
                 pointer_attention = pointer_attention / pointer_attention.sum(
                     dim=-1, keepdim=True
                 ).clamp_min(1e-12)
-        pointer = self._scatter_pointer_probabilities(
-            pointer_attention[:, None], pointer_byte_ids
-        )[:, 0]
+        if self.architecture == "byte_gru_pointer_markov_max":
+            pointer = self._max_pointer_distribution(
+                pointer_attention[:, None], pointer_byte_ids
+            )[:, 0]
+        else:
+            pointer = self._scatter_pointer_probabilities(
+                pointer_attention[:, None], pointer_byte_ids
+            )[:, 0]
         logits, gate_logits = self._mix_pointer_logits(
             recurrent, pointer
         )
@@ -455,6 +496,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
             "byte_gru_pointer_markov",
+            "byte_gru_pointer_markov_max",
         }:
             raise ValueError("persistent incremental state requires byte_gru")
         if byte_ids.ndim != 2 or byte_ids.shape[1] == 0:
@@ -492,12 +534,14 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
             "byte_gru_pointer_markov",
+            "byte_gru_pointer_markov_max",
         }:
             pointer_keys = self.copy_key(recurrent)
             if self.architecture in {
                 "byte_gru_pointer_transition",
                 "byte_gru_pointer_self_transition",
                 "byte_gru_pointer_markov",
+                "byte_gru_pointer_markov_max",
             }:
                 pointer_result = self.pointer_forward(byte_ids, recurrent)
                 next_logits = pointer_result["logits"][:, -1]
@@ -552,6 +596,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
             "byte_gru_pointer_markov",
+            "byte_gru_pointer_markov_max",
         }:
             raise ValueError("persistent incremental state requires byte_gru")
         if byte_ids.ndim == 1:
@@ -582,6 +627,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
             "byte_gru_pointer_markov",
+            "byte_gru_pointer_markov_max",
         }:
             pointer_keys = torch.cat(
                 (

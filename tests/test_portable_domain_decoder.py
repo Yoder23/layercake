@@ -351,3 +351,50 @@ def test_markov_pointer_incremental_logits_match_full_prefix():
     actual = decoder.decode_incremental(observed, state)
     expected = decoder(torch.cat([prompt, observed], dim=1))[:, -1]
     assert torch.allclose(actual, expected, atol=1e-6, rtol=1e-6)
+
+
+def test_max_projection_preserves_highest_position_byte():
+    decoder = PortableDomainDecoder(
+        feature_width=16,
+        hidden_width=24,
+        architecture="byte_gru_pointer_markov_max",
+        embedding_width=8,
+        pointer_width=12,
+    )
+    probabilities = torch.tensor(
+        [[[0.34, 0.22, 0.22, 0.22]]], dtype=torch.float32
+    )
+    byte_ids = torch.tensor([[65, 66, 66, 66]])
+    summed = decoder._scatter_pointer_probabilities(
+        probabilities, byte_ids
+    )
+    maximum = decoder._max_pointer_distribution(
+        probabilities, byte_ids
+    )
+    assert summed.argmax(dim=-1).item() == 66
+    assert maximum.argmax(dim=-1).item() == 65
+
+
+def test_max_projection_incremental_logits_match_full_prefix():
+    torch.manual_seed(53)
+    decoder = PortableDomainDecoder(
+        feature_width=16,
+        hidden_width=24,
+        architecture="byte_gru_pointer_markov_max",
+        embedding_width=8,
+        pointer_width=12,
+    ).eval()
+    with torch.no_grad():
+        decoder.copy_gate.bias.fill_(0.75)
+        decoder.copy_transition_logits.copy_(
+            torch.tensor([-2.0, -1.0, 0.0, 3.0, 0.5, -0.5, -1.5])
+        )
+    prompt = torch.randint(0, 256, (2, 23))
+    state = decoder.prefill_incremental(prompt)
+    expected = decoder(prompt)[:, -1]
+    assert torch.allclose(state["next_logits"], expected, atol=1e-6, rtol=1e-6)
+
+    observed = torch.randint(0, 256, (2, 1))
+    actual = decoder.decode_incremental(observed, state)
+    expected = decoder(torch.cat([prompt, observed], dim=1))[:, -1]
+    assert torch.allclose(actual, expected, atol=1e-6, rtol=1e-6)
