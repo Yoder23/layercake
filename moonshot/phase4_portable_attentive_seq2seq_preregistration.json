@@ -1,0 +1,107 @@
+{
+  "format": "layercake-phase4-portable-attentive-seq2seq-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_TRAINING",
+  "parent_governance": "moonshot/phase4_gpu_first_acquisition_amendment.json",
+  "representation_decision": {
+    "closed_lineage": "recurrent raw-byte pointer over a frozen causal semantic state",
+    "closed_lineage_final_evidence": "results/moonshot/phase4/python-portable-max-pointer-seed9440-autonomous.json",
+    "closed_lineage_final_evidence_sha256": "c43078fa5f81b3c0911cdf38442732d14e42d1a39cfe5e57314568385bf378b5",
+    "new_materially_distinct_representation": "end-to-end portable bidirectional prompt encoder plus persistent causal recurrent decoder and neural cross-attention pointer-generator",
+    "nearby_pointer_gate_offset_pooling_temperature_or_decoding_sweep": false
+  },
+  "architecture": {
+    "existing_artifact_class": "layercake.portable_domain.PortableDomainDecoder",
+    "architecture": "byte_attentive_seq2seq",
+    "external_input_output": "UTF-8 bytes",
+    "byte_vocab_size": 256,
+    "embedding_width": 64,
+    "encoder_direction_width": 128,
+    "encoder_layers": 1,
+    "encoder_bidirectional": true,
+    "decoder_width": 256,
+    "decoder_layers": 1,
+    "attention_width": 128,
+    "decoder_start_input": "learned vector",
+    "prompt_attention": "learned scaled dot-product cross-attention over bidirectional prompt states",
+    "pointer_values": "observed raw prompt byte ids",
+    "position_to_byte_projection": "probability scatter-add",
+    "output_distribution": "learned gate mixture of normalized neural language and pointer byte distributions",
+    "persistent_incremental_state": [
+      "encoded prompt states",
+      "attention keys",
+      "source byte ids",
+      "decoder recurrent hidden state"
+    ],
+    "core_parameters_trainable": 0,
+    "canonical_abi_changed": false,
+    "new_package_or_transfer_mechanism": false,
+    "deterministic_cursor_or_output_rewrite": false,
+    "template_retrieval_forcing_or_stored_answer": false
+  },
+  "training_data": {
+    "functional": {
+      "path": "data/moonshot/phase4/python_functional_v4.jsonl",
+      "sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa",
+      "train_rows": 960
+    },
+    "lexical_conformance": {
+      "path": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+      "sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+      "train_rows": 4096,
+      "functional_promotion_credit": 0
+    },
+    "sampling_per_batch": {
+      "functional_rows": 32,
+      "lexical_rows": 32,
+      "total_rows": 64
+    },
+    "maximum_prompt_bytes": 192,
+    "maximum_response_bytes": 256,
+    "functional_validation_rows_used_during_training": 0,
+    "functional_test_rows_used": 0,
+    "lexical_validation_rows_used_during_training": 0
+  },
+  "gpu_first_bounded_run": {
+    "seed": 10040,
+    "primary_device": "cuda:0",
+    "required_device_name": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "precision": "fp32",
+    "optimizer": "AdamW",
+    "optimizer_steps": 4000,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0,
+    "decoder_input_embedding_dropout": 0.1,
+    "objective": "response byte negative log likelihood plus exact identifier source-position cross-entropy plus exact identifier copy-gate binary cross-entropy",
+    "checkpoint_selection": "lowest deterministic combined training objective; no validation access during training",
+    "cpu_fallback": "The identical implementation must complete a separately recorded one-step CPU forward/backward/optimizer smoke test; full CPU candidate training is not required."
+  },
+  "validation_sequence": {
+    "first": {
+      "name": "heldout lexical conformance",
+      "dataset": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+      "distinct_prompts": 256,
+      "minimum_teacher_forced_pointer_byte_accuracy": 0.95,
+      "minimum_teacher_forced_identifier_next_byte_accuracy": 0.9,
+      "minimum_autonomous_exact_def_name_open_parenthesis_prefixes": 231,
+      "functional_promotion_credit": 0
+    },
+    "second_only_if_first_passes": {
+      "name": "locked Python functional validation",
+      "dataset": "data/moonshot/phase4/python_functional_v1.jsonl",
+      "dataset_sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+      "distinct_prompts": 64,
+      "minimum_strict_functional_successes": 52,
+      "maximum_new_bytes": 320
+    },
+    "test_split_access_allowed": false
+  },
+  "decision_rule": {
+    "authorize_seeds_10041_and_10042_only_after_seed_10040_passes_both_validation_gates": true,
+    "if_seed_10040_fails": "Preserve raw evidence and identify one measured bottleneck; no width, depth, dropout, learning-rate, step-count, data-mixture, or loss-weight sweep is authorized by this protocol.",
+    "if_three_seeds_pass": "Freeze the union source success set and proceed to package identity, three receiver hosts or initializations, semantic retention, CPU inference, TTFT, RSS, and inactive-compute certification using the same payload lineage.",
+    "cpu_inference_gates_unchanged": true,
+    "speed_quality_and_transfer_must_use_the_same_final_payload": true
+  }
+}
