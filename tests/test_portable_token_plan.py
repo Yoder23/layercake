@@ -119,5 +119,38 @@ def test_bound_token_plan_exposes_persistent_byte_facing_state():
     assert state.encoded.data_ptr() == encoded_pointer
     assert state.generated_actions == [action]
     assert state.previous_actions.shape[1] in {1, 2}
+    assert all(cache.shape[1] == 1 for cache in state.layer_self_attention_inputs)
     with pytest.raises(ValueError, match="special action"):
         model.generate_bytes(rows[0]["prompt"], maximum_actions=3)
+
+
+def test_incremental_token_plan_actions_match_full_prefix_decoder():
+    torch.manual_seed(83)
+    tokenizer = LosslessLexemePointerTokenizer.build(_rows())
+    model = PortableTokenPlan(
+        fixed_vocab_size=tokenizer.vocab_size,
+        model_width=24,
+        attention_heads=4,
+        encoder_layers=1,
+        decoder_layers=1,
+        feedforward_width=48,
+        pointer_width=12,
+        dropout=0.0,
+        maximum_source_lexemes=32,
+        maximum_target_actions=8,
+    ).eval().bind_tokenizer(tokenizer)
+    source_ids, _ = tokenizer.encode_source(_rows()[0]["prompt"])
+    source = torch.tensor([source_ids], dtype=torch.long)
+    expected = model.generate_actions(source, maximum_actions=6)[0]
+    state = model.prefill_bytes(_rows()[0]["prompt"])
+    actual = []
+    for _ in range(6):
+        action, state = model.decode_step(state)
+        actual.append(action)
+        if state.complete:
+            break
+    assert actual == expected
+    assert all(
+        cache.shape[1] == len(actual)
+        for cache in state.layer_self_attention_inputs
+    )

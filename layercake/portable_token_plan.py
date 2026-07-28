@@ -240,6 +240,7 @@ class PortableTokenPlanState:
     source_padding: torch.Tensor
     previous_actions: torch.Tensor
     generated_actions: list[int]
+    layer_self_attention_inputs: tuple[torch.Tensor, ...]
     complete: bool = False
 
 
@@ -412,6 +413,102 @@ class PortableTokenPlan(nn.Module):
         )
         return embedded + self.target_position(target_positions)[None]
 
+    def _action_embedding_step(
+        self,
+        action: torch.Tensor,
+        encoded: torch.Tensor,
+        *,
+        position: int,
+    ) -> torch.Tensor:
+        fixed = action < self.fixed_vocab_size
+        fixed_ids = action.clamp(
+            min=0, max=self.fixed_vocab_size - 1
+        )
+        embedded = self.lexeme_embedding(fixed_ids)
+        if (~fixed).any():
+            source_positions = (
+                action - self.fixed_vocab_size
+            ).clamp(min=0, max=encoded.shape[1] - 1)
+            batch = torch.arange(
+                action.shape[0], device=action.device
+            )
+            selected = encoded[batch, source_positions]
+            embedded = torch.where(
+                fixed[:, None],
+                embedded,
+                self.pointer_input(selected),
+            )
+        target_position = torch.tensor(
+            [position], dtype=torch.long, device=action.device
+        )
+        return (
+            embedded[:, None]
+            + self.target_position(target_position)[None]
+        )
+
+    def _incremental_action_log_probs(
+        self,
+        state: PortableTokenPlanState,
+    ) -> tuple[torch.Tensor, tuple[torch.Tensor, ...]]:
+        """Evaluate one action position without recomputing prior positions."""
+
+        action = state.previous_actions[:, -1]
+        hidden = self._action_embedding_step(
+            action,
+            state.encoded,
+            position=len(state.generated_actions),
+        )
+        next_caches: list[torch.Tensor] = []
+        for layer_index, layer in enumerate(self.decoder.layers):
+            normalized = layer.norm1(hidden)
+            previous = state.layer_self_attention_inputs[layer_index]
+            memory = torch.cat((previous, normalized), dim=1)
+            attended = layer.self_attn(
+                normalized,
+                memory,
+                memory,
+                need_weights=False,
+            )[0]
+            hidden = hidden + layer.dropout1(attended)
+            cross_input = layer.norm2(hidden)
+            crossed = layer.multihead_attn(
+                cross_input,
+                state.encoded,
+                state.encoded,
+                key_padding_mask=state.source_padding,
+                need_weights=False,
+            )[0]
+            hidden = hidden + layer.dropout2(crossed)
+            feedforward_input = layer.norm3(hidden)
+            feedforward = layer.linear2(
+                layer.dropout(
+                    layer.activation(layer.linear1(feedforward_input))
+                )
+            )
+            hidden = hidden + layer.dropout3(feedforward)
+            next_caches.append(memory)
+        if self.decoder.norm is not None:
+            hidden = self.decoder.norm(hidden)
+        fixed_log = F.log_softmax(self.fixed_output(hidden), dim=-1)
+        pointer_scores = torch.matmul(
+            self.pointer_query(hidden),
+            self.pointer_key(state.encoded).transpose(1, 2),
+        ) / (self.pointer_width ** 0.5)
+        pointer_scores = pointer_scores.masked_fill(
+            state.source_padding[:, None],
+            torch.finfo(pointer_scores.dtype).min,
+        )
+        pointer_log = F.log_softmax(pointer_scores, dim=-1)
+        gate_logits = self.pointer_gate(hidden)
+        extended = torch.cat(
+            (
+                F.logsigmoid(-gate_logits) + fixed_log,
+                F.logsigmoid(gate_logits) + pointer_log,
+            ),
+            dim=-1,
+        )
+        return extended[:, 0], tuple(next_caches)
+
     def action_log_probs(
         self,
         source_ids: torch.Tensor,
@@ -555,6 +652,16 @@ class PortableTokenPlan(nn.Module):
             source_padding=source_padding,
             previous_actions=previous,
             generated_actions=[],
+            layer_self_attention_inputs=tuple(
+                torch.empty(
+                    1,
+                    0,
+                    self.model_width,
+                    dtype=encoded.dtype,
+                    device=device,
+                )
+                for _ in self.decoder.layers
+            ),
         )
 
     @torch.inference_mode()
@@ -565,14 +672,10 @@ class PortableTokenPlan(nn.Module):
 
         if state.complete:
             raise ValueError("token-plan request is already complete")
-        result = self.action_log_probs(
-            state.source_ids,
-            state.previous_actions,
-            encoded=state.encoded,
-            source_padding=state.source_padding,
-        )
-        action_tensor = result["log_probs"][:, -1].argmax(dim=-1)
+        log_probs, caches = self._incremental_action_log_probs(state)
+        action_tensor = log_probs.argmax(dim=-1)
         action = int(action_tensor.item())
+        state.layer_self_attention_inputs = caches
         state.generated_actions.append(action)
         state.complete = (
             action == EOS_ID
