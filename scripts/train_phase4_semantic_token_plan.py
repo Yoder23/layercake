@@ -343,7 +343,7 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         "loss_weights": training["loss_weights"],
         "best_selection_objective": best_loss,
         "learning_curves": curves,
-        "test_split_accessed": false,
+        "test_split_accessed": False,
     }
     evidence["evidence_sha256"] = _canonical_sha(evidence)
     evidence_path = args.output.with_suffix(".json")
@@ -518,12 +518,12 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
         "functional_failures": len(rows) - successes,
         "functional_success_rate": successes / len(rows),
         "minimum_functional_successes": minimum,
-        "teacher_at_inference": false,
-        "raw_prompt_bytes_exposed_to_cake": false,
-        "private_host_token_ids_exposed_to_cake": false,
-        "canonical_semantic_abi_consumed": true,
-        "same_shape_semantic_residual_returned": true,
-        "autonomous_neural_generation": true,
+        "teacher_at_inference": False,
+        "raw_prompt_bytes_exposed_to_cake": False,
+        "private_host_token_ids_exposed_to_cake": False,
+        "canonical_semantic_abi_consumed": True,
+        "same_shape_semantic_residual_returned": True,
+        "autonomous_neural_generation": True,
         "records": records,
         "test_split_accessed": args.split == "test",
     }
