@@ -976,7 +976,7 @@ def _verify_phase_evidence(root: Path, phase: int, contracts: Mapping[str, Mappi
                 root, _phase_dir(root, 4)
             )
             payload = read_document(
-                _lifecycle_path(root, 4, "certificate_payload.json")
+                _lifecycle_path(root, 4, "certificate_payload_v2.json")
             )
             validate_required_gates(
                 root, 4, payload, contracts["claim_contract.yaml"]
@@ -1197,7 +1197,7 @@ def promote_phase(root: Path, phase: int) -> dict[str, Any]:
         )
     if phase == 4:
         payload = read_document(
-            _lifecycle_path(root, 4, "certificate_payload.json")
+            _lifecycle_path(root, 4, "certificate_payload_v2.json")
         )
         payload_lineage = payload.get("lineage")
         if not isinstance(payload_lineage, dict):
