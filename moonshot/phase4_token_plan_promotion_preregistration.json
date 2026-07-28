@@ -1,0 +1,109 @@
+{
+  "format": "layercake-phase4-token-plan-promotion-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_TEST_PACKAGE_AND_RECEIVER_CERTIFICATION",
+  "date": "2026-07-27",
+  "parent": "moonshot/phase4_portable_token_plan_preregistration.json",
+  "selection_rule": {
+    "candidate": "artifacts/moonshot/phase4/candidates/python-portable-token-plan-seed10141.pt",
+    "artifact_file_sha256": "211db7a97194234f4fbf2a04c99f99eea4698cc73bd486f901e7d12fb8af439e",
+    "payload_hash": "a70fcb62a2c24305ca0dad3929124ca6881363d26366c9374b96e7951b5cd49f",
+    "reason": "Seed 10141 is the first preregistered replication, in execution order, to reach 64 of 64 strict functional validation successes after the initial seed authorized replication. Seed 10142 is retained as the second replication and was not selected by looking for a higher score.",
+    "validation_evidence": {
+      "seed10140": {
+        "functional_successes": 63,
+        "functional_prompts": 64,
+        "evidence_sha256": "a964e7a78ab678da0937e2ad1fdac7b80ecf77861779f5c55705ffabee9483cf"
+      },
+      "seed10141": {
+        "functional_successes": 64,
+        "functional_prompts": 64,
+        "evidence_sha256": "f292f32a1052d5bea3e5fbe55ea6c4609144570dc1dcfdc57350c01035ed850d"
+      },
+      "seed10142": {
+        "functional_successes": 64,
+        "functional_prompts": 64,
+        "evidence_sha256": "f1d25e43e096304120a28acd37f4e591331f3aeba3ce5fa0c54f8550a9c95669"
+      }
+    }
+  },
+  "pre_package_abi_audit": {
+    "locked_semantic_abi": "moonshot/phase2_canonical_semantic_abi_r3.json",
+    "locked_semantic_abi_sha256": "d024de52144a2d797d0501acb7deb55575ffca7e33f72900beff599cf0a97761",
+    "semantic_abi_mutated": false,
+    "candidate_execution_mode": "direct manually selected portable_decoder",
+    "candidate_consumes_semantic_abi_state": false,
+    "candidate_external_boundary": "UTF-8 bytes in and UTF-8 bytes out",
+    "claim_limit": "The direct-decoder package can prove useful capability transfer, package identity, receiver semantic retention, and device portability. It cannot by itself prove the narrower claim that this representation consumes and returns the locked 768-wide semantic residual ABI. The final verifier must report these as distinct checks and must not silently convert the latter to PASS."
+  },
+  "test_protocol": {
+    "dataset": "data/moonshot/phase4/python_functional_v1.jsonl",
+    "dataset_sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "split": "test",
+    "distinct_prompts": 128,
+    "minimum_strict_functional_successes": 104,
+    "every_task_requires_all_unit_tests": true,
+    "test_split_accessed_before_this_commit": false
+  },
+  "package_protocol": {
+    "existing_container": "signed deterministic non-executable .cake ZIP",
+    "existing_tensor_format": "safetensors",
+    "existing_installer": "layercake.cake.installer.CakeInstaller",
+    "cake_type": "portable_decoder",
+    "new_transfer_mechanism_allowed": false,
+    "private_signing_key_committed": false,
+    "same_archive_and_tensor_payload_hash_required_on_all_receivers": true,
+    "remove_reinstall_identity_required": true,
+    "malformed_or_tampered_package_rejection_required": true
+  },
+  "receiver_protocol": {
+    "receiver_initializations": [
+      {
+        "seed": 9824,
+        "core_checkpoint_sha256": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1"
+      },
+      {
+        "seed": 9825,
+        "core_checkpoint_sha256": "81f78a2154353f0ea3c2a4ff685c3e4ffb91876328cd0075559a11bd0d1c2a01"
+      },
+      {
+        "seed": 9826,
+        "core_checkpoint_sha256": "f2987c0629460f2050489dda07e3d660e80f48d3c19f1574d51477ce8bdcbf1d"
+      }
+    ],
+    "receiver_training_examples": 0,
+    "receiver_calibration_runs": 0,
+    "locked_source_success_set": "all test tasks passed by the source package",
+    "required_source_success_retention_rate": 1.0,
+    "cpu_install_required": true,
+    "cuda_install_and_execution_required": true
+  },
+  "runtime_protocol": {
+    "quality_and_speed_payload_identical": true,
+    "primary_cpu_threads": 1,
+    "thread_choice_basis": "A pre-promotion profile across 1, 2, 4, 6, 8, 10, 12, and 14 threads found batch-one overhead lowest at one thread; no weights or decoding thresholds changed.",
+    "distinct_prompts_minimum": 100,
+    "repeated_observations_per_headline_configuration": 20,
+    "primary_throughput_metric": "generated UTF-8 bytes per total second",
+    "secondary_throughput_metric": "generated UTF-8 characters per total second",
+    "time_to_first_output": "tokenization plus source encoding plus first neural action selection",
+    "optimized_transformer_median_bytes_per_second": 506.36428467410497,
+    "optimized_transformer_median_ttft_seconds": 0.26304215,
+    "minimum_transformer_relative_median_throughput": 2.0,
+    "minimum_paired_bootstrap_lower_bound": 2.0,
+    "maximum_ttft_ratio": 1.0,
+    "incremental_equivalence": "cached action sequence must equal the original full-prefix decoder on every functional validation prompt on CPU and CUDA",
+    "completed_source_or_target_prefix_recomputation_allowed": false
+  },
+  "phase2_sentinel": {
+    "before_and_after_core_runtime": "artifacts/moonshot/phase2_shallow_sparse_pretrained/student2400-onnx-int8-v5-seed-9824",
+    "runtime_graph_sha256": "aee6337743617adc3c1e1730bc6d5d8a62e74480fe2d993feaa4be89874832b5",
+    "minimum_throughput_retention": 0.9,
+    "installed_but_inactive_cake_forward_calls": 0,
+    "core_checkpoint_and_runtime_graph_hashes_must_remain_identical": true
+  },
+  "decision_rule": {
+    "package_and_direct_decoder_transfer_pass": "All test, package, receiver, identity, CPU, CUDA, incremental, and functional retention checks pass.",
+    "phase4_full_pass": "In addition, every controlling campaign requirement—including the canonical semantic ABI attachment rule—passes without relabeling.",
+    "if_direct_transfer_passes_but_semantic_abi_consumption_fails": "Preserve a partial direct-decoder certificate, keep Phase 4 open, and identify the exact architectural incompatibility. Do not fabricate a phase pass."
+  }
+}
