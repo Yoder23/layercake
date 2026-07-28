@@ -1,0 +1,91 @@
+{
+  "format": "layercake-phase4-portable-markov-pointer-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_TRAINING",
+  "parent": "moonshot/phase4_portable_lexical_pointer_preregistration.json",
+  "parent_artifact": {
+    "path": "artifacts/moonshot/phase4/candidates/python-portable-lexical-pointer-seed9440.pt",
+    "file_sha256": "90192d3ceec4c07b81d4f0773a6da22c12cc87aee510eff1a1ca41548052c902",
+    "payload_hash": "414d002aa646c23cb03805fdb27dbf0da1b151408d02f798b6e2f0dc2bdb1fbd",
+    "semantic_parameters": 379136,
+    "content_pointer_and_copy_gate_parameters": 33025,
+    "all_parent_parameters_frozen": true
+  },
+  "measured_parent_result": {
+    "heldout_teacher_forced_pointer_byte_accuracy": 0.9824298024177551,
+    "heldout_teacher_forced_identifier_next_byte_accuracy": 0.9586458206176758,
+    "heldout_copy_gate_conjunction_on_identifier_continuations": 0.8812645077705383,
+    "heldout_previous_copy_gate_at_first_identifier_byte": 0.017725063487887383,
+    "heldout_autonomous_exact_prefix_rate": 0.328125,
+    "teacher_forced_evidence_sha256": "967f90e3f5fa19e8f3615f0b6ba53891f271120589b6ee0141ba0b76187804e5",
+    "autonomous_evidence_sha256": "96757e6254253feecd2a379972fb03b82425aefa5fee2a24061a2c3ef908bcd4"
+  },
+  "measured_bottleneck": "The frozen lexical pointer and gate know held-out identifiers under teacher forcing, but independent per-byte content attention drifts autonomously. Adjacent frozen copy-gate probabilities already identify whether the previous and current output units are inside a copy span.",
+  "single_bounded_change": {
+    "existing_class": "layercake.portable_domain.PortableDomainDecoder",
+    "architecture": "byte_gru_pointer_markov",
+    "previous_pointer_distribution_persisted": true,
+    "transition_offsets": [
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "transition_offset_probabilities": "seven learned global softmax logits",
+    "transition_gate_probability": "product of frozen current and previous copy-gate probabilities",
+    "new_parameters": 7,
+    "trainable_parameters": 7,
+    "frozen_parameters": 412161,
+    "total_parameters": 412168,
+    "new_model_class": false,
+    "deterministic_cursor": false,
+    "forced_source_position": false,
+    "output_rewrite": false
+  },
+  "training_data": {
+    "path": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+    "sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+    "training_split_sha256": "6d6fec96e642b48bd5da3cfb61dab9239c6c3b32f64027f72359b38e87cb2f31",
+    "rows": 4096,
+    "functional_validation_rows_used": 0,
+    "functional_test_rows_used": 0
+  },
+  "bounded_run": {
+    "seed": 9940,
+    "device": "cpu",
+    "torch_threads": 8,
+    "optimizer": "AdamW",
+    "optimizer_steps": 1200,
+    "batch_size": 8,
+    "learning_rate": 0.001,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0,
+    "objective": "response neural negative log likelihood plus final recurrent pointer-position negative log likelihood",
+    "checkpoint_selection": "lowest deterministic combined training objective; lexical heldout probes evaluated once after training"
+  },
+  "lexical_validation": {
+    "teacher_forced_dataset": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+    "autonomous_protocol": "moonshot/phase4_portable_lexical_autonomous_protocol.json",
+    "distinct_prompts": 256,
+    "minimum_teacher_forced_pointer_byte_accuracy": 0.95,
+    "minimum_teacher_forced_identifier_next_byte_accuracy": 0.9,
+    "minimum_autonomous_exact_prefix_successes": 231,
+    "functional_promotion_credit": 0,
+    "test_split_access_allowed": false
+  },
+  "functional_validation": {
+    "path": "data/moonshot/phase4/python_functional_v1.jsonl",
+    "sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "distinct_prompts": 64,
+    "minimum_strict_functional_successes": 52,
+    "authorized_only_if_both_lexical_gates_pass": true,
+    "test_split_access_allowed": false
+  },
+  "decision_rule": {
+    "if_lexical_probe_fails": "Preserve and close recurrent raw-byte copying without an offset, loss, threshold, step, or data sweep.",
+    "if_lexical_probe_passes": "Run locked functional validation once and authorize two additional preregistered semantic seeds only after 52/64 functional success.",
+    "speed_quality_and_transfer_must_use_the_same_final_payload": true
+  }
+}
