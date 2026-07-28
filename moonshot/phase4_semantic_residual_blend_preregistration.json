@@ -1,0 +1,88 @@
+{
+  "format": "layercake-phase4-semantic-residual-blend-preregistration/1",
+  "date": "2026-07-27",
+  "status": "PREREGISTERED_BEFORE_RUNTIME_IMPLEMENTATION_OR_FRESH_PROBE_ACCESS",
+  "measured_basis": {
+    "closed_coordinate_branch_decision": "moonshot/phase4_semantic_coordinate_replacement_decision.json",
+    "closed_coordinate_branch_commit": "9cb6405b6923ecba1194525c0b59b6cb8cc38a45",
+    "calibration_diagnostic": "results/moonshot/phase4/semantic-expert-gate-calibration-diagnostic-v2.json",
+    "calibration_diagnostic_file_sha256": "075c4b8f0d148de15cb2631c57bfe937de5200260855ab11fd944648e883215e",
+    "calibration_diagnostic_evidence_sha256": "282c25a146962f346a8298859313a820cff94a2e95a36a58b0714b27126419e0",
+    "calibration_rows": 256,
+    "calibration_identity_units": 1536,
+    "coordinate_exact_identity_rows": 235,
+    "parent_linear_exact_identity_rows": 164,
+    "coordinate_or_parent_oracle_exact_identity_rows": 246,
+    "grouped_eight_fold_blend_exact_identity_rows": 247,
+    "grouped_eight_fold_blend_correct_identity_units": 1527,
+    "full_calibration_blend_exact_identity_rows": 249,
+    "full_calibration_blend_correct_identity_units": 1529,
+    "selected_coordinate_alpha": 0.73,
+    "alpha_search_grid": "0.00 through 1.00 inclusive in increments of 0.01",
+    "simple_threshold_gate_improved_cross_validation": false,
+    "calibration_promotion_credit": 0
+  },
+  "fresh_probe": {
+    "dataset": "data/moonshot/phase4/lexical_conformance_v2_fresh_probe.jsonl",
+    "dataset_sha256": "418a7a1ee3876c947278cf6bc3e8ec1e9cb61fbea3a11cded72c9448a928248e",
+    "manifest": "data/moonshot/phase4/lexical_conformance_v2_fresh_probe.manifest.json",
+    "manifest_file_sha256": "c970891138b817b53c1610b0cb6c6cb16e7543261288e103d1354597c936559a",
+    "manifest_sha256": "58769e60f6259d5145d42eb9ed03f1dc7cb20328412be9083aac3bf512a59a0d",
+    "distinct_prompts": 256,
+    "fresh_target_token_ids": 512,
+    "fresh_target_ids_unique": true,
+    "fresh_target_ids_disjoint_from_all_prior_lexical_rows": true,
+    "model_outputs_accessed_before_preregistration": 0,
+    "minimum_exact_response_successes": 231
+  },
+  "materially_distinct_runtime": {
+    "name": "constant_complementary_semantic_residual_blend",
+    "pointer_residual": "0.73 * coordinate_residual + 0.27 * parent_linear_residual",
+    "fixed_action_residual": "unchanged parent residual",
+    "new_runtime_parameters": 0,
+    "new_matrix_operations": 0,
+    "reason_no_new_expert_compute": "The coordinate artifact already computes the parent linear residual and coordinate residual at every pointer action before selecting the coordinate result.",
+    "canonical_semantic_abi_unchanged": true,
+    "same_shape_semantic_residual_unchanged": true,
+    "core_parameters_changed": 0,
+    "coordinate_artifact_tensors_changed": 0,
+    "raw_prompt_bytes_exposed": false,
+    "private_host_token_ids_exposed": false,
+    "host_tokenizer_invoked_inside_cake": false,
+    "teacher_at_inference": false,
+    "receiver_specific_state": false
+  },
+  "locked_source": {
+    "coordinate_artifact": "artifacts/moonshot/phase4/candidates/python-semantic-coordinate-replacement-seed10840.pt",
+    "coordinate_artifact_sha256": "7a5dd947e338fa7cdc561201b14124b9d1408343cfe928b6ae500132327e5a83",
+    "coordinate_payload_hash": "d2f9565ba239045cdbfaa49ba6a0e9eb619214f81c482640fbd485252c5e845f",
+    "parent_linear_weights_already_contained_in_coordinate_artifact": true,
+    "conversion_optimizer_steps": 0,
+    "conversion_training_examples": 0
+  },
+  "device_policy": {
+    "fresh_probe_primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "replication_training_primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "cpu_fallback_smoke_required_before_screen": true,
+    "identical_artifact_tensors_on_gpu_and_cpu": true,
+    "final_cpu_inference_certification_required": true
+  },
+  "screen_sequence": {
+    "first": "Evaluate the locked fresh lexical probe exactly once.",
+    "fresh_lexical_minimum": "231 of 256 exact responses",
+    "second_only_after_first_pass": "Evaluate the locked 64-prompt Python functional validation.",
+    "python_functional_minimum": "52 of 64 strict functional successes",
+    "third_only_after_both_pass": "Build two independent coordinate-expert lineages under seeds 10941 and 10942, apply the unchanged 0.73 blend without calibration, and rescreen.",
+    "test_split_before_three_lineages_pass": false,
+    "no_threshold_relaxation": true
+  },
+  "decision_rule": {
+    "maximum_initial_blend_candidates": 1,
+    "nearby_alpha_gate_width_depth_scale_loss_weight_or_step_sweeps_authorized": false,
+    "on_initial_failure": "Preserve the artifact and evidence, close residual-blend work, and keep Phase 4 OPEN.",
+    "on_initial_pass": "Run the Python screen and authorize the two declared independent lineages only if Python also passes.",
+    "on_three_lineage_pass": "Package the selected lineage through the existing signed lossless transfer machinery; certify three receivers including CUDA and CPU-only paths, semantic retention, and matched repeated CPU inference.",
+    "phase4_before_every_gate_passes": "OPEN",
+    "phase5_before_phase4_seal": "LOCKED"
+  }
+}
