@@ -450,9 +450,10 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
             row["prompt"],
             device=device,
         )
-        source = _extract_function(
+        source, parse_status = _extract_function(
             generated["text"], row["function_name"]
-        ) or ""
+        )
+        source = source or ""
         passed, tests = _execute_tests(
             source, row["function_name"], row["tests"]
         )
@@ -463,6 +464,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
                 "expected_function_name": row["function_name"],
                 "generated_text": generated["text"],
                 "extracted_source": source,
+                "parse_status": parse_status,
                 "functional_success": passed,
                 "tests": tests,
                 "time_to_first_output_seconds": generated[
