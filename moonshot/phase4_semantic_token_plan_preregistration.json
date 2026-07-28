@@ -1,0 +1,109 @@
+{
+  "format": "layercake-phase4-semantic-token-plan-preregistration/1",
+  "date": "2026-07-27",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_TRAINING",
+  "parent_decision": {
+    "path": "moonshot/phase4_token_plan_branch_decision.json",
+    "sha256": "9794099badfbc8a02c537908df078b230fa917971503ad4aff81eadfb8f5be95"
+  },
+  "controlling_contract": {
+    "path": "moonshot/phase4_cpu_cake_training_lock.json",
+    "sha256": "d9ee237548f6ce3e68ef546567da9ffa135e1e0b9409573d9a8b02664f54f91f"
+  },
+  "locked_semantic_abi": {
+    "path": "moonshot/phase2_canonical_semantic_abi_r3.json",
+    "sha256": "d024de52144a2d797d0501acb7deb55575ffca7e33f72900beff599cf0a97761",
+    "version": "lc-semantic-gpt2-768/1",
+    "input_per_causal_unit": [
+      "batch",
+      768
+    ],
+    "output_per_causal_unit": "same-shape bounded semantic residual",
+    "private_host_token_ids_exposed_at_runtime": false,
+    "raw_prompt_bytes_exposed_at_runtime": false,
+    "mutation_allowed": false
+  },
+  "hypothesis": "The direct token-plan branch proved that whole-prompt planning plus a neural source pointer can separate Python semantics from exact requested identity. A semantic token-plan residual can preserve that factorization while replacing raw lexemes with an encoded history of public 768-wide ABI states and realizing each next unit only through a same-shape residual before the frozen tied language-model head.",
+  "materially_distinct_architecture": {
+    "name": "semantic_token_plan_residual",
+    "source": "causal history of public semantic ABI states",
+    "source_encoder": "two-layer Transformer encoder over the immutable prompt-state history",
+    "target_controller": "two-layer causal Transformer decoder over current public ABI states with cross-attention to encoded prompt states",
+    "semantic_path": "bounded learned 768-wide residual",
+    "identity_path": "neural source-position pointer with learned semantic value projection and neural copy gate",
+    "persistent_state": [
+      "encoded prompt ABI history",
+      "source padding mask",
+      "per-layer causal decoder attention cache"
+    ],
+    "fixed_or_forced_output_templates": false,
+    "deterministic_cursor_or_output_rewrite": false,
+    "retrieval_or_stored_answers": false,
+    "teacher_at_inference": false,
+    "difference_from_closed_attentive_residual_branch": "The closed branch used one undifferentiated causal stream and attempted local copy additions. This branch factorizes immutable prompt encoding from causal response planning, applies cross-attention at every response step, and trains the semantic and identity paths jointly as a token-plan controller."
+  },
+  "training": {
+    "primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "cpu_fallback_required": true,
+    "precision": "fp32",
+    "dataset": "data/moonshot/phase4/python_functional_v4.jsonl",
+    "dataset_sha256": "b2a2850e867ce0ae738bb8609e9463b50ee94e9feeea33b76ac8f7b75e2308fa",
+    "training_rows": 960,
+    "frozen_state_cache": "artifacts/moonshot/phase4/cache/seed9824-attentive-v4-train.safetensors",
+    "frozen_state_cache_sha256": "1ec99ec9bf188abfd4546884dd1272aac864045305397520aac4d6cd538ec184",
+    "frozen_core_checkpoint_sha256": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+    "initial_seed": 10240,
+    "replication_seeds_if_screen_passes": [
+      10241,
+      10242
+    ],
+    "maximum_optimizer_steps": 3000,
+    "losses": [
+      "authoritative full-vocabulary next-unit cross-entropy through the frozen tied output head",
+      "source-position pointer cross-entropy on exact identifier units",
+      "copy-value full-vocabulary cross-entropy",
+      "copy-gate binary cross-entropy",
+      "bounded residual stability penalty"
+    ],
+    "core_parameters_trainable": 0,
+    "output_head_parameters_trainable": 0
+  },
+  "screen": {
+    "dataset": "data/moonshot/phase4/python_functional_v1.jsonl",
+    "dataset_sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "split": "validation",
+    "distinct_prompts": 64,
+    "strict_functional_successes_minimum": 52,
+    "exact_requested_identifier_required": true,
+    "real_unit_tests_required": true,
+    "autonomous_neural_generation_required": true,
+    "replication_authorized_only_if_screen_passes": true
+  },
+  "final_promotion": {
+    "three_independent_training_seeds_required": true,
+    "same_signed_payload_required_for_quality_and_speed": true,
+    "three_receiver_hosts_required": true,
+    "cpu_and_cuda_execution_required": true,
+    "source_success_retention_rate": 1.0,
+    "receiver_training_examples": 0,
+    "receiver_calibration_runs": 0,
+    "core_parameters_changed": 0,
+    "canonical_semantic_abi_conformance_required": true,
+    "core_plus_active_cake_phase2_throughput_retention_min": 0.9,
+    "core_plus_active_cake_optimized_cpu_transformer_ratio_min": 2.0,
+    "inactive_cake_neural_compute": 0,
+    "fresh_adversarial_final_suite_required_before_seal": true
+  },
+  "historical_test_disclosure": {
+    "existing_phase4_test_was_accessed_by_prior_direct_branch": true,
+    "existing_test_may_be_reported_but_is_not_sufficient_as_a fresh_blind_test_for_this_branch": true,
+    "policy": "If the validation screen and three-seed replication pass, preregister and generate a new independently seeded adversarial final suite before accessing its rows."
+  },
+  "decision_rule": {
+    "if_initial_screen_fails": "Preserve the checkpoint and evidence as negative evidence. No nearby width, loss-weight, pointer, gate, or decoding sweep is authorized without a profiler- or error-attribution-measured bottleneck.",
+    "if_initial_screen_passes": "Run exactly the two preregistered replication seeds, then freeze the selection rule and create the fresh final protocol before final evaluation.",
+    "phase4_status_before_all_gates_pass": "OPEN",
+    "phase5_status_before_phase4_seal": "LOCKED"
+  },
+  "test_split_accessed_for_this_branch": false
+}
