@@ -1,0 +1,61 @@
+{
+  "format": "layercake-phase4-semantic-parallel-plan-decision/1",
+  "date": "2026-07-27",
+  "status": "REJECTED_STRICT_LEXICAL_QUALITY",
+  "protocol": {
+    "path": "moonshot/phase4_semantic_parallel_plan_preregistration.json",
+    "sha256": "79e90f7577e89f4eb7b2bf94d1890dcebcbe25437a3d7d3048be523cd0f7467b"
+  },
+  "candidate": {
+    "seed": 11040,
+    "source_commit": "c836a69aeab3dc4a2f22176b082b5d9401eef3e5",
+    "artifact": "artifacts/moonshot/phase4/candidates/python-semantic-parallel-plan-seed11040.pt",
+    "artifact_file_sha256": "a9c923f94348f5c458555face0e17f2a1ff641a9287a88d367f0da5c92bd7f06",
+    "artifact_bytes": 16274907,
+    "payload_hash": "f4f5cd46fcf195524c423303fda0656dcd7f12cd0898db15f2f15d50b68addf78",
+    "training_evidence": "artifacts/moonshot/phase4/candidates/python-semantic-parallel-plan-seed11040.json",
+    "training_evidence_file_sha256": "d81fce269ae201adc885c991b4377e00cef0ae6599f0cf303fc5e68300615f8e",
+    "training_evidence_sha256": "f24b647d68d8c86a0cb0ccd0f2ff6ab14b3b69aa1dfed8918afd035fdccfff2a8",
+    "optimizer_steps": 2500,
+    "training_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "training_precision": "fp32",
+    "gpu_wall_seconds": 81.73223199998029,
+    "peak_accelerator_memory_bytes": 1275884544,
+    "peak_process_resident_memory_bytes": 1467170816,
+    "cpu_fallback_smoke": "PASS",
+    "frozen_realization_tensors_identical": true,
+    "core_parameters_changed": 0
+  },
+  "fresh_lexical_screen": {
+    "evidence": "results/moonshot/phase4/python-semantic-parallel-plan-seed11040-lexical.json",
+    "evidence_file_sha256": "eebf9dea9fd4cc671315174539bbe625337ef540ff63a29a52908439e5eaeb53",
+    "evidence_sha256": "de2944168396c0b2d046bd610c86d1255623bb1fc831c09c323118f8ba9e0738",
+    "dataset_sha256": "3bbc8f4da5e4b540037074922ddb09a76b16f0cc427a46ecf1c317a9cebc194e",
+    "distinct_prompts": 256,
+    "exact_response_successes": 0,
+    "functional_identity_successes": 0,
+    "minimum_exact_response_successes": 231,
+    "status": "FAIL"
+  },
+  "measured_interpretation": {
+    "training_objective_minimum": 0.00005318211333360523,
+    "fresh_exact_response_rate": 0.0,
+    "fresh_functional_identity_rate": 0.0,
+    "representative_failure": "The plan usually selected plausible fixed and copy-position actions, but independently decoded target slots duplicated, omitted, or shifted copied prompt units and punctuation.",
+    "conclusion": "Removing autoregressive action feedback did not preserve prompt-position alignment. The learned parallel target queries fit the training caches while failing completely on disjoint lexical identities. This architecture does not solve semantic action planning through the locked ABI."
+  },
+  "decision": {
+    "candidate_promoted": false,
+    "functional_probe_accessed": false,
+    "replication_seeds_11041_and_11042_unlocked": false,
+    "nearby_parallel_query_width_depth_loss_weight_step_or_decoding_sweeps_authorized": false,
+    "artifact_and_negative_evidence_preserved": true,
+    "phase4_campaign_state": "OPEN",
+    "phase5_campaign_state": "LOCKED",
+    "phase4_seal_or_tag_allowed_now": false
+  },
+  "claim_boundary": {
+    "proven": "The prompt-only plan consumes the canonical semantic ABI, returns a bounded same-shape residual, trains on CUDA, loads and executes on CPU, and preserves the frozen semantic-realization tensors.",
+    "not_proven": "Held-out lexical identity, useful Python capability, semantic portability, or promoted CPU inference performance."
+  }
+}
