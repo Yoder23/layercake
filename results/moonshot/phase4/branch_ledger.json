@@ -903,6 +903,68 @@
       "functional_validation_accessed": false,
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "portable-attentive-seq2seq-seed10040",
+      "disposition": "REJECTED_FUNCTIONAL_SEMANTICS_AFTER_LEXICAL_PASS",
+      "architecture": {
+        "name": "PortableDomainDecoder",
+        "architecture": "byte_attentive_seq2seq",
+        "parameters": 675905,
+        "prompt_encoder": "bidirectional_gru",
+        "decoder": "persistent_causal_gru",
+        "copy_path": "neural_cross_attention_pointer_generator"
+      },
+      "training": {
+        "seed": 10040,
+        "optimizer_steps": 4000,
+        "primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+        "precision": "fp32",
+        "gpu_wall_seconds": 257.19675499998266,
+        "peak_accelerator_memory_bytes": 520412672,
+        "cpu_fallback_smoke_status": "PASS",
+        "artifact_file_sha256": "de0f22b0e064772d1fa5b6741effb207e5c21738956419b70cb900884f30adf3",
+        "payload_hash": "2ce9179690c9cb80a2fe284d0419240d504eff91feef4dd151c9be42133da0cb",
+        "evidence_sha256": "ed37ffd0cd5d1f9251950b43336d74040ea651aff41469fc78995e90a5a2d553"
+      },
+      "heldout_lexical_teacher_forced_probe": {
+        "distinct_prompts": 256,
+        "identifier_pointer_position_accuracy": 0.9997857213020325,
+        "identifier_pointer_byte_accuracy": 0.9997857213020325,
+        "identifier_next_byte_accuracy": 0.9997857213020325,
+        "evidence_sha256": "08fa7fec5bce6a6104ecbb85d6f61532770b202abb38d9a70ae6eddd01ebf16f"
+      },
+      "heldout_lexical_autonomous_probe": {
+        "distinct_prompts": 256,
+        "exact_def_name_open_parenthesis_prefixes": 255,
+        "exact_prefix_rate": 0.99609375,
+        "required_exact_prefixes": 231,
+        "evidence_sha256": "96995966fa7000c3efda31d0bc6fb4c90fb6f593d1772017ce05b7adadc25274"
+      },
+      "functional_validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "no_expected_function_failures": 64,
+        "median_time_to_first_output_seconds": 0.021800449991133064,
+        "median_total_latency_seconds": 0.20474914996884763,
+        "evidence_sha256": "90c9cab88621090a1c1abffe7f9f52dbf2f8bc70dd87dcef31d260282702fc5a"
+      },
+      "diagnostic_only_causal_handoff": {
+        "semantic_parent_payload_hash": "ab1733c73585833095164306deccd3103c6c80b21001f7f26214cee221fff882",
+        "forced_through_identifier_successes": 0,
+        "forced_through_open_parenthesis_successes": 2,
+        "distinct_prompts": 64,
+        "promotion_credit": 0,
+        "evidence_sha256": [
+          "4825276fe6b6da8e8687658add224b9bccde71dd000a6fbc23b580fc84b909a0",
+          "acdd03e7149b65fe6f99ab466592235b977b1c9e1776da2f58fe467a280d39b9"
+        ]
+      },
+      "measured_bottleneck": "The end-to-end recurrent decoder learned nearly lossless autonomous unseen-identifier copying but did not generalize program plans. Its generated signatures and bodies mixed memorized training fragments, and even an oracle lexical prefix could not causally recover the preserved semantic GRU.",
+      "next_bounded_change": "Factor prompt identity from program semantics before decoding using a preregistered non-recurrent whole-span or token-plan representation. Reuse the repository's lossless tokenizer or latent-span primitives and existing exact package-transfer path; do not run another nearby byte-pointer, gate, loss-weight, width, or decoder sweep.",
+      "nearby_recurrent_or_pointer_sweeps_authorized": false,
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }

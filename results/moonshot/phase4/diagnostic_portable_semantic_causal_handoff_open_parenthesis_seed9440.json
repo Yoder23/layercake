@@ -1,0 +1,1007 @@
+{
+  "causal_handoff_functional_success_rate": 0.03125,
+  "causal_handoff_functional_successes": 2,
+  "dataset": "data/moonshot/phase4/python_functional_v1.jsonl",
+  "dataset_sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+  "distinct_prompts": 64,
+  "evidence_sha256": "acdd03e7149b65fe6f99ab466592235b977b1c9e1776da2f58fe467a280d39b9",
+  "format": "layercake-phase4-causal-handoff-diagnostic/1",
+  "intervention": "force only UTF-8 bytes for 'def ' plus the expected function identifier and opening parenthesis into the semantic decoder state, then autonomously generate every remaining byte",
+  "maximum_new_bytes": 320,
+  "opening_parenthesis_in_forced_prefix": true,
+  "prohibited_as_runtime_or_promotion_evidence": true,
+  "records": [
+    {
+      "causal_handoff_functional_success": true,
+      "extracted_source": "def add_validation_00(a, b):\n    return a + b\n    return False\n    for divisor in range(2, int(number ** 0.5) + 1):\n        if number % divisor == 0:\n            return False\n    return True\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n",
+      "family": "add",
+      "forced_prefix_utf8": "def add_validation_00(",
+      "generated_text": "def add_validation_00(a, b):\n    return a + b\n    return False\n    for divisor in range(2, int(number ** 0.5) + 1):\n        if number % divisor == 0:\n            return False\n    return True\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n   ",
+      "generated_text_sha256": "3d409ea570aa2643d133761b36f7685e44b844bc5c557e3ab3abc99ff2ae3efb",
+      "id": "validation-add-00",
+      "tests": [
+        {
+          "actual": 48,
+          "expected": 48,
+          "status": "PASS"
+        },
+        {
+          "actual": 11,
+          "expected": 11,
+          "status": "PASS"
+        },
+        {
+          "actual": -27,
+          "expected": -27,
+          "status": "PASS"
+        },
+        {
+          "actual": -6,
+          "expected": -6,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": true,
+      "extracted_source": "def add_validation_01(a, b):\n    return a + b\n    return a * b\n    return False\n    return True\n    return numerator / denominator\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    retur\n",
+      "family": "add",
+      "forced_prefix_utf8": "def add_validation_01(",
+      "generated_text": "def add_validation_01(a, b):\n    return a + b\n    return a * b\n    return False\n    return True\n    return numerator / denominator\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    retur",
+      "generated_text_sha256": "eacec59b9509decc2f2351c48854547c6bb31ed909eabe790dc853d5e46fcd19",
+      "id": "validation-add-01",
+      "tests": [
+        {
+          "actual": -64,
+          "expected": -64,
+          "status": "PASS"
+        },
+        {
+          "actual": -48,
+          "expected": -48,
+          "status": "PASS"
+        },
+        {
+          "actual": 48,
+          "expected": 48,
+          "status": "PASS"
+        },
+        {
+          "actual": 86,
+          "expected": 86,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "subtract",
+      "forced_prefix_utf8": "def subtract_validation_00(",
+      "generated_text": "def subtract_validation_00(5_94909(values):\n    return [value for value in values if value is not None]\n    return normalized == normalized[::-1]\n    return number % 2 == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return re",
+      "generated_text_sha256": "b1e6b58ae70836218b48f12de55ab940207429dc2474b6fc88126ad20272531d",
+      "id": "validation-subtract-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "subtract",
+      "forced_prefix_utf8": "def subtract_validation_01(",
+      "generated_text": "def subtract_validation_01(5oumber):\n    return numerator / denominator\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return res",
+      "generated_text_sha256": "81e9fb58fdd5368f0c89735060ae069aad4f3ac0ea90ff8a53d1ac0e3733bad2",
+      "id": "validation-subtract-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "multiply",
+      "forced_prefix_utf8": "def multiply_validation_00(",
+      "generated_text": "def multiply_validation_00(a_04805(a, b):\n    return a * b\n    return False\n    return depth == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return values[index:index + size] for index in range(0, len(values), size)]\n    return values[index:index + size] for index in rang",
+      "generated_text_sha256": "b163372e8747686a6d03a3bf0c0a44178d942ed486493eb33acfb7b7d02b9d69",
+      "id": "validation-multiply-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "multiply",
+      "forced_prefix_utf8": "def multiply_validation_01(",
+      "generated_text": "def multiply_validation_01(ar_0546(value, low, high):\n    return max(low, min(value, high))\n    return a * b\n    return {**left, **right}\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return numerator / denominator\n    return result\n ",
+      "generated_text_sha256": "b39a9c22afb85614b8c4f060967fea8da217c06797ca8d67151333633d476ae2",
+      "id": "validation-multiply-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "absolute_difference",
+      "forced_prefix_utf8": "def absolute_difference_validation_00(",
+      "generated_text": "def absolute_difference_validation_00(9a_beract_0383_50061(values):\n    result = []\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n  ",
+      "generated_text_sha256": "1336428e41994d5643894fdc3ebf16ad5b0b55db1a18514233c39e4e92b53ddb",
+      "id": "validation-absolute_difference-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "absolute_difference",
+      "forced_prefix_utf8": "def absolute_difference_validation_01(",
+      "generated_text": "def absolute_difference_validation_01(ar_0356(number):\n    return number % 2 == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return res",
+      "generated_text_sha256": "e7ed3c81164098bc71061a81b09ad91c56c4e842b07f14fc4dcfc6cd61289960",
+      "id": "validation-absolute_difference-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "clamp",
+      "forced_prefix_utf8": "def clamp_validation_00(",
+      "generated_text": "def clamp_validation_00(1_54903(value, low, high):\n    return max(low, min(value, high))\n    return max(low, min(value, high))\n    return a * b\n    return False\n    for divisor in range(2, int(number ** 0.5) + 1):\n        if number % divisor == 0:\n            return False\n    return True\n    return result\n    return re",
+      "generated_text_sha256": "f50439e27ea5a9d392742138f672ae70b160859a75bce7a9f7077174f09ae9f7",
+      "id": "validation-clamp-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "clamp",
+      "forced_prefix_utf8": "def clamp_validation_01(",
+      "generated_text": "def clamp_validation_01(5or_0495_23039(value, low, high):\n    return max(low, min(value, high))\n    return max(low, min(value, high))\n    return a * b\n    return False\n    for divisor in range(2, int(number ** 0.5) + 1):\n        if number % divisor == 0:\n            return False\n    return True\n    return result\n    re",
+      "generated_text_sha256": "5935a5f126eef3859fa6828fb04549ff753f6a3f57357909abe730b328b946f8",
+      "id": "validation-clamp-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "is_even",
+      "forced_prefix_utf8": "def is_even_validation_00(",
+      "generated_text": "def is_even_validation_00(1_55553(values, target):\n    for index, value in enumerate(values):\n        if value == target:\n            return index\n    return -1\n    return counts\n    return values[offset:] + values[:offset]\n    for value in values:\n        if value not in result:\n            result.append(value)\n    re",
+      "generated_text_sha256": "6d7c40f26e35e809dcc393ae3fe8892024c310f5fa459495c1a317f776a68737",
+      "id": "validation-is_even-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "is_even",
+      "forced_prefix_utf8": "def is_even_validation_01(",
+      "generated_text": "def is_even_validation_01(5a_03489(number):\n    return number % 2 == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    ret",
+      "generated_text_sha256": "2e126da8b042185809c00508dbbb81de0670f47d463461dc4cc7aa04eb60ed02",
+      "id": "validation-is_even-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "palindrome",
+      "forced_prefix_utf8": "def palindrome_validation_00(",
+      "generated_text": "def palindrome_validation_00(9_53695(text):\n    normalized = text.lower()\n    return normalized == normalized[::-1]\n    return number % 2 == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n    return result\n    ret",
+      "generated_text_sha256": "6ce60d833911e073ee6635542df0d9688c8d1bdbcea77e7d40d69ce152269712",
+      "id": "validation-palindrome-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "palindrome",
+      "forced_prefix_utf8": "def palindrome_validation_01(",
+      "generated_text": "def palindrome_validation_01(ar_03866(text):\n    normalized = text.lower()\n    return normalized == normalized[::-1]\n    return number % 2 == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n    return result\n    re",
+      "generated_text_sha256": "b2f8a1b15c6aa90886136370cb251bc03534f7bd166598341f394484e456f7b3",
+      "id": "validation-palindrome-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "reverse_text",
+      "forced_prefix_utf8": "def reverse_text_validation_00(",
+      "generated_text": "def reverse_text_validation_00(9_3425(text):\n    return text[::-1]\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return ",
+      "generated_text_sha256": "ef8309ad11104f9073c8abf606ec0edff8879e5293a60b8596c67936e14d2275",
+      "id": "validation-reverse_text-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "reverse_text",
+      "forced_prefix_utf8": "def reverse_text_validation_01(",
+      "generated_text": "def reverse_text_validation_01(5_04249(text):\n    return text[::-1]\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return",
+      "generated_text_sha256": "a35b4f439490beb29c4a16e7bb586b6f8694c8787f88c37bda2e72e149b1da46",
+      "id": "validation-reverse_text-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "count_vowels",
+      "forced_prefix_utf8": "def count_vowels_validation_00(",
+      "generated_text": "def count_vowels_validation_00(9_45255(values):\n    return [value for value in values if value is not None]\n    return normalized == normalized[::-1]\n    return number % 2 == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    retur",
+      "generated_text_sha256": "87951f2489a9915637058cec79862d08dc3178bb43942a3373e4daca237eb678",
+      "id": "validation-count_vowels-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "count_vowels",
+      "forced_prefix_utf8": "def count_vowels_validation_01(",
+      "generated_text": "def count_vowels_validation_01(5or_0455_20499(text):\n    return text[::-1]\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n   ",
+      "generated_text_sha256": "fbff3ca84aff60da7686935eebb6e8061b3211c16dadbf76aef01676027644d0",
+      "id": "validation-count_vowels-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "factorial",
+      "forced_prefix_utf8": "def factorial_validation_00(",
+      "generated_text": "def factorial_validation_00(9_34585(values):\n    result = []\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    ret",
+      "generated_text_sha256": "3db5f318cf3fec8a647366764d0f73690a0351941ae767c52ada0d4bfe0cc89a",
+      "id": "validation-factorial-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": "def factorial_validation_01(values):\n    return sum(values) / len(values)\n",
+      "family": "factorial",
+      "forced_prefix_utf8": "def factorial_validation_01(",
+      "generated_text": "def factorial_validation_01(values):\n    return sum(values) / len(values)\n    return values[index:index + size] for index in range(0, len(values), size)]\n    return values[index:index + size] for index in range(0, len(values), size)]\n    return values[index:index + size] for index in range(0, len(values), size)]\n    re",
+      "generated_text_sha256": "3d2950c65820b5dc60a0eea7f8dfb4b88a3fc89e217e0784d3b7102e9c7e5ee5",
+      "id": "validation-factorial-01",
+      "tests": [
+        {
+          "error": "TypeError",
+          "status": "RUNTIME_ERROR"
+        },
+        {
+          "error": "TypeError",
+          "status": "RUNTIME_ERROR"
+        },
+        {
+          "error": "TypeError",
+          "status": "RUNTIME_ERROR"
+        },
+        {
+          "error": "TypeError",
+          "status": "RUNTIME_ERROR"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "fibonacci",
+      "forced_prefix_utf8": "def fibonacci_validation_00(",
+      "generated_text": "def fibonacci_validation_00(5_54938(a, b):\n    return abs(a - b)\n    return values\n    return values[offset:] + values[:offset]\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return r",
+      "generated_text_sha256": "6dfd68052c8b6ec423d78d37e58eae18afe61a8708df2c823467f8e7cdbb7725",
+      "id": "validation-fibonacci-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "fibonacci",
+      "forced_prefix_utf8": "def fibonacci_validation_01(",
+      "generated_text": "def fibonacci_validation_01(5_03038(a, b):\n    return abs(a - b)\n    return values\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n   ",
+      "generated_text_sha256": "028240f84f91331290ac11cf90f2bf87d39b45386ed70742c62788aa9729ad10",
+      "id": "validation-fibonacci-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "is_prime",
+      "forced_prefix_utf8": "def is_prime_validation_00(",
+      "generated_text": "def is_prime_validation_00(5_34898(values):\n    result = []\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    retu",
+      "generated_text_sha256": "a1ee6fbd1ce6c3da49d9d34404bf95b672e01c66ef369d98b6b605fe9f493970",
+      "id": "validation-is_prime-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "is_prime",
+      "forced_prefix_utf8": "def is_prime_validation_01(",
+      "generated_text": "def is_prime_validation_01(5_34939(number):\n    return number % 2 == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    ret",
+      "generated_text_sha256": "29f59946d5ca3f6378d21c50e29e5c1ee79f28998b00e788f04f923e9b465c9a",
+      "id": "validation-is_prime-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "deduplicate",
+      "forced_prefix_utf8": "def deduplicate_validation_00(",
+      "generated_text": "def deduplicate_validation_00(va_ex509_40523(values):\n    result = []\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return resul",
+      "generated_text_sha256": "3407f6202ffb797abc6abaff53d10aa5e766c743b5126e80d8b153206660b597",
+      "id": "validation-deduplicate-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "deduplicate",
+      "forced_prefix_utf8": "def deduplicate_validation_01(",
+      "generated_text": "def deduplicate_validation_01(value > 0 deptha = 0)\n    return counts\n    return values[offset:] + values[:offset]\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    ret",
+      "generated_text_sha256": "dd0821ad75cd361caf0889651dea4828a6ff31a21836042991185a0fbd48b429",
+      "id": "validation-deduplicate-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "running_totals",
+      "forced_prefix_utf8": "def running_totals_validation_00(",
+      "generated_text": "def running_totals_validation_00(9_34558(values):\n    result = []\n    total = 0\n    for value in values:\n        total += value\n        result.append(total)\n    return result\n        return False\n    return depth == 0\n    for char in text:\n        if char == \"(\":\n            depth += 1\n        elif char == \")\":\n       ",
+      "generated_text_sha256": "d64e7420b0828739e25e0aa2e9ab1fb2ff68d278e4be7d2bebb6e46153a5e6cb",
+      "id": "validation-running_totals-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "running_totals",
+      "forced_prefix_utf8": "def running_totals_validation_01(",
+      "generated_text": "def running_totals_validation_01(5_94938(values):\n    return [value for value in values if value is not None]\n    return normalized == normalized[::-1]\n    return number % 2 == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    ret",
+      "generated_text_sha256": "24e8aa375bcc36f6fde7e8a30a31fd94ded9e6694001477cb3e446fa754beff5",
+      "id": "validation-running_totals-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "flatten_once",
+      "forced_prefix_utf8": "def flatten_once_validation_00(",
+      "generated_text": "def flatten_once_validation_00(5_44093(values):\n    return min(values)\n    return [value for value in values if value is not None]\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    retur",
+      "generated_text_sha256": "d3db975e4c97a481f71361ce4c2669390ba6e367b8adddba6b0226be8af8f540",
+      "id": "validation-flatten_once-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "flatten_once",
+      "forced_prefix_utf8": "def flatten_once_validation_01(",
+      "generated_text": "def flatten_once_validation_01(5_94495(value, low, high):\n    return max(low, min(value, high))\n    return max(low, min(value, high))\n    return a * b\n    return False\n    for divisor in range(2, int(number ** 0.5) + 1):\n        if number % divisor == 0:\n            return False\n    return True\n    return result\n    re",
+      "generated_text_sha256": "292f4e847173c31f783778171e5cd00b72fddbb72978f5ead1a3e7cf7a2cf86e",
+      "id": "validation-flatten_once-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "maximum",
+      "forced_prefix_utf8": "def maximum_validation_00(",
+      "generated_text": "def maximum_validation_00(va_exalue, low_0458_14236(values):\n    return min(values)\n    return max(values)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return resu",
+      "generated_text_sha256": "ac221d280685c6d935412b366f1139e8fadb77b191c12954afad36ff558057aa",
+      "id": "validation-maximum-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "maximum",
+      "forced_prefix_utf8": "def maximum_validation_01(",
+      "generated_text": "def maximum_validation_01(5value, low, high):\n    return max(low, min(value, high))\n    return max(low, min(value, high))\n    return a * b\n    return False\n    for divisor in range(2, int(number ** 0.5) + 1):\n        if number % divisor == 0:\n            return False\n    return True\n    return result\n    return result\n",
+      "generated_text_sha256": "82c0bc95d482b143bec9b06969762389901ecf1f1eac0df254d0c2fecc179257",
+      "id": "validation-maximum-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "minimum",
+      "forced_prefix_utf8": "def minimum_validation_00(",
+      "generated_text": "def minimum_validation_00(va_exalue, 0_5951_45023(values):\n    return min(values)\n    return min(values)\n    return [value for value in values if value is not None]\n    return numerator_0835_12079(values):\n    return [value for value in values if value is not None]\n    return values[index:index + size] for index in ran",
+      "generated_text_sha256": "3ce6bc116c8e18af3089dc95dab84a69446d5e5c7f479d18e53065b41d75f91c",
+      "id": "validation-minimum-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "minimum",
+      "forced_prefix_utf8": "def minimum_validation_01(",
+      "generated_text": "def minimum_validation_01(5_99458(value, low, high):\n    return max(low, min(value, high))\n    return max(low, min(value, high))\n    return a * b\n    return False\n    for divisor in range(2, int(number ** 0.5) + 1):\n        if number % divisor == 0:\n            return False\n    return True\n    return result\n    return ",
+      "generated_text_sha256": "7362f29f614742f36c453187615caa5d19600eeb1380ea3e47529d02891bd123",
+      "id": "validation-minimum-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "average",
+      "forced_prefix_utf8": "def average_validation_00(",
+      "generated_text": "def average_validation_00(5_94959(values):\n    result = []\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    retur",
+      "generated_text_sha256": "6fac1d85065f4bec6e7f7d7d2da27844a9f5237393d81309feb8d4c69b9303fe",
+      "id": "validation-average-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "average",
+      "forced_prefix_utf8": "def average_validation_01(",
+      "generated_text": "def average_validation_01(5_34939(values):\n    return sum(values) / len(values)\n    return values[offset:] + values[:offset]\n    return [value for value in values if value is not None]\n    return values[index:index + size] for index in range(0, len(values), size)]\n    return values[index:index + size] for index in rang",
+      "generated_text_sha256": "b61653e3058a0fa59c9a1ed16b80fc8ecc995261c3db5ca3855f536396926a5d",
+      "id": "validation-average-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "word_count",
+      "forced_prefix_utf8": "def word_count_validation_00(",
+      "generated_text": "def word_count_validation_00(5_44059(a, b):\n    return a + b\n    return values\n    return values[offset:] + values[:offset]\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return resul",
+      "generated_text_sha256": "cd55172d0e19256b35470d4d622fc786d90c5cc8c034af413084d2486573d53a",
+      "id": "validation-word_count-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "word_count",
+      "forced_prefix_utf8": "def word_count_validation_01(",
+      "generated_text": "def word_count_validation_01(5_54498(text):\n    return text[::-1]\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n        return index\n    return -1\n    return numerator / denominator\n    return result\n    return res",
+      "generated_text_sha256": "414605f8f2217dff73378d65838aff8328220f3108ff421deb026f30b1621905",
+      "id": "validation-word_count-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "slugify",
+      "forced_prefix_utf8": "def slugify_validation_00(",
+      "generated_text": "def slugify_validation_00(9_54558(text):\n    return \"-\".join(text.strip().lower().split())\n    return values[offset:] + values[:offset]\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n    ",
+      "generated_text_sha256": "9996915e923d9d9f8d3d1b1a1e6c8fd8781991c1e583abcf341f3b182b720ef7",
+      "id": "validation-slugify-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "slugify",
+      "forced_prefix_utf8": "def slugify_validation_01(",
+      "generated_text": "def slugify_validation_01(5or_05459(number):\n    return number % 2 == 0\n    for ngrept:\n        return False\n    for divisor in range(2, int(number ** 0.5) + 1):\n        if number % divisor == 0:\n            return False\n    return True\n    return result\n    return result\n    return result\n    return result\n    return ",
+      "generated_text_sha256": "3804796a40a231016e8c9fbe0899f9af8275474cc4b80be9488513bec6220d27",
+      "id": "validation-slugify-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "merge_mappings",
+      "forced_prefix_utf8": "def merge_mappings_validation_00(",
+      "generated_text": "def merge_mappings_validation_00(5_44959(a, b):\n    return a * b\n    return False\n    return depth == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return values[index:index + size] for index in range(0, len(values), size)]\n    return values[index:index + size] for index i",
+      "generated_text_sha256": "153ac42a1473348f0f5d35ab57d3e7939c6137607fdf8296d89dc8ac7fccf5f1",
+      "id": "validation-merge_mappings-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "merge_mappings",
+      "forced_prefix_utf8": "def merge_mappings_validation_01(",
+      "generated_text": "def merge_mappings_validation_01(5or_0556_00799(text):\n    return text[::-1]\n    for group in groups:\n        result.extend(group)\n    return result\n        return None\n    return numerator / denominator\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    retu",
+      "generated_text_sha256": "93c842df063ad6bfee6fd6e59cfd16590e6ff443611fcdcc9d868182327d7b7c",
+      "id": "validation-merge_mappings-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "invert_mapping",
+      "forced_prefix_utf8": "def invert_mapping_validation_00(",
+      "generated_text": "def invert_mapping_validation_00(5_4409(values):\n    return min(values)\n    return [value for value in values if value is not None]\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    retu",
+      "generated_text_sha256": "ac5dccc864b319fffffcb2e663b8f8a8cba1fcf17e5f544cc6d366e06acc69e5",
+      "id": "validation-invert_mapping-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "invert_mapping",
+      "forced_prefix_utf8": "def invert_mapping_validation_01(",
+      "generated_text": "def invert_mapping_validation_01(5_94495(values):\n    return min(values)\n    return max(values)\n    return result\n        result.extend(group)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return resu",
+      "generated_text_sha256": "534a2ea29f0fe04f277b7abf01acc74056c5109ce1e1d6afca0d7658d7753a43",
+      "id": "validation-invert_mapping-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "character_frequencies",
+      "forced_prefix_utf8": "def character_frequencies_validation_00(",
+      "generated_text": "def character_frequencies_validation_00(4_58468(text):\n    counts = {}\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    ret",
+      "generated_text_sha256": "a939cdc8b3b7bb66eae6122f6e73b6774508b105078d1fc34e616f635988aa85",
+      "id": "validation-character_frequencies-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "character_frequencies",
+      "forced_prefix_utf8": "def character_frequencies_validation_01(",
+      "generated_text": "def character_frequencies_validation_01(5or_wil5:(068(text):\n    counts = {}\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n ",
+      "generated_text_sha256": "36921323d3438fb8845a269974b0dd699c8e3334e9513625ad417a914742e3f6",
+      "id": "validation-character_frequencies-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "safe_divide",
+      "forced_prefix_utf8": "def safe_divide_validation_00(",
+      "generated_text": "def safe_divide_validation_00(9a_53853(values):\n    return sum(values) / len(values)\n    return values[offset:] + values[:offset]\n    return [value for value in values if value is not None]\n    return values[index:index + size] for index in range(0, len(values), size)]\n    return values[index:index + size] for index in",
+      "generated_text_sha256": "d1496ca51714eb03f3e6f5c0907fbf199b33f660f8cd8933d52103dc17fb0188",
+      "id": "validation-safe_divide-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "safe_divide",
+      "forced_prefix_utf8": "def safe_divide_validation_01(",
+      "generated_text": "def safe_divide_validation_01(ar_03766(number):\n    return number % 2 == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n   ",
+      "generated_text_sha256": "4e439a0c92d3bf81df0a5ec6eeaa099a949e1427c1ee5b95b322efe4efef0c9a",
+      "id": "validation-safe_divide-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "chunks",
+      "forced_prefix_utf8": "def chunks_validation_00(",
+      "generated_text": "def chunks_validation_00(va_ex509(values):\n    return all(value > 0 for value in values)\n    return values[offset:] + values[:offset]\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n    re",
+      "generated_text_sha256": "0ee6df08b797df3d1cd13f68703337f5b8996063c296794e42f6fa96785112cd",
+      "id": "validation-chunks-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": "def chunks_validation_01(value, low, high):\n    return [value for value in values if value is not None]\n    return numerator / denominator\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n",
+      "family": "chunks",
+      "forced_prefix_utf8": "def chunks_validation_01(",
+      "generated_text": "def chunks_validation_01(value, low, high):\n    return [value for value in values if value is not None]\n    return numerator / denominator\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n ",
+      "generated_text_sha256": "005c6656faa32faab4fc7fcfd68c800f3b5037e7c76e9094c7c0d9f84707b622",
+      "id": "validation-chunks-01",
+      "tests": [
+        {
+          "error": "TypeError",
+          "status": "RUNTIME_ERROR"
+        },
+        {
+          "error": "TypeError",
+          "status": "RUNTIME_ERROR"
+        },
+        {
+          "error": "TypeError",
+          "status": "RUNTIME_ERROR"
+        },
+        {
+          "error": "TypeError",
+          "status": "RUNTIME_ERROR"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "rotate_left",
+      "forced_prefix_utf8": "def rotate_left_validation_00(",
+      "generated_text": "def rotate_left_validation_00(value_s579_04025(values):\n    return sum(values) / len(values)\n    return values[offset:] + values[:offset]\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n  ",
+      "generated_text_sha256": "61277ef87fcf6cc3c46160bf690c8e9f85515f7c149910be1fc299bd7cc521c4",
+      "id": "validation-rotate_left-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "rotate_left",
+      "forced_prefix_utf8": "def rotate_left_validation_01(",
+      "generated_text": "def rotate_left_validation_01(5_94958(values, places):\n    offset = places % len(values)\n    return values[offset:] + values[:offset]\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n    re",
+      "generated_text_sha256": "e4dca1377edafa4da12116208687e052c0b83c24afaedc9069eb00667de2fb79",
+      "id": "validation-rotate_left-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "find_index",
+      "forced_prefix_utf8": "def find_index_validation_00(",
+      "generated_text": "def find_index_validation_00(9a_ber5a_03508(values):\n    return all(value > 0 for value in values)\n    return values[offset:] + values[:offset]\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return res",
+      "generated_text_sha256": "dff608251a3d96b83a11b7ac6e05d718f383f3820591764457dad397dd0819a2",
+      "id": "validation-find_index-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "find_index",
+      "forced_prefix_utf8": "def find_index_validation_01(",
+      "generated_text": "def find_index_validation_01(ar_03866(values):\n    return sum(values) / len(values)\n    return values[offset:] + values[:offset]\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n    return ",
+      "generated_text_sha256": "1a9ba1d161b3ae6d31bbcb91bcadd7184b8d80ed1d82487d311305ad1884e9d1",
+      "id": "validation-find_index-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "all_positive",
+      "forced_prefix_utf8": "def all_positive_validation_00(",
+      "generated_text": "def all_positive_validation_00(9_34558(values):\n    return [value for value in values if value is not None]\n    return values[index:index + size] for index in range(0, len(values), size)]\n    return values[index:index + size] for index in range(0, len(values), size)]\n    return values[index:index + size] for index in r",
+      "generated_text_sha256": "9b04456c5301dc44c876e8e0b5102795e42685d27d3d8c2488be18a60e76e2bc",
+      "id": "validation-all_positive-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "all_positive",
+      "forced_prefix_utf8": "def all_positive_validation_01(",
+      "generated_text": "def all_positive_validation_01(9_34258(values):\n    return [value for value in values if value is not None]\n    return normalized == normalized[::-1]\n    return number % 2 == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    retur",
+      "generated_text_sha256": "2041fbfcd19aac661c02ed6cac27fdf43c39bef2b737da57cf4f88f4565dd5bf",
+      "id": "validation-all_positive-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": "def balanced_parentheses_validation_00(values):\n        total = 0\n",
+      "family": "balanced_parentheses",
+      "forced_prefix_utf8": "def balanced_parentheses_validation_00(",
+      "generated_text": "def balanced_parentheses_validation_00(values):\n        total = 0\n    for value in range(2, number + 1):\n        result *= value\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return ",
+      "generated_text_sha256": "a0412cf737fb3c56c63ab0282f521cac9626a750a6b5305b4968dce0fa2c9f5c",
+      "id": "validation-balanced_parentheses-00",
+      "tests": [
+        {
+          "actual": null,
+          "expected": true,
+          "status": "WRONG_RESULT"
+        },
+        {
+          "actual": null,
+          "expected": true,
+          "status": "WRONG_RESULT"
+        },
+        {
+          "actual": null,
+          "expected": false,
+          "status": "WRONG_RESULT"
+        },
+        {
+          "actual": null,
+          "expected": false,
+          "status": "WRONG_RESULT"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "balanced_parentheses",
+      "forced_prefix_utf8": "def balanced_parentheses_validation_01(",
+      "generated_text": "def balanced_parentheses_validation_01(5oumber):\n    return number % 2 == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return result\n        return index\n    return -1\n    return numerator / denominator\n    return result\n    ",
+      "generated_text_sha256": "c645259ab656a119a9f1d7e32a34c56411f7606c3ccbff269f000ce3a166ae06",
+      "id": "validation-balanced_parentheses-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "title_words",
+      "forced_prefix_utf8": "def title_words_validation_00(",
+      "generated_text": "def title_words_validation_00(9_5455(text):\n    return \"-\".join(text.strip().lower().split())\n    return values[offset:] + values[:offset]\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n    return result\n    return result\n    return result\n ",
+      "generated_text_sha256": "c6914f2e896abb7469ccfc10a43640b4b0486d9341350585c11044c5ead5c5af",
+      "id": "validation-title_words-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "title_words",
+      "forced_prefix_utf8": "def title_words_validation_01(",
+      "generated_text": "def title_words_validation_01(9a_03485(text):\n    return text[::-1]\n    for group in groups:\n        result.extend(group)\n    return result\n        return None\n    return numerator / denominator\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result\n    return result",
+      "generated_text_sha256": "ccc43641cebca2b8a8ee17596b7a309981066d5e17cc9cae3fea558b2c45fc84",
+      "id": "validation-title_words-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "remove_none",
+      "forced_prefix_utf8": "def remove_none_validation_00(",
+      "generated_text": "def remove_none_validation_00(9_35259(value, low, high):\n    return max(low, min(value, high))\n    return a * b\n    return {**left, **right}\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return numerator / denominator\n    return resul",
+      "generated_text_sha256": "3cda502889f91714f522fd7c9a827e95c7332162c1b4cb80a8fee4cfd15cbdc2",
+      "id": "validation-remove_none-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": "def remove_none_validation_01(value, low, high):\n    return max(low, min(value, high))\n    return a * b\n    return {**left, **right}\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return numerator / denominator\n    retu\n",
+      "family": "remove_none",
+      "forced_prefix_utf8": "def remove_none_validation_01(",
+      "generated_text": "def remove_none_validation_01(value, low, high):\n    return max(low, min(value, high))\n    return a * b\n    return {**left, **right}\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return True\n    return numerator / denominator\n    retu",
+      "generated_text_sha256": "9b19f47c2e87c11740074872520c87a7f7edd930fdefaf0a3a8f4b013c429979",
+      "id": "validation-remove_none-01",
+      "tests": [
+        {
+          "error": "TypeError",
+          "status": "RUNTIME_ERROR"
+        },
+        {
+          "error": "TypeError",
+          "status": "RUNTIME_ERROR"
+        },
+        {
+          "error": "TypeError",
+          "status": "RUNTIME_ERROR"
+        },
+        {
+          "error": "TypeError",
+          "status": "RUNTIME_ERROR"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "sort_values",
+      "forced_prefix_utf8": "def sort_values_validation_00(",
+      "generated_text": "def sort_values_validation_00(9_34558(values):\n    return [value for value in values if value is not None]\n    return normalized == normalized[::-1]\n    return number % 2 == 0\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n    return result\n        result.extend(group)\n    return",
+      "generated_text_sha256": "30f9808d270d65da8bebb5446383a4778c687d214182dfc21c0ea290326ecbc8",
+      "id": "validation-sort_values-00",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    },
+    {
+      "causal_handoff_functional_success": false,
+      "extracted_source": null,
+      "family": "sort_values",
+      "forced_prefix_utf8": "def sort_values_validation_01(",
+      "generated_text": "def sort_values_validation_01(5or_vector_0385_52859(values):\n    return sorted(values)\n    return [value for value in values if value is not None]\n    return values[offset:] + values[:offset]\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n    return result\n  ",
+      "generated_text_sha256": "60555d7949bb2e1b8bef179a3ca84a453a0cd3f070c90dbe18bd1387d284e954",
+      "id": "validation-sort_values-01",
+      "tests": [
+        {
+          "status": "NO_EXPECTED_FUNCTION"
+        }
+      ]
+    }
+  ],
+  "semantic_artifact": "artifacts/moonshot/phase4/candidates/python-portable-functional-seed9440.pt",
+  "semantic_artifact_file_sha256": "805ab616c63c197c4738e670627137dff001fe110ad42638ec94fe8a7a6dbf08",
+  "semantic_payload_hash": "ab1733c73585833095164306deccd3103c6c80b21001f7f26214cee221fff882",
+  "split": "validation",
+  "status": "DIAGNOSTIC_ONLY_NO_PROMOTION_CREDIT",
+  "test_split_accessed": false
+}
