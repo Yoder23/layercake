@@ -1,0 +1,115 @@
+{
+  "format": "layercake-phase4-semantic-parallel-plan-preregistration/1",
+  "date": "2026-07-27",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION_TRAINING_OR_FRESH_PROBE_ACCESS",
+  "measured_basis": {
+    "decision": "moonshot/phase4_semantic_residual_blend_decision.json",
+    "decision_commit": "8ed703e",
+    "action_diagnostic": "results/moonshot/phase4/python-semantic-residual-blend-seed10840-action-diagnostic.json",
+    "action_diagnostic_file_sha256": "30dc8bfe87dd132e897cec731d1e4998b5c13c0eea7796d03853f43eaa474136",
+    "action_diagnostic_evidence_sha256": "289113bf34d03d97471dfc6fa0162bd9f5b73d7397015e1ce5623a0115904951",
+    "autonomous_action_accuracy": 0.2328159645232816,
+    "autonomous_pointer_action_accuracy": 0.11507936507936507,
+    "autonomous_exact_action_sequence_rate": 0.0,
+    "teacher_forced_action_accuracy": 0.8802660753880266,
+    "teacher_forced_pointer_realization_accuracy": 0.8670634920634921,
+    "teacher_forced_realization_accuracy": 0.9375461936437546,
+    "fresh_lexical_residual_blend_successes": 244,
+    "fresh_lexical_residual_blend_prompts": 256,
+    "measured_limiter": "Autoregressive semantic action feedback and prompt-span grounding, not identity realization."
+  },
+  "materially_distinct_architecture": {
+    "name": "prompt_only_parallel_semantic_action_plan",
+    "plan_input": "immutable public prompt semantic ABI states only",
+    "target_queries": "learned BOS query plus target-position embedding for every declared response position",
+    "decoder_self_attention": "bidirectional across target-position queries with no previous predicted action embeddings",
+    "cross_attention": "target-position queries attend to the encoded prompt semantic states",
+    "plan_creation": "one parallel forward pass creates and caches the complete fixed-or-pointer action sequence before the first output",
+    "runtime_step": "consume the next cached action and its cached decoded realization state; no action decoder or action-history update per generated token",
+    "host_generated_response_states_drive_plan": false,
+    "previous_predicted_actions_drive_plan": false,
+    "new_runtime_parameters": 0,
+    "canonical_semantic_abi_unchanged": true,
+    "same_shape_semantic_residual_unchanged": true,
+    "raw_prompt_bytes_exposed": false,
+    "private_host_token_ids_exposed": false,
+    "teacher_at_inference": false,
+    "template_or_answer_retrieval": false
+  },
+  "frozen_realization": {
+    "parent_artifact": "artifacts/moonshot/phase4/candidates/python-semantic-residual-blend-seed10840.pt",
+    "parent_artifact_sha256": "918c578f71e7b336f4d4a7da9a43cc74ab3db8e8266d459178b0d92a38520b72",
+    "parent_payload_hash": "d2f9565ba239045cdbfaa49ba6a0e9eb619214f81c482640fbd485252c5e845f",
+    "coordinate_blend": 0.73,
+    "parent_linear_blend": 0.27,
+    "frozen_tensor_prefixes": [
+      "input_norm.",
+      "fixed_action_embedding.",
+      "pointer_input.",
+      "fixed_semantic_value.",
+      "copy_semantic_value.",
+      "copy_coordinate_",
+      "copy_transition_",
+      "plan_correction."
+    ],
+    "frozen_tensor_subset_hash_before_after_must_match": true,
+    "core_parameters_changed": 0,
+    "output_head_parameters_changed": 0
+  },
+  "training": {
+    "initial_seed": 11040,
+    "replication_seeds_if_both_screens_pass": [
+      11041,
+      11042
+    ],
+    "primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "cpu_fallback_required": true,
+    "precision": "fp32",
+    "functional_cache": "artifacts/moonshot/phase4/cache/seed9824-attentive-v4-exact-span-train.safetensors",
+    "functional_cache_sha256": "4177a690c3f0b5d13ed3391eefa61add6da9e3a52ca4b038bd8953a073ba53cc",
+    "functional_rows": 960,
+    "lexical_cache": "artifacts/moonshot/phase4/cache/seed9824-lexical-conformance-v1-train.safetensors",
+    "lexical_cache_sha256": "ee0488a5f407c1fbd1cb8383c8de5d27ee955042e05d9b1713b2b584051bcf79",
+    "lexical_rows": 4096,
+    "sampling": "alternate one functional batch and one lexical batch",
+    "maximum_optimizer_steps": 2500,
+    "batch_size": 16,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.01,
+    "action_cross_entropy_weight": 1.0,
+    "frozen_realization_cross_entropy_weight": 0.25,
+    "checkpoint_selection": "minimum training objective without probe access"
+  },
+  "fresh_screens": {
+    "first": {
+      "dataset": "data/moonshot/phase4/lexical_conformance_v3_parallel_probe.jsonl",
+      "dataset_sha256": "3bbc8f4da5e4b540037074922ddb09a76b16f0cc427a46ecf1c317a9cebc194e",
+      "manifest_file_sha256": "f9597add0910c35fe9166c31bd20a9e1f3347a3333ea5ff47a80c98c2ff05082",
+      "manifest_sha256": "89f8fbfe6b45c60bc0d192999e079d5bbdbd74e16b9e5c6e758d7d349899d7e8",
+      "distinct_prompts": 256,
+      "fresh_target_token_ids": 512,
+      "target_ids_disjoint_from_lexical_v1_and_v2": true,
+      "minimum_exact_responses": 231
+    },
+    "second_only_after_first_pass": {
+      "dataset": "data/moonshot/phase4/python_parallel_plan_probe_v1.jsonl",
+      "dataset_sha256": "c46c894b18ba3460d6e46eb2271270d68db7d8bb84fcbbe740d5ceb1c2085131",
+      "manifest_file_sha256": "cafa5f40f06eae20b174b7ecfeee4dcf7ca4024311d3af3cb197c73bac211abc",
+      "manifest_sha256": "03d9e27689767115e77ae7aa1a10af066f0cfe71d8614d04f6ef9fcb22a8a0c1",
+      "distinct_prompts": 64,
+      "fresh_function_names": 64,
+      "minimum_strict_functional_successes": 52
+    },
+    "model_outputs_accessed_before_preregistration": 0,
+    "test_split_accessed": false
+  },
+  "decision_rule": {
+    "maximum_initial_runs": 1,
+    "nearby_query_width_depth_loss_weight_step_data_augmentation_or_decoding_sweeps_authorized": false,
+    "replication_authorized_only_after_both_fresh_screens_pass": true,
+    "on_failure": "Preserve the artifact and all evidence, close prompt-only parallel-plan work, and keep Phase 4 OPEN.",
+    "on_three_lineage_pass": "Create an untouched final test protocol, package the selected lineage with the existing signed lossless transfer machinery, then certify CUDA and CPU receivers plus matched repeated CPU inference.",
+    "phase4_before_every_gate_passes": "OPEN",
+    "phase5_before_phase4_seal": "LOCKED"
+  }
+}
