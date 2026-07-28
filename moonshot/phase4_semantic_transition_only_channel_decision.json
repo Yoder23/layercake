@@ -1,0 +1,51 @@
+{
+  "format": "layercake-phase4-semantic-transition-only-channel-decision/1",
+  "date": "2026-07-27",
+  "status": "FAILED_LEXICAL_SCREEN_TRANSITION_ONLY_BRANCH_CLOSED",
+  "protocol": {
+    "path": "moonshot/phase4_semantic_transition_only_channel_preregistration.json",
+    "sha256": "ed3366c71ec366829e6989112a8a0722083933231c62cdbf39550353f3a709a6"
+  },
+  "training": {
+    "artifact": "artifacts/moonshot/phase4/candidates/python-semantic-transition-only-seed10640.pt",
+    "artifact_file_sha256": "6065fc2db8cb598fa45be4c71c1394d3db472dc4c86e9eabfd20422e557c5f89",
+    "payload_hash": "904122207dc006000ffb5b8b58df7a6ca0de5911cdc4f724fcbea32e664693c4",
+    "evidence_sha256": "ce4b24c0f608ff7123618d3c9d42586b1dc1e94662a6f92c494738586cb29154",
+    "seed": 10640,
+    "gpu_wall_seconds": 91.27826200000709,
+    "peak_accelerator_memory_bytes": 555203072,
+    "trainable_parameters": 788480,
+    "frozen_parent_tensors_identical": true,
+    "cpu_fallback_smoke": "PASS",
+    "first_training_cross_entropy": 24.408414840698242,
+    "best_training_cross_entropy": 0.00005340274583431892
+  },
+  "lexical_validation": {
+    "evidence": "results/moonshot/phase4/python-semantic-transition-only-seed10640-lexical-validation.json",
+    "evidence_sha256": "b875f8321ee888ce0fce26833a335a1ce8d107a28e60d091b317662e926189c9",
+    "evidence_file_sha256": "e110ecc7ce43184d8d52d1d6abe8abf1ced8463f99c47bfffcf540821fb38faa",
+    "distinct_prompts": 256,
+    "exact_response_successes": 206,
+    "exact_response_success_rate": 0.8046875,
+    "minimum_exact_response_successes": 231,
+    "status": "FAIL"
+  },
+  "decision": {
+    "python_validation_executed": false,
+    "replication_authorized": false,
+    "transition_only_branch_closed": true,
+    "nearby_width_depth_activation_loss_weight_or_step_sweeps_authorized": false,
+    "recoverability_audit_authorized": true,
+    "audit_scope": "Measure without promotion credit whether the frozen tied-head coordinate is lossless for held-out identity and whether a training-only closed-form map from adjacent semantic states recovers that coordinate on disjoint held-out identity units.",
+    "phase4_campaign_state": "OPEN",
+    "phase5_campaign_state": "LOCKED",
+    "phase4_seal_or_tag_allowed_now": false
+  },
+  "preaudit_observation": {
+    "heldout_unique_identifier_token_ids": 771,
+    "raw_tied_embedding_self_top1": 770,
+    "normalized_tied_embedding_self_top1": 771,
+    "normalized_tied_embedding_self_top1_rate": 1.0,
+    "interpretation": "The frozen output coordinate itself is lossless for every held-out identity unit. The remaining scientific question is recovering that coordinate from the public semantic ABI states."
+  }
+}
