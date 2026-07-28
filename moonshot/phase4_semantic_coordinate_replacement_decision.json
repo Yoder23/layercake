@@ -1,0 +1,56 @@
+{
+  "format": "layercake-phase4-semantic-coordinate-replacement-decision/1",
+  "date": "2026-07-27",
+  "status": "FAILED_LEXICAL_SCREEN_COORDINATE_BRANCH_CLOSED",
+  "protocol": {
+    "path": "moonshot/phase4_semantic_coordinate_replacement_preregistration.json",
+    "sha256": "5049e3e9ed975977dfd5f0ab5e52b842252ce06c141ab4fde62719a71863e4b8"
+  },
+  "training": {
+    "artifact": "artifacts/moonshot/phase4/candidates/python-semantic-coordinate-replacement-seed10840.pt",
+    "artifact_file_sha256": "7a5dd947e338fa7cdc561201b14124b9d1408343cfe928b6ae500132327e5a83",
+    "training_evidence": "artifacts/moonshot/phase4/candidates/python-semantic-coordinate-replacement-seed10840.json",
+    "training_evidence_file_sha256": "4b9d833428250afdd1420697cdee8cdc0dc99f8d1d7bb824b8b19fff48f304c2",
+    "payload_hash": "d2f9565ba239045cdbfaa49ba6a0e9eb619214f81c482640fbd485252c5e845f",
+    "evidence_sha256": "39d61f3550d4e6cda35cf704acede402c5a807c7343d26fb110e3f1ea3a3f2b3",
+    "seed": 10840,
+    "gpu_wall_seconds": 89.81532180000795,
+    "primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "peak_accelerator_memory_bytes": 718442496,
+    "trainable_parameters": 788480,
+    "frozen_parent_tensors_identical": true,
+    "cpu_fallback_smoke": "PASS",
+    "first_coordinate_cosine_loss": 1.0123257637023926,
+    "last_coordinate_cosine_loss": 0.11430376768112183,
+    "first_bounded_replacement_cross_entropy": 12.126358032226562,
+    "last_bounded_replacement_cross_entropy": 0.00400795741006732
+  },
+  "lexical_validation": {
+    "evidence": "results/moonshot/phase4/python-semantic-coordinate-replacement-seed10840-lexical-validation.json",
+    "evidence_sha256": "339884a6a062a1863758e4cfce80c28da065eaaeff582d0bc8c9fb3af92a0ac5",
+    "evidence_file_sha256": "6510a6efdd76f887b7600bd9a731833834d699ab4a8f88a3932bf0e4d06e6400",
+    "distinct_prompts": 256,
+    "exact_response_successes": 227,
+    "exact_response_success_rate": 0.88671875,
+    "minimum_exact_response_successes": 231,
+    "shortfall_exact_responses": 4,
+    "status": "FAIL"
+  },
+  "decision": {
+    "python_validation_executed": false,
+    "replication_authorized": false,
+    "coordinate_replacement_branch_closed": true,
+    "nearby_width_depth_scale_activation_loss_weight_or_step_sweeps_authorized": false,
+    "threshold_relaxation_authorized": false,
+    "test_split_accessed": false,
+    "phase4_campaign_state": "OPEN",
+    "phase5_campaign_state": "LOCKED",
+    "phase4_seal_or_tag_allowed_now": false
+  },
+  "interpretation": {
+    "identity_coordinate_oracle_recoverability": "255 of 256 complete validation rows were exactly recoverable by bounded replacement when the authoritative normalized tied coordinate was supplied.",
+    "learned_coordinate_result": "The nonlinear canonical-ABI coordinate codec improved exact lexical reconstruction to 227 of 256 but did not meet the preregistered 231-of-256 screen.",
+    "remaining_measured_limiter": "Learned nonlinear identity-coordinate generalization, not cake serialization, receiver transfer, canonical ABI carriage, or GPU availability.",
+    "next_experiment_constraint": "Any continuation must be materially distinct from a coordinate-codec hyperparameter sweep, preregistered before implementation, and evaluated on a fresh disjoint probe so prior validation observations cannot be reused as promotion evidence."
+  }
+}
