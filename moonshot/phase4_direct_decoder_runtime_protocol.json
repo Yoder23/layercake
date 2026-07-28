@@ -1,0 +1,60 @@
+{
+  "format": "layercake-phase4-direct-decoder-runtime-protocol/1",
+  "date": "2026-07-27",
+  "status": "PREREGISTERED_AFTER_PACKAGE_CERTIFICATION_BEFORE_RUNTIME_BENCHMARK",
+  "parent": {
+    "path": "moonshot/phase4_direct_decoder_release_preregistration.json",
+    "sha256": "9a1a97f29f8ac29c187f559034541350cd54e5e0023d1bd77f01089d996b2dc4"
+  },
+  "transfer_certificate": {
+    "path": "results/moonshot/phase4/direct_decoder_transfer_certificate.json",
+    "file_sha256": "c72d37ad95feeb763190ca6ffad3edbb5cc1bf6443bb957f5c75c48b416b131a",
+    "evidence_sha256": "48ce31f720376c87819501048cc8cde06774bb6741ae4628522062f4b29e5d89",
+    "status": "PASS"
+  },
+  "immutable_package": {
+    "path": "artifacts/moonshot/phase4/release/python-token-plan-seed10141-direct-v1.0.0.cake",
+    "archive_sha256": "0585c79bfbea16b1c4165bf0030ba6985b8a8cdeab529cd7afe3f9c76c564ef7",
+    "tensor_payload_hash": "d100316a27e3a17d7d262a6e77d1a99ca3c3c47b3055fafe524f397c58b172b7",
+    "artifact_state_dict_hash": "a70fcb62a2c24305ca0dad3929124ca6881363d26366c9374b96e7951b5cd49f",
+    "abi_version": "lc-direct-neural-decoder/1",
+    "abi_sha256": "de765899700aefe22bfe6c9d00ed5b0c1f87a7ef864cf7211aa8aa4491a0742a"
+  },
+  "benchmark": {
+    "dataset": "data/moonshot/phase4/python_functional_v1.jsonl",
+    "dataset_sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "split": "test",
+    "distinct_prompts": 100,
+    "additional_repeated_prompt_observations": 20,
+    "observations_per_system": 120,
+    "order": "alternate LayerCake-first and Qwen-first",
+    "layercake_threads": 1,
+    "qwen_threads": 14,
+    "qwen_gpu_layers": 0,
+    "qwen_model": "qwen2.5:0.5b",
+    "qwen_digest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+    "decoding": "greedy for both systems",
+    "primary_metric": "generated UTF-8 bytes per total second",
+    "secondary_metric": "generated UTF-8 characters per total second",
+    "token_accounting": "LayerCake authoritative selected neural actions; Qwen authoritative Ollama eval_count",
+    "bootstrap_samples": 10000
+  },
+  "gates": {
+    "layercake_functional_successes": 100,
+    "median_paired_throughput_ratio_min": 2.0,
+    "paired_mean_ratio_bootstrap_lower_bound_min": 2.0,
+    "median_ttft_ratio_max": 1.0,
+    "active_tensor_memory_lower_than_qwen": true,
+    "phase2_core_sentinel_retention_min": 0.9,
+    "phase2_core_plus_inactive_cake_transformer_ratio_min": 2.0,
+    "phase2_core_outputs_identical_before_after": true,
+    "inactive_cake_forward_calls": 0,
+    "same_archive_and_tensor_payload_as_transfer_certificate": true
+  },
+  "decision_rule": {
+    "on_pass": "Use this evidence with the direct transfer certificate and immutable earlier quality evidence to derive the Phase 4 candidate.",
+    "on_failure": "Preserve the benchmark and keep Phase 4 OPEN.",
+    "semantic_residual_fusion_claimed": false,
+    "phase5_before_phase4_seal": "LOCKED"
+  }
+}
