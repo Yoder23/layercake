@@ -1,0 +1,50 @@
+{
+  "format": "layercake-phase4-semantic-action-plan-lexical-repair-decision/1",
+  "date": "2026-07-27",
+  "status": "FAILED_LEXICAL_SCREEN_BRANCH_CLOSED",
+  "protocol": {
+    "path": "moonshot/phase4_semantic_action_plan_lexical_repair_preregistration.json",
+    "sha256": "5efc599759f36edb4a949f2b941ec1a2a5f54e30c95dbc49a6859e5f44a29a1c"
+  },
+  "training": {
+    "artifact": "artifacts/moonshot/phase4/candidates/python-semantic-action-plan-lexical-repair-seed10440.pt",
+    "artifact_file_sha256": "a8211523110f8e69c851a65fefe63a5bb95ab487fda56980301fe28056215f64",
+    "payload_hash": "2862d39f39cef57ac631665b3ffcc0011ee3fd8967eb774d1ffdc821362b1ef0",
+    "training_evidence_sha256": "43c4ed8000c0f16ac9eaf2b4dff574bd7bab13beeedaac4b858ba738f957a2d9",
+    "seed": 10440,
+    "gpu_wall_seconds": 48.54029780003475,
+    "peak_accelerator_memory_bytes": 579969536,
+    "trainable_parameters": 676033,
+    "new_runtime_parameters": 0,
+    "architecture_unchanged": true,
+    "frozen_tensor_subset_identical": true,
+    "cpu_fallback_smoke": "PASS"
+  },
+  "lexical_validation": {
+    "evidence": "results/moonshot/phase4/python-semantic-action-plan-lexical-repair-seed10440-lexical-validation.json",
+    "evidence_sha256": "606d2b67a38e895a1e8d7dcea3676fddbec17ff3237033e6925c375be8b57586",
+    "evidence_file_sha256": "b0e6b301309be9b54a8158f733fdc5f009804af745d6622485a576b04bfc5265",
+    "distinct_prompts": 256,
+    "exact_response_successes": 189,
+    "exact_response_success_rate": 0.73828125,
+    "functional_identity_successes": 189,
+    "functional_identity_success_rate": 0.73828125,
+    "minimum_exact_response_successes": 231,
+    "status": "FAIL"
+  },
+  "decision": {
+    "python_validation_executed": false,
+    "reason_python_validation_locked": "The preregistered lexical screen failed.",
+    "replication_seeds_authorized": false,
+    "nearby_pointer_gate_copy_value_loss_weight_width_or_decoder_sweeps_authorized": false,
+    "semantic_action_plan_branch_closed": true,
+    "phase4_campaign_state": "OPEN",
+    "phase5_campaign_state": "LOCKED",
+    "phase4_seal_or_tag_allowed_now": false,
+    "next_required_work": "Use the preserved raw lexical records to preregister a materially distinct semantic-ABI identity codec only if action-level diagnostics show that planning is already correct and semantic-state realization remains the isolated limiter."
+  },
+  "claim_boundary": {
+    "proven": "A GPU-only copy-path conformance repair can preserve every frozen tensor and improve autonomous held-out lexical identity to 189/256 without adding runtime parameters, while retaining CPU artifact execution.",
+    "not_proven": "Lossless held-out identity, useful Python quality, portable semantic-ABI cake promotion, or Phase 4."
+  }
+}
