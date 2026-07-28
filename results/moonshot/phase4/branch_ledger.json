@@ -1047,6 +1047,52 @@
       "phase4_promoted": false,
       "phase4_status": "OPEN",
       "test_split_accessed": true
+    },
+    {
+      "branch_id": "semantic-token-plan-residual-seed10240",
+      "disposition": "REJECTED_AUTONOMOUS_QUALITY_REPLICATION_LOCKED",
+      "architecture": {
+        "name": "SemanticTokenPlanResidual",
+        "architecture": "host_state_driven_encoder_decoder_with_neural_pointer",
+        "canonical_semantic_abi_state_consumed": true,
+        "same_shape_bounded_residual_returned": true,
+        "raw_prompt_bytes_exposed": false,
+        "private_host_token_ids_exposed": false,
+        "parameters": 3222337
+      },
+      "training": {
+        "seed": 10240,
+        "optimizer_steps": 3000,
+        "primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+        "precision": "fp32",
+        "last_reported_gpu_wall_seconds": 126.6852157000103,
+        "artifact_file_sha256": "50b49f27d408ab2e3ca77fa8bd3656b939f30e586a0a8b620ac5b93c96555456",
+        "payload_hash": "7425c257ef1af392cfd768b8212fa03cdd0017d03bdf4450f7cbd169860f2f22",
+        "post_training_evidence_serialization_failed": true,
+        "checkpoint_preserved": true
+      },
+      "teacher_forced_final_report": {
+        "full_vocabulary_cross_entropy": 0.0001886876707430929,
+        "pointer_cross_entropy": 0.00026468877331353724,
+        "copy_value_cross_entropy": 0.00005024081110605039,
+        "copy_gate_binary_cross_entropy": 0.001248092739842832,
+        "selection_objective": 0.00285340822301805,
+        "promotion_credit": 0
+      },
+      "autonomous_validation": {
+        "distinct_prompts": 64,
+        "strict_functional_successes": 0,
+        "functional_error_rate": 1.0,
+        "parseable_first_functions": 10,
+        "name_agnostic_functional_successes_diagnostic_only": 4,
+        "evidence_sha256": "ae7010ba2dd5f9e73b1bc9143f2ebc1fbc494f47caee7664a432e9bfb8a06e70",
+        "diagnostic_file_sha256": "845b3a68d550372aca352df96753ffdf07e5da2a314f32de6acdc74563448c1a"
+      },
+      "measured_bottleneck": "The controller fits teacher-forced host states almost perfectly but drives its target decoder from the host's newly generated semantic states. The first autonomous lexical errors therefore change all subsequent host states; only 10/64 outputs remain parseable and only 4/64 bodies pass under generated names. Exact identity and program structure both collapse under this host-state exposure shift.",
+      "next_bounded_change": "Replace the response-side host-state-driven decoder with a self-generated neural action-plan state while retaining prompt input exclusively through the canonical semantic ABI and realizing each planned action only as a bounded semantic residual. The action state must remain independent of erroneous host response states; this is a causal-state representation change, not a pointer, gate, width, loss-weight, or decoding sweep.",
+      "replication_seeds_authorized": false,
+      "nearby_sweeps_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }
