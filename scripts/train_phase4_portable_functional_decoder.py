@@ -1308,6 +1308,12 @@ def evaluate(
     if len(rows) != validation["distinct_prompts"]:
         raise ValueError("validation row count mismatch")
     artifact = torch.load(artifact_path, map_location="cpu", weights_only=True)
+    expected_artifact = protocol.get("artifact")
+    if expected_artifact is not None:
+        if _sha256(artifact_path) != expected_artifact["file_sha256"]:
+            raise ValueError("functional validation artifact hash mismatch")
+        if artifact["payload_hash"] != expected_artifact["payload_hash"]:
+            raise ValueError("functional validation payload hash mismatch")
     spec, _ = load_portable_artifact(artifact, "cpu")
     runtime = LayerCakeRuntime()
     runtime.install_portable_domain(artifact, "cpu")

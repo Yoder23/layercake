@@ -1,0 +1,33 @@
+{
+  "format": "layercake-phase4-portable-functional-evaluation-protocol/1",
+  "status": "PREREGISTERED_BEFORE_FUNCTIONAL_EVALUATION",
+  "parent": "moonshot/phase4_portable_attentive_seq2seq_preregistration.json",
+  "authorization": {
+    "lexical_autonomous_evidence": "results/moonshot/phase4/python-portable-attentive-seq2seq-seed10040-autonomous.json",
+    "evidence_sha256": "96995966fa7000c3efda31d0bc6fb4c90fb6f593d1772017ce05b7adadc25274",
+    "exact_prefix_successes": 255,
+    "required_successes": 231,
+    "gate_passed": true
+  },
+  "artifact": {
+    "path": "artifacts/moonshot/phase4/candidates/python-portable-attentive-seq2seq-seed10040.pt",
+    "file_sha256": "de0f22b0e064772d1fa5b6741effb207e5c21738956419b70cb900884f30adf3",
+    "payload_hash": "2ce9179690c9cb80a2fe284d0419240d504eff91feef4dd151c9be42133da0cb"
+  },
+  "validation": {
+    "path": "data/moonshot/phase4/python_functional_v1.jsonl",
+    "sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "split_sha256": "233f09a202a7a28605952d9348fa36bfe538e5163ac8b41f46b3a965bc62c75d",
+    "distinct_prompts": 64,
+    "generation_policy": "greedy_argmax_persistent_incremental_attentive_seq2seq_state",
+    "maximum_new_bytes": 320,
+    "minimum_strict_functional_successes": 52,
+    "expected_function_name_required": true,
+    "every_unit_test_must_pass": true
+  },
+  "decision_rule": {
+    "authorize_seeds_10041_and_10042_only_if_this_gate_passes": true,
+    "test_split_access_allowed": false,
+    "transfer_or_speed_claim_from_a_different_payload_allowed": false
+  }
+}
