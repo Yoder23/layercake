@@ -1,0 +1,81 @@
+{
+  "format": "layercake-phase4-semantic-transition-only-channel-preregistration/1",
+  "date": "2026-07-27",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_TRAINING",
+  "measured_parent_failure": {
+    "decision": "moonshot/phase4_semantic_transition_identity_codec_decision.json",
+    "artifact": "artifacts/moonshot/phase4/candidates/python-semantic-transition-codec-seed10540.pt",
+    "artifact_file_sha256": "a364ba0383a1c51cb9825afdf8f87a84b4e0cec1965d18868c85959af2cd663c",
+    "first_training_pointer_cross_entropy": 0.00018481354345567524,
+    "lexical_exact_successes": 201,
+    "lexical_prompts": 256,
+    "attribution": "The additive codec is gradient-shadowed by a parent copy path that memorizes training identities at near-zero loss but does not generalize losslessly."
+  },
+  "materially_distinct_architecture": {
+    "name": "causal_semantic_transition_only_identity_channel",
+    "pointer_realization": "LayerNorm(selected_state - immediately_preceding_state), Linear(768,512), GELU, Linear(512,768,bias=False)",
+    "parent_linear_copy_value_used_for_pointer_realization": false,
+    "parent_action_planner_unchanged": true,
+    "parent_fixed_action_realization_unchanged": true,
+    "canonical_semantic_abi_unchanged": true,
+    "new_runtime_parameters": 788480,
+    "pointer_time_active_codec_parameters": 788480,
+    "failed_additive_pointer_time_active_value_parameters": 1378304,
+    "expected_speed_direction_vs_failed_additive_codec": "faster",
+    "raw_prompt_bytes_exposed": false,
+    "private_host_token_ids_exposed": false,
+    "template_retrieval_or_output_rewrite": false,
+    "teacher_at_inference": false
+  },
+  "frozen_boundary": {
+    "base_artifact": "artifacts/moonshot/phase4/candidates/python-semantic-action-plan-lexical-repair-seed10440.pt",
+    "base_artifact_sha256": "a8211523110f8e69c851a65fefe63a5bb95ab487fda56980301fe28056215f64",
+    "base_payload_hash": "2862d39f39cef57ac631665b3ffcc0011ee3fd8967eb774d1ffdc821362b1ef0",
+    "all_base_artifact_tensors_frozen": true,
+    "all_core_and_output_head_tensors_frozen": true,
+    "trainable_tensors": [
+      "copy_transition_norm.weight",
+      "copy_transition_norm.bias",
+      "copy_transition_input.weight",
+      "copy_transition_input.bias",
+      "copy_transition_output.weight"
+    ],
+    "base_tensor_subset_hash_before_after_must_match": true
+  },
+  "training": {
+    "seed": 10640,
+    "primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "cpu_fallback_required": true,
+    "precision": "fp32",
+    "cache": "artifacts/moonshot/phase4/cache/seed9824-lexical-conformance-v1-train.safetensors",
+    "cache_sha256": "ee0488a5f407c1fbd1cb8383c8de5d27ee955042e05d9b1713b2b584051bcf79",
+    "train_rows": 4096,
+    "pointer_training_units": 24908,
+    "maximum_optimizer_steps": 2000,
+    "batch_size": 64,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.01,
+    "loss": "authoritative frozen-host full-vocabulary cross-entropy on transition-only pointer realization",
+    "selection": "minimum observed training pointer realization cross-entropy"
+  },
+  "screens": {
+    "lexical_validation_first": true,
+    "lexical_dataset_sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+    "lexical_distinct_prompts": 256,
+    "lexical_exact_response_successes_minimum": 231,
+    "python_validation_only_if_lexical_screen_passes": true,
+    "python_dataset_sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "python_distinct_prompts": 64,
+    "python_strict_functional_successes_minimum": 52,
+    "test_split_accessed": false
+  },
+  "decision_rule": {
+    "maximum_initial_runs": 1,
+    "nearby_width_depth_activation_loss_weight_or_step_sweeps_authorized": false,
+    "replication_authorized_only_after_both_initial_screens_pass": true,
+    "on_failure": "Preserve all evidence, close transition-only identity-channel work, and reassess whether the frozen canonical semantic ABI contains sufficiently recoverable lexical identity for the Phase 4 contract.",
+    "on_pass": "Run two independently initialized full staged lineages, then package, transfer, semantic-retention, and matched CPU-inference certification.",
+    "phase4_before_all_gates_pass": "OPEN",
+    "phase5_before_phase4_seal": "LOCKED"
+  }
+}
