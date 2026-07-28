@@ -111,6 +111,9 @@ def main() -> None:
     parser.add_argument("--rows", type=int, default=256)
     parser.add_argument("--seed", type=int, default=10940)
     parser.add_argument("--row-offset", type=int, default=20000)
+    parser.add_argument(
+        "--exclude-dataset", action="append", type=Path, default=[]
+    )
     args = parser.parse_args()
     output = args.output if args.output.is_absolute() else ROOT / args.output
     manifest_path = output.with_suffix(".manifest.json")
@@ -123,7 +126,16 @@ def main() -> None:
     rng = random.Random(args.seed)
     rng.shuffle(leading)
     rng.shuffle(interior)
-    parent_rows = _load_rows(PARENT_DATASET)
+    exclusion_paths = [PARENT_DATASET]
+    exclusion_paths.extend(
+        path if path.is_absolute() else ROOT / path
+        for path in args.exclude_dataset
+    )
+    parent_rows = [
+        row
+        for path in exclusion_paths
+        for row in _load_rows(path)
+    ]
     excluded = {
         int(token_id)
         for row in parent_rows
@@ -160,8 +172,13 @@ def main() -> None:
         "tokenizer_json_sha256": sha256_file(
             CHECKPOINT / "tokenizer.json"
         ),
-        "parent_dataset": PARENT_DATASET.relative_to(ROOT).as_posix(),
-        "parent_dataset_sha256": PARENT_DATASET_SHA256,
+        "excluded_datasets": [
+            {
+                "path": path.relative_to(ROOT).as_posix(),
+                "sha256": sha256_file(path),
+            }
+            for path in exclusion_paths
+        ],
         "parent_target_token_ids": len(excluded),
         "fresh_target_token_ids": len(fresh_ids),
         "fresh_target_ids_unique": len(fresh_ids) == 2 * len(rows),
