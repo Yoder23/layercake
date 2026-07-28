@@ -171,6 +171,34 @@ learning on CPU-only and GPU-capable compatible hosts.
 The machine-readable version of this lock is
 `moonshot/phase4_cpu_cake_training_lock.json`.
 
+## Phase 5 generic multi-domain lock
+
+Phase 5 extends the sealed Phase 4 mechanism; it does not reconstruct it. The
+exact sealed Python package remains the first real domain. SQL and regular
+expression capabilities are the next two real neural domains, selected because
+their held-out behavior can be checked by bounded execution rather than syntax
+or subjective scoring.
+
+One generic authoring framework is frozen before either new domain
+configuration or dataset is created. After that freeze, adding a domain may
+change only configuration, data, evidence, and package artifacts. Any
+domain-specific source edit fails the generic-authoring gate.
+
+All three packages must coexist on one host and remain explicitly selectable.
+Only the selected cake may execute. Installed inactive cakes must receive zero
+neural forward calls and may not change the selected cake's action sequence or
+output bytes. The same signed package bytes must retain the complete frozen
+source-host success set on two CPU receivers and one CUDA receiver without
+receiver training, calibration, core mutation, or package mutation.
+
+This phase proves generic installation and manually selected multi-domain
+operation. It does not claim automatic routing, top-k selection, simultaneous
+fusion, multidomain response composition, or catalog scalability. Those remain
+Phase 6 gates.
+
+The immutable preregistration is
+`moonshot/phase5_generic_multidomain_preregistration.json`.
+
 ## Required reread points
 
 Before beginning a representation campaign, selecting a promoted candidate,

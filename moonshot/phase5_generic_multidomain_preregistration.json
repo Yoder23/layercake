@@ -1,0 +1,208 @@
+{
+  "format": "layercake-phase5-generic-multidomain-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_FRAMEWORK_IMPLEMENTATION_DATA_GENERATION_OR_TRAINING",
+  "phase": 5,
+  "parent_release": {
+    "tag": "layercake-moonshot-phase4",
+    "tag_commit": "e1d1be330dd504fc9c2e09abda22d6ce7eb90e63",
+    "release_commit": "219b04a612a835608f2fde844f76d6a6288400fa",
+    "python_package": "artifacts/moonshot/phase4/release/python-token-plan-seed10141-direct-v1.0.0.cake",
+    "python_package_sha256": "0585c79bfbea16b1c4165bf0030ba6985b8a8cdeab529cd7afe3f9c76c564ef7",
+    "direct_decoder_abi": "moonshot/phase4_canonical_direct_decoder_abi_v1.json",
+    "direct_decoder_abi_version": "lc-direct-neural-decoder/1",
+    "direct_decoder_abi_sha256": "de765899700aefe22bfe6c9d00ed5b0c1f87a7ef864cf7211aa8aa4491a0742a"
+  },
+  "claim_boundary": {
+    "proves": [
+      "three real neural capability domains can coexist on one LayerCake host",
+      "each installed domain can be explicitly selected and execute autonomously",
+      "new domains are authored from configuration and data after one generic framework freeze",
+      "inactive installed cakes receive zero neural forward calls and cannot alter selected-cake behavior",
+      "identical signed package bytes retain held-out functional behavior on compatible CPU and CUDA receivers",
+      "the sealed English core and sealed Python package remain immutable"
+    ],
+    "does_not_prove": [
+      "automatic routing",
+      "top-k selection",
+      "simultaneous neural fusion",
+      "multidomain response composition",
+      "catalog-size scaling",
+      "integrated CPU-versus-GPU dominance"
+    ],
+    "phase6_owns": [
+      "discovery-driven routing",
+      "top-1 and top-k selection",
+      "abstention",
+      "multidomain composition where semantically valid",
+      "catalog scaling"
+    ]
+  },
+  "real_domains": {
+    "python": {
+      "disposition": "inherit_exact_sealed_phase4_package_and_three_seed_evidence",
+      "functional_evaluator": "isolated_python_function_unit_tests",
+      "new_training_authorized": false
+    },
+    "sql": {
+      "disposition": "new_generic_direct_neural_decoder",
+      "functional_evaluator": "isolated_in_memory_sqlite_query_execution",
+      "minimum_families": 8
+    },
+    "regex": {
+      "disposition": "new_generic_direct_neural_decoder",
+      "functional_evaluator": "bounded_python_regular_expression_fullmatch",
+      "minimum_families": 8
+    }
+  },
+  "generic_authoring_contract": {
+    "framework_freeze_required_before_domain_configs": true,
+    "domain_specific_source_edits_after_framework_freeze_allowed": false,
+    "allowed_post_freeze_domain_authoring_paths": [
+      "configs/moonshot/phase5/domains/",
+      "data/moonshot/phase5/",
+      "moonshot/phase5_*_data_freeze.json",
+      "moonshot/phase5_*_training_seed*.json",
+      "results/moonshot/phase5/",
+      "artifacts/moonshot/phase5/"
+    ],
+    "configuration_must_declare": [
+      "domain identity",
+      "prompt and response patterns",
+      "dynamic copy lexemes",
+      "functional evaluator kind and bounded fixtures",
+      "split sizes",
+      "deterministic data seed"
+    ],
+    "package_payload_must_remain_non_executable": true,
+    "external_boundary": "UTF-8 bytes in and UTF-8 bytes out"
+  },
+  "data_protocol": {
+    "generator": "generic configuration renderer frozen in the framework commit",
+    "split_generation_order": [
+      "train",
+      "validation",
+      "test"
+    ],
+    "minimum_rows_per_new_domain": {
+      "train": 1024,
+      "validation": 128,
+      "test": 128
+    },
+    "split_content_hashes_frozen_before_training": true,
+    "validation_may_select_the_promoted_seed": true,
+    "test_access_before_seed_selection_allowed": false,
+    "dynamic_values_disjoint_across_splits": true,
+    "training_labels_are_not_available_to_the_deployed_host": true
+  },
+  "model_protocol": {
+    "architecture": "portable_token_plan_pointer_transformer",
+    "private_representation": "lossless generic lexemes plus neurally selected source-position pointer actions",
+    "external_boundary": "UTF-8 bytes",
+    "model_width": 192,
+    "attention_heads": 6,
+    "encoder_layers": 2,
+    "decoder_layers": 2,
+    "feedforward_width": 768,
+    "pointer_width": 128,
+    "dropout": 0.1,
+    "maximum_source_lexemes": 96,
+    "maximum_target_actions_including_eos": 96,
+    "templates_retrieval_stored_answers_forced_actions_or_output_rewrite_allowed": false,
+    "complete_prompt_encoded_once": true,
+    "persistent_incremental_action_state_required": true,
+    "completed_context_recomputation_allowed": false
+  },
+  "training_protocol": {
+    "new_domain_seeds": [
+      10150,
+      10151,
+      10152
+    ],
+    "primary_device": "cuda:0",
+    "required_device_name": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "precision": "fp32",
+    "optimizer": "AdamW",
+    "optimizer_steps": 2500,
+    "batch_size": 64,
+    "learning_rate": 0.0005,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0,
+    "checkpoint_selection_within_seed": "lowest deterministic training negative log likelihood without validation access",
+    "promoted_seed_selection": [
+      "highest validation functional successes",
+      "lowest validation invalid-output count",
+      "lowest training negative log likelihood",
+      "lowest numeric seed"
+    ],
+    "cpu_fallback": "one forward backward optimizer step per trained seed",
+    "host_core_parameters_trainable": 0,
+    "phase4_python_package_trainable": false
+  },
+  "quality_protocol": {
+    "validation_prompts_per_new_domain": 128,
+    "minimum_validation_successes_per_seed": 122,
+    "final_test_prompts_per_selected_new_domain": 128,
+    "minimum_final_test_successes": 122,
+    "paired_frozen_core_baseline": true,
+    "frozen_core_checkpoint_sha256": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+    "functional_error_reduction_definition": "100 * (frozen_core_error_rate - selected_cake_error_rate)",
+    "minimum_domain_functional_error_reduction_percentage_points": 5.0,
+    "real_neural_domain_count_minimum": 3,
+    "all_unit_or_execution_cases_required_per_prompt": true,
+    "syntax_only_or_exact_text_only_promotion_allowed": false
+  },
+  "package_and_host_protocol": {
+    "same_direct_decoder_abi_required": true,
+    "signed_content_addressed_non_executable_packages_required": true,
+    "private_signing_keys_may_be_committed": false,
+    "identical_archive_bytes_required": true,
+    "identical_tensor_payload_hash_required": true,
+    "receiver_training_examples": 0,
+    "receiver_calibration_runs": 0,
+    "receiver_matrix_per_new_package": [
+      "phase2-core-seed9824 CPU",
+      "phase2-core-seed9825 CPU",
+      "phase2-core-seed9826 CUDA"
+    ],
+    "source_success_retention_required": 1.0,
+    "selected_package_uninstall_reinstall_identity_required": true,
+    "tampered_archive_rejection_required": true,
+    "manual_selection_only": true,
+    "inactive_cake_forward_calls_required": 0,
+    "selected_output_and_action_sequence_must_equal_solo_execution": true,
+    "installed_package_count_minimum": 3,
+    "english_core_hash_changes_allowed": 0,
+    "phase4_python_archive_changes_allowed": 0
+  },
+  "promotion_gates": {
+    "real_neural_domain_count": {
+      "operator": ">=",
+      "threshold": 3
+    },
+    "minimum_domain_functional_error_reduction": {
+      "operator": ">=",
+      "threshold": 5.0,
+      "unit": "percentage_points"
+    },
+    "generic_authoring_requires_source_edits": {
+      "operator": "==",
+      "threshold": 0
+    },
+    "inactive_cake_effect": {
+      "operator": "==",
+      "threshold": 0,
+      "definition": "maximum inactive neural forward calls plus any selected output or action-sequence mismatch"
+    }
+  },
+  "adversarial_verifier_requirements": [
+    "reject relabeled duplicate domains",
+    "reject deterministic or non-neural payloads",
+    "reject stale or manually edited aggregates",
+    "reject test access before seed selection",
+    "reject any post-freeze domain-specific source edit",
+    "reject package hash or tensor mutation",
+    "reject receiver learning or calibration",
+    "reject inactive-cake forward calls",
+    "reject a routing or fusion claim from manual direct selection"
+  ]
+}
