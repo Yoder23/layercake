@@ -978,6 +978,225 @@ def convert_self_gated_transition(
     return evidence
 
 
+def continue_markov_pointer(
+    protocol_path: Path,
+    initial_artifact_path: Path,
+    artifact_path: Path,
+    evidence_path: Path,
+) -> dict[str, Any]:
+    protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+    if (
+        protocol["status"]
+        != "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_TRAINING"
+    ):
+        raise ValueError("Markov pointer integration is not preregistered")
+    parent = protocol["parent_artifact"]
+    if _sha256(initial_artifact_path) != parent["file_sha256"]:
+        raise ValueError("Markov pointer parent artifact hash mismatch")
+    if artifact_path.exists() or evidence_path.exists():
+        raise RuntimeError("Markov pointer outputs are immutable")
+    data_contract = protocol["training_data"]
+    data_path = ROOT / data_contract["path"]
+    if _sha256(data_path) != data_contract["sha256"]:
+        raise ValueError("Markov pointer training dataset hash mismatch")
+    rows = [row for row in _load_rows(data_path) if row["split"] == "train"]
+    if len(rows) != data_contract["rows"]:
+        raise ValueError("Markov pointer training row count mismatch")
+    settings = protocol["bounded_run"]
+    seed = int(settings["seed"])
+    torch.manual_seed(seed)
+    random.seed(seed)
+    torch.set_num_threads(int(settings["torch_threads"]))
+    initial = torch.load(
+        initial_artifact_path, map_location="cpu", weights_only=True
+    )
+    parent_spec, parent_model = load_portable_artifact(initial, "cpu")
+    if initial["payload_hash"] != parent["payload_hash"]:
+        raise ValueError("Markov pointer parent payload hash mismatch")
+    model = PortableDomainDecoder(
+        feature_width=parent_spec.feature_width,
+        hidden_width=parent_spec.hidden_width,
+        architecture="byte_gru_pointer_markov",
+        embedding_width=parent_spec.embedding_width,
+        pointer_width=parent_spec.pointer_width,
+    )
+    missing, unexpected = model.load_state_dict(
+        parent_model.state_dict(), strict=False
+    )
+    if set(missing) != {"copy_transition_logits"} or unexpected:
+        raise ValueError("Markov pointer parent is structurally incompatible")
+    for name, parameter in model.named_parameters():
+        parameter.requires_grad_(name == "copy_transition_logits")
+    trainable = [
+        parameter for parameter in model.parameters() if parameter.requires_grad
+    ]
+    trainable_count = sum(parameter.numel() for parameter in trainable)
+    expected_trainable = int(
+        protocol["single_bounded_change"]["trainable_parameters"]
+    )
+    if trainable_count != expected_trainable:
+        raise ValueError("Markov pointer trainable parameter count mismatch")
+    optimizer = torch.optim.AdamW(
+        trainable,
+        lr=float(settings["learning_rate"]),
+        weight_decay=float(settings["weight_decay"]),
+    )
+    process = psutil.Process()
+    peak_rss = int(process.memory_info().rss)
+    started = time.perf_counter()
+    history = []
+    best_loss = float("inf")
+    best_state = None
+    steps = int(settings["optimizer_steps"])
+    batch_size = int(settings["batch_size"])
+    order = list(range(len(rows)))
+    cursor = len(order)
+    generator = random.Random(seed + 1)
+    model.train()
+    for step in range(1, steps + 1):
+        if cursor + batch_size > len(order):
+            generator.shuffle(order)
+            cursor = 0
+        indexes = order[cursor : cursor + batch_size]
+        cursor += batch_size
+        (
+            inputs,
+            targets,
+            response_mask,
+            identifier_mask,
+            pointer_labels,
+        ) = _batch(rows, indexes, maximum_sequence_bytes=512)
+        result = model.pointer_forward(inputs)
+        response_loss = F.nll_loss(
+            result["logits"][response_mask],
+            targets[response_mask],
+        )
+        alignment_loss = F.nll_loss(
+            result["pointer_scores"][identifier_mask],
+            pointer_labels[identifier_mask],
+        )
+        loss = response_loss + alignment_loss
+        optimizer.zero_grad(set_to_none=True)
+        loss.backward()
+        gradient_norm = torch.nn.utils.clip_grad_norm_(
+            trainable, float(settings["gradient_clip_norm"])
+        )
+        optimizer.step()
+        value = float(loss.item())
+        if value < best_loss:
+            best_loss = value
+            best_state = {
+                name: tensor.detach().cpu().clone()
+                for name, tensor in model.state_dict().items()
+            }
+        if step == 1 or step % 100 == 0 or step == steps:
+            pointer_top1 = result["pointer_scores"][
+                identifier_mask
+            ].argmax(dim=-1)
+            transition_probabilities = torch.softmax(
+                model.copy_transition_logits.detach(), dim=0
+            )
+            record = {
+                "step": step,
+                "combined_objective": value,
+                "response_nll": float(response_loss.item()),
+                "pointer_alignment_nll": float(alignment_loss.item()),
+                "pointer_position_accuracy": float(
+                    (
+                        pointer_top1
+                        == pointer_labels[identifier_mask]
+                    )
+                    .float()
+                    .mean()
+                    .item()
+                ),
+                "transition_offset_probabilities": [
+                    float(item)
+                    for item in transition_probabilities.tolist()
+                ],
+                "gradient_norm_before_clip": float(gradient_norm),
+                "cpu_wall_seconds": time.perf_counter() - started,
+            }
+            history.append(record)
+            print(json.dumps(record), flush=True)
+        peak_rss = max(peak_rss, int(process.memory_info().rss))
+    if best_state is None:
+        raise RuntimeError("Markov pointer produced no checkpoint")
+    model.load_state_dict(best_state)
+    model.eval()
+    wall = time.perf_counter() - started
+    spec = PortableDomainSpec(
+        domain_id=parent_spec.domain_id,
+        feature_width=parent_spec.feature_width,
+        hidden_width=parent_spec.hidden_width,
+        architecture="byte_gru_pointer_markov",
+        embedding_width=parent_spec.embedding_width,
+        pointer_width=parent_spec.pointer_width,
+    )
+    artifact = build_portable_artifact(
+        model,
+        spec,
+        training={
+            **initial.get("training", {}),
+            "markov_pointer_protocol": protocol_path.relative_to(
+                ROOT
+            ).as_posix(),
+            "markov_pointer_protocol_sha256": _sha256(protocol_path),
+            "markov_pointer_seed": seed,
+            "markov_pointer_steps": steps,
+            "best_markov_pointer_objective": best_loss,
+        },
+    )
+    artifact_path.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(artifact, artifact_path)
+    evidence = {
+        "format": "layercake-phase4-portable-markov-pointer-training/1",
+        "status": "TRAINED",
+        "protocol": protocol_path.relative_to(ROOT).as_posix(),
+        "protocol_sha256": _sha256(protocol_path),
+        "parent_artifact": initial_artifact_path.relative_to(ROOT).as_posix(),
+        "parent_artifact_file_sha256": _sha256(initial_artifact_path),
+        "parent_payload_hash": initial["payload_hash"],
+        "device": "cpu",
+        "torch_threads": int(settings["torch_threads"]),
+        "seed": seed,
+        "optimizer_steps": steps,
+        "batch_size": batch_size,
+        "trainable_parameters": trainable_count,
+        "frozen_parameters": sum(
+            parameter.numel()
+            for parameter in model.parameters()
+            if not parameter.requires_grad
+        ),
+        "best_combined_objective": best_loss,
+        "cpu_wall_seconds": wall,
+        "peak_process_resident_memory_bytes": peak_rss,
+        "transition_offsets": protocol["single_bounded_change"][
+            "transition_offsets"
+        ],
+        "final_transition_offset_probabilities": [
+            float(item)
+            for item in torch.softmax(
+                model.copy_transition_logits.detach(), dim=0
+            ).tolist()
+        ],
+        "artifact": artifact_path.relative_to(ROOT).as_posix(),
+        "artifact_file_sha256": _sha256(artifact_path),
+        "spec_hash": artifact["spec_hash"],
+        "payload_hash": artifact["payload_hash"],
+        "history": history,
+        "functional_validation_accessed_during_training": False,
+        "test_split_accessed": False,
+    }
+    evidence["evidence_sha256"] = _canonical_sha(evidence)
+    evidence_path.parent.mkdir(parents=True, exist_ok=True)
+    evidence_path.write_text(
+        json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return evidence
+
+
 @torch.inference_mode()
 def evaluate(
     protocol_path: Path,
@@ -1101,6 +1320,7 @@ def main() -> int:
             "continue-pointer",
             "continue-transition-pointer",
             "convert-self-transition",
+            "continue-markov-pointer",
             "evaluate",
         ),
     )
@@ -1170,6 +1390,19 @@ def main() -> int:
             else ROOT / args.initial_artifact
         )
         result = convert_self_gated_transition(
+            protocol, initial_artifact, artifact, output
+        )
+    elif args.command == "continue-markov-pointer":
+        if args.initial_artifact is None:
+            parser.error(
+                "continue-markov-pointer requires --initial-artifact"
+            )
+        initial_artifact = (
+            args.initial_artifact
+            if args.initial_artifact.is_absolute()
+            else ROOT / args.initial_artifact
+        )
+        result = continue_markov_pointer(
             protocol, initial_artifact, artifact, output
         )
     else:

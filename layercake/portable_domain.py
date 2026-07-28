@@ -49,6 +49,7 @@ class PortableDomainSpec:
             "byte_gru_pointer",
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
+            "byte_gru_pointer_markov",
         }:
             raise ValueError(f"unsupported decoder architecture: {self.architecture}")
         if self.embedding_width <= 0 or self.pointer_width <= 0:
@@ -106,6 +107,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer",
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
+            "byte_gru_pointer_markov",
         }:
             self.byte_embedding = nn.Embedding(256, embedding_width)
             self.recurrent = nn.GRU(
@@ -121,6 +123,7 @@ class PortableDomainDecoder(nn.Module):
                 "byte_gru_pointer",
                 "byte_gru_pointer_transition",
                 "byte_gru_pointer_self_transition",
+                "byte_gru_pointer_markov",
             }:
                 self.copy_query = nn.Linear(
                     self.hidden_width, pointer_width, bias=False
@@ -136,10 +139,15 @@ class PortableDomainDecoder(nn.Module):
                 if architecture in {
                     "byte_gru_pointer_transition",
                     "byte_gru_pointer_self_transition",
+                    "byte_gru_pointer_markov",
                 }:
                     self.copy_transition_logits = nn.Parameter(
                         torch.zeros(len(POINTER_TRANSITION_OFFSETS))
                     )
+                if architecture in {
+                    "byte_gru_pointer_transition",
+                    "byte_gru_pointer_self_transition",
+                }:
                     self.copy_transition_gate = nn.Linear(
                         self.hidden_width, 1
                     )
@@ -163,6 +171,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer",
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
+            "byte_gru_pointer_markov",
         }:
             embedded = self.byte_embedding(byte_ids)
             hidden, _ = self.recurrent(torch.cat([embedded, anchors], dim=-1))
@@ -170,6 +179,7 @@ class PortableDomainDecoder(nn.Module):
                 "byte_gru_pointer",
                 "byte_gru_pointer_transition",
                 "byte_gru_pointer_self_transition",
+                "byte_gru_pointer_markov",
             }:
                 return self.pointer_forward(byte_ids, hidden)["logits"]
             return self.decoder(hidden)
@@ -238,7 +248,10 @@ class PortableDomainDecoder(nn.Module):
                 )
                 if (
                     self.architecture
-                    == "byte_gru_pointer_self_transition"
+                    in {
+                        "byte_gru_pointer_self_transition",
+                        "byte_gru_pointer_markov",
+                    }
                 ):
                     gate = (
                         current_copy_gate * previous_copy_gate
@@ -289,6 +302,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer",
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
+            "byte_gru_pointer_markov",
         }:
             raise ValueError("neural pointer path is disabled")
         if recurrent is None:
@@ -320,6 +334,7 @@ class PortableDomainDecoder(nn.Module):
         if self.architecture in {
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
+            "byte_gru_pointer_markov",
         }:
             (
                 pointer_probabilities,
@@ -372,6 +387,7 @@ class PortableDomainDecoder(nn.Module):
         if self.architecture in {
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
+            "byte_gru_pointer_markov",
         }:
             if previous_pointer_attention is None:
                 transition_gate_logits = torch.full(
@@ -387,7 +403,10 @@ class PortableDomainDecoder(nn.Module):
                 )
                 if (
                     self.architecture
-                    == "byte_gru_pointer_self_transition"
+                    in {
+                        "byte_gru_pointer_self_transition",
+                        "byte_gru_pointer_markov",
+                    }
                 ):
                     if previous_copy_gate_probability is None:
                         raise ValueError(
@@ -435,6 +454,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer",
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
+            "byte_gru_pointer_markov",
         }:
             raise ValueError("persistent incremental state requires byte_gru")
         if byte_ids.ndim != 2 or byte_ids.shape[1] == 0:
@@ -471,11 +491,13 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer",
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
+            "byte_gru_pointer_markov",
         }:
             pointer_keys = self.copy_key(recurrent)
             if self.architecture in {
                 "byte_gru_pointer_transition",
                 "byte_gru_pointer_self_transition",
+                "byte_gru_pointer_markov",
             }:
                 pointer_result = self.pointer_forward(byte_ids, recurrent)
                 next_logits = pointer_result["logits"][:, -1]
@@ -529,6 +551,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer",
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
+            "byte_gru_pointer_markov",
         }:
             raise ValueError("persistent incremental state requires byte_gru")
         if byte_ids.ndim == 1:
@@ -558,6 +581,7 @@ class PortableDomainDecoder(nn.Module):
             "byte_gru_pointer",
             "byte_gru_pointer_transition",
             "byte_gru_pointer_self_transition",
+            "byte_gru_pointer_markov",
         }:
             pointer_keys = torch.cat(
                 (
