@@ -382,12 +382,15 @@ def _generate(
     task_routes = result["task_routes"]
     generated: list[int] = []
     first_output = None
-    for _ in range(maximum_tokens):
+    for output_index in range(maximum_tokens):
         token = next_logits.argmax(dim=-1)
         generated.append(int(token.item()))
         if first_output is None:
             first_output = time.perf_counter()
-        if token.item() == tokenizer.eos_token_id:
+        if (
+            token.item() == tokenizer.eos_token_id
+            or output_index + 1 >= maximum_tokens
+        ):
             break
         result = core(
             token[:, None],
