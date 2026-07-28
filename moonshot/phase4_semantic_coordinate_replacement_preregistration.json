@@ -1,0 +1,90 @@
+{
+  "format": "layercake-phase4-semantic-coordinate-replacement-preregistration/1",
+  "date": "2026-07-27",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_TRAINING",
+  "measured_basis": {
+    "decision": "moonshot/phase4_semantic_identity_recoverability_decision.json",
+    "audit": "results/moonshot/phase4/semantic-identity-recoverability-audit-v2.json",
+    "audit_file_sha256": "c34ce2ecd2739a5fafa1914662d11572d40fe3e56fe842c0a709d9c4947694f1",
+    "audit_evidence_sha256": "89eff92c024cf0c1e017f07f04feb66102ab03a3be54f9a17bd3375f62189614",
+    "normalized_tied_coordinate_self_recovery_rate": 1.0,
+    "bounded_oracle_replacement_unit_recovery_rate": 0.9993489583333334,
+    "bounded_oracle_replacement_exact_rows": 255,
+    "bounded_oracle_replacement_rows": 256,
+    "training_selected_replacement_scale": 16.0,
+    "validation_used_to_choose_scale": false,
+    "selected_state_affine_heldout_only_coordinate_recovery_rate": 0.635673624288425,
+    "transition_affine_heldout_only_coordinate_recovery_rate": 0.3870967741935484
+  },
+  "materially_distinct_architecture": {
+    "name": "nonlinear_semantic_coordinate_replacement_codec",
+    "identity_input": "the correctly selected public 768-wide semantic ABI state",
+    "coordinate_codec": "LayerNorm(768), Linear(768,512), GELU, Linear(512,768,bias=False), L2 normalization",
+    "coordinate_target": "the frozen normalized tied-head coordinate of the authoritative source identity unit",
+    "bounded_realization": "desired_state = 16 * normalized_predicted_coordinate; residual = 8 * tanh((desired_state - current_host_state) / 8)",
+    "parent_linear_copy_value_active": false,
+    "parent_transition_codec_active": false,
+    "parent_action_planner_unchanged": true,
+    "parent_fixed_action_realization_unchanged": true,
+    "canonical_semantic_abi_unchanged": true,
+    "new_runtime_parameters": 788480,
+    "pointer_time_active_codec_parameters": 788480,
+    "raw_prompt_bytes_exposed": false,
+    "private_host_token_ids_exposed": false,
+    "host_tokenizer_invoked_inside_cake": false,
+    "template_retrieval_or_output_rewrite": false,
+    "teacher_at_inference": false
+  },
+  "frozen_boundary": {
+    "base_artifact": "artifacts/moonshot/phase4/candidates/python-semantic-action-plan-lexical-repair-seed10440.pt",
+    "base_artifact_sha256": "a8211523110f8e69c851a65fefe63a5bb95ab487fda56980301fe28056215f64",
+    "base_payload_hash": "2862d39f39cef57ac631665b3ffcc0011ee3fd8967eb774d1ffdc821362b1ef0",
+    "all_base_artifact_tensors_frozen": true,
+    "all_core_and_output_head_tensors_frozen": true,
+    "trainable_tensors": [
+      "copy_coordinate_norm.weight",
+      "copy_coordinate_norm.bias",
+      "copy_coordinate_input.weight",
+      "copy_coordinate_input.bias",
+      "copy_coordinate_output.weight"
+    ],
+    "base_tensor_subset_hash_before_after_must_match": true
+  },
+  "training": {
+    "seed": 10840,
+    "primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "cpu_fallback_required": true,
+    "precision": "fp32",
+    "cache": "artifacts/moonshot/phase4/cache/seed9824-lexical-conformance-v1-train.safetensors",
+    "cache_sha256": "ee0488a5f407c1fbd1cb8383c8de5d27ee955042e05d9b1713b2b584051bcf79",
+    "train_rows": 4096,
+    "pointer_training_units": 24908,
+    "maximum_optimizer_steps": 2000,
+    "batch_size": 64,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.01,
+    "coordinate_cosine_loss_weight": 1.0,
+    "bounded_replacement_full_vocabulary_cross_entropy_weight": 1.0,
+    "selection": "minimum sum of coordinate cosine loss and bounded replacement full-vocabulary cross-entropy"
+  },
+  "screens": {
+    "lexical_validation_first": true,
+    "lexical_dataset_sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+    "lexical_distinct_prompts": 256,
+    "lexical_exact_response_successes_minimum": 231,
+    "python_validation_only_if_lexical_screen_passes": true,
+    "python_dataset_sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+    "python_distinct_prompts": 64,
+    "python_strict_functional_successes_minimum": 52,
+    "test_split_accessed": false
+  },
+  "decision_rule": {
+    "maximum_initial_runs": 1,
+    "nearby_width_depth_scale_activation_loss_weight_or_step_sweeps_authorized": false,
+    "replication_authorized_only_after_both_initial_screens_pass": true,
+    "on_failure": "Preserve all evidence and close coordinate-replacement work; the frozen ABI retains oracle identity but the declared bounded learned codecs have not met the generalization gate.",
+    "on_pass": "Run two independently initialized full staged lineages, then package, transfer, semantic-retention, and matched CPU-inference certification.",
+    "phase4_before_all_gates_pass": "OPEN",
+    "phase5_before_phase4_seal": "LOCKED"
+  }
+}
