@@ -450,7 +450,9 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
             row["prompt"],
             device=device,
         )
-        source = _extract_function(generated["text"])
+        source = _extract_function(
+            generated["text"], row["function_name"]
+        )
         tests = _execute_tests(source, row)
         passed = bool(source) and all(
             test["status"] == "PASS" for test in tests
