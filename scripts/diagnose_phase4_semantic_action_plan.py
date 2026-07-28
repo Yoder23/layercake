@@ -116,6 +116,8 @@ def main() -> None:
         "teacher_forced_pointer_units": 0,
         "teacher_forced_pointer_realization_correct": 0,
         "previous_state_pointer_realization_correct": 0,
+        "raw_previous_state_token_recovery_correct": 0,
+        "raw_selected_state_token_recovery_correct": 0,
     }
     for row in rows:
         (
@@ -221,6 +223,20 @@ def main() -> None:
         )
         previous_positions = (source_positions - 1).clamp_min(0)
         previous_source = prompt_states[0, previous_positions]
+        selected_source = prompt_states[0, source_positions]
+        pointer_target_tokens = target_tokens[0, pointer_tensor]
+        raw_previous_tokens = F.linear(
+            previous_source, embedding
+        ).argmax(dim=-1)
+        raw_selected_tokens = F.linear(
+            selected_source, embedding
+        ).argmax(dim=-1)
+        raw_previous_correct = int(
+            raw_previous_tokens.eq(pointer_target_tokens).sum()
+        )
+        raw_selected_correct = int(
+            raw_selected_tokens.eq(pointer_target_tokens).sum()
+        )
         previous_value = cake.copy_semantic_value(
             cake.input_norm(previous_source)
         )
@@ -251,6 +267,12 @@ def main() -> None:
         totals["previous_state_pointer_realization_correct"] += (
             previous_correct
         )
+        totals["raw_previous_state_token_recovery_correct"] += (
+            raw_previous_correct
+        )
+        totals["raw_selected_state_token_recovery_correct"] += (
+            raw_selected_correct
+        )
         records.append(
             {
                 "id": row["id"],
@@ -272,6 +294,12 @@ def main() -> None:
                 ),
                 "previous_state_pointer_realization_correct": (
                     previous_correct
+                ),
+                "raw_previous_state_token_recovery_correct": (
+                    raw_previous_correct
+                ),
+                "raw_selected_state_token_recovery_correct": (
+                    raw_selected_correct
                 ),
                 "identifier_token_units": len(identifier_pattern),
                 "prompt_identifier_start": prompt_identifier_start,
@@ -307,6 +335,14 @@ def main() -> None:
         ),
         "previous_state_pointer_realization_accuracy": (
             totals["previous_state_pointer_realization_correct"]
+            / totals["teacher_forced_pointer_units"]
+        ),
+        "raw_previous_state_token_recovery_accuracy": (
+            totals["raw_previous_state_token_recovery_correct"]
+            / totals["teacher_forced_pointer_units"]
+        ),
+        "raw_selected_state_token_recovery_accuracy": (
+            totals["raw_selected_state_token_recovery_correct"]
             / totals["teacher_forced_pointer_units"]
         ),
     }
