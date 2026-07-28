@@ -1,0 +1,39 @@
+{
+  "format": "layercake-phase4-portable-token-plan-lexical-protocol/1",
+  "status": "PREREGISTERED_BEFORE_LEXICAL_EVALUATION",
+  "parent": "moonshot/phase4_portable_token_plan_seed10141_preregistration.json",
+  "artifact": {
+    "path": "artifacts/moonshot/phase4/candidates/python-portable-token-plan-seed10141.pt",
+    "file_sha256": "211db7a97194234f4fbf2a04c99f99eea4698cc73bd486f901e7d12fb8af439e",
+    "payload_hash": "a70fcb62a2c24305ca0dad3929124ca6881363d26366c9374b96e7951b5cd49f",
+    "spec_hash": "653561ca11ff58cc066550475a04583792203d3f9ee149e1604e80f8446596c1",
+    "tokenizer_sha256": "cac61492515c2dd94e9d2ce0e73ff9bd1b13415f3b4c7d0a920ecc962d5fda9c"
+  },
+  "training_evidence": {
+    "path": "results/moonshot/phase4/python-portable-token-plan-seed10141-training.json",
+    "evidence_sha256": "4449aca7783f22b94744ba718e432bd26dc7b2bc8c4775ec7d27a04d96c9ef36",
+    "validation_accessed": false
+  },
+  "dataset": {
+    "path": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+    "sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+    "split": "validation",
+    "distinct_prompts": 256,
+    "functional_promotion_credit": 0
+  },
+  "evaluation_device": "cuda:0",
+  "generation": {
+    "policy": "greedy_argmax_autoregressive_extended_vocabulary_actions",
+    "maximum_actions": 32,
+    "required_exact_prefix": "UTF-8 bytes for def, one space, the exact requested identifier, and opening parenthesis",
+    "pointer_position_is_neurally_selected": true,
+    "function_name_injection_or_output_rewrite_allowed": false
+  },
+  "gate": {
+    "minimum_exact_prefix_successes": 231,
+    "minimum_exact_prefix_rate": 0.9,
+    "if_pass": "Authorize the locked 64-prompt functional validation once.",
+    "if_fail": "Preserve the negative result and diagnose the exact autonomous action failure without a blind sweep.",
+    "test_split_access_allowed": false
+  }
+}
