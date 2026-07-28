@@ -1,0 +1,39 @@
+{
+  "format": "layercake-phase4-portable-lexical-autonomous-protocol/1",
+  "status": "PREREGISTERED_BEFORE_AUTONOMOUS_EVALUATION",
+  "parent": "moonshot/phase4_portable_attentive_seq2seq_preregistration.json",
+  "artifact": {
+    "path": "artifacts/moonshot/phase4/candidates/python-portable-attentive-seq2seq-seed10040.pt",
+    "file_sha256": "de0f22b0e064772d1fa5b6741effb207e5c21738956419b70cb900884f30adf3",
+    "payload_hash": "2ce9179690c9cb80a2fe284d0419240d504eff91feef4dd151c9be42133da0cb"
+  },
+  "teacher_forced_probe": {
+    "evidence_sha256": "08fa7fec5bce6a6104ecbb85d6f61532770b202abb38d9a70ae6eddd01ebf16f",
+    "distinct_prompts": 256,
+    "pointer_position_accuracy": 0.9997857213020325,
+    "pointer_byte_accuracy": 0.9997857213020325,
+    "identifier_next_byte_accuracy": 0.9997857213020325,
+    "gate_passed": true
+  },
+  "dataset": {
+    "path": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+    "sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+    "split": "validation",
+    "distinct_prompts": 256,
+    "functional_validation_or_test_rows": 0,
+    "promotion_credit": 0
+  },
+  "generation": {
+    "policy": "greedy_argmax_persistent_incremental_neural_cross_attention_pointer_generator",
+    "required_exact_prefix": "UTF-8 bytes for def, one space, the exact requested identifier, and opening parenthesis",
+    "generated_bytes_per_prompt": "length of the required exact prefix",
+    "templates_retrieval_forcing_or_output_rewrite_allowed": false
+  },
+  "gate": {
+    "minimum_exact_prefix_successes": 231,
+    "minimum_exact_prefix_rate": 0.9,
+    "if_pass": "Authorize the locked 64-prompt functional validation once.",
+    "if_fail": "Preserve the negative result and use the measured autonomous failure mode to select the next materially distinct representation.",
+    "test_split_access_allowed": false
+  }
+}
