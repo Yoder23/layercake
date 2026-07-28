@@ -35,6 +35,8 @@ class SemanticActionPlanState:
     layer_self_attention_inputs: tuple[torch.Tensor, ...]
     planned_actions: list[int]
     response_steps: int
+    parallel_decoded: torch.Tensor | None = None
+    parallel_actions: torch.Tensor | None = None
     complete: bool = False
 
 
@@ -58,6 +60,7 @@ class SemanticActionPlanResidual(nn.Module):
         copy_coordinate_width: int = 0,
         copy_coordinate_scale: float = 16.0,
         copy_coordinate_blend: float = 1.0,
+        parallel_plan: bool = False,
         dropout: float = 0.1,
         maximum_prompt_units: int = 128,
         maximum_response_units: int = 192,
@@ -126,6 +129,7 @@ class SemanticActionPlanResidual(nn.Module):
         self.copy_coordinate_width = int(copy_coordinate_width)
         self.copy_coordinate_scale = float(copy_coordinate_scale)
         self.copy_coordinate_blend = float(copy_coordinate_blend)
+        self.parallel_plan = bool(parallel_plan)
         self.dropout = float(dropout)
         self.maximum_prompt_units = int(maximum_prompt_units)
         self.maximum_response_units = int(maximum_response_units)
@@ -244,6 +248,7 @@ class SemanticActionPlanResidual(nn.Module):
             "copy_coordinate_width": self.copy_coordinate_width,
             "copy_coordinate_scale": self.copy_coordinate_scale,
             "copy_coordinate_blend": self.copy_coordinate_blend,
+            "parallel_plan": self.parallel_plan,
             "dropout": self.dropout,
             "maximum_prompt_units": self.maximum_prompt_units,
             "maximum_response_units": self.maximum_response_units,
@@ -476,19 +481,29 @@ class SemanticActionPlanResidual(nn.Module):
         encoded, prompt_padding = self.encode_prompt(
             prompt_states, prompt_padding
         )
-        previous = torch.full_like(target_actions, BOS_ACTION)
-        if target_actions.shape[1] > 1:
-            previous[:, 1:] = target_actions[:, :-1]
-        target = self._action_embeddings(previous, encoded)
-        causal = torch.triu(
-            torch.ones(
-                target.shape[1],
-                target.shape[1],
-                dtype=torch.bool,
-                device=target.device,
-            ),
-            diagonal=1,
-        )
+        if self.parallel_plan:
+            positions = torch.arange(
+                target_actions.shape[1], device=target_actions.device
+            )
+            target = (
+                self.bos_embedding[None, None]
+                + self.target_position(positions)[None]
+            ).expand(target_actions.shape[0], -1, -1)
+            causal = None
+        else:
+            previous = torch.full_like(target_actions, BOS_ACTION)
+            if target_actions.shape[1] > 1:
+                previous[:, 1:] = target_actions[:, :-1]
+            target = self._action_embeddings(previous, encoded)
+            causal = torch.triu(
+                torch.ones(
+                    target.shape[1],
+                    target.shape[1],
+                    dtype=torch.bool,
+                    device=target.device,
+                ),
+                diagonal=1,
+            )
         decoded = self.decoder(
             target,
             encoded,
@@ -505,6 +520,28 @@ class SemanticActionPlanResidual(nn.Module):
             ),
             "decoded": decoded,
         }
+
+    def _parallel_plan_from_encoded(
+        self,
+        encoded_prompt: torch.Tensor,
+        prompt_padding: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        positions = torch.arange(
+            self.maximum_response_units, device=encoded_prompt.device
+        )
+        queries = (
+            self.bos_embedding[None, None]
+            + self.target_position(positions)[None]
+        ).expand(encoded_prompt.shape[0], -1, -1)
+        decoded = self.decoder(
+            queries,
+            encoded_prompt,
+            memory_key_padding_mask=prompt_padding,
+        )
+        actions = self._action_log_probs(
+            decoded, encoded_prompt, prompt_padding
+        ).argmax(dim=-1)
+        return decoded, actions
 
     def _incremental_decoded(
         self,
@@ -550,6 +587,12 @@ class SemanticActionPlanResidual(nn.Module):
         self, prompt_states: torch.Tensor
     ) -> tuple[torch.Tensor, SemanticActionPlanState, int]:
         encoded, padding = self.encode_prompt(prompt_states)
+        parallel_decoded = None
+        parallel_actions = None
+        if self.parallel_plan:
+            parallel_decoded, parallel_actions = (
+                self._parallel_plan_from_encoded(encoded, padding)
+            )
         state = SemanticActionPlanState(
             prompt_states=prompt_states,
             encoded_prompt=encoded,
@@ -572,6 +615,8 @@ class SemanticActionPlanResidual(nn.Module):
             ),
             planned_actions=[],
             response_steps=0,
+            parallel_decoded=parallel_decoded,
+            parallel_actions=parallel_actions,
         )
         return self.step(prompt_states[:, -1], state)
 
@@ -585,11 +630,25 @@ class SemanticActionPlanResidual(nn.Module):
             raise ValueError("semantic action plan is already complete")
         if state.response_steps >= self.maximum_response_units:
             raise ValueError("response exceeds semantic action-plan limit")
-        decoded, caches = self._incremental_decoded(state)
-        log_probs = self._action_log_probs(
-            decoded, state.encoded_prompt, state.prompt_padding
-        )[:, 0]
-        action_tensor = log_probs.argmax(dim=-1)
+        if self.parallel_plan:
+            if (
+                state.parallel_decoded is None
+                or state.parallel_actions is None
+            ):
+                raise RuntimeError("parallel action plan is absent")
+            decoded = state.parallel_decoded[
+                :, state.response_steps : state.response_steps + 1
+            ]
+            action_tensor = state.parallel_actions[
+                :, state.response_steps
+            ]
+            caches = state.layer_self_attention_inputs
+        else:
+            decoded, caches = self._incremental_decoded(state)
+            log_probs = self._action_log_probs(
+                decoded, state.encoded_prompt, state.prompt_padding
+            )[:, 0]
+            action_tensor = log_probs.argmax(dim=-1)
         action = int(action_tensor.item())
         realized = self._realize(
             action_tensor[:, None],

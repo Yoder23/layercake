@@ -199,3 +199,40 @@ def test_coordinate_blend_requires_coordinate_codec():
         assert "requires a non-zero coordinate codec" in str(error)
     else:
         raise AssertionError("invalid coordinate blend was accepted")
+
+
+def test_parallel_plan_is_prompt_only_and_cached_before_first_output():
+    config = _model().canonical_config()
+    config["parallel_plan"] = True
+    model = SemanticActionPlanResidual(**config).eval()
+    prompt = torch.randn(1, 5, 24)
+    residual, state, action = model.prefill(prompt)
+    assert residual.shape == (1, 24)
+    assert isinstance(action, int)
+    assert state.parallel_decoded is not None
+    assert state.parallel_actions is not None
+    assert state.parallel_decoded.shape == (1, 12, 24)
+    assert state.parallel_actions.shape == (1, 12)
+    assert all(cache.shape[1] == 0 for cache in state.layer_self_attention_inputs)
+    if not state.complete:
+        state.previous_action.fill_(999999)
+        _, state, next_action = model.step(
+            torch.randn(1, 24), state
+        )
+        assert next_action == int(state.parallel_actions[0, 1])
+
+
+def test_parallel_training_path_ignores_teacher_action_prefix():
+    config = _model().canonical_config()
+    config["parallel_plan"] = True
+    model = SemanticActionPlanResidual(**config).eval()
+    prompt = torch.randn(1, 5, 24)
+    current = torch.randn(1, 4, 24)
+    first = torch.tensor([[0, 1, 2, 0]])
+    second = torch.tensor([[2, 0, 1, 2]])
+    first_result = model.training_forward(prompt, current, first)
+    second_result = model.training_forward(prompt, current, second)
+    assert torch.equal(
+        first_result["action_log_probs"],
+        second_result["action_log_probs"],
+    )

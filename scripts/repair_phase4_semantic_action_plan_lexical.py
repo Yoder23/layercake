@@ -95,6 +95,9 @@ LEXICAL_MINIMUM_EXACT_RESPONSES = 231
 PYTHON_EVALUATION_FORMAT = (
     "layercake-phase4-semantic-action-plan-lexical-repair-python-evaluation/1"
 )
+PYTHON_EVALUATION_SPLIT = "validation"
+PYTHON_EXPECTED_ROWS = 64
+PYTHON_MINIMUM_FUNCTIONAL_SUCCESSES = 52
 
 
 def _sha256(path: Path) -> str:
@@ -563,8 +566,13 @@ def evaluate_python(args: argparse.Namespace) -> dict[str, Any]:
     )
     rows = [
         row for row in _load_rows(PYTHON_DATASET)
-        if row["split"] == "validation"
+        if row["split"] == PYTHON_EVALUATION_SPLIT
     ]
+    if len(rows) != PYTHON_EXPECTED_ROWS:
+        raise RuntimeError(
+            f"expected {PYTHON_EXPECTED_ROWS} Python "
+            f"{PYTHON_EVALUATION_SPLIT} rows, got {len(rows)}"
+        )
     records = []
     for index, row in enumerate(rows):
         generated = _generate(
@@ -612,7 +620,7 @@ def evaluate_python(args: argparse.Namespace) -> dict[str, Any]:
                 flush=True,
             )
     successes = sum(record["functional_success"] for record in records)
-    minimum = 52
+    minimum = PYTHON_MINIMUM_FUNCTIONAL_SUCCESSES
     evidence = {
         "format": PYTHON_EVALUATION_FORMAT,
         "status": "PASS" if successes >= minimum else "FAIL",
@@ -628,7 +636,7 @@ def evaluate_python(args: argparse.Namespace) -> dict[str, Any]:
         "core_checkpoint_sha256": core_metadata["checkpoint"]["sha256"],
         "dataset": PYTHON_DATASET.relative_to(ROOT).as_posix(),
         "dataset_sha256": _sha256(PYTHON_DATASET),
-        "split": "validation",
+        "split": PYTHON_EVALUATION_SPLIT,
         "evaluation_device": str(device),
         "evaluation_device_name": (
             torch.cuda.get_device_name(device)
