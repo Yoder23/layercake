@@ -861,6 +861,48 @@
       "functional_validation_accessed": false,
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "portable-lexical-markov-max-projection",
+      "disposition": "REJECTED_AUTONOMOUS_LEXICAL_EXPOSURE_DRIFT_BRANCH_CLOSED",
+      "architecture": {
+        "name": "PortableDomainDecoder",
+        "architecture": "byte_gru_pointer_markov_max",
+        "parameters": 412168,
+        "new_parameters": 0,
+        "trained_parameters": 0,
+        "parent_parameter_tensors_bit_identical": true,
+        "parent_and_converted_payload_hash": "363e2913f2c8b1ea0fc3cf87e9f54c4b28dff3a65ad3ecc25eb6064f18177c0b"
+      },
+      "conversion": {
+        "optimizer_steps": 0,
+        "training_rows_accessed": 0,
+        "validation_rows_accessed": 0,
+        "artifact_file_sha256": "0b4b4fcd2007176bd60821509d500ef0a9ae81f8aa25cb41f5ce12a4137729c7",
+        "evidence_sha256": "d43295772ff19b1ebb409931309b2a87344e8f2605897c211b4dc9df67f58549"
+      },
+      "heldout_lexical_teacher_forced_probe": {
+        "distinct_prompts": 256,
+        "identifier_pointer_position_accuracy": 0.9976430535316467,
+        "identifier_pointer_byte_accuracy": 0.9976430535316467,
+        "identifier_next_byte_accuracy": 0.9618598818778992,
+        "evidence_sha256": "8fc5bad107165ca7dd2c8f92914a18e6c6b0b9edd9f24fcbac963ffddcd45da4",
+        "promotion_credit": 0
+      },
+      "heldout_lexical_autonomous_probe": {
+        "distinct_prompts": 256,
+        "exact_def_name_open_parenthesis_prefixes": 90,
+        "exact_prefix_rate": 0.3515625,
+        "required_exact_prefixes": 231,
+        "evidence_sha256": "c43078fa5f81b3c0911cdf38442732d14e42d1a39cfe5e57314568385bf378b5",
+        "promotion_credit": 0
+      },
+      "measured_bottleneck": "Max pooling fixes the repeated-byte projection defect and restores teacher-forced identifier next-byte accuracy to 96.19%, but autonomous exact prefix retention remains only 35.16%. The raw-byte recurrent pointer family therefore fails causal lexical conformance even though its teacher-forced position and byte projections pass.",
+      "next_bounded_change": "Close the recurrent raw-byte pointer lineage. Preserve the existing exact package-transfer implementation and the 64/64 name-agnostic semantic cake. Any future capability-acquisition work must be a preregistered materially distinct representation, not another pointer, gate, offset, pooling, temperature, loss, decoding, or data sweep.",
+      "nearby_pointer_or_projection_sweeps_authorized": false,
+      "functional_validation_accessed": false,
+      "additional_seeds_authorized": false,
+      "test_split_accessed": false
     }
   ]
 }
