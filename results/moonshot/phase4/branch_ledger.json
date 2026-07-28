@@ -1080,15 +1080,23 @@
         "promotion_credit": 0
       },
       "autonomous_validation": {
+        "corrected_protocol": "locked 192-unit maximum with EOS-only early stop",
         "distinct_prompts": 64,
         "strict_functional_successes": 0,
         "functional_error_rate": 1.0,
-        "parseable_first_functions": 10,
-        "name_agnostic_functional_successes_diagnostic_only": 4,
-        "evidence_sha256": "ae7010ba2dd5f9e73b1bc9143f2ebc1fbc494f47caee7664a432e9bfb8a06e70",
-        "diagnostic_file_sha256": "845b3a68d550372aca352df96753ffdf07e5da2a314f32de6acdc74563448c1a"
+        "parseable_first_functions": 12,
+        "name_agnostic_functional_successes_diagnostic_only": 6,
+        "evidence_sha256": "3fcc32ecab6d10d710a5c872ad2239599fbe2d97dd49522636a05ea4c9069d17",
+        "diagnostic_file_sha256": "d2d2c24778d41ab09d02992917a28b844568b3af4c1e6ec38e6964cc5922230c",
+        "superseded_early_stop_evidence_preserved": {
+          "strict_functional_successes": 0,
+          "parseable_first_functions": 10,
+          "name_agnostic_functional_successes": 4,
+          "evidence_sha256": "ae7010ba2dd5f9e73b1bc9143f2ebc1fbc494f47caee7664a432e9bfb8a06e70",
+          "reason": "An unauthorized two-newline early stop truncated multi-line generations; the record is historical and supplies no promotion credit."
+        }
       },
-      "measured_bottleneck": "The controller fits teacher-forced host states almost perfectly but drives its target decoder from the host's newly generated semantic states. The first autonomous lexical errors therefore change all subsequent host states; only 10/64 outputs remain parseable and only 4/64 bodies pass under generated names. Exact identity and program structure both collapse under this host-state exposure shift.",
+      "measured_bottleneck": "The controller fits teacher-forced host states almost perfectly but drives its target decoder from the host's newly generated semantic states. The first autonomous lexical errors therefore change all subsequent host states; under the corrected full-length screen only 12/64 outputs remain parseable and only 6/64 bodies pass under generated names. Exact identity and program structure both collapse under this host-state exposure shift.",
       "next_bounded_change": "Replace the response-side host-state-driven decoder with a self-generated neural action-plan state while retaining prompt input exclusively through the canonical semantic ABI and realizing each planned action only as a bounded semantic residual. The action state must remain independent of erroneous host response states; this is a causal-state representation change, not a pointer, gate, width, loss-weight, or decoding sweep.",
       "replication_seeds_authorized": false,
       "nearby_sweeps_authorized": false,
