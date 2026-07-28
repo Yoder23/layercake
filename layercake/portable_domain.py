@@ -51,6 +51,7 @@ class PortableDomainSpec:
             "byte_gru_pointer_self_transition",
             "byte_gru_pointer_markov",
             "byte_gru_pointer_markov_max",
+            "byte_attentive_seq2seq",
         }:
             raise ValueError(f"unsupported decoder architecture: {self.architecture}")
         if self.embedding_width <= 0 or self.pointer_width <= 0:
@@ -103,6 +104,41 @@ class PortableDomainDecoder(nn.Module):
                 nn.GELU(),
                 nn.Linear(self.hidden_width, 256),
             )
+        elif architecture == "byte_attentive_seq2seq":
+            self.byte_embedding = nn.Embedding(256, embedding_width)
+            self.seq_encoder = nn.GRU(
+                embedding_width,
+                self.feature_width,
+                batch_first=True,
+                bidirectional=True,
+            )
+            self.seq_initial_hidden = nn.Linear(
+                2 * self.feature_width, self.hidden_width
+            )
+            self.seq_start = nn.Parameter(torch.zeros(embedding_width))
+            self.seq_decoder = nn.GRU(
+                embedding_width,
+                self.hidden_width,
+                batch_first=True,
+            )
+            self.seq_key = nn.Linear(
+                2 * self.feature_width, pointer_width, bias=False
+            )
+            self.seq_query = nn.Linear(
+                self.hidden_width, pointer_width, bias=False
+            )
+            self.seq_output = nn.Linear(
+                self.hidden_width + 2 * self.feature_width, 256
+            )
+            self.seq_copy_gate = nn.Linear(
+                self.hidden_width + 2 * self.feature_width, 1
+            )
+            self.seq_input_dropout = nn.Dropout(0.1)
+            nn.init.normal_(self.seq_start, mean=0.0, std=0.02)
+            nn.init.xavier_uniform_(self.seq_key.weight)
+            nn.init.xavier_uniform_(self.seq_query.weight)
+            nn.init.zeros_(self.seq_copy_gate.weight)
+            nn.init.constant_(self.seq_copy_gate.bias, -4.0)
         elif architecture in {
             "byte_gru",
             "byte_gru_pointer",
@@ -169,6 +205,15 @@ class PortableDomainDecoder(nn.Module):
         return self.hidden_width
 
     def forward(self, byte_ids: torch.Tensor) -> torch.Tensor:
+        if self.architecture == "byte_attentive_seq2seq":
+            lengths = torch.full(
+                (byte_ids.shape[0],),
+                byte_ids.shape[1],
+                dtype=torch.long,
+                device=byte_ids.device,
+            )
+            state = self._seq2seq_prefill(byte_ids, lengths)
+            return state["next_logits"][:, None]
         anchors = causal_byte_anchors(byte_ids, self.feature_width)
         if self.architecture in {
             "byte_gru",
@@ -190,6 +235,134 @@ class PortableDomainDecoder(nn.Module):
                 return self.pointer_forward(byte_ids, hidden)["logits"]
             return self.decoder(hidden)
         return self.decoder(anchors)
+
+    def _seq2seq_encode(
+        self,
+        prompt_ids: torch.Tensor,
+        prompt_lengths: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        if self.architecture != "byte_attentive_seq2seq":
+            raise ValueError("attentive encoder-decoder path is disabled")
+        if prompt_ids.ndim != 2:
+            raise ValueError("prompt ids must have shape [batch, sequence]")
+        if prompt_lengths.ndim != 1 or prompt_lengths.shape[0] != prompt_ids.shape[0]:
+            raise ValueError("prompt lengths must have shape [batch]")
+        embedded = self.byte_embedding(prompt_ids)
+        packed = nn.utils.rnn.pack_padded_sequence(
+            embedded,
+            prompt_lengths.detach().cpu(),
+            batch_first=True,
+            enforce_sorted=False,
+        )
+        encoded_packed, encoder_hidden = self.seq_encoder(packed)
+        encoded, _ = nn.utils.rnn.pad_packed_sequence(
+            encoded_packed,
+            batch_first=True,
+            total_length=prompt_ids.shape[1],
+        )
+        final = torch.cat(
+            (encoder_hidden[-2], encoder_hidden[-1]), dim=-1
+        )
+        initial_hidden = torch.tanh(
+            self.seq_initial_hidden(final)
+        ).unsqueeze(0)
+        positions = torch.arange(
+            prompt_ids.shape[1], device=prompt_ids.device
+        )[None]
+        source_mask = positions < prompt_lengths[:, None]
+        return {
+            "encoder_outputs": encoded,
+            "attention_keys": self.seq_key(encoded),
+            "source_ids": prompt_ids,
+            "source_mask": source_mask,
+            "recurrent_hidden": initial_hidden,
+        }
+
+    def _seq2seq_project(
+        self,
+        decoder_states: torch.Tensor,
+        encoded: dict[str, torch.Tensor],
+    ) -> dict[str, torch.Tensor]:
+        queries = self.seq_query(decoder_states)
+        scores = torch.matmul(
+            queries, encoded["attention_keys"].transpose(1, 2)
+        ) / (self.pointer_width ** 0.5)
+        scores = scores.masked_fill(
+            ~encoded["source_mask"][:, None],
+            torch.finfo(scores.dtype).min,
+        )
+        attention = torch.softmax(scores, dim=-1)
+        context = torch.matmul(attention, encoded["encoder_outputs"])
+        joined = torch.cat((decoder_states, context), dim=-1)
+        language = torch.log_softmax(self.seq_output(joined), dim=-1)
+        pointer = attention.new_zeros(
+            attention.shape[0], attention.shape[1], 256
+        )
+        source_values = encoded["source_ids"][:, None].expand_as(scores)
+        pointer.scatter_add_(2, source_values, attention)
+        gate_logits = self.seq_copy_gate(joined)
+        logits = torch.logaddexp(
+            F.logsigmoid(-gate_logits) + language,
+            F.logsigmoid(gate_logits)
+            + torch.log(pointer.clamp_min(1e-12)),
+        )
+        return {
+            "logits": logits,
+            "pointer_scores": scores,
+            "pointer_attention": attention,
+            "pointer_distribution": pointer,
+            "gate_logits": gate_logits,
+            "context": context,
+        }
+
+    def seq2seq_forward(
+        self,
+        prompt_ids: torch.Tensor,
+        prompt_lengths: torch.Tensor,
+        response_ids: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        """Teacher-forced response logits for the attentive portable decoder."""
+        encoded = self._seq2seq_encode(prompt_ids, prompt_lengths)
+        starts = self.seq_start[None, None].expand(
+            response_ids.shape[0], 1, -1
+        )
+        if response_ids.shape[1] > 1:
+            previous = self.byte_embedding(response_ids[:, :-1])
+            decoder_inputs = torch.cat((starts, previous), dim=1)
+        else:
+            decoder_inputs = starts
+        decoder_inputs = self.seq_input_dropout(decoder_inputs)
+        decoder_states, hidden = self.seq_decoder(
+            decoder_inputs, encoded["recurrent_hidden"]
+        )
+        result = self._seq2seq_project(decoder_states, encoded)
+        result.update(encoded)
+        result["recurrent_hidden"] = hidden
+        return result
+
+    def _seq2seq_prefill(
+        self,
+        prompt_ids: torch.Tensor,
+        prompt_lengths: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        encoded = self._seq2seq_encode(prompt_ids, prompt_lengths)
+        decoder_input = self.seq_start[None, None].expand(
+            prompt_ids.shape[0], 1, -1
+        )
+        decoder_state, hidden = self.seq_decoder(
+            decoder_input, encoded["recurrent_hidden"]
+        )
+        projected = self._seq2seq_project(decoder_state, encoded)
+        return {
+            "seq_encoder_outputs": encoded["encoder_outputs"],
+            "seq_attention_keys": encoded["attention_keys"],
+            "seq_source_ids": encoded["source_ids"],
+            "seq_source_mask": encoded["source_mask"],
+            "recurrent_hidden": hidden,
+            "pointer_attention": projected["pointer_attention"][:, 0],
+            "pointer_gate_logits": projected["gate_logits"][:, 0],
+            "next_logits": projected["logits"][:, 0],
+        }
 
     def _scatter_pointer_probabilities(
         self,
@@ -490,6 +663,18 @@ class PortableDomainDecoder(nn.Module):
         self, byte_ids: torch.Tensor
     ) -> dict[str, torch.Tensor]:
         """Create persistent byte-GRU state without changing model mathematics."""
+        if self.architecture == "byte_attentive_seq2seq":
+            if byte_ids.ndim != 2 or byte_ids.shape[1] == 0:
+                raise ValueError(
+                    "prefill requires non-empty [batch, sequence] bytes"
+                )
+            lengths = torch.full(
+                (byte_ids.shape[0],),
+                byte_ids.shape[1],
+                dtype=torch.long,
+                device=byte_ids.device,
+            )
+            return self._seq2seq_prefill(byte_ids, lengths)
         if self.architecture not in {
             "byte_gru",
             "byte_gru_pointer",
@@ -590,6 +775,32 @@ class PortableDomainDecoder(nn.Module):
         state: dict[str, torch.Tensor],
     ) -> torch.Tensor:
         """Advance persistent state by one observed generated byte."""
+        if self.architecture == "byte_attentive_seq2seq":
+            if byte_ids.ndim == 1:
+                byte_ids = byte_ids[:, None]
+            if byte_ids.ndim != 2 or byte_ids.shape[1] != 1:
+                raise ValueError(
+                    "incremental decode requires [batch, 1] bytes"
+                )
+            decoder_state, hidden = self.seq_decoder(
+                self.byte_embedding(byte_ids),
+                state["recurrent_hidden"],
+            )
+            encoded = {
+                "encoder_outputs": state["seq_encoder_outputs"],
+                "attention_keys": state["seq_attention_keys"],
+                "source_ids": state["seq_source_ids"],
+                "source_mask": state["seq_source_mask"],
+            }
+            projected = self._seq2seq_project(decoder_state, encoded)
+            logits = projected["logits"][:, 0]
+            state["recurrent_hidden"] = hidden
+            state["pointer_attention"] = projected[
+                "pointer_attention"
+            ][:, 0]
+            state["pointer_gate_logits"] = projected["gate_logits"][:, 0]
+            state["next_logits"] = logits
+            return logits
         if self.architecture not in {
             "byte_gru",
             "byte_gru_pointer",

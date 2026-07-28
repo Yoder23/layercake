@@ -398,3 +398,59 @@ def test_max_projection_incremental_logits_match_full_prefix():
     actual = decoder.decode_incremental(observed, state)
     expected = decoder(torch.cat([prompt, observed], dim=1))[:, -1]
     assert torch.allclose(actual, expected, atol=1e-6, rtol=1e-6)
+
+
+def test_attentive_seq2seq_incremental_logits_match_teacher_forcing():
+    torch.manual_seed(59)
+    decoder = PortableDomainDecoder(
+        feature_width=12,
+        hidden_width=20,
+        architecture="byte_attentive_seq2seq",
+        embedding_width=8,
+        pointer_width=10,
+    ).eval()
+    prompt = torch.randint(0, 256, (2, 17))
+    lengths = torch.tensor([17, 14])
+    response = torch.randint(0, 256, (2, 9))
+    expected = decoder.seq2seq_forward(prompt, lengths, response)["logits"]
+
+    state = decoder._seq2seq_prefill(prompt, lengths)
+    assert torch.allclose(
+        state["next_logits"], expected[:, 0], atol=1e-6, rtol=1e-6
+    )
+    for index in range(response.shape[1] - 1):
+        actual = decoder.decode_incremental(
+            response[:, index : index + 1], state
+        )
+        assert torch.allclose(
+            actual, expected[:, index + 1], atol=1e-6, rtol=1e-6
+        )
+
+
+def test_attentive_seq2seq_artifact_round_trip_preserves_logits():
+    torch.manual_seed(61)
+    decoder = PortableDomainDecoder(
+        feature_width=12,
+        hidden_width=20,
+        architecture="byte_attentive_seq2seq",
+        embedding_width=8,
+        pointer_width=10,
+    ).eval()
+    artifact = build_portable_artifact(
+        decoder,
+        PortableDomainSpec(
+            "python",
+            feature_width=12,
+            hidden_width=20,
+            architecture="byte_attentive_seq2seq",
+            embedding_width=8,
+            pointer_width=10,
+        ),
+    )
+    _, loaded = load_portable_artifact(artifact)
+    prompt = torch.randint(0, 256, (2, 17))
+    lengths = torch.tensor([17, 13])
+    response = torch.randint(0, 256, (2, 7))
+    expected = decoder.seq2seq_forward(prompt, lengths, response)["logits"]
+    actual = loaded.seq2seq_forward(prompt, lengths, response)["logits"]
+    assert torch.equal(expected, actual)
