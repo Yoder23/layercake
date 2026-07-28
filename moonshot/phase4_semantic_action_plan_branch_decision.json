@@ -1,0 +1,59 @@
+{
+  "format": "layercake-phase4-semantic-action-plan-branch-decision/1",
+  "date": "2026-07-27",
+  "status": "REJECTED_STRICT_QUALITY_BOUNDED_LEXICAL_REPAIR_AUTHORIZED",
+  "protocol": {
+    "path": "moonshot/phase4_semantic_action_plan_preregistration.json",
+    "sha256": "76dbad597752712d6714f64a7944ebe604e29d4c02b974538459d9fe95788adf"
+  },
+  "candidate": {
+    "seed": 10340,
+    "artifact": "artifacts/moonshot/phase4/candidates/python-semantic-action-plan-seed10340.pt",
+    "artifact_file_sha256": "9363688165a22709be0b87b54787c3e0fec2ea904499464c74ac18571a5b28b8",
+    "payload_hash": "90edd3b74c7b3c8fbbd82118d98ebc298aebc83961c276d92b8df5ead91255aa",
+    "parameters": 3271051,
+    "training_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "gpu_wall_seconds": 158.60749339999165,
+    "peak_accelerator_memory_bytes": 1286682624,
+    "peak_process_resident_memory_bytes": 1271808000,
+    "cpu_fallback_smoke": "PASS"
+  },
+  "strict_validation": {
+    "evidence": "results/moonshot/phase4/python-semantic-action-plan-seed10340-validation.json",
+    "evidence_file_sha256": "aa8e88a82b38d5caabd70969db2c702311e176866f8ccb67cd52b2449f45b324",
+    "distinct_prompts": 64,
+    "functional_successes": 0,
+    "functional_success_rate": 0.0,
+    "minimum_successes": 52,
+    "replication_seeds_10341_and_10342_unlocked": false
+  },
+  "diagnosis": {
+    "evidence": "results/moonshot/phase4/python-semantic-action-plan-seed10340-diagnostic-v2.json",
+    "evidence_file_sha256": "d2faa3149b2ed0b8f303e3c61b77e282557397f55b1be46016b0cc9090ba488e",
+    "autonomous_action_accuracy": 0.467110125646711,
+    "exact_action_sequence_rate": 0.140625,
+    "fixed_action_accuracy": 0.3542234332425068,
+    "pointer_action_accuracy": 0.9603174603174603,
+    "teacher_forced_action_accuracy": 0.9002217294900222,
+    "teacher_forced_realization_accuracy": 0.8518107908351811,
+    "teacher_forced_pointer_realization_accuracy": 0.49206349206349204,
+    "previous_state_pointer_realization_accuracy": 0.003968253968253968,
+    "raw_previous_semantic_state_token_recovery_accuracy": 0.01984126984126984,
+    "raw_selected_semantic_state_token_recovery_accuracy": 0.001984126984126984,
+    "measured_limiter": "The planner selects held-out identifier source positions accurately, but it neither learns held-out identifier span termination nor realizes arbitrary selected identity units reliably through the existing semantic copy path."
+  },
+  "decision": {
+    "candidate_promoted": false,
+    "phase4_campaign_state": "OPEN",
+    "phase5_campaign_state": "LOCKED",
+    "nearby_architecture_sweeps_authorized": false,
+    "bounded_repair_authorized": true,
+    "repair": "Freeze the planner, fixed-action path, semantic encoder/decoder, and all core tensors. Train only the existing pointer/copy tensors on the already content-addressed lexical-conformance cache, using GPU first and verifying CPU fallback. This introduces no new runtime parameters and directly attacks the measured span-boundary and identity-realization limiter.",
+    "maximum_repair_attempts": 1,
+    "phase4_seal_or_tag_allowed_now": false
+  },
+  "claim_boundary": {
+    "proven": "The candidate consumes the locked 768-wide canonical semantic ABI, returns same-shape residuals, trains on the declared GPU, and loads on CPU.",
+    "not_proven": "Useful held-out Python capability or semantic identity retention through the canonical ABI."
+  }
+}
