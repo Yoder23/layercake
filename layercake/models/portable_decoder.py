@@ -12,6 +12,11 @@ from layercake.domain_runtime import (
     RecurrentHostResidualCake,
 )
 from layercake.portable_domain import PortableDomainDecoder
+from layercake.portable_token_plan import (
+    TOKEN_PLAN_FORMAT,
+    LosslessLexemePointerTokenizer,
+    PortableTokenPlan,
+)
 
 from .portable_fusion import PortableFusionCake, PortableFusionConfig
 from .routed_cakes import HostResidualCake
@@ -42,32 +47,106 @@ def portable_decoder_manifest_architecture(
     return result
 
 
+def portable_token_plan_manifest_architecture(
+    spec: dict[str, Any],
+) -> dict[str, Any]:
+    """Describe a private token plan behind the byte-facing cake boundary."""
+
+    required = {
+        "architecture",
+        "model",
+        "tokenizer",
+        "tokenizer_sha256",
+        "external_input_output",
+    }
+    if set(spec) - {"domain_id", "quantization"} != required:
+        raise ValueError("portable token-plan spec is incomplete or ambiguous")
+    if spec["architecture"] != "portable_token_plan_pointer_transformer":
+        raise ValueError("unsupported portable token-plan architecture")
+    tokenizer = LosslessLexemePointerTokenizer.from_document(
+        spec["tokenizer"]
+    )
+    if tokenizer.hash() != spec["tokenizer_sha256"]:
+        raise ValueError("portable token-plan tokenizer hash mismatch")
+    return {
+        "name": "portable_token_plan",
+        "format": TOKEN_PLAN_FORMAT,
+        "model": spec["model"],
+        "tokenizer": spec["tokenizer"],
+        "tokenizer_sha256": spec["tokenizer_sha256"],
+        "external_input_output": spec["external_input_output"],
+        "private_representation": spec["architecture"],
+    }
+
+
 def load_cake_module(package: CakePackage) -> nn.Module:
     manifest = package.manifest
     architecture = manifest.architecture
     if manifest.cake_type == "portable_decoder":
-        if architecture.get("name") != "portable_domain_decoder":
+        if architecture.get("name") == "portable_token_plan":
+            allowed = {
+                "name",
+                "format",
+                "model",
+                "tokenizer",
+                "tokenizer_sha256",
+                "external_input_output",
+                "private_representation",
+            }
+            if set(architecture) != allowed:
+                raise ValueError(
+                    "portable token-plan architecture metadata is "
+                    "incomplete or ambiguous"
+                )
+            if architecture["format"] != TOKEN_PLAN_FORMAT:
+                raise ValueError("unsupported portable token-plan format")
+            if architecture["external_input_output"] != "UTF-8 bytes":
+                raise ValueError(
+                    "portable token-plan external boundary is invalid"
+                )
+            if (
+                architecture["private_representation"]
+                != "portable_token_plan_pointer_transformer"
+            ):
+                raise ValueError(
+                    "unsupported portable token-plan representation"
+                )
+            tokenizer = LosslessLexemePointerTokenizer.from_document(
+                architecture["tokenizer"]
+            )
+            if tokenizer.hash() != architecture["tokenizer_sha256"]:
+                raise ValueError(
+                    "portable token-plan tokenizer hash mismatch"
+                )
+            model = PortableTokenPlan(**architecture["model"])
+            model.bind_tokenizer(tokenizer)
+        elif architecture.get("name") != "portable_domain_decoder":
             raise ValueError("portable decoder architecture name is invalid")
-        legacy_allowed = {
-            "name", "feature_width", "hidden_width", "decoder_architecture",
-            "embedding_width", "anchor_version",
-        }
-        pointer_allowed = legacy_allowed | {"pointer_width"}
-        declared = frozenset(architecture)
-        if declared not in {
-            frozenset(legacy_allowed),
-            frozenset(pointer_allowed),
-        }:
-            raise ValueError("portable decoder architecture metadata is incomplete or ambiguous")
-        if architecture["anchor_version"] != "lc-causal-byte-anchor/1":
-            raise ValueError("unsupported deterministic anchor contract")
-        model = PortableDomainDecoder(
-            feature_width=int(architecture["feature_width"]),
-            hidden_width=int(architecture["hidden_width"]),
-            architecture=str(architecture["decoder_architecture"]),
-            embedding_width=int(architecture["embedding_width"]),
-            pointer_width=int(architecture.get("pointer_width", 64)),
-        )
+        else:
+            legacy_allowed = {
+                "name", "feature_width", "hidden_width",
+                "decoder_architecture", "embedding_width",
+                "anchor_version",
+            }
+            pointer_allowed = legacy_allowed | {"pointer_width"}
+            declared = frozenset(architecture)
+            if declared not in {
+                frozenset(legacy_allowed),
+                frozenset(pointer_allowed),
+            }:
+                raise ValueError(
+                    "portable decoder architecture metadata is "
+                    "incomplete or ambiguous"
+                )
+            if architecture["anchor_version"] != "lc-causal-byte-anchor/1":
+                raise ValueError("unsupported deterministic anchor contract")
+            model = PortableDomainDecoder(
+                feature_width=int(architecture["feature_width"]),
+                hidden_width=int(architecture["hidden_width"]),
+                architecture=str(architecture["decoder_architecture"]),
+                embedding_width=int(architecture["embedding_width"]),
+                pointer_width=int(architecture.get("pointer_width", 64)),
+            )
     elif manifest.cake_type == "host_residual":
         if (
             set(architecture) == {"name", "d_abi", "rank"}

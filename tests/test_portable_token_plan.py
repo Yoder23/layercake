@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pytest
 import torch
 
 from layercake.portable_token_plan import (
@@ -94,3 +95,29 @@ def test_token_plan_generation_emits_only_valid_extended_actions():
         0 <= action < tokenizer.vocab_size + len(source_ids)
         for action in actions
     )
+
+
+def test_bound_token_plan_exposes_persistent_byte_facing_state():
+    torch.manual_seed(79)
+    rows = _rows()
+    tokenizer = LosslessLexemePointerTokenizer.build(rows)
+    model = PortableTokenPlan(
+        fixed_vocab_size=tokenizer.vocab_size,
+        model_width=24,
+        attention_heads=4,
+        encoder_layers=1,
+        decoder_layers=1,
+        feedforward_width=48,
+        pointer_width=12,
+        dropout=0.0,
+        maximum_source_lexemes=32,
+        maximum_target_actions=8,
+    ).eval().bind_tokenizer(tokenizer)
+    state = model.prefill_bytes(rows[0]["prompt"])
+    encoded_pointer = state.encoded.data_ptr()
+    action, state = model.decode_step(state)
+    assert state.encoded.data_ptr() == encoded_pointer
+    assert state.generated_actions == [action]
+    assert state.previous_actions.shape[1] in {1, 2}
+    with pytest.raises(ValueError, match="special action"):
+        model.generate_bytes(rows[0]["prompt"], maximum_actions=3)

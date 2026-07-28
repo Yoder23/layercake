@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from dataclasses import dataclass
 from typing import Any, Iterable, Mapping
 
 import torch
@@ -177,6 +178,18 @@ class LosslessLexemePointerTokenizer:
     def from_document(
         cls, document: Mapping[str, Any]
     ) -> "LosslessLexemePointerTokenizer":
+        allowed = {
+            "format",
+            "lexeme_pattern_ascii",
+            "special_ids",
+            "fixed_lexemes_hex",
+            "fixed_vocabulary_order",
+            "external_input_output",
+        }
+        if set(document) != allowed:
+            raise ValueError(
+                "token-plan tokenizer document is incomplete or ambiguous"
+            )
         if document.get("format") != TOKENIZER_FORMAT:
             raise ValueError("unsupported token-plan tokenizer format")
         if document.get("lexeme_pattern_ascii") != LEXEME_PATTERN.decode(
@@ -191,13 +204,43 @@ class LosslessLexemePointerTokenizer:
         }
         if document.get("special_ids") != expected_specials:
             raise ValueError("token-plan special ids mismatch")
+        if (
+            document.get("fixed_vocabulary_order")
+            != "ascending_utf8_bytes"
+        ):
+            raise ValueError("token-plan fixed vocabulary order mismatch")
+        if document.get("external_input_output") != "UTF-8 bytes":
+            raise ValueError("token-plan external boundary mismatch")
+        values = document.get("fixed_lexemes_hex")
+        if not isinstance(values, list) or any(
+            not isinstance(value, str) for value in values
+        ):
+            raise ValueError("token-plan fixed lexemes must be hex strings")
+        try:
+            fixed_lexemes = [bytes.fromhex(value) for value in values]
+        except ValueError as error:
+            raise ValueError(
+                "token-plan fixed lexemes contain invalid hex"
+            ) from error
         return cls(
-            bytes.fromhex(value)
-            for value in document["fixed_lexemes_hex"]
+            fixed_lexemes
         )
 
     def hash(self) -> str:
         return _canonical_hash(self.canonical_dict())
+
+
+@dataclass
+class PortableTokenPlanState:
+    """Persistent source encoding and causal action history for one request."""
+
+    source_ids: torch.Tensor
+    source_lexemes: list[bytes]
+    encoded: torch.Tensor
+    source_padding: torch.Tensor
+    previous_actions: torch.Tensor
+    generated_actions: list[int]
+    complete: bool = False
 
 
 class PortableTokenPlan(nn.Module):
@@ -290,6 +333,7 @@ class PortableTokenPlan(nn.Module):
         nn.init.xavier_uniform_(self.pointer_query.weight)
         nn.init.zeros_(self.pointer_gate.weight)
         nn.init.constant_(self.pointer_gate.bias, -3.0)
+        self.tokenizer: LosslessLexemePointerTokenizer | None = None
 
     def canonical_config(self) -> dict[str, Any]:
         return {
@@ -307,6 +351,14 @@ class PortableTokenPlan(nn.Module):
 
     def parameter_count(self) -> int:
         return sum(parameter.numel() for parameter in self.parameters())
+
+    def bind_tokenizer(
+        self, tokenizer: LosslessLexemePointerTokenizer
+    ) -> "PortableTokenPlan":
+        if tokenizer.vocab_size != self.fixed_vocab_size:
+            raise ValueError("model and tokenizer vocabulary sizes differ")
+        self.tokenizer = tokenizer
+        return self
 
     def encode(
         self, source_ids: torch.Tensor
@@ -477,6 +529,84 @@ class PortableTokenPlan(nn.Module):
             previous = torch.cat((previous, action[:, None]), dim=1)
         return generated
 
+    @torch.inference_mode()
+    def prefill_bytes(
+        self, prompt: bytes | str
+    ) -> PortableTokenPlanState:
+        """Encode a byte-facing prompt once and retain its immutable state."""
+
+        if self.tokenizer is None:
+            raise ValueError("token-plan tokenizer is not bound")
+        source_ids, source_lexemes = self.tokenizer.encode_source(prompt)
+        if not source_ids:
+            raise ValueError("token-plan prompt must contain at least one lexeme")
+        device = next(self.parameters()).device
+        source = torch.tensor(
+            [source_ids], dtype=torch.long, device=device
+        )
+        encoded, source_padding = self.encode(source)
+        previous = torch.full(
+            (1, 1), BOS_ID, dtype=torch.long, device=device
+        )
+        return PortableTokenPlanState(
+            source_ids=source,
+            source_lexemes=source_lexemes,
+            encoded=encoded,
+            source_padding=source_padding,
+            previous_actions=previous,
+            generated_actions=[],
+        )
+
+    @torch.inference_mode()
+    def decode_step(
+        self, state: PortableTokenPlanState
+    ) -> tuple[int, PortableTokenPlanState]:
+        """Select one neural action while retaining source/action state."""
+
+        if state.complete:
+            raise ValueError("token-plan request is already complete")
+        result = self.action_log_probs(
+            state.source_ids,
+            state.previous_actions,
+            encoded=state.encoded,
+            source_padding=state.source_padding,
+        )
+        action_tensor = result["log_probs"][:, -1].argmax(dim=-1)
+        action = int(action_tensor.item())
+        state.generated_actions.append(action)
+        state.complete = (
+            action == EOS_ID
+            or len(state.generated_actions) >= self.maximum_target_actions
+        )
+        if not state.complete:
+            state.previous_actions = torch.cat(
+                (state.previous_actions, action_tensor[:, None]), dim=1
+            )
+        return action, state
+
+    @torch.inference_mode()
+    def generate_bytes(
+        self,
+        prompt: bytes | str,
+        *,
+        maximum_actions: int | None = None,
+    ) -> bytes:
+        """Generate autonomous actions and losslessly realize exact bytes."""
+
+        if self.tokenizer is None:
+            raise ValueError("token-plan tokenizer is not bound")
+        state = self.prefill_bytes(prompt)
+        limit = (
+            self.maximum_target_actions
+            if maximum_actions is None
+            else min(int(maximum_actions), self.maximum_target_actions)
+        )
+        while not state.complete and len(state.generated_actions) < limit:
+            self.decode_step(state)
+        return self.tokenizer.decode_actions(
+            state.generated_actions, state.source_lexemes
+        )
+
 
 def build_token_plan_artifact(
     model: PortableTokenPlan,
@@ -535,5 +665,6 @@ def load_token_plan_artifact(
         raise ValueError("portable token-plan payload hash mismatch")
     model = PortableTokenPlan(**spec["model"]).to(device)
     model.load_state_dict(state)
+    model.bind_tokenizer(tokenizer)
     model.eval()
     return spec, tokenizer, model
