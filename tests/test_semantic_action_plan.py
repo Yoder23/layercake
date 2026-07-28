@@ -126,3 +126,25 @@ def test_transition_only_channel_does_not_use_parent_linear_copy_value():
         pointer_action, decoded, current, prompt
     )["residual"]
     assert torch.equal(before, after)
+
+
+def test_coordinate_replacement_is_bounded_and_bypasses_copy_value():
+    config = _model().canonical_config()
+    config["copy_coordinate_width"] = 8
+    config["copy_coordinate_scale"] = 16.0
+    model = SemanticActionPlanResidual(**config).eval()
+    prompt = torch.randn(1, 4, 24)
+    current = torch.randn(1, 1, 24)
+    decoded = torch.randn(1, 1, 24)
+    pointer_action = torch.tensor([[model.fixed_action_count + 2]])
+    result = model._realize(
+        pointer_action, decoded, current, prompt
+    )
+    assert result["identity_coordinate"].shape == current.shape
+    assert torch.all(result["residual"].abs() <= model.max_residual)
+    with torch.no_grad():
+        model.copy_semantic_value.weight.normal_(mean=100.0, std=20.0)
+    changed = model._realize(
+        pointer_action, decoded, current, prompt
+    )
+    assert torch.equal(result["residual"], changed["residual"])

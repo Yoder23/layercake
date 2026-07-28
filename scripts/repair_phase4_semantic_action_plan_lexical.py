@@ -86,6 +86,12 @@ TRAINABLE_TENSORS = frozenset(
         "copy_semantic_value.weight",
     }
 )
+LEXICAL_EVALUATION_FORMAT = (
+    "layercake-phase4-semantic-action-plan-lexical-evaluation/1"
+)
+PYTHON_EVALUATION_FORMAT = (
+    "layercake-phase4-semantic-action-plan-lexical-repair-python-evaluation/1"
+)
 
 
 def _sha256(path: Path) -> str:
@@ -489,7 +495,7 @@ def evaluate_lexical(args: argparse.Namespace) -> dict[str, Any]:
     )
     minimum = 231
     evidence = {
-        "format": "layercake-phase4-semantic-action-plan-lexical-evaluation/1",
+        "format": LEXICAL_EVALUATION_FORMAT,
         "status": "PASS" if exact_successes >= minimum else "FAIL",
         "protocol": PREREGISTRATION.relative_to(ROOT).as_posix(),
         "protocol_sha256": _sha256(PREREGISTRATION),
@@ -602,7 +608,7 @@ def evaluate_python(args: argparse.Namespace) -> dict[str, Any]:
     successes = sum(record["functional_success"] for record in records)
     minimum = 52
     evidence = {
-        "format": "layercake-phase4-semantic-action-plan-lexical-repair-python-evaluation/1",
+        "format": PYTHON_EVALUATION_FORMAT,
         "status": "PASS" if successes >= minimum else "FAIL",
         "protocol": PREREGISTRATION.relative_to(ROOT).as_posix(),
         "protocol_sha256": _sha256(PREREGISTRATION),

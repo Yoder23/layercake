@@ -55,6 +55,8 @@ class SemanticActionPlanResidual(nn.Module):
         pointer_width: int = 128,
         copy_transition_width: int = 0,
         copy_transition_replaces_linear: bool = False,
+        copy_coordinate_width: int = 0,
+        copy_coordinate_scale: float = 16.0,
         dropout: float = 0.1,
         maximum_prompt_units: int = 128,
         maximum_response_units: int = 192,
@@ -88,6 +90,11 @@ class SemanticActionPlanResidual(nn.Module):
             raise ValueError(
                 "transition replacement requires a non-zero codec width"
             )
+        if copy_coordinate_width < 0 or copy_coordinate_scale <= 0:
+            raise ValueError(
+                "copy coordinate width must be non-negative and its scale "
+                "must be positive"
+            )
         if model_width % attention_heads:
             raise ValueError("model width must divide attention heads")
         if max_residual <= 0:
@@ -107,6 +114,8 @@ class SemanticActionPlanResidual(nn.Module):
         self.copy_transition_replaces_linear = bool(
             copy_transition_replaces_linear
         )
+        self.copy_coordinate_width = int(copy_coordinate_width)
+        self.copy_coordinate_scale = float(copy_coordinate_scale)
         self.dropout = float(dropout)
         self.maximum_prompt_units = int(maximum_prompt_units)
         self.maximum_response_units = int(maximum_response_units)
@@ -186,6 +195,18 @@ class SemanticActionPlanResidual(nn.Module):
             self.copy_transition_norm = None
             self.copy_transition_input = None
             self.copy_transition_output = None
+        if self.copy_coordinate_width:
+            self.copy_coordinate_norm = nn.LayerNorm(self.d_abi)
+            self.copy_coordinate_input = nn.Linear(
+                self.d_abi, self.copy_coordinate_width
+            )
+            self.copy_coordinate_output = nn.Linear(
+                self.copy_coordinate_width, self.d_abi, bias=False
+            )
+        else:
+            self.copy_coordinate_norm = None
+            self.copy_coordinate_input = None
+            self.copy_coordinate_output = None
         self.plan_correction = nn.Linear(
             self.model_width, self.d_abi, bias=False
         )
@@ -210,6 +231,8 @@ class SemanticActionPlanResidual(nn.Module):
             "copy_transition_replaces_linear": (
                 self.copy_transition_replaces_linear
             ),
+            "copy_coordinate_width": self.copy_coordinate_width,
+            "copy_coordinate_scale": self.copy_coordinate_scale,
             "dropout": self.dropout,
             "maximum_prompt_units": self.maximum_prompt_units,
             "maximum_response_units": self.maximum_response_units,
@@ -358,6 +381,8 @@ class SemanticActionPlanResidual(nn.Module):
             min=0, max=self.fixed_action_count - 1
         )
         semantic_value = self.fixed_semantic_value(fixed_ids)
+        identity_coordinate = torch.zeros_like(semantic_value)
+        coordinate_residual = None
         if (~fixed).any():
             positions = (
                 actions - self.fixed_action_count
@@ -395,14 +420,33 @@ class SemanticActionPlanResidual(nn.Module):
             semantic_value = torch.where(
                 fixed[:, :, None], semantic_value, copy_value
             )
+            if self.copy_coordinate_width:
+                identity_coordinate = self.copy_coordinate_output(
+                    F.gelu(
+                        self.copy_coordinate_input(
+                            self.copy_coordinate_norm(selected)
+                        )
+                    )
+                )
+                desired_state = self.copy_coordinate_scale * F.normalize(
+                    identity_coordinate, dim=-1
+                )
+                coordinate_residual = self.max_residual * torch.tanh(
+                    (desired_state - current_states) / self.max_residual
+                )
         correction = self.plan_correction(self.output_norm(decoded))
         residual = self.max_residual * torch.tanh(
             semantic_value + correction
         )
+        if coordinate_residual is not None:
+            residual = torch.where(
+                fixed[:, :, None], residual, coordinate_residual
+            )
         return {
             "residual": residual,
             "adapted": current_states + residual,
             "semantic_value": semantic_value,
+            "identity_coordinate": identity_coordinate,
         }
 
     def training_forward(
