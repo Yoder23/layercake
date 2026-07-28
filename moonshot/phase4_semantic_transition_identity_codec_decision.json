@@ -1,0 +1,49 @@
+{
+  "format": "layercake-phase4-semantic-transition-identity-codec-decision/1",
+  "date": "2026-07-27",
+  "status": "FAILED_LEXICAL_SCREEN_ADDITIVE_CODEC_CLOSED",
+  "protocol": {
+    "path": "moonshot/phase4_semantic_transition_identity_codec_preregistration.json",
+    "sha256": "d7d05d0221629db1e142dcdc8d02f4d5bdbbea1a91f76d8ef20882d5dd8e5898"
+  },
+  "training": {
+    "artifact": "artifacts/moonshot/phase4/candidates/python-semantic-transition-codec-seed10540.pt",
+    "artifact_file_sha256": "a364ba0383a1c51cb9825afdf8f87a84b4e0cec1965d18868c85959af2cd663c",
+    "payload_hash": "062fdf30ee3815763c61079187e69590fbf7231eb7a39b5870942c219d757cf9",
+    "evidence_sha256": "0d72a80902bd5a33353c8f6438abed487b81ac79c04144d2aac7f32aac2fb7c9",
+    "seed": 10540,
+    "gpu_wall_seconds": 109.39137910003774,
+    "peak_accelerator_memory_bytes": 554695168,
+    "trainable_parameters": 788480,
+    "new_runtime_parameters": 788480,
+    "frozen_parent_tensors_identical": true,
+    "cpu_fallback_smoke": "PASS",
+    "first_observed_training_cross_entropy": 0.00018481354345567524,
+    "best_training_cross_entropy": 0.000016595091437920928
+  },
+  "lexical_validation": {
+    "evidence": "results/moonshot/phase4/python-semantic-transition-codec-seed10540-lexical-validation.json",
+    "evidence_sha256": "99a0e9795207ef852eef869fd4f62f0d3e25167f32cfdda305c3b20e263c892f",
+    "evidence_file_sha256": "cf573b45819dab2dd828f736e8990c7a3e8736e21aa6d03eeb335e73dfb988de",
+    "distinct_prompts": 256,
+    "exact_response_successes": 201,
+    "exact_response_success_rate": 0.78515625,
+    "minimum_exact_response_successes": 231,
+    "status": "FAIL"
+  },
+  "measured_new_limiter": {
+    "observation": "The frozen parent linear copy path already makes training pointer cross-entropy nearly zero before the additive transition codec learns, although held-out exact identity is only 73.8 percent.",
+    "effect": "An additive transition correction is gradient-shadowed by the memorized parent path and improves held-out exact identity only from 189/256 to 201/256.",
+    "evidence_supported_change": "A transition-only identity channel must be trained without the saturated parent linear copy value in its realization path. Replacing that path also removes its pointer-time matrix multiply, so the change targets quality without adding work relative to the failed additive codec."
+  },
+  "decision": {
+    "python_validation_executed": false,
+    "replication_authorized": false,
+    "additive_transition_codec_branch_closed": true,
+    "nearby_width_depth_activation_loss_weight_or_step_sweeps_authorized": false,
+    "one_materially_distinct_transition_only_channel_authorized": true,
+    "phase4_campaign_state": "OPEN",
+    "phase5_campaign_state": "LOCKED",
+    "phase4_seal_or_tag_allowed_now": false
+  }
+}
