@@ -48,7 +48,7 @@ def test_phase3_claim_contract_contains_only_retirement_gates():
 
 def test_phase4_keeps_product_gates_and_reports_training_cost_without_speed_gate():
     contract = _read("moonshot/phase4_cpu_cake_training_lock.json")
-    assert contract["status"] == "LOCKED_PENDING_PHASE3_SEAL"
+    assert contract["status"] == "OPEN"
     assert contract["current_acquisition_path"]["external_abi_required"] is False
     assert contract["reported_not_promoted"]["training_speedup"] is True
     assert contract["promotion_gates"]["functional_error_reduction_over_frozen_core_min"] == 5.0

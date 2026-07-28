@@ -965,6 +965,88 @@
       "nearby_recurrent_or_pointer_sweeps_authorized": false,
       "additional_seeds_authorized": false,
       "test_split_accessed": false
+    },
+    {
+      "branch_id": "portable-token-plan-seed10141-direct-transfer",
+      "disposition": "DIRECT_TRANSFER_PASS_NOT_PHASE4_PROMOTABLE_SEMANTIC_ABI_GATE_OPEN",
+      "architecture": {
+        "name": "PortableTokenPlanModel",
+        "architecture": "lossless_lexeme_token_plan_transformer",
+        "parameters": 2286384,
+        "external_boundary": "UTF-8 bytes",
+        "execution_mode": "direct_selected_portable_decoder",
+        "canonical_semantic_abi_state_consumed": false
+      },
+      "training": {
+        "selected_seed": 10141,
+        "replication_seeds": [
+          10140,
+          10141,
+          10142
+        ],
+        "optimizer_steps": 3000,
+        "primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+        "precision": "fp32",
+        "gpu_wall_seconds": 104.306,
+        "peak_accelerator_memory_bytes": 426532352,
+        "cpu_fallback_smoke_status": "PASS",
+        "artifact_file_sha256": "211db7a97194234f4fbf2a04c99f99eea4698cc73bd486f901e7d12fb8af439e",
+        "payload_hash": "a70fcb62a2c24305ca0dad3929124ca6881363d26366c9374b96e7951b5cd49f"
+      },
+      "validation": {
+        "three_seed_lexical_successes": [
+          256,
+          256,
+          256
+        ],
+        "three_seed_lexical_prompts": 256,
+        "three_seed_functional_successes": [
+          63,
+          64,
+          64
+        ],
+        "three_seed_functional_prompts": 64,
+        "heldout_test_distinct_prompts": 128,
+        "heldout_test_strict_functional_successes": 128,
+        "test_evidence_sha256": "b8d0eb00e89e008e33309226d7033037e0600868f94588c66f86a42a096f4d3b"
+      },
+      "transfer": {
+        "signed_archive_sha256": "d82df64b32224d1671fb119166f19c61f51a6ab8e49548c56bc90e5ef6d2028e",
+        "receiver_hosts": 3,
+        "cpu_receivers": 2,
+        "cuda_receivers": 1,
+        "source_success_retention_rate": 1.0,
+        "receiver_training_examples": 0,
+        "receiver_calibration_runs": 0,
+        "deterministic_package_build": true,
+        "tampered_package_rejected": true,
+        "core_immutable": true,
+        "evidence_sha256": "ee14fd5eb60959b87826886665df95773e64428357768b1a334ef017760676c3"
+      },
+      "cpu_product_benchmark": {
+        "distinct_prompts": 100,
+        "observations_per_system": 120,
+        "layercake_functional_successes": 100,
+        "qwen_functional_successes": 36,
+        "layercake_median_bytes_per_second": 976.7945958821759,
+        "qwen_median_bytes_per_second": 133.49210724097782,
+        "median_paired_throughput_ratio": 8.187656289024712,
+        "paired_mean_ratio_bootstrap_95ci": [
+          8.193261067002746,
+          8.745475006978394
+        ],
+        "layercake_median_ttft_seconds": 0.0063579,
+        "qwen_median_ttft_seconds": 2.63244815,
+        "phase2_core_sentinel_retention": 0.9862348258814619,
+        "phase2_core_plus_inactive_cake_transformer_ratio": 2.1529826985368894,
+        "evidence_sha256": "5d4853c5ab62b8563e0f208801fa1d5bf768361c916a1b45abda925b8245c0c4"
+      },
+      "measured_bottleneck": "The model has lossless access to prompt lexemes and passes direct execution, but the locked Phase 2 cake ABI exposes only a 768-wide semantic state and requires a same-shape residual. This package therefore bypasses rather than consumes the canonical semantic ABI.",
+      "next_bounded_change": "Do not run a nearby pointer, gate, auxiliary-loss, width, or byte-decoder variant. A future branch must be a preregistered materially distinct representation that carries lossless prompt identity through the unchanged semantic ABI, unless governance explicitly versions the ABI and recertifies the affected sealed boundary.",
+      "direct_transfer_promoted": true,
+      "phase4_promoted": false,
+      "phase4_status": "OPEN",
+      "test_split_accessed": true
     }
   ]
 }

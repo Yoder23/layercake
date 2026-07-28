@@ -1,0 +1,162 @@
+{
+  "format": "layercake-phase4-token-plan-branch-decision/1",
+  "date": "2026-07-27",
+  "status": "DIRECT_TRANSFER_PASS_PHASE4_REMAINS_OPEN",
+  "decision": {
+    "direct_portable_decoder_transfer": "PASS",
+    "full_phase4_promotion": "FAIL",
+    "phase4_campaign_state": "OPEN",
+    "phase5_campaign_state": "LOCKED",
+    "blocking_gate": "candidate_consumes_and_returns_locked_canonical_semantic_abi",
+    "blocking_gate_value": false,
+    "reason": "The selected package is a byte-facing directly selected portable decoder. It proves useful Python capability, exact signed transfer, receiver retention, CPU and CUDA execution, and matched-prompt CPU dominance, but it does not consume a 768-wide host semantic state and return a same-shape residual. Relabeling it as a canonical semantic cake would invalidate the sealed Phase 2 boundary."
+  },
+  "locked_contract": {
+    "phase4": "moonshot/phase4_cpu_cake_training_lock.json",
+    "phase4_sha256": "d9ee237548f6ce3e68ef546567da9ffa135e1e0b9409573d9a8b02664f54f91f",
+    "canonical_semantic_abi": "moonshot/phase2_canonical_semantic_abi_r3.json",
+    "canonical_semantic_abi_sha256": "d024de52144a2d797d0501acb7deb55575ffca7e33f72900beff599cf0a97761",
+    "canonical_semantic_abi_version": "lc-semantic-gpt2-768/1",
+    "canonical_semantic_abi_mutated": false
+  },
+  "selected_candidate": {
+    "seed": 10141,
+    "selection_rule": "first preregistered replication in execution order to reach 64/64 strict functional validation successes",
+    "artifact": "artifacts/moonshot/phase4/candidates/python-portable-token-plan-seed10141.pt",
+    "artifact_file_sha256": "211db7a97194234f4fbf2a04c99f99eea4698cc73bd486f901e7d12fb8af439e",
+    "state_dict_hash": "a70fcb62a2c24305ca0dad3929124ca6881363d26366c9374b96e7951b5cd49f",
+    "trainable_parameters": 2286384,
+    "training_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "training_precision": "fp32",
+    "gpu_wall_seconds": 104.306,
+    "peak_accelerator_memory_bytes": 426532352,
+    "cpu_fallback_smoke": "PASS",
+    "teacher_at_inference": false
+  },
+  "three_seed_validation": [
+    {
+      "seed": 10140,
+      "lexical_successes": 256,
+      "lexical_prompts": 256,
+      "functional_successes": 63,
+      "functional_prompts": 64,
+      "artifact_file_sha256": "1aa4826ee1e83e17535b4e07d7518b9fedfd3188f0688fab874addcfc41d3ad7"
+    },
+    {
+      "seed": 10141,
+      "lexical_successes": 256,
+      "lexical_prompts": 256,
+      "functional_successes": 64,
+      "functional_prompts": 64,
+      "artifact_file_sha256": "211db7a97194234f4fbf2a04c99f99eea4698cc73bd486f901e7d12fb8af439e"
+    },
+    {
+      "seed": 10142,
+      "lexical_successes": 256,
+      "lexical_prompts": 256,
+      "functional_successes": 64,
+      "functional_prompts": 64,
+      "artifact_file_sha256": "0562c74b0e8451da9c669dfff23851812ffc2f7e9bdeea7abb698787c8ee1dd9"
+    }
+  ],
+  "heldout_test": {
+    "distinct_prompts": 128,
+    "strict_functional_successes": 128,
+    "strict_functional_success_rate": 1.0,
+    "test_split_accessed_only_after_protocol_commit": true,
+    "evidence": "results/moonshot/phase4/python-portable-token-plan-seed10141-test.json",
+    "evidence_sha256": "b8d0eb00e89e008e33309226d7033037e0600868f94588c66f86a42a096f4d3b"
+  },
+  "signed_package_transfer": {
+    "package": "artifacts/moonshot/phase4/release/python-token-plan-seed10141-v1.0.0.cake",
+    "archive_sha256": "d82df64b32224d1671fb119166f19c61f51a6ab8e49548c56bc90e5ef6d2028e",
+    "content_hash": "353dd75f532766b90a0377c4c2eacaced0ebd4c04dad15bb2da67f0fc15fb48b",
+    "tensor_payload_hash": "d100316a27e3a17d7d262a6e77d1a99ca3c3c47b3055fafe524f397c58b172b7",
+    "package_bytes": 9164714,
+    "signed": true,
+    "deterministic_rebuild_identical": true,
+    "tampered_package_rejected": true,
+    "receiver_hosts": 3,
+    "receiver_devices": [
+      "cpu",
+      "cpu",
+      "cuda:0"
+    ],
+    "source_success_retention_per_receiver": 1.0,
+    "receiver_training_examples": 0,
+    "receiver_calibration_runs": 0,
+    "output_bytes_identical_across_receivers": true,
+    "remove_reinstall_identity": true,
+    "english_core_hashes_identical_before_after": true,
+    "private_signing_key_committed": false,
+    "certificate": "results/moonshot/phase4/token_plan_transfer_certificate.json",
+    "certificate_evidence_sha256": "ee14fd5eb60959b87826886665df95773e64428357768b1a334ef017760676c3"
+  },
+  "incremental_execution": {
+    "persistent_incremental_state": true,
+    "source_encoded_once": true,
+    "completed_target_prefix_recomputation": false,
+    "cpu_action_sequences_equal": 64,
+    "cuda_action_sequences_equal": 64,
+    "prompts_per_device": 64
+  },
+  "matched_cpu_product_benchmark": {
+    "distinct_prompts": 100,
+    "observations_per_system": 120,
+    "repeated_prompt_observations": 20,
+    "layercake_functional_successes": 100,
+    "qwen_functional_successes": 36,
+    "layercake_median_generated_bytes_per_total_second": 976.7945958821759,
+    "qwen_median_generated_bytes_per_total_second": 133.49210724097782,
+    "median_paired_throughput_ratio": 8.187656289024712,
+    "mean_paired_throughput_ratio": 8.465063688271792,
+    "paired_mean_ratio_bootstrap_95ci": [
+      8.193261067002746,
+      8.745475006978394
+    ],
+    "layercake_median_ttft_seconds": 0.0063579,
+    "qwen_median_ttft_seconds": 2.63244815,
+    "median_ttft_ratio": 0.0024152042652767916,
+    "active_cake_tensor_bytes": 9145536,
+    "qwen_runtime_model_bytes": 484221909,
+    "qwen_size_vram_bytes": 0,
+    "phase2_core_sentinel_retention": 0.9862348258814619,
+    "phase2_core_plus_inactive_cake_transformer_ratio": 2.1529826985368894,
+    "inactive_cake_forward_calls": 0,
+    "process_rss_diagnostic_bytes": 999219200,
+    "process_rss_diagnostic_scope": "whole Python certification process after loading all audit machinery; not represented as active model memory",
+    "evidence": "results/moonshot/phase4/token_plan_cpu_product_benchmark.json",
+    "evidence_sha256": "5d4853c5ab62b8563e0f208801fa1d5bf768361c916a1b45abda925b8245c0c4"
+  },
+  "gate_matrix": {
+    "useful_python_functional_quality": true,
+    "three_training_seeds": true,
+    "gpu_acquisition": true,
+    "cpu_acquisition_fallback": true,
+    "signed_deterministic_safe_package": true,
+    "three_receiver_hosts": true,
+    "cpu_install_and_execution": true,
+    "cuda_install_and_execution": true,
+    "no_receiver_learning": true,
+    "mathematical_payload_identity": true,
+    "semantic_behavior_retention": true,
+    "core_immutability": true,
+    "same_payload_quality_and_speed": true,
+    "matched_cpu_transformer_ratio_at_least_2x": true,
+    "paired_bootstrap_lower_bound_at_least_2x": true,
+    "phase2_core_with_inactive_cake_at_least_2x": true,
+    "incremental_state_without_prefix_recomputation": true,
+    "inactive_cake_neural_compute_zero": true,
+    "candidate_consumes_and_returns_locked_semantic_abi": false
+  },
+  "claim_boundary": {
+    "proven": "A GPU-trained Python capability can be packaged once, signed, installed without learning, transferred byte-identically, and executed with identical functional behavior on CPU-only and CUDA-capable receivers while the installed inactive package leaves the sealed English core unchanged and above its CPU-speed gate.",
+    "not_proven": "The candidate is a canonical semantic residual cake attached inside the sealed Phase 2 host.",
+    "historical_qwen_comparison_warning": "The direct-cake 976.8 B/s result must not be divided by the historical 506.36 B/s Qwen result because those runs used different prompts. The valid direct-cake product ratio is the paired same-prompt 8.19x result. The separately valid sealed-core plus inactive-cake ratio is 2.153x."
+  },
+  "next_authorized_work": {
+    "nearby_pointer_gate_loss_width_or_byte_decoder_sweeps": false,
+    "required_change": "a preregistered materially distinct architecture that consumes the immutable 768-wide semantic ABI and preserves lossless prompt identity, or an explicit versioned governance amendment followed by recertification of the affected sealed boundary",
+    "phase4_seal_or_tag_allowed_now": false
+  }
+}

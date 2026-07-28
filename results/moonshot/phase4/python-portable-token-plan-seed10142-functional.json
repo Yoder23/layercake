@@ -1,0 +1,2676 @@
+{
+  "artifact": "artifacts/moonshot/phase4/candidates/python-portable-token-plan-seed10142.pt",
+  "artifact_file_sha256": "0562c74b0e8451da9c669dfff23851812ffc2f7e9bdeea7abb698787c8ee1dd9",
+  "autonomous_neural_generation": true,
+  "batched_generation_wall_seconds": 0.5682216000277549,
+  "dataset": "data/moonshot/phase4/python_functional_v1.jsonl",
+  "dataset_sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3",
+  "distinct_prompts": 64,
+  "dynamic_pointer_actions_neurally_selected": true,
+  "evaluation_device": "cuda:0",
+  "evidence_sha256": "f1d25e43e096304120a28acd37f4e591331f3aeba3ce5fa0c54f8550a9c95669",
+  "format": "layercake-phase4-portable-token-plan-functional/1",
+  "functional_failures": 0,
+  "functional_success_rate": 1.0,
+  "functional_successes": 64,
+  "median_generated_actions": 32.5,
+  "minimum_functional_successes": 52,
+  "payload_hash": "33e61d0d3e92b1d7388ca37d3dfb3c1b41bcbb4259f3eab8fe1113fbd96a9c9b",
+  "protocol": "moonshot/phase4_portable_token_plan_seed10142_functional_protocol.json",
+  "protocol_sha256": "372bbf90c227631401026de5dc4849b666d81c976d574963db6ea38aaebf06e7",
+  "records": [
+    {
+      "expected_function": "add_validation_00",
+      "extracted_source": "def add_validation_00(a, b):\n    return a + b\n",
+      "family": "add",
+      "functional_success": true,
+      "generated_actions": 20,
+      "generated_text": "def add_validation_00(a, b):\n    return a + b\n",
+      "generated_text_sha256": "db5030504db2816022e5a16edbd64ab8f1e4d12e401d668ed0eb9256664eb6ae",
+      "id": "validation-add-00",
+      "tests": [
+        {
+          "actual": 48,
+          "expected": 48,
+          "status": "PASS"
+        },
+        {
+          "actual": 11,
+          "expected": 11,
+          "status": "PASS"
+        },
+        {
+          "actual": -27,
+          "expected": -27,
+          "status": "PASS"
+        },
+        {
+          "actual": -6,
+          "expected": -6,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "add_validation_01",
+      "extracted_source": "def add_validation_01(a, b):\n    return a + b\n",
+      "family": "add",
+      "functional_success": true,
+      "generated_actions": 20,
+      "generated_text": "def add_validation_01(a, b):\n    return a + b\n",
+      "generated_text_sha256": "0f682ea8ff2d655955db99aa8c475d88552346f3b029d8286d6114858822d151",
+      "id": "validation-add-01",
+      "tests": [
+        {
+          "actual": -64,
+          "expected": -64,
+          "status": "PASS"
+        },
+        {
+          "actual": -48,
+          "expected": -48,
+          "status": "PASS"
+        },
+        {
+          "actual": 48,
+          "expected": 48,
+          "status": "PASS"
+        },
+        {
+          "actual": 86,
+          "expected": 86,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "subtract_validation_00",
+      "extracted_source": "def subtract_validation_00(a, b):\n    return a - b\n",
+      "family": "subtract",
+      "functional_success": true,
+      "generated_actions": 20,
+      "generated_text": "def subtract_validation_00(a, b):\n    return a - b\n",
+      "generated_text_sha256": "f56b67b282d6a9b02849ae38248af50808e1e5d9ebb078faf166064e5c962f1e",
+      "id": "validation-subtract-00",
+      "tests": [
+        {
+          "actual": 2,
+          "expected": 2,
+          "status": "PASS"
+        },
+        {
+          "actual": 47,
+          "expected": 47,
+          "status": "PASS"
+        },
+        {
+          "actual": -42,
+          "expected": -42,
+          "status": "PASS"
+        },
+        {
+          "actual": 11,
+          "expected": 11,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "subtract_validation_01",
+      "extracted_source": "def subtract_validation_01(a, b):\n    return a - b\n",
+      "family": "subtract",
+      "functional_success": true,
+      "generated_actions": 20,
+      "generated_text": "def subtract_validation_01(a, b):\n    return a - b\n",
+      "generated_text_sha256": "6be034071cc5c81f3d82dd2d0eedeb25d3c8d39f892cff70fcddf6c8c3efeaf6",
+      "id": "validation-subtract-01",
+      "tests": [
+        {
+          "actual": 29,
+          "expected": 29,
+          "status": "PASS"
+        },
+        {
+          "actual": 37,
+          "expected": 37,
+          "status": "PASS"
+        },
+        {
+          "actual": -13,
+          "expected": -13,
+          "status": "PASS"
+        },
+        {
+          "actual": -54,
+          "expected": -54,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "multiply_validation_00",
+      "extracted_source": "def multiply_validation_00(a, b):\n    return a * b\n",
+      "family": "multiply",
+      "functional_success": true,
+      "generated_actions": 20,
+      "generated_text": "def multiply_validation_00(a, b):\n    return a * b\n",
+      "generated_text_sha256": "ee7f721d077b9665fbeca053235c5f1a46449e08ee9171853a531ac4af8720af",
+      "id": "validation-multiply-00",
+      "tests": [
+        {
+          "actual": 560,
+          "expected": 560,
+          "status": "PASS"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "actual": -864,
+          "expected": -864,
+          "status": "PASS"
+        },
+        {
+          "actual": -1008,
+          "expected": -1008,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "multiply_validation_01",
+      "extracted_source": "def multiply_validation_01(a, b):\n    return a * b\n",
+      "family": "multiply",
+      "functional_success": true,
+      "generated_actions": 20,
+      "generated_text": "def multiply_validation_01(a, b):\n    return a * b\n",
+      "generated_text_sha256": "a6be2b17e8afceaf534bc0ed8514077814ed8a15b8f1f025bd6c98c1e65926bc",
+      "id": "validation-multiply-01",
+      "tests": [
+        {
+          "actual": 168,
+          "expected": 168,
+          "status": "PASS"
+        },
+        {
+          "actual": 1332,
+          "expected": 1332,
+          "status": "PASS"
+        },
+        {
+          "actual": -403,
+          "expected": -403,
+          "status": "PASS"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "absolute_difference_validation_00",
+      "extracted_source": "def absolute_difference_validation_00(a, b):\n    return abs(a - b)\n",
+      "family": "absolute_difference",
+      "functional_success": true,
+      "generated_actions": 23,
+      "generated_text": "def absolute_difference_validation_00(a, b):\n    return abs(a - b)\n",
+      "generated_text_sha256": "155d8d166963fe8f1ae2c1a1c5c4488a1f3a744d236c1c3c00ec1fd7193dad98",
+      "id": "validation-absolute_difference-00",
+      "tests": [
+        {
+          "actual": 40,
+          "expected": 40,
+          "status": "PASS"
+        },
+        {
+          "actual": 2,
+          "expected": 2,
+          "status": "PASS"
+        },
+        {
+          "actual": 33,
+          "expected": 33,
+          "status": "PASS"
+        },
+        {
+          "actual": 19,
+          "expected": 19,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "absolute_difference_validation_01",
+      "extracted_source": "def absolute_difference_validation_01(a, b):\n    return abs(a - b)\n",
+      "family": "absolute_difference",
+      "functional_success": true,
+      "generated_actions": 23,
+      "generated_text": "def absolute_difference_validation_01(a, b):\n    return abs(a - b)\n",
+      "generated_text_sha256": "20c17eb8c0fa00fcf06f99f4414f5ac01f67c0d155639ef6a36ed7347c4d7ee7",
+      "id": "validation-absolute_difference-01",
+      "tests": [
+        {
+          "actual": 25,
+          "expected": 25,
+          "status": "PASS"
+        },
+        {
+          "actual": 28,
+          "expected": 28,
+          "status": "PASS"
+        },
+        {
+          "actual": 83,
+          "expected": 83,
+          "status": "PASS"
+        },
+        {
+          "actual": 55,
+          "expected": 55,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "clamp_validation_00",
+      "extracted_source": "def clamp_validation_00(value, low, high):\n    return max(low, min(value, high))\n",
+      "family": "clamp",
+      "functional_success": true,
+      "generated_actions": 31,
+      "generated_text": "def clamp_validation_00(value, low, high):\n    return max(low, min(value, high))\n",
+      "generated_text_sha256": "e4fca4da64798f081c752add45eaa0bb90be3194f00bc0584362a71426b66255",
+      "id": "validation-clamp-00",
+      "tests": [
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "actual": 4,
+          "expected": 4,
+          "status": "PASS"
+        },
+        {
+          "actual": 10,
+          "expected": 10,
+          "status": "PASS"
+        },
+        {
+          "actual": 3,
+          "expected": 3,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "clamp_validation_01",
+      "extracted_source": "def clamp_validation_01(value, low, high):\n    return max(low, min(value, high))\n",
+      "family": "clamp",
+      "functional_success": true,
+      "generated_actions": 31,
+      "generated_text": "def clamp_validation_01(value, low, high):\n    return max(low, min(value, high))\n",
+      "generated_text_sha256": "3404990cf3cb3e16abdbfa4eb78493d2245e802a41e28f04b190b71318abf47e",
+      "id": "validation-clamp-01",
+      "tests": [
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "actual": 4,
+          "expected": 4,
+          "status": "PASS"
+        },
+        {
+          "actual": 10,
+          "expected": 10,
+          "status": "PASS"
+        },
+        {
+          "actual": 3,
+          "expected": 3,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "is_even_validation_00",
+      "extracted_source": "def is_even_validation_00(number):\n    return number % 2 == 0\n",
+      "family": "is_even",
+      "functional_success": true,
+      "generated_actions": 21,
+      "generated_text": "def is_even_validation_00(number):\n    return number % 2 == 0\n",
+      "generated_text_sha256": "3092946de093a30a7fcb8a02a4abbcf672ae4d0c005b3dcbac3765814da8335b",
+      "id": "validation-is_even-00",
+      "tests": [
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "is_even_validation_01",
+      "extracted_source": "def is_even_validation_01(number):\n    return number % 2 == 0\n",
+      "family": "is_even",
+      "functional_success": true,
+      "generated_actions": 21,
+      "generated_text": "def is_even_validation_01(number):\n    return number % 2 == 0\n",
+      "generated_text_sha256": "9b706d38c837fc9a5b0e07893f5aa0e80059abdb48eef1ca0eb64740861d97f9",
+      "id": "validation-is_even-01",
+      "tests": [
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "palindrome_validation_00",
+      "extracted_source": "def palindrome_validation_00(text):\n    normalized = text.lower()\n    return normalized == normalized[::-1]\n",
+      "family": "palindrome",
+      "functional_success": true,
+      "generated_actions": 33,
+      "generated_text": "def palindrome_validation_00(text):\n    normalized = text.lower()\n    return normalized == normalized[::-1]\n",
+      "generated_text_sha256": "847ad002c2e8b3f70515a32e8853c897ce304967400ac8dfae2f96afa1772d75",
+      "id": "validation-palindrome-00",
+      "tests": [
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "palindrome_validation_01",
+      "extracted_source": "def palindrome_validation_01(text):\n    normalized = text.lower()\n    return normalized == normalized[::-1]\n",
+      "family": "palindrome",
+      "functional_success": true,
+      "generated_actions": 33,
+      "generated_text": "def palindrome_validation_01(text):\n    normalized = text.lower()\n    return normalized == normalized[::-1]\n",
+      "generated_text_sha256": "0f3db93e6e7f9eea3d9d206bfc03606e88d206161b231917eccfeb0ccb6a0886",
+      "id": "validation-palindrome-01",
+      "tests": [
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "reverse_text_validation_00",
+      "extracted_source": "def reverse_text_validation_00(text):\n    return text[::-1]\n",
+      "family": "reverse_text",
+      "functional_success": true,
+      "generated_actions": 19,
+      "generated_text": "def reverse_text_validation_00(text):\n    return text[::-1]\n",
+      "generated_text_sha256": "7e62f3b9c302d8bac95a34b13bfe1e0ce4739728a55d1d04cac74f81a410e149",
+      "id": "validation-reverse_text-00",
+      "tests": [
+        {
+          "actual": "ekac",
+          "expected": "ekac",
+          "status": "PASS"
+        },
+        {
+          "actual": "",
+          "expected": "",
+          "status": "PASS"
+        },
+        {
+          "actual": "fed cba",
+          "expected": "fed cba",
+          "status": "PASS"
+        },
+        {
+          "actual": "x",
+          "expected": "x",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "reverse_text_validation_01",
+      "extracted_source": "def reverse_text_validation_01(text):\n    return text[::-1]\n",
+      "family": "reverse_text",
+      "functional_success": true,
+      "generated_actions": 19,
+      "generated_text": "def reverse_text_validation_01(text):\n    return text[::-1]\n",
+      "generated_text_sha256": "1ab17d8422fd1b7e48efa4661fc7aacfe53dc9561c3b1d45fbdf02e370c34870",
+      "id": "validation-reverse_text-01",
+      "tests": [
+        {
+          "actual": "ekac",
+          "expected": "ekac",
+          "status": "PASS"
+        },
+        {
+          "actual": "",
+          "expected": "",
+          "status": "PASS"
+        },
+        {
+          "actual": "fed cba",
+          "expected": "fed cba",
+          "status": "PASS"
+        },
+        {
+          "actual": "x",
+          "expected": "x",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "count_vowels_validation_00",
+      "extracted_source": "def count_vowels_validation_00(text):\n    return sum(1 for char in text.lower() if char in \"aeiou\")\n",
+      "family": "count_vowels",
+      "functional_success": true,
+      "generated_actions": 38,
+      "generated_text": "def count_vowels_validation_00(text):\n    return sum(1 for char in text.lower() if char in \"aeiou\")\n",
+      "generated_text_sha256": "dcd8248dd5b7f1731b8925273bdf7a8eb3233d867c8dce21e8406fdf1b9e4b73",
+      "id": "validation-count_vowels-00",
+      "tests": [
+        {
+          "actual": 4,
+          "expected": 4,
+          "status": "PASS"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "actual": 5,
+          "expected": 5,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "count_vowels_validation_01",
+      "extracted_source": "def count_vowels_validation_01(text):\n    return sum(1 for char in text.lower() if char in \"aeiou\")\n",
+      "family": "count_vowels",
+      "functional_success": true,
+      "generated_actions": 38,
+      "generated_text": "def count_vowels_validation_01(text):\n    return sum(1 for char in text.lower() if char in \"aeiou\")\n",
+      "generated_text_sha256": "6fa2a7be89810a0b7c53aea22e0af4703f862b04897aa810897b3df0ef03fd6d",
+      "id": "validation-count_vowels-01",
+      "tests": [
+        {
+          "actual": 4,
+          "expected": 4,
+          "status": "PASS"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "actual": 5,
+          "expected": 5,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "factorial_validation_00",
+      "extracted_source": "def factorial_validation_00(number):\n    result = 1\n    for value in range(2, number + 1):\n        result *= value\n    return result\n",
+      "family": "factorial",
+      "functional_success": true,
+      "generated_actions": 45,
+      "generated_text": "def factorial_validation_00(number):\n    result = 1\n    for value in range(2, number + 1):\n        result *= value\n    return result\n",
+      "generated_text_sha256": "f34608480a5a265c9f4387bfecb3a07433ede1ebe02a5fbad12ce2b9c5dec141",
+      "id": "validation-factorial-00",
+      "tests": [
+        {
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "actual": 120,
+          "expected": 120,
+          "status": "PASS"
+        },
+        {
+          "actual": 5040,
+          "expected": 5040,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "factorial_validation_01",
+      "extracted_source": "def factorial_validation_01(number):\n    result = 1\n    for value in range(2, number + 1):\n        result *= value\n    return result\n",
+      "family": "factorial",
+      "functional_success": true,
+      "generated_actions": 45,
+      "generated_text": "def factorial_validation_01(number):\n    result = 1\n    for value in range(2, number + 1):\n        result *= value\n    return result\n",
+      "generated_text_sha256": "805ff8e92dbf10faed453f77a12cc76a73c2f1f1eb5b2363906b883c57f2e2c3",
+      "id": "validation-factorial-01",
+      "tests": [
+        {
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "actual": 120,
+          "expected": 120,
+          "status": "PASS"
+        },
+        {
+          "actual": 5040,
+          "expected": 5040,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "fibonacci_validation_00",
+      "extracted_source": "def fibonacci_validation_00(count):\n    values = []\n    a, b = 0, 1\n    for _ in range(count):\n        values.append(a)\n        a, b = b, a + b\n    return values\n",
+      "family": "fibonacci",
+      "functional_success": true,
+      "generated_actions": 67,
+      "generated_text": "def fibonacci_validation_00(count):\n    values = []\n    a, b = 0, 1\n    for _ in range(count):\n        values.append(a)\n        a, b = b, a + b\n    return values\n",
+      "generated_text_sha256": "7060270db4826ac05cbd6341764a4d6874444e804b6beb32b915245bd958ccd3",
+      "id": "validation-fibonacci-00",
+      "tests": [
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            0
+          ],
+          "expected": [
+            0
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            0,
+            1,
+            1,
+            2,
+            3
+          ],
+          "expected": [
+            0,
+            1,
+            1,
+            2,
+            3
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            0,
+            1,
+            1,
+            2,
+            3,
+            5,
+            8,
+            13
+          ],
+          "expected": [
+            0,
+            1,
+            1,
+            2,
+            3,
+            5,
+            8,
+            13
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "fibonacci_validation_01",
+      "extracted_source": "def fibonacci_validation_01(count):\n    values = []\n    a, b = 0, 1\n    for _ in range(count):\n        values.append(a)\n        a, b = b, a + b\n    return values\n",
+      "family": "fibonacci",
+      "functional_success": true,
+      "generated_actions": 67,
+      "generated_text": "def fibonacci_validation_01(count):\n    values = []\n    a, b = 0, 1\n    for _ in range(count):\n        values.append(a)\n        a, b = b, a + b\n    return values\n",
+      "generated_text_sha256": "39f5dd9bd39ab59b395e10ee4bbbbd94b69cf0db9b8171b7660544f0695d3411",
+      "id": "validation-fibonacci-01",
+      "tests": [
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            0
+          ],
+          "expected": [
+            0
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            0,
+            1,
+            1,
+            2,
+            3
+          ],
+          "expected": [
+            0,
+            1,
+            1,
+            2,
+            3
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            0,
+            1,
+            1,
+            2,
+            3,
+            5,
+            8,
+            13
+          ],
+          "expected": [
+            0,
+            1,
+            1,
+            2,
+            3,
+            5,
+            8,
+            13
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "is_prime_validation_00",
+      "extracted_source": "def is_prime_validation_00(number):\n    if number < 2:\n        return False\n    for divisor in range(2, int(number ** 0.5) + 1):\n        if number % divisor == 0:\n            return False\n    return True\n",
+      "family": "is_prime",
+      "functional_success": true,
+      "generated_actions": 69,
+      "generated_text": "def is_prime_validation_00(number):\n    if number < 2:\n        return False\n    for divisor in range(2, int(number ** 0.5) + 1):\n        if number % divisor == 0:\n            return False\n    return True\n",
+      "generated_text_sha256": "2fc0059d4c2f1855fae78f6eacd5e3bff54418c46b9a51ac935c392127b70788",
+      "id": "validation-is_prime-00",
+      "tests": [
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "is_prime_validation_01",
+      "extracted_source": "def is_prime_validation_01(number):\n    if number < 2:\n        return False\n    for divisor in range(2, int(number ** 0.5) + 1):\n        if number % divisor == 0:\n            return False\n    return True\n",
+      "family": "is_prime",
+      "functional_success": true,
+      "generated_actions": 69,
+      "generated_text": "def is_prime_validation_01(number):\n    if number < 2:\n        return False\n    for divisor in range(2, int(number ** 0.5) + 1):\n        if number % divisor == 0:\n            return False\n    return True\n",
+      "generated_text_sha256": "6de561caba636bbd4c745f02c61a8232807ce775a2e131fe145304e2b54ca639",
+      "id": "validation-is_prime-01",
+      "tests": [
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "deduplicate_validation_00",
+      "extracted_source": "def deduplicate_validation_00(values):\n    result = []\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n",
+      "family": "deduplicate",
+      "functional_success": true,
+      "generated_actions": 47,
+      "generated_text": "def deduplicate_validation_00(values):\n    result = []\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n",
+      "generated_text_sha256": "0dbd86cb4a21df0ecb85a40340e668be8c2404706359ebfc7d36c065ced7daf2",
+      "id": "validation-deduplicate-00",
+      "tests": [
+        {
+          "actual": [
+            1,
+            2,
+            3
+          ],
+          "expected": [
+            1,
+            2,
+            3
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            "a",
+            "b"
+          ],
+          "expected": [
+            "a",
+            "b"
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            4
+          ],
+          "expected": [
+            4
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "deduplicate_validation_01",
+      "extracted_source": "def deduplicate_validation_01(values):\n    result = []\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n",
+      "family": "deduplicate",
+      "functional_success": true,
+      "generated_actions": 47,
+      "generated_text": "def deduplicate_validation_01(values):\n    result = []\n    for value in values:\n        if value not in result:\n            result.append(value)\n    return result\n",
+      "generated_text_sha256": "dcbfd35571b66a014d33926fc05e677db144901610441c5cfb48fdd7e47da51c",
+      "id": "validation-deduplicate-01",
+      "tests": [
+        {
+          "actual": [
+            1,
+            2,
+            3
+          ],
+          "expected": [
+            1,
+            2,
+            3
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            "a",
+            "b"
+          ],
+          "expected": [
+            "a",
+            "b"
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            4
+          ],
+          "expected": [
+            4
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "running_totals_validation_00",
+      "extracted_source": "def running_totals_validation_00(values):\n    result = []\n    total = 0\n    for value in values:\n        total += value\n        result.append(total)\n    return result\n",
+      "family": "running_totals",
+      "functional_success": true,
+      "generated_actions": 49,
+      "generated_text": "def running_totals_validation_00(values):\n    result = []\n    total = 0\n    for value in values:\n        total += value\n        result.append(total)\n    return result\n",
+      "generated_text_sha256": "4cd25265f0f08fee6fa6fbaeb2551623a1fc89f9b4aa67ce37e08cf16d167633",
+      "id": "validation-running_totals-00",
+      "tests": [
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            1
+          ],
+          "expected": [
+            1
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            -5,
+            -15,
+            -20,
+            -22,
+            -13
+          ],
+          "expected": [
+            -5,
+            -15,
+            -20,
+            -22,
+            -13
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            -19,
+            -33,
+            -18,
+            -25,
+            -28,
+            -12,
+            -9,
+            -11,
+            -9
+          ],
+          "expected": [
+            -19,
+            -33,
+            -18,
+            -25,
+            -28,
+            -12,
+            -9,
+            -11,
+            -9
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "running_totals_validation_01",
+      "extracted_source": "def running_totals_validation_01(values):\n    result = []\n    total = 0\n    for value in values:\n        total += value\n        result.append(total)\n    return result\n",
+      "family": "running_totals",
+      "functional_success": true,
+      "generated_actions": 49,
+      "generated_text": "def running_totals_validation_01(values):\n    result = []\n    total = 0\n    for value in values:\n        total += value\n        result.append(total)\n    return result\n",
+      "generated_text_sha256": "361baa8b2576fe79f6843a3db330ea80471ae3680c37511d693486b118c6b971",
+      "id": "validation-running_totals-01",
+      "tests": [
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            -20
+          ],
+          "expected": [
+            -20
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            -19,
+            -35,
+            -47,
+            -62,
+            -49
+          ],
+          "expected": [
+            -19,
+            -35,
+            -47,
+            -62,
+            -49
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            -15,
+            -22,
+            -35,
+            -25,
+            -40,
+            -24,
+            -40,
+            -46,
+            -46
+          ],
+          "expected": [
+            -15,
+            -22,
+            -35,
+            -25,
+            -40,
+            -24,
+            -40,
+            -46,
+            -46
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "flatten_once_validation_00",
+      "extracted_source": "def flatten_once_validation_00(groups):\n    result = []\n    for group in groups:\n        result.extend(group)\n    return result\n",
+      "family": "flatten_once",
+      "functional_success": true,
+      "generated_actions": 36,
+      "generated_text": "def flatten_once_validation_00(groups):\n    result = []\n    for group in groups:\n        result.extend(group)\n    return result\n",
+      "generated_text_sha256": "4ed34a249f791d45ca06997b84bde7fa2fa6d4fd8f8d1e00da89ba355015a6e3",
+      "id": "validation-flatten_once-00",
+      "tests": [
+        {
+          "actual": [
+            1,
+            2,
+            3
+          ],
+          "expected": [
+            1,
+            2,
+            3
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            "a",
+            "b",
+            "c"
+          ],
+          "expected": [
+            "a",
+            "b",
+            "c"
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "expected": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "flatten_once_validation_01",
+      "extracted_source": "def flatten_once_validation_01(groups):\n    result = []\n    for group in groups:\n        result.extend(group)\n    return result\n",
+      "family": "flatten_once",
+      "functional_success": true,
+      "generated_actions": 36,
+      "generated_text": "def flatten_once_validation_01(groups):\n    result = []\n    for group in groups:\n        result.extend(group)\n    return result\n",
+      "generated_text_sha256": "df7a3e942f99ce7010a4e5a300243d93cb77b1ef05868d52b52447b4217d9e39",
+      "id": "validation-flatten_once-01",
+      "tests": [
+        {
+          "actual": [
+            1,
+            2,
+            3
+          ],
+          "expected": [
+            1,
+            2,
+            3
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            "a",
+            "b",
+            "c"
+          ],
+          "expected": [
+            "a",
+            "b",
+            "c"
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "expected": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "maximum_validation_00",
+      "extracted_source": "def maximum_validation_00(values):\n    return max(values)\n",
+      "family": "maximum",
+      "functional_success": true,
+      "generated_actions": 16,
+      "generated_text": "def maximum_validation_00(values):\n    return max(values)\n",
+      "generated_text_sha256": "d7de645134f1e0748ea7abc8db875a6028dec62abd65de2e4e01e6288082a1a4",
+      "id": "validation-maximum-00",
+      "tests": [
+        {
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "actual": -1,
+          "expected": -1,
+          "status": "PASS"
+        },
+        {
+          "actual": 7,
+          "expected": 7,
+          "status": "PASS"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "maximum_validation_01",
+      "extracted_source": "def maximum_validation_01(values):\n    return max(values)\n",
+      "family": "maximum",
+      "functional_success": true,
+      "generated_actions": 16,
+      "generated_text": "def maximum_validation_01(values):\n    return max(values)\n",
+      "generated_text_sha256": "7cb2b970ade35c94f9653fb9d9ab09ca6caaec2e50a3f80a8dc4e9361ef9b64f",
+      "id": "validation-maximum-01",
+      "tests": [
+        {
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "actual": -1,
+          "expected": -1,
+          "status": "PASS"
+        },
+        {
+          "actual": 7,
+          "expected": 7,
+          "status": "PASS"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "minimum_validation_00",
+      "extracted_source": "def minimum_validation_00(values):\n    return min(values)\n",
+      "family": "minimum",
+      "functional_success": true,
+      "generated_actions": 16,
+      "generated_text": "def minimum_validation_00(values):\n    return min(values)\n",
+      "generated_text_sha256": "13053125ee383dd501e66d6208d6417793af53bf00b7e1dbc35a02fff84f890d",
+      "id": "validation-minimum-00",
+      "tests": [
+        {
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "actual": -9,
+          "expected": -9,
+          "status": "PASS"
+        },
+        {
+          "actual": 2,
+          "expected": 2,
+          "status": "PASS"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "minimum_validation_01",
+      "extracted_source": "def minimum_validation_01(values):\n    return min(values)\n",
+      "family": "minimum",
+      "functional_success": true,
+      "generated_actions": 16,
+      "generated_text": "def minimum_validation_01(values):\n    return min(values)\n",
+      "generated_text_sha256": "0ba18a965db8bdb999405be33bd5ee04366f0fa0862a97636418a99450e37a35",
+      "id": "validation-minimum-01",
+      "tests": [
+        {
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "actual": -9,
+          "expected": -9,
+          "status": "PASS"
+        },
+        {
+          "actual": 2,
+          "expected": 2,
+          "status": "PASS"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "average_validation_00",
+      "extracted_source": "def average_validation_00(values):\n    return sum(values) / len(values)\n",
+      "family": "average",
+      "functional_success": true,
+      "generated_actions": 23,
+      "generated_text": "def average_validation_00(values):\n    return sum(values) / len(values)\n",
+      "generated_text_sha256": "de5267771e10816a3d2aa56f0c95443c15a362dcc8b4b17578a10e75cf6369a2",
+      "id": "validation-average-00",
+      "tests": [
+        {
+          "actual": 2.0,
+          "expected": 2.0,
+          "status": "PASS"
+        },
+        {
+          "actual": 2.0,
+          "expected": 2.0,
+          "status": "PASS"
+        },
+        {
+          "actual": 0.0,
+          "expected": 0.0,
+          "status": "PASS"
+        },
+        {
+          "actual": 2.0,
+          "expected": 2.0,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "average_validation_01",
+      "extracted_source": "def average_validation_01(values):\n    return sum(values) / len(values)\n",
+      "family": "average",
+      "functional_success": true,
+      "generated_actions": 23,
+      "generated_text": "def average_validation_01(values):\n    return sum(values) / len(values)\n",
+      "generated_text_sha256": "a2b21a7709f13b8fc003d5852319d6f905851248f23f27797e8770a0ed4d0d13",
+      "id": "validation-average-01",
+      "tests": [
+        {
+          "actual": 2.0,
+          "expected": 2.0,
+          "status": "PASS"
+        },
+        {
+          "actual": 2.0,
+          "expected": 2.0,
+          "status": "PASS"
+        },
+        {
+          "actual": 0.0,
+          "expected": 0.0,
+          "status": "PASS"
+        },
+        {
+          "actual": 2.0,
+          "expected": 2.0,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "word_count_validation_00",
+      "extracted_source": "def word_count_validation_00(text):\n    return len(text.split())\n",
+      "family": "word_count",
+      "functional_success": true,
+      "generated_actions": 20,
+      "generated_text": "def word_count_validation_00(text):\n    return len(text.split())\n",
+      "generated_text_sha256": "66553306c8a7c9186ed2700ece014cb2577c72dad4954ce630bc9c43b118cdc3",
+      "id": "validation-word_count-00",
+      "tests": [
+        {
+          "actual": 2,
+          "expected": 2,
+          "status": "PASS"
+        },
+        {
+          "actual": 2,
+          "expected": 2,
+          "status": "PASS"
+        },
+        {
+          "actual": 3,
+          "expected": 3,
+          "status": "PASS"
+        },
+        {
+          "actual": 3,
+          "expected": 3,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "word_count_validation_01",
+      "extracted_source": "def word_count_validation_01(text):\n    return len(text.split())\n",
+      "family": "word_count",
+      "functional_success": true,
+      "generated_actions": 20,
+      "generated_text": "def word_count_validation_01(text):\n    return len(text.split())\n",
+      "generated_text_sha256": "5b06c87e3f60fa7fd900253d999a47348afcf097b3dc80731434fea7511e6520",
+      "id": "validation-word_count-01",
+      "tests": [
+        {
+          "actual": 2,
+          "expected": 2,
+          "status": "PASS"
+        },
+        {
+          "actual": 2,
+          "expected": 2,
+          "status": "PASS"
+        },
+        {
+          "actual": 3,
+          "expected": 3,
+          "status": "PASS"
+        },
+        {
+          "actual": 3,
+          "expected": 3,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "slugify_validation_00",
+      "extracted_source": "def slugify_validation_00(text):\n    return \"-\".join(text.strip().lower().split())\n",
+      "family": "slugify",
+      "functional_success": true,
+      "generated_actions": 32,
+      "generated_text": "def slugify_validation_00(text):\n    return \"-\".join(text.strip().lower().split())\n",
+      "generated_text_sha256": "73fbcb73ce0004a7aa97bfbc1d0e8e628fab576098a5e77fa751e8ab38ab458e",
+      "id": "validation-slugify-00",
+      "tests": [
+        {
+          "actual": "layer-cake",
+          "expected": "layer-cake",
+          "status": "PASS"
+        },
+        {
+          "actual": "quiet-bridge",
+          "expected": "quiet-bridge",
+          "status": "PASS"
+        },
+        {
+          "actual": "red-blue-red",
+          "expected": "red-blue-red",
+          "status": "PASS"
+        },
+        {
+          "actual": "a-b-c",
+          "expected": "a-b-c",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "slugify_validation_01",
+      "extracted_source": "def slugify_validation_01(text):\n    return \"-\".join(text.strip().lower().split())\n",
+      "family": "slugify",
+      "functional_success": true,
+      "generated_actions": 32,
+      "generated_text": "def slugify_validation_01(text):\n    return \"-\".join(text.strip().lower().split())\n",
+      "generated_text_sha256": "d50cd9665d382d8b813408d2fda2d20d6da1e1b059c4926c2398613b2a1fdec1",
+      "id": "validation-slugify-01",
+      "tests": [
+        {
+          "actual": "layer-cake",
+          "expected": "layer-cake",
+          "status": "PASS"
+        },
+        {
+          "actual": "quiet-bridge",
+          "expected": "quiet-bridge",
+          "status": "PASS"
+        },
+        {
+          "actual": "red-blue-red",
+          "expected": "red-blue-red",
+          "status": "PASS"
+        },
+        {
+          "actual": "a-b-c",
+          "expected": "a-b-c",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "merge_mappings_validation_00",
+      "extracted_source": "def merge_mappings_validation_00(left, right):\n    return {**left, **right}\n",
+      "family": "merge_mappings",
+      "functional_success": true,
+      "generated_actions": 23,
+      "generated_text": "def merge_mappings_validation_00(left, right):\n    return {**left, **right}\n",
+      "generated_text_sha256": "b64fc38bcabddee79b9bf8185310aa0377c2ff1eed9c450efc39fa53eaf4b848",
+      "id": "validation-merge_mappings-00",
+      "tests": [
+        {
+          "actual": {},
+          "expected": {},
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "a": 1,
+            "b": 2
+          },
+          "expected": {
+            "a": 1,
+            "b": 2
+          },
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "a": 2
+          },
+          "expected": {
+            "a": 2
+          },
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "x": 0,
+            "y": 4
+          },
+          "expected": {
+            "x": 0,
+            "y": 4
+          },
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "merge_mappings_validation_01",
+      "extracted_source": "def merge_mappings_validation_01(left, right):\n    return {**left, **right}\n",
+      "family": "merge_mappings",
+      "functional_success": true,
+      "generated_actions": 23,
+      "generated_text": "def merge_mappings_validation_01(left, right):\n    return {**left, **right}\n",
+      "generated_text_sha256": "d869488b20397d3896c410d04e0e76b42291838c08922b66a8d9b12b54597a67",
+      "id": "validation-merge_mappings-01",
+      "tests": [
+        {
+          "actual": {},
+          "expected": {},
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "a": 1,
+            "b": 2
+          },
+          "expected": {
+            "a": 1,
+            "b": 2
+          },
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "a": 2
+          },
+          "expected": {
+            "a": 2
+          },
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "x": 0,
+            "y": 4
+          },
+          "expected": {
+            "x": 0,
+            "y": 4
+          },
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "invert_mapping_validation_00",
+      "extracted_source": "def invert_mapping_validation_00(mapping):\n    return {value: key for key, value in mapping.items()}\n",
+      "family": "invert_mapping",
+      "functional_success": true,
+      "generated_actions": 33,
+      "generated_text": "def invert_mapping_validation_00(mapping):\n    return {value: key for key, value in mapping.items()}\n",
+      "generated_text_sha256": "463d5cfa7063a15ddb71e56b1cc32b4c462639b3a8364405c0c6076a300487c4",
+      "id": "validation-invert_mapping-00",
+      "tests": [
+        {
+          "actual": {},
+          "expected": {},
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "1": "a"
+          },
+          "expected": {
+            "1": "a"
+          },
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "1": "a",
+            "2": "b"
+          },
+          "expected": {
+            "1": "a",
+            "2": "b"
+          },
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "blue": "y",
+            "red": "x"
+          },
+          "expected": {
+            "blue": "y",
+            "red": "x"
+          },
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "invert_mapping_validation_01",
+      "extracted_source": "def invert_mapping_validation_01(mapping):\n    return {value: key for key, value in mapping.items()}\n",
+      "family": "invert_mapping",
+      "functional_success": true,
+      "generated_actions": 33,
+      "generated_text": "def invert_mapping_validation_01(mapping):\n    return {value: key for key, value in mapping.items()}\n",
+      "generated_text_sha256": "b7fa3d64effa0e5637d5a183fc1e3d2ae77a2eb9c6dce0b43c470147078c831a",
+      "id": "validation-invert_mapping-01",
+      "tests": [
+        {
+          "actual": {},
+          "expected": {},
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "1": "a"
+          },
+          "expected": {
+            "1": "a"
+          },
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "1": "a",
+            "2": "b"
+          },
+          "expected": {
+            "1": "a",
+            "2": "b"
+          },
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "blue": "y",
+            "red": "x"
+          },
+          "expected": {
+            "blue": "y",
+            "red": "x"
+          },
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "character_frequencies_validation_00",
+      "extracted_source": "def character_frequencies_validation_00(text):\n    counts = {}\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n",
+      "family": "character_frequencies",
+      "functional_success": true,
+      "generated_actions": 50,
+      "generated_text": "def character_frequencies_validation_00(text):\n    counts = {}\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n",
+      "generated_text_sha256": "f126e7c8d55331820499ab0e19589be739226af844478ccd2cf28fc11d520bb3",
+      "id": "validation-character_frequencies-00",
+      "tests": [
+        {
+          "actual": {},
+          "expected": {},
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "a": 2,
+            "b": 1
+          },
+          "expected": {
+            "a": 2,
+            "b": 1
+          },
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "a": 1,
+            "c": 1,
+            "e": 1,
+            "k": 1
+          },
+          "expected": {
+            "a": 1,
+            "c": 1,
+            "e": 1,
+            "k": 1
+          },
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            " ": 1,
+            "a": 2
+          },
+          "expected": {
+            " ": 1,
+            "a": 2
+          },
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "character_frequencies_validation_01",
+      "extracted_source": "def character_frequencies_validation_01(text):\n    counts = {}\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n",
+      "family": "character_frequencies",
+      "functional_success": true,
+      "generated_actions": 50,
+      "generated_text": "def character_frequencies_validation_01(text):\n    counts = {}\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n",
+      "generated_text_sha256": "2dd262aa2286ccdf0ad8ad7c22711d287bbb182aa13eebf4a82beaf23e48266b",
+      "id": "validation-character_frequencies-01",
+      "tests": [
+        {
+          "actual": {},
+          "expected": {},
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "a": 2,
+            "b": 1
+          },
+          "expected": {
+            "a": 2,
+            "b": 1
+          },
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            "a": 1,
+            "c": 1,
+            "e": 1,
+            "k": 1
+          },
+          "expected": {
+            "a": 1,
+            "c": 1,
+            "e": 1,
+            "k": 1
+          },
+          "status": "PASS"
+        },
+        {
+          "actual": {
+            " ": 1,
+            "a": 2
+          },
+          "expected": {
+            " ": 1,
+            "a": 2
+          },
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "safe_divide_validation_00",
+      "extracted_source": "def safe_divide_validation_00(numerator, denominator):\n    if denominator == 0:\n        return None\n    return numerator / denominator\n",
+      "family": "safe_divide",
+      "functional_success": true,
+      "generated_actions": 33,
+      "generated_text": "def safe_divide_validation_00(numerator, denominator):\n    if denominator == 0:\n        return None\n    return numerator / denominator\n",
+      "generated_text_sha256": "7d26bc7665166496c17ac82a743aee64d21bb58a651aa7c609a233594dfd4164",
+      "id": "validation-safe_divide-00",
+      "tests": [
+        {
+          "actual": 2.0,
+          "expected": 2.0,
+          "status": "PASS"
+        },
+        {
+          "actual": null,
+          "expected": null,
+          "status": "PASS"
+        },
+        {
+          "actual": -3.0,
+          "expected": -3.0,
+          "status": "PASS"
+        },
+        {
+          "actual": 0.0,
+          "expected": 0.0,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "safe_divide_validation_01",
+      "extracted_source": "def safe_divide_validation_01(numerator, denominator):\n    if denominator == 0:\n        return None\n    return numerator / denominator\n",
+      "family": "safe_divide",
+      "functional_success": true,
+      "generated_actions": 33,
+      "generated_text": "def safe_divide_validation_01(numerator, denominator):\n    if denominator == 0:\n        return None\n    return numerator / denominator\n",
+      "generated_text_sha256": "fa07910d280cac1184730c7d336b1ea8f6df82c59adbf9d62e27467b8ece8a26",
+      "id": "validation-safe_divide-01",
+      "tests": [
+        {
+          "actual": 2.0,
+          "expected": 2.0,
+          "status": "PASS"
+        },
+        {
+          "actual": null,
+          "expected": null,
+          "status": "PASS"
+        },
+        {
+          "actual": -3.0,
+          "expected": -3.0,
+          "status": "PASS"
+        },
+        {
+          "actual": 0.0,
+          "expected": 0.0,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "chunks_validation_00",
+      "extracted_source": "def chunks_validation_00(values, size):\n    return [values[index:index + size] for index in range(0, len(values), size)]\n",
+      "family": "chunks",
+      "functional_success": true,
+      "generated_actions": 47,
+      "generated_text": "def chunks_validation_00(values, size):\n    return [values[index:index + size] for index in range(0, len(values), size)]\n",
+      "generated_text_sha256": "8f6cdb0c5c9bf841a3cc868b809ab945b9cc8532cffe2e2458aab6796d6a2506",
+      "id": "validation-chunks-00",
+      "tests": [
+        {
+          "actual": [
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              5
+            ]
+          ],
+          "expected": [
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              5
+            ]
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            [
+              1,
+              2
+            ]
+          ],
+          "expected": [
+            [
+              1,
+              2
+            ]
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            [
+              "a"
+            ],
+            [
+              "b"
+            ],
+            [
+              "c"
+            ]
+          ],
+          "expected": [
+            [
+              "a"
+            ],
+            [
+              "b"
+            ],
+            [
+              "c"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "chunks_validation_01",
+      "extracted_source": "def chunks_validation_01(values, size):\n    return [values[index:index + size] for index in range(0, len(values), size)]\n",
+      "family": "chunks",
+      "functional_success": true,
+      "generated_actions": 47,
+      "generated_text": "def chunks_validation_01(values, size):\n    return [values[index:index + size] for index in range(0, len(values), size)]\n",
+      "generated_text_sha256": "aa1ab6a692bc417596fd2bb99e423d967d22256f105c636e402b05157d587253",
+      "id": "validation-chunks-01",
+      "tests": [
+        {
+          "actual": [
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              5
+            ]
+          ],
+          "expected": [
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              5
+            ]
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            [
+              1,
+              2
+            ]
+          ],
+          "expected": [
+            [
+              1,
+              2
+            ]
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            [
+              "a"
+            ],
+            [
+              "b"
+            ],
+            [
+              "c"
+            ]
+          ],
+          "expected": [
+            [
+              "a"
+            ],
+            [
+              "b"
+            ],
+            [
+              "c"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "rotate_left_validation_00",
+      "extracted_source": "def rotate_left_validation_00(values, places):\n    offset = places % len(values)\n    return values[offset:] + values[:offset]\n",
+      "family": "rotate_left",
+      "functional_success": true,
+      "generated_actions": 41,
+      "generated_text": "def rotate_left_validation_00(values, places):\n    offset = places % len(values)\n    return values[offset:] + values[:offset]\n",
+      "generated_text_sha256": "cb2c8c56a7a1efbd8f573740621c45c0207cc15cd9175189e8f3a2c8be049cb2",
+      "id": "validation-rotate_left-00",
+      "tests": [
+        {
+          "actual": [
+            2,
+            3,
+            1
+          ],
+          "expected": [
+            2,
+            3,
+            1
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            2,
+            3,
+            1
+          ],
+          "expected": [
+            2,
+            3,
+            1
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            "a"
+          ],
+          "expected": [
+            "a"
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "expected": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "rotate_left_validation_01",
+      "extracted_source": "def rotate_left_validation_01(values, places):\n    offset = places % len(values)\n    return values[offset:] + values[:offset]\n",
+      "family": "rotate_left",
+      "functional_success": true,
+      "generated_actions": 41,
+      "generated_text": "def rotate_left_validation_01(values, places):\n    offset = places % len(values)\n    return values[offset:] + values[:offset]\n",
+      "generated_text_sha256": "a042e18651329b5c4af458d8e310c863ffdaf341ed018fb8474aae3da0f951c6",
+      "id": "validation-rotate_left-01",
+      "tests": [
+        {
+          "actual": [
+            2,
+            3,
+            1
+          ],
+          "expected": [
+            2,
+            3,
+            1
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            2,
+            3,
+            1
+          ],
+          "expected": [
+            2,
+            3,
+            1
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            "a"
+          ],
+          "expected": [
+            "a"
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "expected": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "find_index_validation_00",
+      "extracted_source": "def find_index_validation_00(values, target):\n    for index, value in enumerate(values):\n        if value == target:\n            return index\n    return -1\n",
+      "family": "find_index",
+      "functional_success": true,
+      "generated_actions": 45,
+      "generated_text": "def find_index_validation_00(values, target):\n    for index, value in enumerate(values):\n        if value == target:\n            return index\n    return -1\n",
+      "generated_text_sha256": "6f1d3678b3db5e9c4255be536f302fdd9298bac4e165b98836daf62206f87a91",
+      "id": "validation-find_index-00",
+      "tests": [
+        {
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "actual": -1,
+          "expected": -1,
+          "status": "PASS"
+        },
+        {
+          "actual": -1,
+          "expected": -1,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "find_index_validation_01",
+      "extracted_source": "def find_index_validation_01(values, target):\n    for index, value in enumerate(values):\n        if value == target:\n            return index\n    return -1\n",
+      "family": "find_index",
+      "functional_success": true,
+      "generated_actions": 45,
+      "generated_text": "def find_index_validation_01(values, target):\n    for index, value in enumerate(values):\n        if value == target:\n            return index\n    return -1\n",
+      "generated_text_sha256": "8faaeeb049f803188ec05e5f8a80cb78bc1d5be57b3cce363a4ad04aea88c0b7",
+      "id": "validation-find_index-01",
+      "tests": [
+        {
+          "actual": 1,
+          "expected": 1,
+          "status": "PASS"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "status": "PASS"
+        },
+        {
+          "actual": -1,
+          "expected": -1,
+          "status": "PASS"
+        },
+        {
+          "actual": -1,
+          "expected": -1,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "all_positive_validation_00",
+      "extracted_source": "def all_positive_validation_00(values):\n    return all(value > 0 for value in values)\n",
+      "family": "all_positive",
+      "functional_success": true,
+      "generated_actions": 28,
+      "generated_text": "def all_positive_validation_00(values):\n    return all(value > 0 for value in values)\n",
+      "generated_text_sha256": "d40b2beb3f4f02a7f99afa51f60778b01f3a1841f80d4b778642d9ad3de19515",
+      "id": "validation-all_positive-00",
+      "tests": [
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "all_positive_validation_01",
+      "extracted_source": "def all_positive_validation_01(values):\n    return all(value > 0 for value in values)\n",
+      "family": "all_positive",
+      "functional_success": true,
+      "generated_actions": 28,
+      "generated_text": "def all_positive_validation_01(values):\n    return all(value > 0 for value in values)\n",
+      "generated_text_sha256": "8b40bcc942fb2a16b1236efbf87771a56ec019a63761a8425715b92aa14996c5",
+      "id": "validation-all_positive-01",
+      "tests": [
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "balanced_parentheses_validation_00",
+      "extracted_source": "def balanced_parentheses_validation_00(text):\n    depth = 0\n    for char in text:\n        if char == \"(\":\n            depth += 1\n        elif char == \")\":\n            depth -= 1\n            if depth < 0:\n                return False\n    return depth == 0\n",
+      "family": "balanced_parentheses",
+      "functional_success": true,
+      "generated_actions": 81,
+      "generated_text": "def balanced_parentheses_validation_00(text):\n    depth = 0\n    for char in text:\n        if char == \"(\":\n            depth += 1\n        elif char == \")\":\n            depth -= 1\n            if depth < 0:\n                return False\n    return depth == 0\n",
+      "generated_text_sha256": "ab0becbd2bfa551b30a2bc93141e7ab46023298957c0bfc6756f8de0e08566ed",
+      "id": "validation-balanced_parentheses-00",
+      "tests": [
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "balanced_parentheses_validation_01",
+      "extracted_source": "def balanced_parentheses_validation_01(text):\n    depth = 0\n    for char in text:\n        if char == \"(\":\n            depth += 1\n        elif char == \")\":\n            depth -= 1\n            if depth < 0:\n                return False\n    return depth == 0\n",
+      "family": "balanced_parentheses",
+      "functional_success": true,
+      "generated_actions": 81,
+      "generated_text": "def balanced_parentheses_validation_01(text):\n    depth = 0\n    for char in text:\n        if char == \"(\":\n            depth += 1\n        elif char == \")\":\n            depth -= 1\n            if depth < 0:\n                return False\n    return depth == 0\n",
+      "generated_text_sha256": "f0c10135f58ddb50972abb330a61b7dbb277dcc5d4789f63dd1f1ea80bb4d247",
+      "id": "validation-balanced_parentheses-01",
+      "tests": [
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "title_words_validation_00",
+      "extracted_source": "def title_words_validation_00(text):\n    return text.title()\n",
+      "family": "title_words",
+      "functional_success": true,
+      "generated_actions": 17,
+      "generated_text": "def title_words_validation_00(text):\n    return text.title()\n",
+      "generated_text_sha256": "6c2d7219296b03d1231affcae5785e76070af1c9b030d7367cd9c8a6d18fbd84",
+      "id": "validation-title_words-00",
+      "tests": [
+        {
+          "actual": "Layer Cake",
+          "expected": "Layer Cake",
+          "status": "PASS"
+        },
+        {
+          "actual": "  Quiet Bridge  ",
+          "expected": "  Quiet Bridge  ",
+          "status": "PASS"
+        },
+        {
+          "actual": "Red Blue Red",
+          "expected": "Red Blue Red",
+          "status": "PASS"
+        },
+        {
+          "actual": "A  B   C",
+          "expected": "A  B   C",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "title_words_validation_01",
+      "extracted_source": "def title_words_validation_01(text):\n    return text.title()\n",
+      "family": "title_words",
+      "functional_success": true,
+      "generated_actions": 17,
+      "generated_text": "def title_words_validation_01(text):\n    return text.title()\n",
+      "generated_text_sha256": "e91e40f8ff08fbcf87c0a9d2d8f69f5639706f32f971bf19be8adc70e82304e6",
+      "id": "validation-title_words-01",
+      "tests": [
+        {
+          "actual": "Layer Cake",
+          "expected": "Layer Cake",
+          "status": "PASS"
+        },
+        {
+          "actual": "  Quiet Bridge  ",
+          "expected": "  Quiet Bridge  ",
+          "status": "PASS"
+        },
+        {
+          "actual": "Red Blue Red",
+          "expected": "Red Blue Red",
+          "status": "PASS"
+        },
+        {
+          "actual": "A  B   C",
+          "expected": "A  B   C",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "remove_none_validation_00",
+      "extracted_source": "def remove_none_validation_00(values):\n    return [value for value in values if value is not None]\n",
+      "family": "remove_none",
+      "functional_success": true,
+      "generated_actions": 33,
+      "generated_text": "def remove_none_validation_00(values):\n    return [value for value in values if value is not None]\n",
+      "generated_text_sha256": "48ddab82b9218a943b887edc7d5502d84af8d78f2f1fafcafbade8cc18629233",
+      "id": "validation-remove_none-00",
+      "tests": [
+        {
+          "actual": [
+            1,
+            2
+          ],
+          "expected": [
+            1,
+            2
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            "a",
+            "b"
+          ],
+          "expected": [
+            "a",
+            "b"
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "remove_none_validation_01",
+      "extracted_source": "def remove_none_validation_01(values):\n    return [value for value in values if value is not None]\n",
+      "family": "remove_none",
+      "functional_success": true,
+      "generated_actions": 33,
+      "generated_text": "def remove_none_validation_01(values):\n    return [value for value in values if value is not None]\n",
+      "generated_text_sha256": "f51f8fb31da39ade3c85769f3bbf2a71b9d10aff23ebef2cb9fa7d67bddb92c3",
+      "id": "validation-remove_none-01",
+      "tests": [
+        {
+          "actual": [
+            1,
+            2
+          ],
+          "expected": [
+            1,
+            2
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            "a",
+            "b"
+          ],
+          "expected": [
+            "a",
+            "b"
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "sort_values_validation_00",
+      "extracted_source": "def sort_values_validation_00(values):\n    return sorted(values)\n",
+      "family": "sort_values",
+      "functional_success": true,
+      "generated_actions": 16,
+      "generated_text": "def sort_values_validation_00(values):\n    return sorted(values)\n",
+      "generated_text_sha256": "45fb6ae869683745923045bf98593661fb2d900ddb0c4a6e5f7e0dee1541eaf6",
+      "id": "validation-sort_values-00",
+      "tests": [
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            10
+          ],
+          "expected": [
+            10
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            -18,
+            -15,
+            -1,
+            4,
+            16
+          ],
+          "expected": [
+            -18,
+            -15,
+            -1,
+            4,
+            16
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            -17,
+            -15,
+            -11,
+            -7,
+            3,
+            5,
+            16,
+            18,
+            19
+          ],
+          "expected": [
+            -17,
+            -15,
+            -11,
+            -7,
+            3,
+            5,
+            16,
+            18,
+            19
+          ],
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "expected_function": "sort_values_validation_01",
+      "extracted_source": "def sort_values_validation_01(values):\n    return sorted(values)\n",
+      "family": "sort_values",
+      "functional_success": true,
+      "generated_actions": 16,
+      "generated_text": "def sort_values_validation_01(values):\n    return sorted(values)\n",
+      "generated_text_sha256": "9cfa004feb1b7a8a4ca5ce1396eef0a3a1ccb0397571067d7e618a64f9a393df",
+      "id": "validation-sort_values-01",
+      "tests": [
+        {
+          "actual": [],
+          "expected": [],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            -9
+          ],
+          "expected": [
+            -9
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            -18,
+            -6,
+            -3,
+            1,
+            12
+          ],
+          "expected": [
+            -18,
+            -6,
+            -3,
+            1,
+            12
+          ],
+          "status": "PASS"
+        },
+        {
+          "actual": [
+            -19,
+            -15,
+            -15,
+            -2,
+            0,
+            5,
+            6,
+            10,
+            13
+          ],
+          "expected": [
+            -19,
+            -15,
+            -15,
+            -2,
+            0,
+            5,
+            6,
+            10,
+            13
+          ],
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "split": "validation",
+  "status": "PASS",
+  "teacher_at_inference": false,
+  "test_split_accessed": false,
+  "tokenizer_sha256": "cac61492515c2dd94e9d2ce0e73ff9bd1b13415f3b4c7d0a920ecc962d5fda9c"
+}
