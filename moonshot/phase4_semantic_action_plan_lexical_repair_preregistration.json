@@ -1,0 +1,88 @@
+{
+  "format": "layercake-phase4-semantic-action-plan-lexical-repair-preregistration/1",
+  "date": "2026-07-27",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION_AND_TRAINING",
+  "parent": {
+    "protocol": "moonshot/phase4_semantic_action_plan_preregistration.json",
+    "protocol_sha256": "76dbad597752712d6714f64a7944ebe604e29d4c02b974538459d9fe95788adf",
+    "artifact": "artifacts/moonshot/phase4/candidates/python-semantic-action-plan-seed10340.pt",
+    "artifact_file_sha256": "9363688165a22709be0b87b54787c3e0fec2ea904499464c74ac18571a5b28b8",
+    "payload_hash": "90edd3b74c7b3c8fbbd82118d98ebc298aebc83961c276d92b8df5ead91255aa",
+    "branch_decision": "moonshot/phase4_semantic_action_plan_branch_decision.json"
+  },
+  "measured_failure": {
+    "strict_python_validation_successes": 0,
+    "strict_python_validation_prompts": 64,
+    "autonomous_pointer_action_accuracy": 0.9603174603174603,
+    "teacher_forced_pointer_realization_accuracy": 0.49206349206349204,
+    "raw_selected_semantic_state_token_recovery_accuracy": 0.001984126984126984,
+    "diagnostic": "results/moonshot/phase4/python-semantic-action-plan-seed10340-diagnostic-v2.json",
+    "diagnostic_file_sha256": "d2faa3149b2ed0b8f303e3c61b77e282557397f55b1be46016b0cc9090ba488e",
+    "limiter": "held-out variable identifier span termination and arbitrary selected semantic-state realization through the existing pointer/copy path"
+  },
+  "single_bounded_change": {
+    "name": "semantic action-plan lexical conformance repair",
+    "trainable_tensors": [
+      "pointer_input.weight",
+      "pointer_key.weight",
+      "pointer_query.weight",
+      "pointer_gate.weight",
+      "pointer_gate.bias",
+      "copy_semantic_value.weight"
+    ],
+    "all_other_cake_tensors_frozen": true,
+    "all_core_and_output_head_tensors_frozen": true,
+    "architecture_or_runtime_graph_changed": false,
+    "new_runtime_parameters": 0,
+    "runtime_parameter_count_changed": false,
+    "cpu_inference_work_changed": false,
+    "source_teacher_at_inference": false
+  },
+  "training": {
+    "seed": 10440,
+    "primary_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "cpu_fallback_required": true,
+    "precision": "fp32",
+    "cache": "artifacts/moonshot/phase4/cache/seed9824-lexical-conformance-v1-train.safetensors",
+    "cache_sha256": "ee0488a5f407c1fbd1cb8383c8de5d27ee955042e05d9b1713b2b584051bcf79",
+    "dataset": "data/moonshot/phase4/lexical_conformance_v1.jsonl",
+    "dataset_sha256": "d6a7c054c1104c38007c97263031576c10c2a4dc7f78cf494a4f848a362e38bb",
+    "train_rows": 4096,
+    "heldout_validation_rows": 256,
+    "response_training_units": 69964,
+    "pointer_training_units": 24908,
+    "all_nonpointer_response_token_ids_in_locked_fixed_action_vocabulary": true,
+    "maximum_optimizer_steps": 1200,
+    "batch_size": 64,
+    "learning_rate": 0.0001,
+    "action_cross_entropy_weight": 1.0,
+    "pointer_realization_cross_entropy_weight": 1.0,
+    "weight_decay": 0.01
+  },
+  "screens": {
+    "lexical_validation_first": true,
+    "lexical_exact_response_successes_minimum": 231,
+    "lexical_distinct_prompts": 256,
+    "python_validation_only_if_lexical_screen_passes": true,
+    "python_strict_functional_successes_minimum": 52,
+    "python_distinct_prompts": 64,
+    "test_split_accessed": false
+  },
+  "immutability_checks": {
+    "canonical_semantic_abi_sha256": "d024de52144a2d797d0501acb7deb55575ffca7e33f72900beff599cf0a97761",
+    "phase2_core_sha256": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+    "frozen_cake_tensor_subset_hash_before_after_must_match": true,
+    "artifact_saved_to_new_path": true,
+    "parent_artifact_overwrite_forbidden": true,
+    "identical_artifact_must_load_and_execute_on_cpu": true
+  },
+  "decision_rule": {
+    "maximum_repair_attempts": 1,
+    "replication_seeds_authorized_only_after_python_screen_passes": true,
+    "nearby_pointer_gate_copy_value_loss_weight_width_or_decoder_sweeps_authorized": false,
+    "on_failure": "Preserve the repaired artifact and evidence, reject the semantic action-plan branch, and return to an evidence-supported materially distinct semantic-ABI architecture.",
+    "on_pass": "Run the preregistered replication and adversarial transfer, package, semantic-retention, and matched CPU-inference gates before Phase 4 promotion.",
+    "phase4_before_all_gates_pass": "OPEN",
+    "phase5_before_phase4_seal": "LOCKED"
+  }
+}
