@@ -1,0 +1,85 @@
+{
+  "format": "layercake-phase4-direct-decoder-release-preregistration/1",
+  "date": "2026-07-27",
+  "status": "PREREGISTERED_BEFORE_DIRECT_ABI_REPACKAGING_OR_RECERTIFICATION",
+  "governance": {
+    "amendment": "moonshot/phase4_direct_decoder_interface_amendment.json",
+    "amendment_sha256": "3d77053b71565153618d9dc10da5eeda1ba3f6508bfba3ae480263f227f37adf",
+    "phase4_contract": "moonshot/phase4_cpu_cake_training_lock.json",
+    "phase4_contract_sha256": "6482da452672312614aa6298ac0ddebfc9351962185844a5b115b84a2403ea60",
+    "source_commit": "a0487979b99e13cada7ed8d3e0935023873e7f70"
+  },
+  "canonical_interface": {
+    "path": "moonshot/phase4_canonical_direct_decoder_abi_v1.json",
+    "sha256": "de765899700aefe22bfe6c9d00ed5b0c1f87a7ef864cf7211aa8aa4491a0742a",
+    "version": "lc-direct-neural-decoder/1",
+    "mode": "direct_selected_one_cake_no_router",
+    "semantic_residual_fusion_claimed": false,
+    "phase5_or_phase6_credit_claimed": false
+  },
+  "immutable_selected_payload": {
+    "artifact": "artifacts/moonshot/phase4/candidates/python-portable-token-plan-seed10141.pt",
+    "artifact_file_sha256": "211db7a97194234f4fbf2a04c99f99eea4698cc73bd486f901e7d12fb8af439e",
+    "artifact_payload_hash": "a70fcb62a2c24305ca0dad3929124ca6881363d26366c9374b96e7951b5cd49f",
+    "selection_rule": "first preregistered replication in execution order to reach 64/64 strict functional validation",
+    "training_seed": 10141,
+    "training_device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "new_training_or_tuning_allowed": false
+  },
+  "existing_blind_quality_evidence": {
+    "path": "results/moonshot/phase4/python-portable-token-plan-seed10141-test.json",
+    "file_sha256": "4f881b12690bb44ac6ae80189e1a3371b6813e711f13a45d3109fb2e583b4546",
+    "evidence_sha256": "b8d0eb00e89e008e33309226d7033037e0600868f94588c66f86a42a096f4d3b",
+    "strict_functional_successes": 128,
+    "distinct_prompts": 128,
+    "disclosure": "The blind test was accessed by the completed direct-decoder branch before this interface amendment. The tensor payload is frozen and may not be trained, tuned, or selected again. Repackaging changes only signed interface metadata."
+  },
+  "package_protocol": {
+    "output": "artifacts/moonshot/phase4/release/python-token-plan-seed10141-direct-v1.0.0.cake",
+    "cake_type": "portable_decoder",
+    "non_executable_safetensors": true,
+    "signed_ed25519": true,
+    "private_key_committed": false,
+    "deterministic_rebuild_identical": true,
+    "tampered_package_rejected": true,
+    "tensor_payload_identical_to_selected_artifact": true
+  },
+  "receiver_protocol": {
+    "receiver_seeds": [
+      9824,
+      9825,
+      9826
+    ],
+    "receiver_devices_in_order": [
+      "cpu",
+      "cpu",
+      "cuda:0"
+    ],
+    "source_success_retention_rate": 1.0,
+    "receiver_training_examples": 0,
+    "receiver_calibration_runs": 0,
+    "core_hash_unchanged": true,
+    "archive_and_tensor_identity": true,
+    "remove_reinstall_output_identity": true,
+    "incremental_action_equivalence_on_cpu_and_cuda": true
+  },
+  "runtime_protocol": {
+    "same_new_direct_abi_package_required": true,
+    "distinct_prompts": 100,
+    "observations_per_system": 120,
+    "repeated_prompt_observations": 20,
+    "primary_metric": "generated UTF-8 bytes per total second",
+    "optimized_cpu_transformer_ratio_min": 2.0,
+    "paired_bootstrap_lower_bound_min": 2.0,
+    "phase2_core_throughput_retention_min": 0.9,
+    "time_to_first_output_no_worse_than_transformer": true,
+    "inactive_cake_forward_calls": 0,
+    "active_tensor_memory_lower_than_transformer": true
+  },
+  "decision_rule": {
+    "phase4_pass": "Every package, security, three-receiver, semantic-retention, core-immutability, CPU/CUDA, incremental-state, matched-quality CPU runtime, TTFT, memory, and direct-ABI conformance gate passes for the exact selected payload.",
+    "on_failure": "Preserve the new evidence and keep Phase 4 OPEN.",
+    "on_pass": "Generate an adversarially derived Phase 4 certificate, candidate, evidence manifest, and seal through the campaign lifecycle.",
+    "phase5_before_phase4_seal": "LOCKED"
+  }
+}
