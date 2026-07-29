@@ -259,3 +259,38 @@ or decode calls.
 
 The immutable Phase 6 preregistration is
 `moonshot/phase6_orchestration_preregistration.json`.
+
+## Phase 7 integrated-performance rule
+
+Phase 7 benchmarks the exact sealed Phase 6 product lineage. The English core,
+three signed neural cakes, direct-decoder ABI, router profiles, and orchestration
+semantics are immutable. A CPU result from one payload may not be paired with a
+GPU result from another payload, and speed may not be promoted without the
+device-matched functional-quality result.
+
+The locked systems are routed LayerCake on CPU FP32, the same routed LayerCake
+packages on CUDA FP32, and Qwen 2.5 0.5B Q4_K_M through Ollama's deployment
+runtime on CPU and with physically verified GPU residency. Cross-model primary
+throughput is UTF-8 output bytes per complete request wall second. Transformer
+tokens are recorded authoritatively but are not used to equate tokenizer units
+with LayerCake actions.
+
+The promoted matrix uses 100 distinct frozen functional prompts plus 20
+repeated observations for every headline system. CPU observations may be
+imported only from the exact sealed Phase 6 raw artifact and must be fully
+revalidated. GPU observations are new, prompt/trial paired, and require at
+least three host/order seeds. Cold timing uses one real streaming request after
+an explicit unload control, never a model-load probe.
+
+General English noninferiority comes only from typed revalidation of the sealed
+Phase 2 core and its exact hashes. Mixed-domain superiority requires actual
+functional execution against the same Qwen comparator on CPU and GPU. All 384
+promoted held-out domain cases must execute successfully on GPU and exactly
+match the sealed CPU outputs, with zero inactive neural forward calls.
+
+Performance claims are limited to the declared laptop CPU, RTX 3080 Laptop
+GPU, exact runtimes, precisions, and model digests. Phase 7 does not claim
+mobile hardware, GPU training dominance, or latent neural cake fusion.
+
+The immutable preregistration is
+`moonshot/phase7_integrated_performance_preregistration.json`.

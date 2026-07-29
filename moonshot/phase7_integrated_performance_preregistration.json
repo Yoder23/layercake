@@ -1,0 +1,199 @@
+{
+  "format": "layercake-phase7-integrated-performance-preregistration/1",
+  "status": "LOCKED",
+  "phase": 7,
+  "objective": "Prove that the exact sealed LayerCake core, capability packages, router, and orchestration lineage dominates the locked optimized transformer in CPU, GPU, and LayerCake-CPU-versus-transformer-GPU execution while retaining general and promoted-domain quality.",
+  "parent_lineage": {
+    "phase2_completion_tag": "layercake-moonshot-phase2-r3",
+    "phase6_completion_tag": "layercake-moonshot-phase6",
+    "phase6_tag_commit": "632a620cc9bdb09e9831c036665a73c419544cca",
+    "phase6_release_commit": "57b10123edce76cc7fdbe1a7af6184db56a50833",
+    "router_sha256": "5397a0f28d145c15ee2aeaf13c021aaabb969b4226d16a2f66f776d2b48c3ec2",
+    "abi_sha256": "de765899700aefe22bfe6c9d00ed5b0c1f87a7ef864cf7211aa8aa4491a0742a",
+    "packages": {
+      "python": "0585c79bfbea16b1c4165bf0030ba6985b8a8cdeab529cd7afe3f9c76c564ef7",
+      "sql": "24efdb68885581318bee3a0b7c3cac0b0fe0b75eefa90070c601384a8bf5e105",
+      "regex": "c336a552415b2d6161eb6696338086f89c3c3b6e25949e6cf0a94373e9690f15"
+    },
+    "phase6_cpu_raw_evidence": {
+      "path": "results/moonshot/phase6/raw_runs/mixed_cpu_benchmark.json",
+      "sha256": "5aac50d5259c4e8d43fddf57d9e8771ce890682b84c992d636c2f73b9efbb303"
+    }
+  },
+  "immutable_boundaries": {
+    "english_core": "unchanged from sealed Phase 2",
+    "capability_packages": "byte-identical to sealed Phases 4 and 5",
+    "router_profiles": "byte-identical to sealed Phase 6",
+    "orchestration_semantics": "unchanged from sealed Phase 6",
+    "receiver_training_examples": 0,
+    "receiver_calibration_runs": 0,
+    "different_quality_and_speed_payloads_forbidden": true
+  },
+  "declared_hardware": {
+    "host_class": "commodity laptop",
+    "cpu_physical_cores": 14,
+    "cpu_logical_processors": 20,
+    "system_ram_bytes": 68473409536,
+    "gpu": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "gpu_memory_bytes": 17179869184,
+    "torch": "2.7.1+cu118",
+    "cuda": "11.8",
+    "physical_hardware_requery_required_at_run": true
+  },
+  "systems": {
+    "layercake_cpu": {
+      "runtime": "sealed Phase 6 routed DirectCakeOrchestrator",
+      "precision": "FP32",
+      "evidence_policy": "import exact sealed Phase 6 raw observations and reverify every hash and aggregate"
+    },
+    "transformer_cpu": {
+      "runtime": "Ollama deployment-grade llama.cpp path",
+      "model": "qwen2.5:0.5b",
+      "digest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+      "quantization": "Q4_K_M",
+      "num_gpu": 0,
+      "threads": 14,
+      "evidence_policy": "import paired sealed Phase 6 raw observations"
+    },
+    "layercake_gpu": {
+      "runtime": "same routed direct neural-decoder package lineage on PyTorch CUDA",
+      "precision": "FP32 because the sealed manifests certify FP32",
+      "device": "cuda:0"
+    },
+    "transformer_gpu": {
+      "runtime": "Ollama deployment-grade llama.cpp GPU-offload path",
+      "model": "qwen2.5:0.5b",
+      "digest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+      "num_gpu": 99,
+      "gpu_residency_requirement": "Ollama /api/ps reports size_vram greater than zero and the locked 64-character digest"
+    }
+  },
+  "benchmark": {
+    "primary_cross_model_throughput": "UTF-8 output bytes per complete wall second",
+    "secondary_throughput": [
+      "UTF-8 characters per complete wall second",
+      "authoritative transformer tokens per complete wall second",
+      "correct task completions per wall second"
+    ],
+    "latency": "complete request wall time including routing and prompt processing",
+    "ttft": "wall time from request start through first non-empty output",
+    "workload": {
+      "distinct_prompts": 100,
+      "repeated_prompt_observations": 20,
+      "observations_per_system": 120,
+      "domains": {
+        "python": 34,
+        "sql": 33,
+        "regex": 33
+      },
+      "source": "the exact frozen functional rows and prompt identities used by the sealed Phase 6 CPU benchmark",
+      "paired_prompt_and_trial_keys": true,
+      "execution_order": "alternating within each device comparison with deterministic order seeds"
+    },
+    "seeds": [
+      10701,
+      10702,
+      10703
+    ],
+    "minimum_observations_per_seed_and_system": 40,
+    "headline_repeated_observations": 20,
+    "bootstrap_samples": 5000,
+    "confidence_interval": 0.95,
+    "quantiles": {
+      "p50": "median",
+      "p95": "nearest rank",
+      "p99": "nearest rank",
+      "minimum_observations": 100
+    },
+    "cold_start": {
+      "one_real_streaming_request_per_device": true,
+      "transformer_unload_control_precedes_request": true,
+      "no_load_probe_request": true,
+      "measure": [
+        "model load",
+        "time to first output",
+        "total latency"
+      ]
+    },
+    "memory": {
+      "layercake_gpu_peak_allocated_and_reserved": true,
+      "layercake_selected_tensor_bytes": true,
+      "transformer_gpu_size_vram": true,
+      "process_rss": true
+    },
+    "energy": {
+      "required_when_calibrated_measurement_exists": true,
+      "otherwise": "record NOT_MEASURED_NO_CALIBRATED_ENERGY_METER"
+    }
+  },
+  "quality": {
+    "general_quality_noninferior": {
+      "source": "typed revalidation of sealed Phase 2 r3 three-seed quality, semantic, repetition, invalid-output, coherence, and adherence evidence",
+      "same_core_hashes_required": true,
+      "current_orchestration_core_abstention_must_execute_zero_cakes": true,
+      "pass_value": 1.0
+    },
+    "mixed_domain_quality_superior": {
+      "suite": "100 distinct domain-balanced frozen functional prompts",
+      "layercake_systems": [
+        "layercake_cpu",
+        "layercake_gpu"
+      ],
+      "transformer_systems": [
+        "transformer_cpu",
+        "transformer_gpu"
+      ],
+      "criterion": "LayerCake success is strictly greater on both devices and the paired bootstrap 95% lower confidence bound for LayerCake minus transformer success is greater than zero",
+      "pass_value": 1.0
+    },
+    "promoted_domain_success_retention": {
+      "suite": "all 128 held-out cases for each of Python, SQL, and regex",
+      "required_gpu_successes": 384,
+      "required_cpu_reference_successes": 384,
+      "gpu_output_sha256_must_equal_cpu_reference": true,
+      "inactive_forward_calls": 0,
+      "pass_value": 1.0
+    }
+  },
+  "headline_gate_definitions": {
+    "cpu_cpu_throughput_ratio": "median of paired LayerCake-CPU bytes/second divided by transformer-CPU bytes/second",
+    "cpu_cpu_median_latency_ratio": "median of paired LayerCake-CPU total latency divided by transformer-CPU total latency",
+    "gpu_gpu_throughput_ratio": "median of paired LayerCake-GPU bytes/second divided by transformer-GPU bytes/second",
+    "cpu_gpu_throughput_ratio": "median of paired LayerCake-CPU bytes/second divided by transformer-GPU bytes/second",
+    "cpu_gpu_median_latency_ratio": "median of paired LayerCake-CPU total latency divided by transformer-GPU total latency",
+    "general_quality_noninferior": "binary typed quality-retention result",
+    "mixed_domain_quality_superior": "binary paired functional-superiority result",
+    "promoted_domain_success_retention": "binary full-domain exact-retention result"
+  },
+  "promotion_thresholds": {
+    "cpu_cpu_throughput_ratio": 5.0,
+    "cpu_cpu_median_latency_ratio": 0.25,
+    "gpu_gpu_throughput_ratio_strictly_greater_than": 1.0,
+    "cpu_gpu_throughput_ratio": 1.0,
+    "cpu_gpu_median_latency_ratio": 1.0,
+    "general_quality_noninferior": 1.0,
+    "mixed_domain_quality_superior": 1.0,
+    "promoted_domain_success_retention": 1.0
+  },
+  "claim_boundaries": {
+    "physical_mobile_hardware_claimed": false,
+    "gpu_training_dominance_claimed": false,
+    "simultaneous_latent_cake_fusion_claimed": false,
+    "structured_multidomain_orchestration_retained": true,
+    "performance_claims_apply_only_to_declared_hardware_and_runtimes": true
+  },
+  "framework_freeze": {
+    "required_before_promoted_gpu_benchmark": true,
+    "source_changes_after_freeze": "invalidate all Phase 7 final evidence",
+    "threshold_changes_after_freeze": "invalidate all Phase 7 final evidence",
+    "baseline_changes_after_freeze": "invalidate all Phase 7 final evidence"
+  },
+  "release": {
+    "typed_fail_closed_verifier_required": true,
+    "adversarial_mutation_tests_required": true,
+    "full_regression_suite_required": true,
+    "clean_commit_required": true,
+    "annotated_tag": "layercake-moonshot-phase7",
+    "phase8_locked_until_seal": true
+  }
+}

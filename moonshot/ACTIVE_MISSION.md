@@ -224,6 +224,31 @@ archive-mismatched routing metadata must fail closed.
 The immutable preregistration is
 `moonshot/phase6_orchestration_preregistration.json`.
 
+## Phase 7 integrated-performance lock
+
+Phase 7 is open on the exact sealed Phase 6 lineage. No core, cake, ABI,
+router-profile, or orchestration-semantic change may contribute evidence
+without reopening all invalidated dependent phases.
+
+The final proof compares routed LayerCake and the locked Qwen 2.5 0.5B
+Q4_K_M digest on the declared laptop CPU and RTX 3080 Laptop GPU. It requires
+at least 5x CPU throughput, at most one-quarter CPU latency, strict GPU
+throughput superiority, LayerCake CPU throughput and latency no worse than
+transformer GPU, retained general quality, superior mixed-domain functional
+quality, and complete promoted-domain retention.
+
+The benchmark is domain-balanced and prompt/trial paired: 100 distinct frozen
+functional prompts plus 20 repeats per system. It uses bytes/second and
+characters/second as primary cross-model throughput, records authoritative
+transformer tokens separately, measures cold and warm TTFT and total latency,
+reports memory, and verifies actual transformer GPU residency. The exact
+sealed Phase 6 CPU raw observations are imported and revalidated; GPU evidence
+is newly measured across three host/order seeds. All 384 held-out domain cases
+must remain successful and byte-identical across CPU and GPU.
+
+The immutable preregistration is
+`moonshot/phase7_integrated_performance_preregistration.json`.
+
 ## Required reread points
 
 Before beginning a representation campaign, selecting a promoted candidate,
