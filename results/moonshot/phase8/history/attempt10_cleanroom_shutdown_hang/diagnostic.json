@@ -1,0 +1,14 @@
+{
+  "format": "layercake-phase8-historical-attempt/1",
+  "status": "INVALIDATED_BEFORE_CERTIFICATION",
+  "reason": "The clean-room subprocess wrote a complete result bundle but did not exit normally; its only active threads were waiting after the output had been closed.",
+  "raw_result_sha256": "513a7356426f67f7ee489e154f933eabf9c130a0b654e56daebc8ce683c40e8d",
+  "observations": {
+    "result_written_at": "2026-07-29T09:36:12-04:00",
+    "shutdown_observation": "No additional output writes occurred for more than seven minutes. Process inspection showed every thread waiting in UserRequest state.",
+    "termination_scope": "Only the clean-room child and its waiting parent verifier were terminated after preservation of the completed raw result."
+  },
+  "corrective_action": "The clean-room child will fsync its completed result and exit explicitly after flushing stdout. A new framework freeze and full reproduction are required.",
+  "claims_retained": false,
+  "historical_evidence_preserved": true
+}

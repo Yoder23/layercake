@@ -2563,10 +2563,12 @@ def cleanroom_run(target: Path, output: Path) -> dict[str, Any]:
         "adversarial": adversarial,
     }
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(
-        json.dumps(result, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    temporary = output.with_name(f".{output.name}.{os.getpid()}.tmp")
+    with temporary.open("w", encoding="utf-8") as handle:
+        handle.write(json.dumps(result, indent=2, sort_keys=True) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+    os.replace(temporary, output)
     return {"status": "PASS", "output": str(output)}
 
 
@@ -2989,6 +2991,14 @@ def main(argv: list[str] | None = None) -> int:
     else:
         value = certify()
     print(json.dumps(value, indent=2, sort_keys=True))
+    if arguments.command == "cleanroom-run":
+        # The isolated workload can leave native CUDA worker threads waiting
+        # after its fully fsynced result has been written.  This disposable
+        # child has no cleanup state to retain; a direct exit guarantees that
+        # the parent verifier observes the completed result instead of a host
+        # shutdown deadlock.
+        sys.stdout.flush()
+        os._exit(0)
     return 0
 
 
