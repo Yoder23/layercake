@@ -1057,9 +1057,12 @@ def derive_phase8_metrics(root: Path) -> dict[str, Any]:
     _validate_self_hash(performance, PERFORMANCE)
     performance_metrics, quality = _performance_metrics(performance)
     domains = _validate_domains(root)
+    # Validate the source package identities before any derived lifecycle
+    # record. This makes a package-lineage mutation fail at the package/ABI
+    # boundary rather than at a downstream installed-hash comparison.
+    manifests = _validate_manifests(root)
     lifecycle = _validate_lifecycle(root)
     routing = _validate_routing(root)
-    manifests = _validate_manifests(root)
     prior = _validate_prior(root)
     adversarial = _validate_adversarial(root)
     thresholds = _read(root, CONTRACT)["reproduction_thresholds"]
