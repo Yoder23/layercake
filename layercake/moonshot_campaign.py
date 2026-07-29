@@ -1506,7 +1506,12 @@ def prepare_seal(root: Path, phase: int) -> dict[str, Any]:
 
 def _git_blob(root: Path, revision: str, relative: str) -> bytes:
     process = subprocess.run(
-        ["git", "show", f"{revision}:{relative}"], cwd=root,
+        # `git show REV:path` asks Windows to stat the full revision/path
+        # argument before resolving it.  Preserved clean-room history can
+        # legitimately exceed MAX_PATH, despite being present in the commit.
+        # Read the Git object directly so sealing verifies the committed blob,
+        # not the host filesystem's path-length limit.
+        ["git", "cat-file", "blob", f"{revision}:{relative}"], cwd=root,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
     )
     if process.returncode != 0:
