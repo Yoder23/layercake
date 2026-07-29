@@ -1,0 +1,572 @@
+{
+  "allowed_statuses": [
+    "FAIL",
+    "INVALID_EVIDENCE",
+    "NOT_RUN_INSUFFICIENT_COMPUTE",
+    "NOT_RUN_NO_HARDWARE",
+    "OPEN",
+    "PASS"
+  ],
+  "continuation_commands": [
+    "C:\\Python310\\python.exe -m layercake.moonshot_final train-core",
+    "C:\\Python310\\python.exe -m layercake.moonshot_final train-domains",
+    "C:\\Python310\\python.exe -m layercake.moonshot_final verify"
+  ],
+  "evidence": {
+    "adaptive_pilot": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\final\\foundation_adaptive_medium_pilot.json",
+      "present": true,
+      "sha256": "5c61dda9fec93f2fa446a33813a8d6fbc94b1d3787ce04659834e06a439f7d38"
+    },
+    "adaptive_pilot_run": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\final\\adaptive-medium-pilot\\routed_adaptive_5x5_top1_8e\\seed-9811\\metadata.json",
+      "present": true,
+      "sha256": "094f73f86e39e51a1a46bb227d1afafc14839f0fd98fcd05d17457bc053457d2"
+    },
+    "adaptive_routing": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\final\\foundation_adaptive_routing_search.json",
+      "present": true,
+      "sha256": "5c9717c76fbadf7be676bfd39eb7a411479aeb4df4c6489290473731f2cfa46e"
+    },
+    "audit": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\final\\baseline_audit.json",
+      "present": true,
+      "sha256": "bffb0bbf9d21cbfcfed477577d67bffb3359ce06b66341160f573854821c117e"
+    },
+    "catalog": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\final\\catalog_scaling.json",
+      "present": true,
+      "sha256": "9a6ada2f2f57c99299dfb4eff0293e26dab68b402d106a5a262fe75d075037ca"
+    },
+    "context_search": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\final\\foundation_adaptive_context_search.json",
+      "present": true,
+      "sha256": "76cafe6e168d649b23227333b681bffdc8db7a0b620ebd41794cfeccf0795a42"
+    },
+    "depth_search": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\final\\foundation_adaptive_depth_search.json",
+      "present": true,
+      "sha256": "9ede1078705b182f341fb3db5de0be2fb0247c5af09324b183feccb21c65cf06"
+    },
+    "direct": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\cpu_vs_gpu_evidence.json",
+      "present": true,
+      "sha256": "b8586b63c984c3bbf1c70801d933cd2dad9714dab58336cfdbb6c3723f1276d9"
+    },
+    "english_manifest": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\manifest.json",
+      "present": true,
+      "sha256": "e49e194580e95cf08f616b296ed6372d83c7af790cba8be7770b82d188a431f3"
+    },
+    "generation": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\english_quality_evidence.json",
+      "present": true,
+      "sha256": "2021c0ff03b2c91f24ff1f820ccc9489a1a2eea4fc2d3a5da4af6d8ee8237b3d"
+    },
+    "incremental": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\incremental_benchmark.json",
+      "present": true,
+      "sha256": "a82029a74537f73293507676109f16bd879927f0c55fc7157f321fa96457f6eb"
+    },
+    "medium_layercake": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\final\\foundation_medium.json",
+      "present": true,
+      "sha256": "5f930361c0adb93f3530d89bfd59264fb86eb6b3b9d11ad2e674a370b7f946ec"
+    },
+    "medium_transformer": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\final\\transformer_medium.json",
+      "present": true,
+      "sha256": "cf599750e123b8d722dd5840c7b37d9d8636e16752156db89861fab1bfcf65e3"
+    },
+    "mobile": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\mobile\\python-fusion-v2.pt.manifest.json",
+      "present": true,
+      "sha256": "db1112ba663eab4b6c0e449726ab90511a1d514209d5fbe9e24aba88ad5081be"
+    },
+    "orchestration": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\orchestration_evidence.json",
+      "present": true,
+      "sha256": "a35a1ae97a35c4d6270d0688596a673d767cc09662d9ae493ef2a1405af79218"
+    },
+    "portability": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\portability_evidence.json",
+      "present": true,
+      "sha256": "22e0837afa4be0c7729cd944ee69f50376f2a3bde9b4edc9ee58ebfbecbff0a9"
+    },
+    "pytest": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\final\\pytest_evidence.json",
+      "present": true,
+      "sha256": "428febd8edcc1e2a80589c723b51dd21e43e7b4bff6c16ff58d4d2601e630e2f"
+    },
+    "python_cake": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\cakes\\python.evidence.json",
+      "present": true,
+      "sha256": "039e4b1996faf6afc695983082944b8773895e72f112b30fe8c8b339373d2e6f"
+    },
+    "python_manifest": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\python\\manifest.json",
+      "present": true,
+      "sha256": "19c7124e1fd4af3789146d166e5d65a5a9f0876d24e86d44f3fef5ecd20eb17d"
+    },
+    "routing": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\v2\\routing_evidence.json",
+      "present": true,
+      "sha256": "a1e3a0c68be428405ea94b4a4708b07f71064ae1057dd2b71b35d8d5aa6cda04"
+    },
+    "variable_patch": {
+      "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\results\\moonshot\\final\\foundation_variable_patch_search.json",
+      "present": true,
+      "sha256": "2d53f9e01995b29b51730fb6ed6cb5fffd594dda35a7869180291315b85916a9"
+    }
+  },
+  "failed_gates": [
+    "english_core_quality",
+    "english_generation_quality",
+    "same_scale_comparison",
+    "matched_quality_comparison",
+    "python_capability",
+    "general_retention",
+    "foundation_training_speed",
+    "domain_training_speed",
+    "multi_seed_replication",
+    "overall_moonshot"
+  ],
+  "format": "layercake-moonshot-final-certificate/1",
+  "gates": {
+    "benchmark_integrity": {
+      "prompt_count": 100,
+      "raw_rows": 600,
+      "reason": "Search stayed validation-only and the realistic 100-prompt inference suite was frozen.",
+      "status": "PASS"
+    },
+    "catalog_size_scaling": {
+      "catalog_sizes": [
+        0,
+        1,
+        5,
+        10,
+        50,
+        100
+      ],
+      "reason": "Only the Python package is a real trained cake; synthetic descriptors are permitted for management stress but cannot prove many-domain capability.",
+      "status": "INVALID_EVIDENCE",
+      "stress_status": "PASS"
+    },
+    "cpu_versus_cpu_inference": {
+      "reason": "A full optimized CPU/CPU suite was not rerun after the general and domain matched-quality prerequisites failed; raw speed cannot become valid evidence.",
+      "status": "NOT_RUN_INSUFFICIENT_COMPUTE"
+    },
+    "cpu_versus_gpu_inference": {
+      "benchmark_status": "INVALID_EVIDENCE",
+      "domain_coverage_valid": false,
+      "headline": {
+        "cpu_over_gpu_end_to_end_latency": 0.1762353449999212,
+        "cpu_over_gpu_useful_byte_throughput": 6.472586899561823
+      },
+      "ordinary_task_quality_valid": false,
+      "reason": "The realistic raw benchmark shows a 6.47x CPU LayerCake throughput advantage, but ordinary-task quality and three-domain coverage fail.",
+      "status": "INVALID_EVIDENCE"
+    },
+    "cross_seed_portability": {
+      "hosts": 1,
+      "reason": "The identical package improves BPB on an independent-seed host, but there are no source functional successes to retain.",
+      "status": "INVALID_EVIDENCE"
+    },
+    "cross_size_portability": {
+      "hosts": 1,
+      "reason": "The identical package improves BPB on a different-size host, but semantic capability portability is unproven.",
+      "status": "INVALID_EVIDENCE"
+    },
+    "data_integrity": {
+      "english_files": {
+        "architecture_selection": {
+          "bytes": 572418,
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\architecture_selection.bin",
+          "sha256": "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93"
+        },
+        "development_train": {
+          "bytes": 10000000,
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\train_development.bin",
+          "sha256": "ceca1962b8aab7bad3ba4dc47739217e3813a2cf16b546df47c81147bd200de3"
+        },
+        "medium_train": {
+          "bytes": 100000000,
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\train_medium.bin",
+          "sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6"
+        },
+        "test": {
+          "bytes": 1282697,
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\test.bin",
+          "sha256": "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388"
+        },
+        "validation": {
+          "bytes": 567414,
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\wikitext103\\validation.bin",
+          "sha256": "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10"
+        }
+      },
+      "python_files": {
+        "test": {
+          "bytes": 7511343,
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\python\\python_test.bin",
+          "sha256": "924c401c5f3ff38ddeb918bd7078f3e878a16b5cc4c64873566fd079131a2b91"
+        },
+        "train": {
+          "bytes": 94960275,
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\python\\python_train.bin",
+          "sha256": "52927315379dfd689f7dd128845699e3bebcaac729548f480f5739a8931ecbd2"
+        },
+        "validation": {
+          "bytes": 2213660,
+          "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\data\\moonshot\\v2\\python\\python_validation.bin",
+          "sha256": "009d445303a1917312d9f212a687def73a8d9895c1f646ca129250eb797a3b48"
+        }
+      },
+      "reason": "Immutable public-corpus hashes, split policy, licenses, and leakage sampling are present.",
+      "status": "PASS"
+    },
+    "domain_training_speed": {
+      "cake_seconds": 24.046566800097935,
+      "reason": "The cake trains quickly but fails functional quality and retention, so time-to-matched-domain-quality is unavailable.",
+      "status": "FAIL"
+    },
+    "english_core_quality": {
+      "adaptive_validation_bpb": 1.8312242828767538,
+      "reason": "At 100M bytes the best sparse adaptive pilot remains about 0.15 BPB behind the transformer.",
+      "status": "FAIL",
+      "transformer_validation_bpb_ci95": {
+        "lower": 1.6572732926527038,
+        "mean": 1.678986391498805,
+        "n": 3,
+        "stdev": 0.008739993119036104,
+        "upper": 1.7006994903449062
+      },
+      "transformer_validation_bpb_mean": 1.678986391498805
+    },
+    "english_generation_quality": {
+      "measured_samples": 5,
+      "reason": "Every measured open English continuation exhibited severe four-gram repetition.",
+      "repeated_samples": 5,
+      "status": "FAIL"
+    },
+    "expert_utilization": {
+      "reason": "All eight adaptive experts trained with balanced causal routing.",
+      "routing": {
+        "all_experts_meaningfully_trained": true,
+        "assignment_counts": [
+          4064437,
+          4074610,
+          4082664,
+          4063244,
+          4086126,
+          4067847,
+          4071972,
+          4060012
+        ],
+        "causal_patch_routing": true,
+        "expert_gradient_steps": [
+          12208,
+          12208,
+          12208,
+          12208,
+          12208,
+          12208,
+          12208,
+          12208
+        ],
+        "experts_used": 8,
+        "maximum_load_fraction": 0.12545322648625865,
+        "mean_normalized_entropy": 0.9984547973147851,
+        "mode": "learned_top1",
+        "router_collapsed": false,
+        "utilization": [
+          0.12478732557442665,
+          0.12509965947530113,
+          0.12534693532683394,
+          0.12475069780054054,
+          0.12545322648625865,
+          0.12489202021730308,
+          0.12501866696271813,
+          0.12465146815661778
+        ]
+      },
+      "status": "PASS"
+    },
+    "foundation_training_speed": {
+      "adaptive_seconds_to_2_bpb": 166.85651720000897,
+      "final_quality_matched": false,
+      "reason": "LayerCake reaches 2.00 BPB faster, but never reaches the transformer's locked final quality; matched-quality speed therefore fails.",
+      "status": "FAIL",
+      "transformer_seconds_to_2_bpb": 262.7342245000182
+    },
+    "general_retention": {
+      "core_bpb": 2.696559838453947,
+      "reason": "Forced Python-cake activation regressed unrelated English beyond the locked tolerance.",
+      "status": "FAIL",
+      "with_cake_bpb": 2.901328122492179
+    },
+    "gpu_versus_gpu_inference": {
+      "reason": "A full optimized GPU/GPU suite was not run because no LayerCake checkpoint met the locked quality prerequisite.",
+      "status": "NOT_RUN_INSUFFICIENT_COMPUTE"
+    },
+    "installation_losslessness": {
+      "reason": "Installation performs no training/calibration and changes neither core nor cake.",
+      "status": "PASS"
+    },
+    "matched_quality_comparison": {
+      "adaptive_bpb": 1.8312242828767538,
+      "reason": "No LayerCake checkpoint reached the transformer's frozen final-quality interval.",
+      "status": "FAIL",
+      "transformer_bpb": 1.678986391498805
+    },
+    "mathematical_execution_losslessness": {
+      "hosts": 3,
+      "reason": "Declared deterministic reinstall paths produce bit-identical outputs and canonical tensors.",
+      "status": "PASS"
+    },
+    "mobile_export": {
+      "artifact_bytes": 185434,
+      "artifact_sha256": "f535046b9911a1062ac84a726ed31d43990193e4fa9b059fc3431d307f942858",
+      "reason": "TorchScript export reloads with exactly identical logits.",
+      "status": "PASS"
+    },
+    "multi_domain_mode": {
+      "reason": "Only one real functional package is installed; many-package execution is not demonstrated.",
+      "status": "OPEN"
+    },
+    "multi_seed_replication": {
+      "adaptive_medium_seeds": [
+        9811
+      ],
+      "reason": "The old recurrent core and transformer have three seeds, but the materially improved adaptive architecture has only one 100M-byte pilot and still fails quality.",
+      "recurrent_medium_seeds": [
+        9801,
+        9802,
+        9803
+      ],
+      "status": "FAIL",
+      "transformer_medium_seeds": [
+        9801,
+        9802,
+        9803
+      ]
+    },
+    "multidomain_composition": {
+      "reason": "No request composed two real compatible neural cakes.",
+      "status": "OPEN"
+    },
+    "one_domain_mode": {
+      "reason": "Three hosts executed a directly bound real cake with routing bypassed.",
+      "status": "PASS"
+    },
+    "overall_moonshot": {
+      "reason": "The complete platform is not proven; quality, functional-domain, semantic-portability, many-domain, and matched-speed gates remain unresolved.",
+      "status": "FAIL"
+    },
+    "package_losslessness": {
+      "package": {
+        "archive_sha256_after": "2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2",
+        "archive_sha256_before": "2cfbde285bb6ef174648a5cd96f7bdc49a4ca12c91dfafbaf19cc66011983ea2",
+        "package_hash": "b20750bb47d6c0f24e46d0308aaaaa666a648ea3246bdab9f067c5ec4e744663",
+        "path": "C:\\Python310\\layercake_merged_nextgen_perfectA_option1_full_ready\\layercake_release\\artifacts\\cakes\\python.cake",
+        "payload_identity": true,
+        "tensor_payload_hash": "51f8ee4f6a9b0f1fc291a636a4247bd132c3bc3933a36fef72e546c468f5dd94"
+      },
+      "reason": "Archive and authenticated tensor payload hashes are identical across installation.",
+      "status": "PASS"
+    },
+    "package_security": {
+      "reason": "Signed, authenticated, non-executable safetensors packages and adversarial installer tests pass.",
+      "status": "PASS"
+    },
+    "physical_mobile_execution": {
+      "reason": "No physical mobile device was available; no physical-performance claim is made.",
+      "status": "NOT_RUN_NO_HARDWARE"
+    },
+    "python_capability": {
+      "reason": "The real Python cake improved code BPB but passed 0/8 ordinary syntax tasks.",
+      "status": "FAIL",
+      "syntax_tasks": {
+        "cake_parse_success_rate": 0.0,
+        "core_parse_success_rate": 0.0,
+        "five_x_error_gate": "FAIL",
+        "ordinary_error_reduction": 1.0,
+        "rows": [
+          {
+            "cake_completion": "of the set the set to the set the set to the set to the set the set. . The self. = = = = None of",
+            "cake_parse_success": false,
+            "core_completion": "of the season . The season the season and the season and the season and the season the season an",
+            "core_parse_success": false,
+            "prompt_sha256": "095af25eb4b348ceaf06314434e306cb3b799bf892f6ec642c425523d82f85a3"
+          },
+          {
+            "cake_completion": "o-@nd ( self. 1, made ) . The self. = = =\n T All -pening the set to the set to the set to the se",
+            "cake_parse_success": false,
+            "core_completion": "of the season . The season the season and the season and the season and the season the season an",
+            "core_parse_success": false,
+            "prompt_sha256": "f27e9381ef446006dd9c12af1a74c360f619772e19965c084f0a5bb2f72873e3"
+          },
+          {
+            "cake_completion": "of the set the set to the set the set to the set to the set to the set. . The self. = = =\n T All",
+            "cake_parse_success": false,
+            "core_completion": "or the season . The season and the season the season and the season and the season and the seaso",
+            "core_parse_success": false,
+            "prompt_sha256": "e2e69319eb074f7907c5415918f237efd63b6fbab73d4f3afd29213a454d15c4"
+          },
+          {
+            "cake_completion": "o-@  o-@ndy . The set the set to the set to the set to the set to the set the set to the set to ",
+            "cake_parse_success": false,
+            "core_completion": "or the season . The season and the season and the season the season and the season . The season ",
+            "core_parse_success": false,
+            "prompt_sha256": "df06c1ff126d4928c8b364a4f1bfa79eba4fae87e835d326ac8c0b73692e5273"
+          },
+          {
+            "cake_completion": "of the set to the set the set to the set the set to the set to the set to the set the set. . The",
+            "cake_parse_success": false,
+            "core_completion": "or the season . The season and the season and the season the season and the season . The season ",
+            "core_parse_success": false,
+            "prompt_sha256": "5dcac496211a743f3a539a5a529a8862a19382780024d67102f05f59e49c4b54"
+          },
+          {
+            "cake_completion": "of the set to the set the set. . The self. = = = = None of the set= = =\n T All and self. = =\n T ",
+            "cake_parse_success": false,
+            "core_completion": "or the season . The second was a second and the season and the season and the season the season ",
+            "core_parse_success": false,
+            "prompt_sha256": "5095b45c8022341a55ef5b9ce8f61d75c8a5ab2d54ffed34d2a0eb47b304dee9"
+          },
+          {
+            "cake_completion": "of the set to the set the set. . The self. = = = = Nones = =\n T All and self. = =\n T All - - - -",
+            "cake_parse_success": false,
+            "core_completion": "or the season . The season and the season and the season the season and the season . The season ",
+            "core_parse_success": false,
+            "prompt_sha256": "cf63fd75036076b6e6edad24e489bab81d3bcf9d8bb4da25a8679a578a45ca4c"
+          },
+          {
+            "cake_completion": "o-@nd ( self. 1, made ) , and the set to the set to the set the set to the set the set to the se",
+            "cake_parse_success": false,
+            "core_completion": "of the season . The season the season and the season and the season and the season the season an",
+            "core_parse_success": false,
+            "prompt_sha256": "62f92227d86d5760bcbd48a886bfa5a42295fb97e465ef657ef802c8444c3a40"
+          }
+        ],
+        "tasks": 8
+      }
+    },
+    "random_cake_control": {
+      "random_bpb": 7.133082688220926,
+      "reason": "The trained cake beats random on code BPB, but the correct cake has no functional successes.",
+      "status": "INVALID_EVIDENCE",
+      "trained_bpb": 4.456789887283931
+    },
+    "repository_regression": {
+      "passed": 416,
+      "reason": "The complete test suite passed against this exact source tree.",
+      "source_tree_sha256": "e10d90b5e3064f65eb377f8bb5161f2f7be62ecc317e96e27f7c3d3530bff29e",
+      "status": "PASS",
+      "warnings": 47
+    },
+    "routing_accuracy": {
+      "latency": {
+        "mean": 1.537683962264151,
+        "p50": 1.669,
+        "p95": 2.2679
+      },
+      "metrics": {
+        "abstention_accuracy": 1.0,
+        "false_specialist_activation": 0.0,
+        "route_accuracy": 1.0,
+        "top_k_recall": 1.0
+      },
+      "reason": "The 318-example held-out template-family suite scores 100%, but only Python has a real cake and the suite is generated; it is not promotable human routing evidence.",
+      "status": "INVALID_EVIDENCE"
+    },
+    "same_scale_comparison": {
+      "layercake_parameters": 3200688,
+      "reason": "Total scale is within tolerance, but LayerCake quality is materially worse.",
+      "relative_delta": 0.04375322663913268,
+      "status": "FAIL",
+      "transformer_parameters": 3347136
+    },
+    "same_seed_portability": {
+      "reason": "Same-host remove/reinstall preserves exact archive, tensors, and deterministic output.",
+      "status": "PASS"
+    },
+    "second_domain": {
+      "reason": "No second real neural domain cake passed functional held-out tasks.",
+      "status": "OPEN"
+    },
+    "semantic_losslessness": {
+      "reason": "BPB improvements transfer, but the source cake has zero ordinary functional successes; semantic losslessness is undefined.",
+      "status": "INVALID_EVIDENCE"
+    },
+    "shuffled_cake_control": {
+      "reason": "The shuffled tensor control was run for BPB, but functional control evidence is empty.",
+      "shuffled_bpb": 7.2928644598749,
+      "status": "INVALID_EVIDENCE"
+    },
+    "sparse_physical_execution": {
+      "active_parameters": 2763216,
+      "reason": "Hard token dispatch evaluates selected experts only and measured active parameters are below installed parameters.",
+      "status": "PASS",
+      "total_parameters": 3200688
+    },
+    "stateful_decoding": {
+      "reason": "Persistent-state decoding is exactly equivalent through the measured 1,024-byte path.",
+      "status": "PASS",
+      "sustained_rate": {
+        "mean": 2054.2817155042794,
+        "p50": 2059.181680190102,
+        "p95": 2085.0827802298318,
+        "p99": 2099.0729641042126,
+        "raw": [
+          2025.1189905731108,
+          2000.6549018780368,
+          2054.117572955777,
+          2056.960531467177,
+          2085.0827802298318,
+          2026.8269548983499,
+          2061.4231630686377,
+          2099.0729641042126,
+          2064.9986559359336,
+          2061.4028289130265,
+          2074.3735857694733,
+          2041.347656257787
+        ]
+      }
+    },
+    "third_domain": {
+      "reason": "No third real neural domain cake was trained and functionally validated.",
+      "status": "OPEN"
+    },
+    "uninstall_reinstall": {
+      "reason": "Removal restores core fallback and reinstall restores the identical signed archive.",
+      "status": "PASS"
+    },
+    "wrong_domain_control": {
+      "reason": "A second serious cake does not exist, so a real wrong-domain control is impossible.",
+      "status": "OPEN"
+    }
+  },
+  "measured_primary_blocker": "The best sparse adaptive LayerCake reaches 2.00 BPB faster but ends at 1.8312 BPB versus the transformer's 1.6790 mean at 100M bytes; the only real cake has zero functional successes.",
+  "moonshot_proven": false,
+  "open_or_invalid_gates": [
+    "second_domain",
+    "third_domain",
+    "random_cake_control",
+    "wrong_domain_control",
+    "shuffled_cake_control",
+    "semantic_losslessness",
+    "cross_seed_portability",
+    "cross_size_portability",
+    "multi_domain_mode",
+    "routing_accuracy",
+    "multidomain_composition",
+    "catalog_size_scaling",
+    "cpu_versus_cpu_inference",
+    "gpu_versus_gpu_inference",
+    "cpu_versus_gpu_inference",
+    "physical_mobile_execution"
+  ],
+  "overall_status": "NOT_YET_PROVEN",
+  "source_tree_sha256": "e10d90b5e3064f65eb377f8bb5161f2f7be62ecc317e96e27f7c3d3530bff29e"
+}
