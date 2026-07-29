@@ -2658,7 +2658,27 @@ def _archive_legacy_final() -> None:
         raise RuntimeError("legacy final certificate is absent or stale")
     history = FINAL / "history/pre_gated_campaign_ec4d074a5740"
     if history.exists():
-        raise RuntimeError("legacy final history already exists")
+        preserved = history / "release_certificate.json"
+        manifest = history / "manifest.json"
+        try:
+            document = json.loads(manifest.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            raise RuntimeError(
+                "existing legacy final history manifest is unreadable"
+            ) from error
+        if (
+            not preserved.is_file()
+            or _sha256(preserved) != LEGACY_FINAL_SHA256
+            or document.get("format")
+            != "layercake-pre-gated-final-history/1"
+            or document.get("status")
+            != "PRESERVED_HISTORICAL_NEGATIVE_EVIDENCE"
+            or document.get("legacy_release_certificate_sha256")
+            != LEGACY_FINAL_SHA256
+            or document.get("evidence_sha256") != _canonical_sha(document)
+        ):
+            raise RuntimeError("existing legacy final history is stale")
+        return
     history.mkdir(parents=True, exist_ok=False)
     shutil.copy2(legacy, history / "release_certificate.json")
     legacy_files = {
