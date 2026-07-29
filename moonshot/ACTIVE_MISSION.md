@@ -249,6 +249,27 @@ must remain successful and byte-identical across CPU and GPU.
 The immutable preregistration is
 `moonshot/phase7_integrated_performance_preregistration.json`.
 
+## Phase 8 final hostile-verification lock
+
+Phase 8 is open on the exact annotated `layercake-moonshot-phase7` seal.
+Architecture, core, cakes, ABI, router, runtime, baselines, and promotion
+thresholds are immutable. Any required product change reopens the earliest
+affected phase instead of being repaired inside final verification.
+
+The final gate uses a detached clean worktree and a separately implemented
+fail-closed verifier. It reruns all feasible tests, executions, routing,
+catalog, lifecycle, domain-retention, and CPU/GPU performance checks, while
+also attacking package security, artifact identity, data isolation, sparse
+execution, no-calibration, dynamic discovery, and claim scope. All prior
+required gates are recomputed from raw evidence.
+
+Training-speed claims remain explicitly retired and are not final product
+gates. No physical mobile, calibrated-energy, latent-fusion, or external
+laboratory-independence claim may be introduced.
+
+The immutable preregistration is
+`moonshot/phase8_independent_verification_preregistration.json`.
+
 ## Required reread points
 
 Before beginning a representation campaign, selecting a promoted candidate,

@@ -294,3 +294,33 @@ mobile hardware, GPU training dominance, or latent neural cake fusion.
 
 The immutable preregistration is
 `moonshot/phase7_integrated_performance_preregistration.json`.
+
+## Phase 8 independent hostile-verification rule
+
+Phase 8 may not improve or alter the sealed product. It treats every Phase 0
+through Phase 7 claim as untrusted until the raw evidence, artifact hashes,
+required gates, commit/tag history, and current physical executions have been
+independently recomputed.
+
+The reproduction runs from a detached clean worktree at the exact annotated
+`layercake-moonshot-phase7` tag. It must validate dependency resolution, run
+the complete clean-checkout test suite, run the campaign-wide verifier, and
+recheck every data, checkpoint, package, ABI, router, and runtime identity.
+Fresh execution must repeat the 100-distinct-plus-20-repeat CPU/GPU matrix,
+all 384 held-out cases per device, 100 core abstentions, the complete 1,980-row
+routing suite, a 500-entry catalog, and install/verify/remove/reinstall on
+three fresh hosts.
+
+Hostile verification must attempt every attack category locked in the Phase 8
+preregistration. A rejected attack is evidence only when the attack actually
+reaches the intended boundary. No unresolved finding of any severity may be
+waived to complete the campaign.
+
+Phase 3's training-efficiency objective remains retired by governance.
+Phase 8 must preserve its historical controls and must not claim faster
+foundation or domain training. Physical mobile, calibrated-energy dominance,
+latent fusion, and third-party laboratory independence also remain outside
+the final claim unless separately measured.
+
+The immutable preregistration is
+`moonshot/phase8_independent_verification_preregistration.json`.

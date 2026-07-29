@@ -1,0 +1,171 @@
+{
+  "format": "layercake-phase8-independent-verification-preregistration/1",
+  "status": "LOCKED",
+  "phase": 8,
+  "objective": "Independently and adversarially reproduce the complete sealed LayerCake campaign from a detached clean worktree, attempt to falsify every promoted product claim, and issue the final release only if all required gates survive.",
+  "accepted_parent": {
+    "tag": "layercake-moonshot-phase7",
+    "annotated_tag_object": "718b592cf541d8a89e376dc91ac4aa85ce7d1db2",
+    "tag_commit": "62aa899d1f3b50eec067f3621ba8390271837c8b",
+    "release_commit": "09024ea190eebe5f2a830b06ff81f8a1ad23e96c",
+    "handoff": "results/moonshot/phase7/handoff.json",
+    "handoff_sha256": "4a0891c817ffe432b54ebc590d10d9b3b7ebc007233681ea8e59ecffad0fa3da",
+    "phase7_certificate": "results/moonshot/phase7/integrated_performance_certificate.json",
+    "phase7_certificate_sha256": "570307d726ca62bd1d476334b71719bcb31bb0ea5087baa7dfe77208b4400779"
+  },
+  "immutability": {
+    "architecture_changes_allowed": false,
+    "core_changes_allowed": false,
+    "cake_changes_allowed": false,
+    "abi_changes_allowed": false,
+    "router_or_runtime_changes_allowed": false,
+    "threshold_changes_after_lock_allowed": false,
+    "historical_evidence_may_be_overwritten_without_archive": false
+  },
+  "clean_room": {
+    "checkout_kind": "detached git worktree",
+    "revision": "layercake-moonshot-phase7",
+    "required_head": "62aa899d1f3b50eec067f3621ba8390271837c8b",
+    "required_worktree_state": "clean",
+    "dependency_resolution": [
+      "python -m pip check",
+      "python -m pip install --dry-run --no-deps ."
+    ],
+    "required_commands": [
+      "python -m pytest -q",
+      "python -m layercake.moonshot_campaign verify-all"
+    ],
+    "minimum_clean_checkout_tests": 597,
+    "methodological_independence": "Phase 8 uses a separately implemented raw-evidence verifier and fresh detached-worktree executions; it does not claim an external organization or independent human laboratory."
+  },
+  "fresh_reproduction": {
+    "seeds": [
+      10801,
+      10802,
+      10803
+    ],
+    "systems": [
+      "layercake_cpu_fp32",
+      "layercake_gpu_fp32",
+      "qwen2.5_0.5b_q4_k_m_ollama_cpu",
+      "qwen2.5_0.5b_q4_k_m_ollama_gpu"
+    ],
+    "qwen_digest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+    "distinct_performance_prompts": 100,
+    "repeated_performance_observations": 20,
+    "observations_per_system": 120,
+    "observations_per_seed_and_system": 40,
+    "primary_throughput": "UTF-8 output bytes per complete request wall second",
+    "secondary_throughput": [
+      "UTF-8 characters per complete request wall second",
+      "authoritative transformer tokens per complete request wall second",
+      "correct task completions per wall second"
+    ],
+    "paired_prompt_trial_keys": true,
+    "alternating_order_within_device": true,
+    "cold_start": "one real streaming request after explicit unload control, with no load-probe request",
+    "domain_retention_cases_per_device": 384,
+    "cpu_gpu_output_sha256_identity_required": true,
+    "core_only_abstention_prompts": 100,
+    "routing_rows": 1980,
+    "catalog_stress_size": 500,
+    "lifecycle_hosts": 3,
+    "receiver_training_examples": 0,
+    "receiver_calibration_runs": 0
+  },
+  "reproduction_thresholds": {
+    "cpu_cpu_throughput_ratio": {
+      "operator": "ge",
+      "value": 5.0
+    },
+    "cpu_cpu_median_latency_ratio": {
+      "operator": "le",
+      "value": 0.25
+    },
+    "gpu_gpu_throughput_ratio": {
+      "operator": "gt",
+      "value": 1.0
+    },
+    "cpu_gpu_throughput_ratio": {
+      "operator": "ge",
+      "value": 1.0
+    },
+    "cpu_gpu_median_latency_ratio": {
+      "operator": "le",
+      "value": 1.0
+    },
+    "layercake_functional_successes_per_device": 100,
+    "paired_quality_delta_bootstrap_95ci_lower": {
+      "operator": "gt",
+      "value": 0.0
+    },
+    "full_domain_successes_per_device": 384,
+    "inactive_forward_calls": 0,
+    "core_only_false_activations": 0
+  },
+  "adversarial_falsification": {
+    "minimum_distinct_attacks": 24,
+    "required_categories": [
+      "raw_evidence_and_certificate_mutation",
+      "package_payload_tampering",
+      "signature_and_trust_confusion",
+      "archive_structure_and_path_traversal",
+      "abi_and_profile_mismatch",
+      "registry_blob_corruption",
+      "router_control_injection",
+      "unsigned_or_permissioned_auto_activation",
+      "inactive_cake_execution",
+      "receiver_training_or_calibration",
+      "core_or_package_mutation",
+      "hidden_retrieval_templates_or_stored_answers",
+      "hard_coded_benchmark_outputs_or_verifier_values",
+      "data_split_overlap_or_prompt_duplication",
+      "failed_seed_omission",
+      "baseline_runtime_or_gpu_residency",
+      "timing_and_token_accounting",
+      "incompatible_memory_accounting",
+      "private_key_or_secret_leakage",
+      "one_lineage_and_stale_artifacts",
+      "uninstall_reinstall_identity",
+      "cross_host_semantic_retention",
+      "dynamic_catalog_discovery",
+      "claim_boundary_overreach"
+    ],
+    "pass_condition": "Every attack is detected or the challenged invariant is independently retained, with zero unresolved findings of any severity."
+  },
+  "prior_gate_retention": {
+    "recompute_from_raw_evidence": true,
+    "verify_all_phase_0_through_7_seals": true,
+    "verify_all_contract_required_gates": true,
+    "verify_all_checkpoint_data_package_abi_and_router_hashes": true,
+    "prior_certificate_status_fields_are_not_sources_of_truth": true
+  },
+  "training_scope": {
+    "faster_foundation_training_required": false,
+    "faster_domain_training_required": false,
+    "reason": "Phase 3 was explicitly retired and sealed by campaign governance; Phase 8 must preserve the controls and must not claim a training-efficiency pass."
+  },
+  "claim_boundaries": {
+    "physical_mobile_performance_claimed": false,
+    "gpu_training_dominance_claimed": false,
+    "latent_neural_fusion_claimed": false,
+    "external_human_or_laboratory_independence_claimed": false,
+    "energy_dominance_claimed_without_calibrated_meter": false,
+    "historical_legacy_results_promoted": false
+  },
+  "legacy_final_bundle": {
+    "existing_path": "results/moonshot/final",
+    "existing_release_certificate_sha256": "ec4d074a57401f126f6140d0938502967b022b5081ff118ebe72b03ce8b4710e",
+    "disposition": "Preserve the pre-gated NOT_YET_PROVEN certificate under a content-addressed history directory before writing the gated final release."
+  },
+  "release": {
+    "phase_evidence_directory": "results/moonshot/phase8",
+    "final_bundle_directory": "results/moonshot/final",
+    "typed_fail_closed_verifier_required": true,
+    "adversarial_mutation_tests_required": true,
+    "full_current_tree_regression_required": true,
+    "campaign_wide_verification_required": true,
+    "clean_release_commit_required": true,
+    "annotated_tag": "layercake-moonshot-final"
+  }
+}
