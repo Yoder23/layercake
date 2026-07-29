@@ -1,5 +1,11 @@
 # Production LayerCake Training Plan
 
+> Historical planning document. This proposed training campaign was not the
+> final sealed Moonshot path and is not an active implementation or product
+> claim. The original Moonshot Phase 3 training-efficiency objective was
+> `RETIRED_BY_GOVERNANCE` with zero headline claims. Use
+> `README.md`, `docs/PHASE_STATUS.md`, and `CLAIMS.md` for the certified state.
+
 ## Overview
 Train a fully operational LayerCake model for game integration with fluent English and modular game FAQ learning.
 

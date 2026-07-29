@@ -7,6 +7,11 @@ The complete eight-phase LayerCake Moonshot is sealed at the annotated tag
 authoritative. The active mission is release stewardship, not continuation of
 an open research phase.
 
+Phase 3 is sealed with disposition `RETIRED_BY_GOVERNANCE`. It is a completed
+campaign-lifecycle decision with preserved controls and zero headline claims,
+not a skipped phase and not proof of training efficiency, ABI acquisition, or
+LayerCake host certification.
+
 ## Permanent product invariants
 
 - UTF-8 request and response boundary.

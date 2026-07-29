@@ -1,5 +1,9 @@
 # Fast 225M Curriculum Plan (Days-Scale)
 
+> Historical training proposal. It is not an active Moonshot gate or a
+> certified production recipe; Phase 3's original training-efficiency objective
+> was retired by governance.
+
 This plan is designed for fast iteration and companion quality in days, not weeks.
 
 ## Why this pivot

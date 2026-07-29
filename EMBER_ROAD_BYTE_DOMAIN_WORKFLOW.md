@@ -1,5 +1,9 @@
 # Ember Road Byte-Domain Workflow
 
+> Historical project-specific training workflow. It is not part of the sealed
+> Moonshot product lineage and does not alter the current capability-package
+> claims.
+
 This workflow uses the tokenizer-free byte-patch LayerCake path only.
 
 ## 1) Train the 500M byte core

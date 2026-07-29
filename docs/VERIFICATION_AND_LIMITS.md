@@ -36,9 +36,11 @@ The following remain intentionally outside the certificate:
 - publication of the final Git tag to a remote.
 
 The Phase 3 training-efficiency controls are preserved as historical science but
-are not product gates. ABI extraction, minimization, and source-model knowledge
-transfer are separate work and are not implemented, imported, or certified by
-this LayerCake release.
+are not product gates. Its sealed retirement certificate has zero headline
+claims and does not certify training efficiency, ABI bootstrapping, external
+artifact acquisition, or LayerCake host certification. ABI extraction,
+minimization, and source-model knowledge transfer are separate work and are not
+implemented, imported, or certified by this LayerCake release.
 
 ## Correct interpretation of portability
 

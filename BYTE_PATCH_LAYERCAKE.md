@@ -1,5 +1,9 @@
 # Byte-Patch LayerCake
 
+> Historical architecture-selection record. The sealed public interface remains
+> byte-facing, but the release does not claim tokenizer-free superiority. See
+> `docs/MOONSHOT_ARCHITECTURE.md` and `docs/VERIFICATION_AND_LIMITS.md`.
+
 The v2 path is:
 
 `UTF-8 bytes -> byte embeddings -> causal patches -> patch core -> canonical ABI -> sparse brick -> byte logits`

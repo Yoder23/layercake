@@ -1,5 +1,8 @@
 # Micro Frontier Findings (2026-06-29)
 
+> Historical negative evidence from a predecessor training study. It remains
+> preserved but does not describe the final sealed product or reopen Phase 3.
+
 Source artifact:
 - results/micro_scale_curriculum_frontier_1m_10m.json
 

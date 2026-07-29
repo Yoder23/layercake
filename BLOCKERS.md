@@ -1,5 +1,10 @@
 # Experimental Blockers
 
+> Historical research backlog. These items do not reopen or redefine the sealed
+> Moonshot. Current certified limits are in
+> `docs/VERIFICATION_AND_LIMITS.md`; post-release work is governed by
+> `ROADMAP.md`.
+
 The software acceptance path and selected small-scale research gates pass. The following
 broader scientific claims remain blocked by resources or evidence:
 

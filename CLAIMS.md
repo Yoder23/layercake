@@ -6,6 +6,7 @@ below is bounded by the exact release lineage and raw evidence paths.
 | Claim | Evidence anchor | Certified result |
 | --- | --- | --- |
 | Campaign completion | `moonshot/campaign.yaml`, Phase 8 seal | All eight phases sealed; `verify-all` validates the completed campaign. |
+| Phase 3 disposition | `results/moonshot/phase3/release_certificate.json` | `RETIRED_BY_GOVERNANCE`; zero headline claims and no training-efficiency, acquisition, ABI, or host-certification proof. |
 | Independent reproduction | `results/moonshot/phase8/raw_runs/cleanroom_environment.json` | Detached Phase 7 checkout, 597 passing tests, all prior typed gates recomputed. |
 | CPU performance | `phase8/raw_runs/reproduction_performance.json` | 9.91x LayerCake/Qwen output-byte throughput; 0.0179x median latency ratio. |
 | GPU performance | same | 8.25x LayerCake/Qwen output-byte throughput. |

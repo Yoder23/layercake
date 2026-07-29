@@ -1,5 +1,10 @@
 # Domain Paste Guide
 
+> Historical direct-paste workflow. The certified Phase 4-6 package lifecycle,
+> compatibility, identity, routing, and portability contracts are documented in
+> `docs/CAKE_AUTHORING.md`, `docs/CAKE_REGISTRY_SPEC.md`, and
+> `docs/PHASE_STATUS.md`.
+
 ## V2 canonical transfer note
 
 This document primarily describes the original tokenized direct-paste workflow. Exact

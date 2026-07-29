@@ -22,21 +22,33 @@ recompute the campaign-level lifecycle state. A valid release reports
 
 ## Eight sealed phases
 
-| Phase | What was proved | Primary evidence | Seal tag |
+| Phase | Sealed result or disposition | Primary evidence | Seal tag |
 | --- | --- | --- | --- |
 | 0 | Permanent governance, contracts, invalidation rules, and campaign state | `results/moonshot/phase0/` | `layercake-moonshot-phase0` |
 | 1 | Auditable benchmark truth with matched quality/speed accounting | `results/moonshot/phase1/` | `layercake-moonshot-phase1` |
-| 2 | One integrated English-host lineage cleared the locked matched-quality CPU gate | `results/moonshot/phase2/` | `layercake-moonshot-phase2-r3` |
-| 3 | Host/capability-acquisition governance, interface continuity, and bounded controls | `results/moonshot/phase3/` | `layercake-moonshot-phase3` |
+| 2 | One integrated English-host lineage cleared the locked matched-quality CPU gate | `results/moonshot/phase2_recertification/` | `layercake-moonshot-phase2-r3` |
+| 3 | Original training-efficiency objective retired by governance; bounded controls and negative evidence preserved | `results/moonshot/phase3/` | `layercake-moonshot-phase3` |
 | 4 | A useful signed Python capability package transferred losslessly without receiver learning | `results/moonshot/phase4/` | `layercake-moonshot-phase4` |
 | 5 | Three real capability packages established generic multi-domain extension | `results/moonshot/phase5/` | `layercake-moonshot-phase5` |
 | 6 | Archive-bound routing, selected-only execution, multi-mode orchestration, and catalog scaling | `results/moonshot/phase6/` | `layercake-moonshot-phase6` |
 | 7 | Locked CPU, GPU, and CPU-versus-GPU performance for the exact integrated product | `results/moonshot/phase7/` | `layercake-moonshot-phase7` |
 | 8 | Detached clean-room reproduction, hostile falsification, and final release integrity | `results/moonshot/phase8/` | `layercake-moonshot-final` |
 
-Phase 3 does **not** claim faster from-scratch foundation training. That gate was
-retired by governance when ABI capability acquisition became a separate product
-campaign. Ordinary LayerCake training remains a research and fallback capability.
+### Phase 3 is retired, not skipped
+
+Phase 3 ran bounded training-efficiency experiments and preserved their positive
+and negative evidence. Its final certificate has scope
+`governance_retirement_no_training_efficiency_claim`, disposition
+`RETIRED_BY_GOVERNANCE`, zero headline claims, and
+`scientific_training_efficiency_passed: false`. The five promoted records prove
+only that the retirement was authorized, historical evidence was preserved, no
+scientific training pass was claimed, the Phase 2 parent was sealed, and a future
+ABI artifact would require recertification.
+
+Therefore Phase 3 is a valid sealed campaign transition, not a skipped lifecycle
+step and not a scientific pass of faster training, English acquisition, ABI
+bootstrapping, or host certification. Ordinary LayerCake training remains a
+research and fallback capability.
 
 ## Final Phase 8 gate summary
 
@@ -48,7 +60,7 @@ The final certificate derives three required metrics from fresh raw evidence:
 | Clean-room reproduction | 1.0 |
 | Adversarial findings resolved | 1.0 |
 
-The detached verifier reran a 597-test clean checkout, all Phase 2–7 typed
+The detached verifier reran a 597-test clean checkout, all Phase 2-7 typed
 gates, a 100-distinct-prompt plus 20-repeat four-system performance matrix,
 384 held-out domain cases per device, 100 core abstentions, 1,980 routing rows,
 a 500-entry catalog, and a three-host package lifecycle. It also executed 32

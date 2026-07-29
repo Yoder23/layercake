@@ -2,7 +2,8 @@
 
 > Historical control, not a current Moonshot gate. Faster from-scratch
 > foundation training was retired as a LayerCake product requirement; Phase 3
-> is sealed under the host-certification and capability-acquisition governance.
+> is sealed only as an authorized governance retirement with preserved evidence
+> and zero headline scientific claims.
 
 ## v23 selected-domain-cake gate
 

@@ -7,6 +7,12 @@ The eight-phase LayerCake campaign is locally sealed at the annotated Git tag
 The tag is the release boundary. The canonical campaign state, raw evidence, and
 machine validation are under `moonshot/` and `results/moonshot/`.
 
+All phase lifecycle entries are sealed. Phase 3 has the explicit disposition
+`RETIRED_BY_GOVERNANCE`: it preserved the bounded training controls and retired
+the original faster-training requirement with zero headline scientific claims.
+It was not skipped, but it also must not be described as a training-efficiency
+or host-certification proof.
+
 LayerCake is a capability host: an English core executes selected, signed,
 non-executable capability packages over a byte-facing interface. It is designed
 for fast CPU and GPU inference, immutable packages, persistent incremental
@@ -47,7 +53,7 @@ from-scratch English acquisition.
 | 0 | Permanent governance and campaign state | Sealed |
 | 1 | Benchmark truth | Sealed |
 | 2 | Matched-quality CPU core performance | Sealed |
-| 3 | LayerCake host certification and capability-acquisition governance | Sealed; faster from-scratch training is retired as a product gate |
+| 3 | Governed retirement of the original training-efficiency objective and preservation of its controls | Sealed as `RETIRED_BY_GOVERNANCE`; no training-efficiency or host-certification claim |
 | 4 | One useful lossless portable Python capability | Sealed |
 | 5 | Generic multi-domain extensibility | Sealed |
 | 6 | Safe routing and catalog scalability | Sealed |

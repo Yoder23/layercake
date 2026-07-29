@@ -1,5 +1,9 @@
 # Dominance gates
 
+> Historical experimental framework. Its smoke and tier gates are not the
+> sealed Moonshot acceptance criteria. The final promoted evidence is governed
+> by `BENCHMARKS.md`, `CLAIMS.md`, and the phase certificates.
+
 Dominance gates are a framework for serious experiments, not a smoke-CI claim.
 
 Tracked dimensions:

@@ -1,5 +1,9 @@
 # LayerCake Transfer Rubric
 
+> Historical transfer rubric. Its level table is preserved as development
+> context and must not replace the sealed Phase 4-6 certificates or the current
+> claim map in `CLAIMS.md`.
+
 LayerCake reports transfer at separate levels. Passing a lower level never implies a
 higher one.
 

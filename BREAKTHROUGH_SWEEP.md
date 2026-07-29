@@ -1,5 +1,9 @@
 # LayerCake Breakthrough Sweep
 
+> Historical predecessor protocol. It is retained for reproducibility and does
+> not represent an open Moonshot gate or the final release verifier. Use
+> `BENCHMARKS.md` and `docs/PHASE_STATUS.md` for the sealed campaign.
+
 This is the locked engineer-facing gate for promoting the LayerCake breakthrough claim.
 
 The sweep is intentionally strict: the top-level certificate passes only when every

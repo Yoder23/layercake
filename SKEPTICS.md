@@ -1,5 +1,9 @@
 # Skeptics FAQ
 
+> Historical V2 FAQ. Current answers are bounded by the final release evidence
+> in `CLAIMS.md` and `docs/VERIFICATION_AND_LIMITS.md`; this document cannot
+> expand those claims.
+
 ## 2026 v2 update
 
 Some objections below describe the original tokenized prototype and remain useful

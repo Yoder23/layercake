@@ -1,5 +1,9 @@
 # Byte NextGen Ladder: 100M -> 225M -> 500M
 
+> Historical byte-model scaling plan. It is not an active Moonshot phase,
+> production commitment, or certified release path. Its artifacts remain
+> research controls.
+
 This plan locks in fast iteration first, then scale only when quality gates require it.
 
 ## Core principle

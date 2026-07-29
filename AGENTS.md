@@ -343,6 +343,10 @@ reaches the intended boundary. No unresolved finding of any severity may be
 waived to complete the campaign.
 
 Phase 3's training-efficiency objective remains retired by governance.
+Its sealed certificate has zero headline claims and must not be described as
+training-efficiency, ABI-bootstrapping, capability-acquisition, or host-
+certification proof. It is a valid campaign-lifecycle retirement, not a skipped
+phase and not a scientific pass of the retired objective.
 Phase 8 must preserve its historical controls and must not claim faster
 foundation or domain training. Physical mobile, calibrated-energy dominance,
 latent fusion, and third-party laboratory independence also remain outside
