@@ -199,6 +199,31 @@ Phase 6 gates.
 The immutable preregistration is
 `moonshot/phase5_generic_multidomain_preregistration.json`.
 
+## Phase 6 orchestration lock
+
+Phase 6 is open on the exact sealed Phase 5 lineage. The English core and the
+signed Python, SQL, and regular-expression archives are immutable inputs.
+Phase 6 adds only a generic catalog-derived router, archive-bound routing
+profiles, safe execution orchestration, and evidence.
+
+Promotion requires core-only, top-1, top-k, structured multidomain, manual, and
+abstention modes; three seeded evaluations; at least 95% top-1 accuracy; at
+least 98% top-k recall; at most 2% false specialist activation; routing below
+5% of warm routed latency; a catalog-management stress size of at least 100;
+and at least 2x the locked optimized CPU-transformer throughput after measured
+routing overhead. Every routed and manually selected real domain must preserve
+the complete frozen functional success set with zero inactive neural forward
+calls.
+
+The 100-entry catalog claim is management scalability, not 100-domain quality:
+only the three sealed neural cakes may contribute capability evidence.
+Multidomain direct-cake operation is an ordered structured composition of
+independent subrequests, not latent neural fusion. Missing, unauthenticated, or
+archive-mismatched routing metadata must fail closed.
+
+The immutable preregistration is
+`moonshot/phase6_orchestration_preregistration.json`.
+
 ## Required reread points
 
 Before beginning a representation campaign, selecting a promoted candidate,

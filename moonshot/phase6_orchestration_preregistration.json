@@ -1,0 +1,158 @@
+{
+  "format": "layercake-phase6-orchestration-preregistration/1",
+  "status": "LOCKED",
+  "phase": 6,
+  "objective": "Prove authenticated dynamic discovery, safe automatic and manual selection, structured multidomain orchestration, abstention, sparse execution, and catalog-management scalability without modifying the sealed core or sealed capability packages.",
+  "parent_lineage": {
+    "phase5_completion_tag": "layercake-moonshot-phase5",
+    "phase5_seal_commit": "5bf363e82fd77644b5461bb166a3b91fbefa5b28",
+    "abi_version": "lc-direct-neural-decoder/1",
+    "abi_sha256": "de765899700aefe22bfe6c9d00ed5b0c1f87a7ef864cf7211aa8aa4491a0742a",
+    "packages": {
+      "python-token-plan": "0585c79bfbea16b1c4165bf0030ba6985b8a8cdeab529cd7afe3f9c76c564ef7",
+      "regex-token-plan": "c336a552415b2d6161eb6696338086f89c3c3b6e25949e6cf0a94373e9690f15",
+      "sql-token-plan": "24efdb68885581318bee3a0b7c3cac0b0fe0b75eefa90070c601384a8bf5e105"
+    }
+  },
+  "immutable_boundaries": {
+    "english_core": "unchanged",
+    "canonical_abi": "unchanged",
+    "sealed_package_archives": "byte-identical",
+    "sealed_package_manifests": "unchanged",
+    "sealed_package_tensors": "unchanged",
+    "receiver_learning_or_calibration": 0,
+    "router_may_execute_package_code": false,
+    "router_profiles": "campaign-authenticated metadata bound to exact cake_id and archive SHA-256",
+    "profile_archive_mismatch": "fail closed"
+  },
+  "routing_modes": {
+    "core_only": "explicitly bypass all cakes",
+    "automatic_top1": "select at most one eligible installed cake or abstain",
+    "automatic_topk": "select up to two eligible installed cakes",
+    "multidomain": "split an explicitly separable request into ordered independent subrequests, route and execute each subrequest, then return a structured result envelope",
+    "manual": "execute only explicitly named eligible installed cakes",
+    "abstention": "select no cake and return control to the unchanged core handler"
+  },
+  "claim_boundaries": {
+    "multidomain_is_structured_orchestration": true,
+    "latent_neural_fusion_claimed": false,
+    "simultaneous_direct_decoder_fusion_claimed": false,
+    "catalog_entries_with_promoted_neural_capability": 3,
+    "catalog_stress_entries_are_real_capabilities": false,
+    "hundred_domain_quality_claimed": false,
+    "automatic_execution_requires_authenticated_installed_package_and_bound_profile": true
+  },
+  "router": {
+    "architecture": "deterministic catalog-profile scorer with phrase, token, and anchored-pattern evidence; no fixed domain output head",
+    "catalog_output_set": "derived at refresh time from eligible installed package records and archive-bound profiles",
+    "activation_threshold": 0.55,
+    "topk_threshold": 0.55,
+    "minimum_top1_margin": 0.08,
+    "maximum_automatic_cakes": 2,
+    "control_phrase_policy": "adversarial routing-control instructions force abstention",
+    "unknown_or_ambiguous_policy": "abstain",
+    "profile_selection": "fixed before final-suite generation and access",
+    "profile_source": "public task vocabulary and package metadata; no held-out output or label feedback"
+  },
+  "evaluation": {
+    "seeds": [
+      10601,
+      10602,
+      10603
+    ],
+    "top1": {
+      "distinct_prompts_per_domain": 120,
+      "domains": [
+        "python",
+        "sql",
+        "regex"
+      ],
+      "promoted_metric": "micro accuracy recomputed from every raw decision",
+      "threshold": 0.95
+    },
+    "topk_and_multidomain": {
+      "distinct_prompts": 120,
+      "required_domains_per_prompt": 2,
+      "promoted_metric": "micro recall over required package identities",
+      "threshold": 0.98
+    },
+    "negative_and_core": {
+      "distinct_core_prompts": 120,
+      "distinct_adversarial_control_prompts": 60,
+      "promoted_metric": "false specialist activations divided by all negative decisions",
+      "threshold": 0.02
+    },
+    "functional_execution": {
+      "source": "the frozen Phase 4 Python and Phase 5 SQL/regex held-out functional rows",
+      "minimum_rows_per_domain": 128,
+      "required_routed_success_retention": 1.0,
+      "required_manual_success_retention": 1.0,
+      "required_inactive_forward_calls": 0
+    },
+    "external_boundary": {
+      "protocol": "UTF-8 JSON request and response documents through a fresh subprocess",
+      "required_equivalence_to_internal_api": 1.0,
+      "shell_or_dynamic_code_execution": false
+    },
+    "catalog_scaling": {
+      "sizes": [
+        3,
+        10,
+        25,
+        50,
+        100,
+        250,
+        500
+      ],
+      "real_installed_promoted_capabilities": 3,
+      "remaining_entries": "management-only unavailable descriptors, explicitly excluded from capability and execution claims",
+      "largest_required_size": 100
+    },
+    "timing": {
+      "warm_distinct_prompts": 100,
+      "headline_repetitions": 20,
+      "primary_route_metric": "median router wall time divided by median routed LayerCake end-to-end wall time",
+      "maximum_fraction": 0.05,
+      "percentiles_require_at_least_100_observations": true,
+      "paired_prompt_bootstrap_confidence_interval": 0.95
+    },
+    "mixed_workload_cpu_comparison": {
+      "systems": [
+        "same routed LayerCake package lineage",
+        "Phase 4 optimized CPU Qwen 2.5 0.5B Q4_K_M product baseline"
+      ],
+      "primary_metric": "median paired UTF-8 output bytes per second ratio after adding measured warm routing latency to LayerCake",
+      "minimum_ratio": 2.0,
+      "quality_condition": "LayerCake must retain the complete promoted functional success set; transformer quality is reported separately and never borrowed",
+      "baseline_reuse": "permitted only for immutable Phase 4 raw observations whose model digest, prompts, thread count, CPU-only setting, and output policy are verified",
+      "new_sql_regex_transformer_credit": "not claimed without new matched raw transformer runs"
+    }
+  },
+  "promotion_gates": {
+    "top1_accuracy": 0.95,
+    "topk_recall": 0.98,
+    "false_specialist_activation": 0.02,
+    "routing_warm_latency_fraction": 0.05,
+    "largest_catalog_size": 100,
+    "mixed_workload_cpu_transformer_ratio": 2.0,
+    "routed_functional_success_retention": 1.0,
+    "manual_functional_success_retention": 1.0,
+    "inactive_cake_forward_calls": 0,
+    "sealed_package_hash_retention": 1.0,
+    "external_internal_equivalence": 1.0,
+    "phase5_dependent_gate_retention": 1.0
+  },
+  "framework_freeze": {
+    "required_before_final_suite_generation": true,
+    "source_changes_after_freeze": "invalidate all Phase 6 final evidence",
+    "final_suite_changes_after_freeze": "invalidate all Phase 6 final evidence",
+    "threshold_changes_after_freeze": "invalidate all Phase 6 final evidence"
+  },
+  "release": {
+    "typed_fail_closed_verifier_required": true,
+    "adversarial_verifier_tests_required": true,
+    "clean_commit_required": true,
+    "annotated_tag": "layercake-moonshot-phase6",
+    "phase7_must_remain_locked_until_seal": true
+  }
+}

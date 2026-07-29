@@ -229,3 +229,33 @@ is non-executable, signed, immutable, autonomously neural, lossless at the byte
 boundary, device-independent, and behavior-identical across certified
 receivers. It does not satisfy later multi-domain fusion or routing gates;
 Phases 5 and 6 remain responsible for those proofs.
+
+## Phase 6 orchestration and catalog rule
+
+Phase 6 operates above the sealed English core and the exact sealed Python,
+SQL, and regular-expression package bytes. It may add routing, catalog, and
+orchestration code and content-addressed routing metadata. It may not modify,
+retrain, calibrate, repackage, or borrow quality from any sealed core or cake.
+
+Automatic activation requires both an eligible authenticated installed package
+and a campaign-authenticated routing profile bound to that package's exact
+archive hash. A missing or mismatched profile fails closed to manual selection
+or core abstention. The router output set must be discovered from the current
+catalog; a fixed compiled domain head cannot satisfy dynamic discovery.
+
+The required modes are core-only, automatic top-1, automatic top-k, structured
+multidomain orchestration, explicit manual selection, and abstention. Because
+the promoted direct-decoder packages do not declare a latent fusion contract,
+multidomain operation means routing and executing explicitly separable
+subrequests and returning a deterministic structured envelope. It is not a
+claim of simultaneous neural fusion or of one decoder generating another
+decoder's domain output.
+
+Catalog stress entries without promoted neural behavior are management-only
+descriptors. They may prove lookup and refresh scaling, but they may never be
+counted as real capabilities, installed executable cakes, domain quality, or
+functional success. Only selected real cakes may receive module-load, prefill,
+or decode calls.
+
+The immutable Phase 6 preregistration is
+`moonshot/phase6_orchestration_preregistration.json`.
