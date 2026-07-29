@@ -461,6 +461,8 @@
       "handoff_sha256": "da0659b4472c7fcb5caa2fa34d74b2ab29853740352272d9d20b0cf8518e4de9",
       "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
       "phase_implementation_commit": "22501a3a4ef16c3cbb390aef565ec502391d8768",
+      "phase_release_commit": "ebf594073c7364df9249e75ee9833861a7804992",
+      "phase_tag": "layercake-moonshot-final",
       "raw_evidence_manifest_sha256": "d368ab56071352ce09ed86bb019837ac7573d82ccd0ca979992403535191aa99",
       "recertification_history": [
         {
@@ -469,7 +471,13 @@
           "reason": "The prior verifier could not read long preserved-history paths through Windows git show; its evidence and mirrors remain preserved under history.",
           "recertification_id": "phase8-long-path-sealing-recertification/1"
         }
-      ]
+      ],
+      "seal": "results/moonshot/phase8/seal.json",
+      "working_tree_clean_at_release": {
+        "command": "git status --porcelain=v1",
+        "porcelain": "",
+        "status": "CLEAN"
+      }
     }
   },
   "phases": {
@@ -481,7 +489,7 @@
     "phase5_multi_domain": "SEALED",
     "phase6_orchestration": "SEALED",
     "phase7_integrated_performance": "SEALED",
-    "phase8_independent_verification": "PASS"
+    "phase8_independent_verification": "SEALED"
   },
   "repair_history": [
     {
