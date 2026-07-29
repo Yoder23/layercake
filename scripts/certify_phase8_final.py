@@ -2985,20 +2985,17 @@ def main(argv: list[str] | None = None) -> int:
     elif arguments.command == "cleanroom-run":
         if arguments.target is None or arguments.output is None:
             parser.error("cleanroom-run requires --target and --output")
-        value = cleanroom_run(
+        cleanroom_run(
             arguments.target.resolve(), arguments.output.resolve()
         )
+        # The parent treats the atomically written output file as the child
+        # protocol.  Do not write a final status message to inherited stdout:
+        # host launchers may detach that pipe after starting a long run, and a
+        # blocked diagnostic print must never prevent evidence completion.
+        os._exit(0)
     else:
         value = certify()
     print(json.dumps(value, indent=2, sort_keys=True))
-    if arguments.command == "cleanroom-run":
-        # The isolated workload can leave native CUDA worker threads waiting
-        # after its fully fsynced result has been written.  This disposable
-        # child has no cleanup state to retain; a direct exit guarantees that
-        # the parent verifier observes the completed result instead of a host
-        # shutdown deadlock.
-        sys.stdout.flush()
-        os._exit(0)
     return 0
 
 

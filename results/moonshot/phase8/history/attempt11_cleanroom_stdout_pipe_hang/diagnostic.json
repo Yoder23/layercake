@@ -1,0 +1,10 @@
+{
+  "format": "layercake-phase8-historical-attempt/1",
+  "status": "INVALIDATED_BEFORE_CERTIFICATION",
+  "reason": "The clean-room subprocess again wrote the same complete fsynced raw bundle but did not return to its parent.",
+  "raw_result_sha256": "513a7356426f67f7ee489e154f933eabf9c130a0b654e56daebc8ce683c40e8d",
+  "root_cause": "The child inherited an output pipe whose reader had been detached by the host launcher. Its final nonessential JSON status print could therefore block after the evidence result was complete.",
+  "corrective_action": "Successful clean-room children now exit immediately after the fsynced result return path, without writing a final status message to stdout. A new framework freeze and full reproduction are required.",
+  "claims_retained": false,
+  "historical_evidence_preserved": true
+}
