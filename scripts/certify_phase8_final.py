@@ -872,7 +872,7 @@ def _fresh_performance(
             torch.cuda.empty_cache()
             torch.cuda.reset_peak_memory_stats()
         with tempfile.TemporaryDirectory(
-            prefix=f"layercake-phase8-cold-{device}-", dir=r"C:\tmp"
+            prefix=f"layercake-phase8-cold-{device}-"
         ) as temporary:
             install_started = time.perf_counter_ns()
             cold_host = _new_orchestrator(
@@ -930,7 +930,6 @@ def _fresh_performance(
             seed_rows = rows[seed_index * 40 : (seed_index + 1) * 40]
             with tempfile.TemporaryDirectory(
                 prefix=f"layercake-phase8-{device}-seed{seed}-",
-                dir=r"C:\tmp",
             ) as temporary:
                 host = _new_orchestrator(
                     target, Path(temporary) / "registry", device
@@ -1049,7 +1048,6 @@ def _domain_retention(
         values: dict[tuple[str, str], dict[str, Any]] = {}
         with tempfile.TemporaryDirectory(
             prefix=f"layercake-phase8-retention-{device}-",
-            dir=r"C:\tmp",
         ) as temporary:
             host = _new_orchestrator(
                 target, Path(temporary) / "registry", device
@@ -1121,7 +1119,7 @@ def _domain_retention(
     ][:100]
     abstentions = []
     with tempfile.TemporaryDirectory(
-        prefix="layercake-phase8-core-only-", dir=r"C:\tmp"
+        prefix="layercake-phase8-core-only-"
     ) as temporary:
         host = _new_orchestrator(
             target, Path(temporary) / "registry", "cpu"
@@ -1174,7 +1172,6 @@ def _lifecycle_portability(
     for seed in SEEDS:
         with tempfile.TemporaryDirectory(
             prefix=f"layercake-phase8-lifecycle-{seed}-",
-            dir=r"C:\tmp",
         ) as temporary:
             core_before = _core_hashes(target)
             host = _new_orchestrator(
@@ -1259,7 +1256,7 @@ def _external_process(
         prompt, mode="automatic_top1"
     ).to_dict()
     with tempfile.TemporaryDirectory(
-        prefix="layercake-phase8-external-", dir=r"C:\tmp"
+        prefix="layercake-phase8-external-"
     ) as temporary:
         temporary_path = Path(temporary)
         request = {
@@ -1337,7 +1334,7 @@ def _routing_catalog(
     ]
     records = []
     with tempfile.TemporaryDirectory(
-        prefix="layercake-phase8-routing-", dir=r"C:\tmp"
+        prefix="layercake-phase8-routing-"
     ) as temporary:
         host = _new_orchestrator(
             target, Path(temporary) / "registry", "cpu"
@@ -1749,44 +1746,59 @@ def _expect_rejection(
     *,
     expected: str | None = None,
 ) -> dict[str, Any]:
+    print(f"phase8: hostile {attack_id} started", flush=True)
     try:
         operation()
     except Exception as error:
         text = f"{type(error).__name__}: {error}"
         if expected is not None and expected.casefold() not in text.casefold():
-            return {
+            result = {
                 "attack_id": attack_id,
                 "category": category,
                 "outcome": "MISDIRECTED",
                 "resolved": False,
                 "evidence": text,
             }
-        return {
+            print(
+                f"phase8: hostile {attack_id} MISDIRECTED",
+                flush=True,
+            )
+            return result
+        result = {
             "attack_id": attack_id,
             "category": category,
             "outcome": "DETECTED",
             "resolved": True,
             "evidence": text,
         }
-    return {
+        print(f"phase8: hostile {attack_id} DETECTED", flush=True)
+        return result
+    result = {
         "attack_id": attack_id,
         "category": category,
         "outcome": "NOT_DETECTED",
         "resolved": False,
         "evidence": "operation unexpectedly succeeded",
     }
+    print(f"phase8: hostile {attack_id} NOT_DETECTED", flush=True)
+    return result
 
 
 def _retained(
     attack_id: str, category: str, passed: bool, evidence: Any
 ) -> dict[str, Any]:
-    return {
+    result = {
         "attack_id": attack_id,
         "category": category,
         "outcome": "INVARIANT_RETAINED" if passed else "FALSIFIED",
         "resolved": bool(passed),
         "evidence": evidence,
     }
+    print(
+        f"phase8: hostile {attack_id} {result['outcome']}",
+        flush=True,
+    )
+    return result
 
 
 def _rewrite_zip(path: Path, mutation: Callable[[list[list[Any]]], None]) -> None:
@@ -1817,7 +1829,7 @@ def _adversarial_falsification(
     from layercake.cake.signing import generate_keypair
     from layercake.routing import load_archive_bound_profiles
     from layercake.routing.catalog_router import CatalogProfileRouter
-    from layercake.routing.policies import RoutingPolicy
+    from layercake.routing.policies import CakePermissionPolicy, RoutingPolicy
 
     records: list[dict[str, Any]] = []
     phase7_certificate = _read(
@@ -1853,12 +1865,15 @@ def _adversarial_falsification(
         )
     )
     python_package = target / PACKAGES_RELATIVE["python"]
+    print("phase8: hostile archive workspace requested", flush=True)
     with tempfile.TemporaryDirectory(
-        prefix="layercake-phase8-attacks-", dir=r"C:\tmp"
+        prefix="layercake-phase8-attacks-"
     ) as temporary:
+        print("phase8: hostile archive workspace ready", flush=True)
         temporary_path = Path(temporary)
         payload_tamper = temporary_path / "payload.cake"
         shutil.copy2(python_package, payload_tamper)
+        print("phase8: hostile payload archive copied", flush=True)
 
         def mutate_payload(members: list[list[Any]]) -> None:
             for member in members:
@@ -1868,6 +1883,7 @@ def _adversarial_falsification(
                     )
 
         _rewrite_zip(payload_tamper, mutate_payload)
+        print("phase8: hostile payload archive rewritten", flush=True)
         records.append(
             _expect_rejection(
                 "adv-003-payload-tamper",
@@ -1961,7 +1977,14 @@ def _adversarial_falsification(
             )
         )
         profiles = load_archive_bound_profiles(target / PROFILES_RELATIVE)
-        router = CatalogProfileRouter(profiles, policy=RoutingPolicy())
+        router = CatalogProfileRouter(
+            profiles,
+            policy=RoutingPolicy(
+                permissions=CakePermissionPolicy(
+                    allowed_permissions=frozenset({"local-inference"})
+                )
+            ),
+        )
         mismatch = router.refresh(
             (
                 {
@@ -1984,7 +2007,7 @@ def _adversarial_falsification(
             )
         )
         with tempfile.TemporaryDirectory(
-            prefix="layercake-phase8-router-attack-", dir=r"C:\tmp"
+            prefix="layercake-phase8-router-attack-"
         ) as router_temporary:
             host = _new_orchestrator(
                 target, Path(router_temporary) / "registry", "cpu"
@@ -2003,29 +2026,47 @@ def _adversarial_falsification(
                 )
             )
             before = host.host.telemetry()
-            result = host.execute(
-                "Write one SQL query only: select value from table_x.",
-                mode="automatic_top1",
+            sql_performance = next(
+                row
+                for row in performance["records"]
+                if row["domain"] == "sql"
+                and row["layercake_cpu"]["functional_success"]
+            )
+            sql_attack_row = next(
+                row
+                for row in _functional_rows(target)["sql"]
+                if row["id"] == sql_performance["prompt_id"]
+            )
+            sql_route = host.plan(
+                str(sql_attack_row["prompt"]), mode="automatic_top1"
+            )
+            sql_generation = host.host.generate(
+                sql_route.selected[0],
+                str(sql_attack_row["prompt"]) + "\n",
+                maximum_actions=int(
+                    sql_performance["layercake_cpu"]["generated_actions"]
+                ),
             )
             after = host.host.telemetry()
+            telemetry_delta = {
+                key: {
+                    field: after[key][field] - before[key][field]
+                    for field in after[key]
+                }
+                for key in after
+            }
             records.append(
                 _retained(
                     "adv-011-inactive-cake",
                     "inactive_cake_execution",
-                    result.selected == (CAKE_IDS["sql"],)
+                    sql_route.selected == (CAKE_IDS["sql"],)
+                    and sql_generation.decode_step_calls > 0
                     and _inactive_calls(
-                        {
-                            key: {
-                                field: after[key][field]
-                                - before[key][field]
-                                for field in after[key]
-                            }
-                            for key in after
-                        },
+                        telemetry_delta,
                         CAKE_IDS["sql"],
                     )
                     == 0,
-                    result.telemetry_delta,
+                    telemetry_delta,
                 )
             )
         unsigned = router.refresh(
@@ -2781,9 +2822,7 @@ def certify() -> dict[str, Any]:
         raise RuntimeError(
             process.stderr.strip() or process.stdout.strip()
         )
-    run_dir = Path(
-        tempfile.mkdtemp(prefix="layercake-phase8-result-", dir=r"C:\tmp")
-    )
+    run_dir = Path(tempfile.mkdtemp(prefix="layercake-phase8-result-"))
     output = run_dir / "cleanroom_result.json"
     env = dict(os.environ)
     env["PYTHONPATH"] = str(CLEAN_ROOT)
