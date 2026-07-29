@@ -909,6 +909,18 @@ def _phase_evidence_files(root: Path, phase: int) -> list[Path]:
             raise CampaignVerificationError(
                 f"Phase 7 evidence manifest failed: {error}"
             ) from error
+    if phase == 8:
+        try:
+            from .evaluation.phase8_evidence import (
+                Phase8EvidenceError,
+                phase8_evidence_files,
+            )
+
+            return phase8_evidence_files(root)
+        except Phase8EvidenceError as error:
+            raise CampaignVerificationError(
+                f"Phase 8 evidence manifest failed: {error}"
+            ) from error
     excluded = {
         "candidate.json", "candidate_verification.json", "release_certificate.json",
         "handoff.json", "seal.json",
@@ -1089,6 +1101,27 @@ def _verify_phase_evidence(root: Path, phase: int, contracts: Mapping[str, Mappi
         except Phase7EvidenceError as error:
             raise CampaignVerificationError(
                 f"Phase 7 typed evidence failed: {error}"
+            ) from error
+    if phase == 8:
+        try:
+            from .evaluation.phase8_evidence import (
+                Phase8EvidenceError,
+                validate_phase8_bundle,
+            )
+
+            summary = validate_phase8_bundle(
+                root, _phase_dir(root, 8)
+            )
+            payload = read_document(
+                _lifecycle_path(root, 8, "certificate_payload.json")
+            )
+            validate_required_gates(
+                root, 8, payload, contracts["claim_contract.yaml"]
+            )
+            return summary
+        except Phase8EvidenceError as error:
+            raise CampaignVerificationError(
+                f"Phase 8 typed evidence failed: {error}"
             ) from error
     raise CampaignVerificationError(
         f"Phase {phase} requires its phase-specific typed verifier before candidate construction"
@@ -1587,6 +1620,18 @@ def verify_sealed(root: Path, phase: int) -> dict[str, Any]:
         except Phase7EvidenceError as error:
             raise CampaignVerificationError(
                 f"sealed Phase 7 typed evidence failed: {error}"
+            ) from error
+    if phase == 8:
+        try:
+            from .evaluation.phase8_evidence import (
+                Phase8EvidenceError,
+                validate_phase8_bundle,
+            )
+
+            validate_phase8_bundle(root, _phase_dir(root, 8))
+        except Phase8EvidenceError as error:
+            raise CampaignVerificationError(
+                f"sealed Phase 8 typed evidence failed: {error}"
             ) from error
     remote = _git(root, "ls-remote", "--tags", "origin", f"refs/tags/{tag}", check=False)
     remote_status = "PUBLISHED" if remote else "NOT_VERIFIED_OR_NOT_PUBLISHED"

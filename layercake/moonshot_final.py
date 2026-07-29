@@ -197,6 +197,21 @@ def main(argv: list[str] | None = None) -> int:
         _dump(result)
         return 0 if all(row.get("status") == "PASS" for row in result.values()) else 1
     if args.command == "verify":
+        phase8 = (
+            ROOT
+            / "results/moonshot/phase8/"
+            "independent_verification_certificate.json"
+        )
+        if phase8.is_file():
+            from layercake.evaluation.phase8_evidence import (
+                validate_phase8_bundle,
+            )
+
+            result = validate_phase8_bundle(
+                ROOT, ROOT / "results/moonshot/phase8"
+            )
+            _dump(result)
+            return 0 if result.get("status") == "PROVEN" else 1
         from layercake.evaluation.moonshot_final_verifier import verify_moonshot_final
 
         result = verify_moonshot_final(ROOT, FINAL / "release_certificate.json")
