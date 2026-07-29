@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import contextlib
 import gc
 import hashlib
 import inspect
@@ -2985,13 +2986,18 @@ def main(argv: list[str] | None = None) -> int:
     elif arguments.command == "cleanroom-run":
         if arguments.target is None or arguments.output is None:
             parser.error("cleanroom-run requires --target and --output")
-        cleanroom_run(
-            arguments.target.resolve(), arguments.output.resolve()
-        )
+        output = arguments.output.resolve()
+        progress = output.with_name("cleanroom_progress.log")
+        progress.parent.mkdir(parents=True, exist_ok=True)
+        with progress.open("a", encoding="utf-8") as handle:
+            with contextlib.redirect_stdout(handle):
+                cleanroom_run(arguments.target.resolve(), output)
+            handle.flush()
+            os.fsync(handle.fileno())
         # The parent treats the atomically written output file as the child
-        # protocol.  Do not write a final status message to inherited stdout:
-        # host launchers may detach that pipe after starting a long run, and a
-        # blocked diagnostic print must never prevent evidence completion.
+        # protocol.  Keep all diagnostic output in the staging log: host
+        # launchers may detach stdout after starting a long run, and a blocked
+        # progress write must never prevent evidence completion.
         os._exit(0)
     else:
         value = certify()

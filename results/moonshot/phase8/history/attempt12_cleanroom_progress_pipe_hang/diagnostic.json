@@ -1,0 +1,10 @@
+{
+  "format": "layercake-phase8-historical-attempt/1",
+  "status": "INVALIDATED_BEFORE_CERTIFICATION",
+  "reason": "The clean-room child completed its typed Phase 2-7 recomputation and wrote its crash-safe staging record, then blocked while emitting the next progress message to detached stdout.",
+  "raw_result_sha256": "513a7356426f67f7ee489e154f933eabf9c130a0b654e56daebc8ce683c40e8d",
+  "completed_stage": "typed_prior_recomputation",
+  "corrective_action": "All clean-room progress output is redirected to a local, fsynced staging log. The parent continues to accept only the atomically written result JSON as the success protocol. A new framework freeze and full reproduction are required.",
+  "claims_retained": false,
+  "historical_evidence_preserved": true
+}
