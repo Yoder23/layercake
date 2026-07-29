@@ -1,77 +1,63 @@
-# Benchmark Protocol
+# Benchmark and Reproduction Protocol
 
-Smoke commands emit JSON suitable for automation:
+The authoritative benchmark protocol is the sealed campaign, not the older
+smoke or North Star scripts. The final Phase 8 verifier recomputes all promoted
+metrics from raw evidence and fails closed on missing, stale, mismatched, or
+mixed-lineage artifacts.
 
-```powershell
-python scripts/smoke_byte_patch.py --output results/smoke_byte_patch.json
-python scripts/eval_lossless_copy.py --output results/lossless_copy_v2.json
-python scripts/eval_abi_alignment.py --output results/abi_alignment_smoke.json
-python scripts/eval_tokenizer_independent_transfer.py --output results/interface_transfer_smoke.json
-python scripts/benchmark_training_cost.py --output results/training_cost_static.json
-python scripts/benchmark_byte_patch.py --output results/byte_patch_benchmark.json
-python scripts/benchmark_domain_routing.py --output results/domain_routing_benchmark.json
-python scripts/verify_northstar_mobile.py
-```
-
-Required real-run metrics are trainable/total parameters, steps, wall time, bytes or
-tokens processed, loss curve, domain/general validation PPL, memory, installed and active
-brick counts, routing overhead, and patch compression ratio.
-
-Smoke numbers validate code paths only. They are not model-quality evidence.
-
-## North Star v23 routed-cake verification
+## Release commands
 
 ```powershell
-python scripts/migrate_v22_to_sparse_routed_cake.py
-python scripts/benchmark_northstar_training_speed.py --devices cpu,cuda --cpu-threads 1 --cpu-batch-size 16 --gpu-batch-size 128 --raw-sequence-bytes 256 --layercake-mode shared3_routed_tail_int8_foundation --warmup-steps 6 --measured-steps 20 --repeats 3 --output results/breakthrough_equal/northstar_v23_domain_cake_training_speed.json
-python scripts/train_byte_core_from_config.py --config configs/northstar_v23_route4_schema_training.json
-python scripts/verify_northstar_v23_route_isolation.py
-python scripts/run_northstar_release_tests.py --output results/breakthrough_equal/northstar_v23_pytest_summary.json
-python scripts/verify_northstar_v23_release.py
+C:\Python310\python.exe -m layercake.moonshot_campaign verify-sealed 8
+C:\Python310\python.exe -m layercake.moonshot_campaign verify-all
+C:\Python310\python.exe -m layercake.moonshot_final verify
 ```
 
-This measures selected-domain-cake fine-tuning with the foundation and decoder
-frozen. It is not the full-core pretraining protocol below.
+The release is valid only when the final tag is annotated, the worktree is
+clean, `verify-sealed 8` returns `SEALED`, and `verify-all` reports
+`completed_phases_valid: true`.
 
-## North Star v22 release verification
+## Final performance protocol
 
-The v22 comparison uses the same corrected training sources, heldout-safe combinations,
-and a transformer continuation with greater byte exposure. Reproduce the final validation:
+The Phase 8 clean room evaluates the same sealed integrated LayerCake lineage
+against the declared Qwen 2.5 0.5B runtime on the declared laptop CPU and RTX
+3080 Laptop GPU. Cross-model throughput is completed-request UTF-8 output bytes
+per wall second. Transformer token counts are retained as authoritative runtime
+metadata, but token units are not treated as LayerCake work units.
 
-```powershell
-python scripts/train_bpe_transformer_from_config.py --config configs/northstar_v22_fair_corrected_bpe.json
-python scripts/eval_schema_action_generation.py --questions data/schema_action_domain/eval_questions.json --layercake runs_experiment/northstar_v21_semantic_pointer/latest.pt --layercake-metrics runs_experiment/northstar_v21_semantic_pointer/training_metrics.json --bpe runs_experiment/northstar_v22_fair_corrected_bpe/latest.pt --bpe-metrics runs_experiment/northstar_v22_fair_corrected_bpe/training_metrics.json --device cpu --cpu-threads 1 --repeats 3 --max-new-bytes 128 --layercake-neural-mode patch --stop-after-json --benchmark-mode fair_neural --output results/breakthrough_equal/northstar_v22_schema_patch_cpu.json
-python scripts/export_northstar_v22_runtime.py
-python scripts/run_northstar_release_tests.py
-python scripts/verify_northstar_v22_release.py
-```
+The promoted matrix contains:
 
-GPU, compositional, INT8, resource, and transfer commands are listed in
-[NORTHSTAR_V22_RELEASE.md](NORTHSTAR_V22_RELEASE.md). The verifier exits nonzero when any
-required artifact is missing or any quality, speed, exposure, footprint, regression, or
-transfer gate fails.
+- 100 distinct frozen functional prompts;
+- 20 repeated observations for each headline configuration;
+- paired prompt-level comparisons and bootstrap confidence intervals;
+- CPU-to-CPU, GPU-to-GPU, and LayerCake-CPU-to-transformer-GPU comparisons;
+- one real cold streaming request after an unload control, including load,
+  time-to-first-output, and complete-request timing;
+- matched quality, repetition, coherence, grounding, memory, and selected-only
+  execution checks from the same product lineage.
 
-The selected 15M-class mobile certificate additionally requires two core seeds, exact
-stateful cached-generation BPB, one-thread generation, unchanged cross-host domain
-migration, and a matched domain-adapter comparison. GPU generation is reported but is not
-a passing gate because the current implementation loses that benchmark.
+The final derived performance values are 9.91x CPU output-byte throughput,
+8.25x GPU output-byte throughput, and 7.67x LayerCake-CPU-to-transformer-GPU
+output-byte throughput. See
+`results/moonshot/phase8/raw_runs/reproduction_performance.json` for all raw
+observations and `results/moonshot/phase8/release_report.md` for the summary.
 
-## Full north-star promotion contract
+## Functional, portability, and routing protocol
 
-Larger candidates must provide every field consumed by
-`layercake.northstar.NorthStarMetrics` and pass:
+The final verifier also reruns:
 
-```powershell
-python scripts/verify_scale_candidate.py `
-  --metrics results/<candidate>_northstar_metrics.json `
-  --output results/<candidate>_northstar_certificate.json
-```
+- 384 held-out domain cases on CPU and on GPU;
+- 100 core-only abstention cases;
+- install, verify, remove, and reinstall across three fresh hosts;
+- 1,980 routing rows across core-only, top-1, top-k, manual, structured
+  multidomain, and abstention modes;
+- a 500-entry catalog stress test that distinguishes management descriptors
+  from promoted neural packages;
+- 32 hostile attacks across 24 categories.
 
-Required gates are smaller parameter count, better heldout BPB, no additional sampled
-training bytes, lower training wall time, faster mobile and desktop prefill/generation,
-faster GPU prefill/generation, exact migration PPL/logits, and better migrated-domain BPB.
-Missing measurements are not treated as passes.
+## Historical benchmark scripts
 
-Measured paired-training and transfer results are recorded in
-[EXPERIMENT_RESULTS.md](EXPERIMENT_RESULTS.md). Raw JSON artifacts are under `results/`,
-and reproducible model/brick artifacts are under `runs_experiment/paired_seed*.pt`.
+Older smoke, tokenizer, byte-patch, North Star, and V2 commands remain useful
+for regression research. Their numbers are historical controls unless imported
+and recomputed by a current phase verifier. They must not be cited as replacing
+the Phase 8 result or as extending its hardware, task, or model scope.

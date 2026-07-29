@@ -1,4 +1,7 @@
-# Breakthrough Dominance Protocol
+# Historical Breakthrough Dominance Protocol
+
+> This superseded research target is retained for controls. It is not an open
+> Moonshot phase and does not narrow or expand the sealed final release.
 
 This protocol is the hard target for proving a byte-level LayerCake breakthrough
 against an equal-size tokenizer transformer. It is intentionally stricter than the

@@ -1,4 +1,8 @@
-# Tokenizer Independence
+# Historical Tokenizer-Independence Research
+
+> Representation research is historical control evidence. The sealed product is
+> representation-agnostic at the public UTF-8 boundary; do not infer a broader
+> tokenizer claim from this document.
 
 Tokenizer independence means domain bricks consume canonical ABI states and never token
 IDs. It does not mean independently trained tokenized and byte-patch cores automatically

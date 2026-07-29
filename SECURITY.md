@@ -2,7 +2,9 @@
 
 ## Supported Versions
 
-This is a research preview (v0.1.x). No production deployments are expected.
+The sealed Moonshot is an evidence release, not a blanket production-security
+certification. Deployments remain responsible for their own threat modeling,
+package publisher trust, key custody, runtime isolation, and incident response.
 
 ## Reporting a Vulnerability
 

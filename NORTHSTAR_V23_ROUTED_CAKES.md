@@ -1,4 +1,7 @@
-# North Star v23: routed domain cakes
+# Historical North Star v23: Routed Domain Cakes
+
+> This document records a predecessor architecture control. It does not replace
+> the sealed Phase 4–8 package, routing, and performance evidence.
 
 North Star v23 locks a migration-compatible sparse training architecture while
 preserving the v22 deployment path.

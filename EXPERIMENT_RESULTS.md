@@ -1,4 +1,8 @@
-# Measured Byte-Patch Results
+# Historical Byte-Patch Research Results
+
+> Historical research only. These results predate the sealed eight-phase
+> Moonshot release and must not be used to alter its status, claim scope, or
+> evidence lineage. See `docs/PHASE_STATUS.md` for the current release.
 
 ## Strict same-PPL domain transfer
 

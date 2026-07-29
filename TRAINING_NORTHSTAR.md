@@ -1,4 +1,8 @@
-# Training North Star audit
+# Historical Training North Star Audit
+
+> Historical control, not a current Moonshot gate. Faster from-scratch
+> foundation training was retired as a LayerCake product requirement; Phase 3
+> is sealed under the host-certification and capability-acquisition governance.
 
 ## v23 selected-domain-cake gate
 

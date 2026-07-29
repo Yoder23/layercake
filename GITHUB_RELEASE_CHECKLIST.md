@@ -1,47 +1,41 @@
-# GitHub release checklist
+# GitHub Release Checklist
 
-## Required checks
+The Moonshot evidence release is already sealed locally at
+`layercake-moonshot-final`. Remote publication is a separate authorized action
+and is not inferred from this checklist.
+
+## Required release-integrity checks
 
 ```powershell
-pytest -q
-python scripts/verify_research_gates.py
-python scripts/verify_scale5m_results.py
-python -m compileall -q layercake scripts tests
-git diff --check
+git status --porcelain=v1
+git cat-file -t layercake-moonshot-final
+C:\Python310\python.exe -m layercake.moonshot_campaign verify-sealed 8
+C:\Python310\python.exe -m layercake.moonshot_campaign verify-all
+C:\Python310\python.exe -m layercake.moonshot_final verify
 ```
 
-Expected:
+Expected results:
 
-- 32 tests pass;
-- selected small-scale certificate passes all gates;
-- 5.40M certificate passes all architecture gates and reports BPE parity as open;
-- no whitespace errors.
+- a clean worktree;
+- `layercake-moonshot-final` is an annotated `tag`;
+- Phase 8 reports `SEALED`;
+- the aggregate verifier reports `completed_phases_valid: true`;
+- the final verifier reports `PROVEN`.
 
-## Files intended for Git
+## Release contents
 
-- source under `layercake/`;
-- reproducible scripts under `scripts/`;
-- tests;
-- public documentation;
-- multi-size configs;
-- selected JSON evidence named in `.gitignore`.
+- source, tests, contracts, and documentation;
+- Phase 0–8 selected raw evidence, certificates, and seals;
+- the final report and release mirrors;
+- preserved invalidated evidence required for auditability.
 
-## Files intentionally local
+Do not publish private keys, restricted training data, unapproved checkpoints,
+credentials, or executable package payloads. Check package licenses and model
+licenses separately from campaign verification.
 
-- `runs_experiment/` checkpoints and generated tokenizer corpora;
-- `.pt`, `.pth`, and `.ckpt` artifacts;
-- exploratory JSON sweeps not selected by the evidence verifiers;
-- raw/pre-tokenized datasets.
+## Public-text check
 
-Model checkpoints should be published separately through Git LFS or a release artifact only
-after checksums, licenses, and model cards are prepared.
-
-## Public claim check
-
-Before release, verify that public text says:
-
-- small-scale general BPB parity by point estimate;
-- larger-tier size, speed, adaptation, transfer, and int8 gates pass;
-- larger-tier BPE general BPB remains better;
-- cross-seed transfer requires canonical training contracts;
-- no universal tokenizer or frontier-model dominance is claimed.
+Public release notes must state the exact final scope: sealed campaign,
+declared CPU/GPU Qwen comparison, immutable signed packages, measured
+portability/routing, and explicit exclusions for mobile, energy, GPU training,
+latent fusion, universal quality, and remote-publication claims.

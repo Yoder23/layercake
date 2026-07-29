@@ -1,5 +1,9 @@
 # Cake authoring guide
 
+> The Python, SQL, and regex packages in the sealed release are examples with
+> their own immutable evidence. A newly authored cake is a new evidence lineage
+> and does not inherit their functional or portability claims.
+
 1. Choose `portable_decoder` only when the complete prediction path excludes host
    representations. Otherwise declare `host_residual`.
 2. Freeze training, provenance, split hashes, architecture, ABI, precision, runtime, and

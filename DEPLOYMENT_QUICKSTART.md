@@ -1,140 +1,38 @@
-# Lock-In: Production LayerCake for Game Integration
+# LayerCake Release Quickstart
 
-## Status Summary
+This guide is for inspecting and verifying the sealed Moonshot release. It does
+not promise that a generic game, production stack, mobile device, or new domain
+inherits the certified result.
 
-### ✅ Research Phase Complete
-- Byte-level architecture proven
-- Modularity locked (10-domain exact transfer)
-- CPU speed proven (3.38x vs BPE)
-- Quality gates all PASS
-- Portable domain system validated
+## Verify the checkout
 
-### 🎯 Next Phase: Operational Deployment
-Build a production-grade LayerCake for your game with:
-- Full English fluency (250M+ core)
-- Game-specific FAQ layer (portable domain)
-- Learnable interaction memory (continuous domain adaptation)
-
----
-
-## Three-Step Deployment Path
-
-### STEP 1: Train 250M English Core
-**Time**: 2-3 days on GPU
-**Data**: redpajama_english_train.jsonl (2.4GB)
-**Result**: Fluent English understanding without tokenizer
-
-```bash
-cd layercake_release
-
-# Train core
-python scripts/train_250m_english_core.py \
-    --corpus ../layercakeogwithdecoder/data/v6/redpajama_english_train.jsonl \
-    --eval-corpus ../layercakeogwithdecoder/data/v6/redpajama_english_eval.jsonl \
-    --output runs_experiment/layercake_250m_english_core.pt \
-    --batch-size 32 \
-    --steps 100000 \
-    --lr 1e-4
+```powershell
+git status --porcelain=v1
+git tag -l layercake-moonshot-final
+C:\Python310\python.exe -m layercake.moonshot_campaign verify-sealed 8
+C:\Python310\python.exe -m layercake.moonshot_campaign verify-all
 ```
 
-### STEP 2: Prepare Game Domain
-**Time**: <1 hour
-**Data**: Your game text files (any format)
-**Result**: JSONL training file for game-specific language
+The worktree must be clean. `verify-all` must report
+`completed_phases_valid: true`.
 
-```bash
-# Point to your game data directory
-python scripts/prepare_game_domain_data.py \
-    --game-dir /path/to/your/game/data \
-    --output data/game_domain_training.jsonl
-```
+## Understand the package boundary
 
-Example game data structure:
-```
-/game/data/
-  ├── quests.txt          (quest descriptions)
-  ├── dialogue.jsonl      (NPC conversations)
-  ├── items.json          (item descriptions)
-  ├── locations.md        (area/zone descriptions)
-  └── faq.txt             (player-facing FAQ)
-```
+Promoted capabilities are signed, non-executable `.cake` archives. They install
+through the registry after manifest, signature, ABI, archive-hash, and
+permission validation. Installation must not train, calibrate, mutate the host,
+or accept executable payloads.
 
-### STEP 3: Train Game Domain Layer
-**Time**: 4-6 hours on GPU
-**Data**: game_domain_training.jsonl
-**Result**: Portable domain decoder for game integration
+Read these documents before integrating a package:
 
-```bash
-# Train portable domain on top of core
-python scripts/train_portable_domain_decoder.py \
-    --decoder-data data/game_domain_training.jsonl \
-    --source-core runs_experiment/layercake_250m_english_core.pt \
-    --target-core runs_experiment/layercake_250m_english_core.pt \
-    --output runs_experiment/portable_game_domain.pt \
-    --preserve-weight 6.0 \
-    --steps 1000
-```
+- [Cake authoring](docs/CAKE_AUTHORING.md)
+- [Registry specification](docs/CAKE_REGISTRY_SPEC.md)
+- [Threat model](docs/CAKE_THREAT_MODEL.md)
+- [Verified limits](docs/VERIFICATION_AND_LIMITS.md)
 
----
+## Integration constraints
 
-## Deployment Architecture
-
-```
-Game Engine
-    ↓
-LayerCakeRuntime
-    ├─→ 250M English Core
-    │      (general understanding)
-    │
-    ├─→ Game Domain Layer
-    │      (game-specific FAQ, quests, dialogue)
-    │
-    └─→ Learning Loop
-           ├─ Player question
-           ├─ Domain predicts answer
-           ├─ Log interaction
-           ├─ Periodic retraining on logs
-           └─ Domain improves from play
-```
-
-## Key Properties (Proven)
-
-✅ **Exact Modularity**: Core + game domain behaves identically whether alone or with other domains
-✅ **Lossless Transfer**: Game domain transfers to core with ppl_ratio=1.0, max_logit_diff=0.0
-✅ **No Tokenizer**: Byte-level inference 3.38x faster than BPE (game response faster)
-✅ **Learnable**: Game domain can be retrained from player interactions without touching core
-✅ **Portable**: Game domain can be easily swapped, versioned, A/B tested
-
----
-
-## Execution Timeline
-
-| Phase | Time | Blocker |
-|-------|------|---------|
-| Core Training (250M) | 2-3 days | GPU availability |
-| Game Data Prep | <1 hour | Access to game files |
-| Game Domain Training | 4-6 hours | Depends on data size |
-| Integration Test | 2-4 hours | Validation script |
-| **Total** | **~3-4 days** | None |
-
----
-
-## What You'll Have
-
-**Production Model Ready For:**
-- ✅ General English queries (core)
-- ✅ Game-specific FAQ (game domain)
-- ✅ Player interaction learning (continuous retraining)
-- ✅ Fast inference (no tokenizer, byte-level)
-- ✅ Exact modularity guarantees (proven)
-
----
-
-## Where to Start
-
-1. **Confirm**: Do you have game data files ready? (format: TXT, JSON, JSONL, MD, CSV)
-2. **Choose scale**: Start with 250M? Or jump to 500M if you have 1-2 weeks?
-3. **Point to GPU**: Which GPU hardware? (determines training speed)
-4. **Run Phase 1**: Kick off core training while we prep game data
-
-**Ready to lock in and deploy?**
+Use the exact certified host, package bytes, and routing profiles when making a
+claim based on this release. A modified model, new package, new device class,
+or different runtime is a new evidence lineage. Start governed recertification
+before describing it as part of the sealed Moonshot.

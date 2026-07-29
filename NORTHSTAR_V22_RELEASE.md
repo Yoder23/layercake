@@ -1,4 +1,7 @@
-# CPU/GPU North Star v22 release
+# Historical CPU/GPU North Star v22 Release
+
+> This is a bounded predecessor result. The sealed Moonshot release and its
+> claims are governed by `layercake-moonshot-final` and `results/moonshot/phase8/`.
 
 North Star v22 is a bounded, reproducible same-size CPU/GPU generation architecture result. It does
 not claim that every transformer workload or every open-domain benchmark has been solved, and it

@@ -1,5 +1,9 @@
 # Mobile deployment guide
 
+> The sealed Moonshot release makes no physical-mobile claim. This guide is a
+> future-device measurement protocol, not evidence that the desktop certificate
+> transfers to Android, iOS, ARM, NPU, battery, or thermal conditions.
+
 `export_mobile_runtime` freezes a CPU-eval module to TorchScript, reloads it, compares
 logits exactly on the declared example, and writes a SHA-256 manifest. This is an export
 smoke test, not a physical-mobile benchmark.

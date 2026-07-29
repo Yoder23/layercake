@@ -1,5 +1,20 @@
 # LayerCake Moonshot Gated Research Campaign Charter
 
+## Current sealed release state
+
+The eight-phase campaign is sealed locally at the annotated
+`layercake-moonshot-final` tag. `moonshot/campaign.yaml`, the phase seals, and
+`results/moonshot/phase8/` are the release source of truth. Treat the current
+task as release stewardship unless a new governed recertification explicitly
+opens affected work. Do not relabel older byte, token, V2, North Star, or
+training experiments as an open Moonshot phase or use them to expand the sealed
+claim.
+
+The final release does not claim physical mobile performance, calibrated energy
+dominance, GPU-training dominance, latent neural fusion, or faster from-scratch
+English acquisition. ABI extraction remains a separate repository and evidence
+lineage.
+
 This repository is governed by the LayerCake Moonshot Gated Research Campaign. These
 instructions apply to every human, agent, script, experiment, verifier, and release task
 performed from this directory.
