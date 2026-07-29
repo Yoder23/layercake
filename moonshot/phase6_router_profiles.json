@@ -1,0 +1,138 @@
+{
+  "format": "layercake-archive-bound-routing-profiles/1",
+  "status": "FROZEN",
+  "contract": "moonshot/phase6_orchestration_preregistration.json",
+  "contract_sha256": "30d04dd01630123c2861d93656d2b4e07d75dba0b2c77ffead2717a0f7c6b48e",
+  "profiles": [
+    {
+      "cake_id": "python-token-plan",
+      "archive_sha256": "0585c79bfbea16b1c4165bf0030ba6985b8a8cdeab529cd7afe3f9c76c564ef7",
+      "domains": [
+        "python"
+      ],
+      "features": [
+        {
+          "kind": "token",
+          "value": "python",
+          "weight": 0.8
+        },
+        {
+          "kind": "phrase",
+          "value": "write a function",
+          "weight": 0.65
+        },
+        {
+          "kind": "phrase",
+          "value": "create a function",
+          "weight": 0.65
+        },
+        {
+          "kind": "phrase",
+          "value": "implement a function",
+          "weight": 0.65
+        },
+        {
+          "kind": "phrase",
+          "value": "function named",
+          "weight": 0.6
+        },
+        {
+          "kind": "regex",
+          "value": "\\bdef\\s+[a-z_][a-z0-9_]*",
+          "weight": 0.8
+        },
+        {
+          "kind": "phrase",
+          "value": "return code only",
+          "weight": 0.25
+        }
+      ],
+      "negative_features": []
+    },
+    {
+      "cake_id": "regex-token-plan",
+      "archive_sha256": "c336a552415b2d6161eb6696338086f89c3c3b6e25949e6cf0a94373e9690f15",
+      "domains": [
+        "regex"
+      ],
+      "features": [
+        {
+          "kind": "token",
+          "value": "regex",
+          "weight": 0.85
+        },
+        {
+          "kind": "phrase",
+          "value": "regular expression",
+          "weight": 0.85
+        },
+        {
+          "kind": "phrase",
+          "value": "anchored expression",
+          "weight": 0.7
+        },
+        {
+          "kind": "phrase",
+          "value": "return pattern only",
+          "weight": 0.6
+        },
+        {
+          "kind": "phrase",
+          "value": "match exactly",
+          "weight": 0.6
+        },
+        {
+          "kind": "phrase",
+          "value": "must match",
+          "weight": 0.6
+        }
+      ],
+      "negative_features": []
+    },
+    {
+      "cake_id": "sql-token-plan",
+      "archive_sha256": "24efdb68885581318bee3a0b7c3cac0b0fe0b75eefa90070c601384a8bf5e105",
+      "domains": [
+        "sql"
+      ],
+      "features": [
+        {
+          "kind": "token",
+          "value": "sql",
+          "weight": 0.85
+        },
+        {
+          "kind": "token",
+          "value": "query",
+          "weight": 0.6
+        },
+        {
+          "kind": "phrase",
+          "value": "return sql only",
+          "weight": 0.8
+        },
+        {
+          "kind": "phrase",
+          "value": "write one query",
+          "weight": 0.8
+        },
+        {
+          "kind": "phrase",
+          "value": "select rows",
+          "weight": 0.6
+        },
+        {
+          "kind": "phrase",
+          "value": "from table",
+          "weight": 0.6
+        },
+        {
+          "kind": "regex",
+          "value": "\\b(?:select|insert|update|delete)\\b.+\\b(?:from|into|set)\\b",
+          "weight": 0.8
+        }
+      ],
+      "negative_features": []
+    }
+  ]
+}
