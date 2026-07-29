@@ -11,7 +11,7 @@ import subprocess
 from typing import Any, Mapping
 
 from layercake.evaluation.phase5_evidence import validate_phase5_bundle
-from layercake.moonshot_campaign import governed_source_hash
+from layercake.moonshot_campaign import component_hashes
 
 
 class Phase6EvidenceError(RuntimeError):
@@ -155,8 +155,22 @@ def _validate_framework(root: Path) -> dict[str, Any]:
     ).returncode == 0
     if not exists:
         raise Phase6EvidenceError("Phase 6 framework commit does not exist")
-    if governed_source_hash(root) != framework.get("governed_source_sha256"):
-        raise Phase6EvidenceError("governed source changed after the Phase 6 freeze")
+    release = _read(root, Path("results/moonshot/phase6/release_certificate.json"))
+    matrix = _read(root, Path("moonshot/invalidation_matrix.yaml"))
+    expected_components = release.get("component_hashes")
+    if not isinstance(expected_components, dict) or not expected_components:
+        raise Phase6EvidenceError("Phase 6 release lacks its component snapshot")
+    actual_components = component_hashes(root, matrix)
+    invalidating = sorted(
+        name
+        for name, policy in matrix.get("components", {}).items()
+        if policy.get("invalidates_from_phase", 0) <= 6
+        and expected_components.get(name) != actual_components.get(name)
+    )
+    if invalidating:
+        raise Phase6EvidenceError(
+            f"Phase 6 dependent components changed after freeze: {invalidating}"
+        )
     return framework
 
 
