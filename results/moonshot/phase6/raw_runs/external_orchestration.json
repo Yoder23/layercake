@@ -1,0 +1,152 @@
+{
+  "equivalent": true,
+  "evidence_sha256": "61cdfdf1ef8eefac6488af04515fa001a0651062fab90045817c6cc9e7e406f8",
+  "external": {
+    "format": "layercake-phase6-external-response/1",
+    "installed": [
+      {
+        "archive_hash": "0585c79bfbea16b1c4165bf0030ba6985b8a8cdeab529cd7afe3f9c76c564ef7",
+        "cake_id": "python-token-plan",
+        "signed": true
+      },
+      {
+        "archive_hash": "24efdb68885581318bee3a0b7c3cac0b0fe0b75eefa90070c601384a8bf5e105",
+        "cake_id": "sql-token-plan",
+        "signed": true
+      },
+      {
+        "archive_hash": "c336a552415b2d6161eb6696338086f89c3c3b6e25949e6cf0a94373e9690f15",
+        "cake_id": "regex-token-plan",
+        "signed": true
+      }
+    ],
+    "result": {
+      "end_to_end_milliseconds": 482.7394000021741,
+      "execution_milliseconds": 482.63519996544346,
+      "execution_path": "automatic_top1_cake",
+      "mode": "automatic_top1",
+      "output": "def add_test_00(a, b):\n    return a + b\n",
+      "route": {
+        "abstained": false,
+        "candidates": [
+          {
+            "cake_id": "python-token-plan",
+            "domains": [
+              "python"
+            ],
+            "lexical_coverage": 0.42857142857142855,
+            "loaded": false,
+            "score": 1.0
+          },
+          {
+            "cake_id": "regex-token-plan",
+            "domains": [
+              "regex"
+            ],
+            "lexical_coverage": 0.0,
+            "loaded": false,
+            "score": 0.0
+          },
+          {
+            "cake_id": "sql-token-plan",
+            "domains": [
+              "sql"
+            ],
+            "lexical_coverage": 0.0,
+            "loaded": false,
+            "score": 0.0
+          }
+        ],
+        "confidence": 1.0,
+        "core_fallback": false,
+        "escalate": false,
+        "multidomain": false,
+        "policy_version": "layercake-catalog-router/1",
+        "reason": "matched_archive_bound_profile",
+        "route_milliseconds": 0.08680002065375447,
+        "selected": [
+          "python-token-plan"
+        ],
+        "trace": [
+          {
+            "cake_id": "python-token-plan",
+            "coverage": 0.42857142857142855,
+            "event": "candidate",
+            "score": 1.0
+          },
+          {
+            "cake_id": "regex-token-plan",
+            "coverage": 0.0,
+            "event": "candidate",
+            "score": 0.0
+          },
+          {
+            "cake_id": "sql-token-plan",
+            "coverage": 0.0,
+            "event": "candidate",
+            "score": 0.0
+          },
+          {
+            "event": "decision",
+            "selected": [
+              "python-token-plan"
+            ],
+            "top_k": 1
+          }
+        ]
+      },
+      "route_milliseconds": 0.08680002065375447,
+      "selected": [
+        "python-token-plan"
+      ],
+      "telemetry_delta": {
+        "python-token-plan": {
+          "decode_step_calls": 20,
+          "module_load_calls": 1,
+          "prefill_calls": 1
+        },
+        "regex-token-plan": {
+          "decode_step_calls": 0,
+          "module_load_calls": 0,
+          "prefill_calls": 0
+        },
+        "sql-token-plan": {
+          "decode_step_calls": 0,
+          "module_load_calls": 0,
+          "prefill_calls": 0
+        }
+      }
+    },
+    "status": "PASS"
+  },
+  "format": "layercake-phase6-external-orchestration/1",
+  "internal_comparable": {
+    "execution_path": "automatic_top1_cake",
+    "output": "def add_test_00(a, b):\n    return a + b\n",
+    "selected": [
+      "python-token-plan"
+    ]
+  },
+  "protocol": "fresh Python subprocess with one UTF-8 JSON request and response",
+  "request": {
+    "abi_hash": "de765899700aefe22bfe6c9d00ed5b0c1f87a7ef864cf7211aa8aa4491a0742a",
+    "abi_version": "lc-direct-neural-decoder/1",
+    "format": "layercake-phase6-external-request/1",
+    "install": [
+      "artifacts/moonshot/phase4/release/python-token-plan-seed10141-direct-v1.0.0.cake",
+      "artifacts/moonshot/phase5/release/sql-token-plan-v1.0.0.cake",
+      "artifacts/moonshot/phase5/release/regex-token-plan-v1.0.0.cake"
+    ],
+    "mode": "automatic_top1",
+    "profiles": "moonshot/phase6_router_profiles.json",
+    "prompt": "Return code only. Create a Python function named add_test_00 with parameters a, b. It adds both numbers.",
+    "registry_root": "<fresh-temporary-registry>",
+    "trust_store": {
+      "0047fe0d71576d696b37ee1eb29a56db": "moonshot/phase5-multidomain-publisher.public.pem",
+      "4d64fb4eb20e06035d287ced76b54be9": "moonshot/phase4-direct-token-plan-publisher.public.pem"
+    }
+  },
+  "returncode": 0,
+  "status": "RAW",
+  "stderr": ""
+}
