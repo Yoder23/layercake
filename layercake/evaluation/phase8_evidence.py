@@ -30,7 +30,7 @@ CONTRACT = Path(
     "moonshot/phase8_independent_verification_preregistration.json"
 )
 CONTRACT_SHA256 = (
-    "fb06fe4fa3952ddbaa34287943e9cf7dc1389036e9f5aeda3e0aba2a14e43ace"
+    "c0a3a7ca5cc71404d398e4f9b5bd6bbc8ec28e187425aa376192b855705e5c00"
 )
 FRAMEWORK = Path("results/moonshot/phase8/framework_freeze.json")
 SOURCE_AUDIT = Path("results/moonshot/phase8/source_audit.json")
@@ -196,6 +196,24 @@ EXTERNAL_COMPONENT_DATA = {
     "v2-wikitext-validation": (
         Path("data/moonshot/v2/wikitext103/validation.bin"),
         "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10",
+    ),
+}
+EXTERNAL_RETIRED_CONTROLS = {
+    "phase3-retired-control-model": (
+        Path(
+            "artifacts/moonshot/phase3_cpu_training/"
+            "layercake-seed9824-continuous30m-milestones/units-5000000/"
+            "model.safetensors"
+        ),
+        "498fcd51a4e3895226770f2ce02fac5ecfd2e8fd02a6a121acfa98d35bf822fb",
+    ),
+    "phase3-retired-control-optimizer": (
+        Path(
+            "artifacts/moonshot/phase3_cpu_training/"
+            "layercake-seed9824-continuous30m-milestones/units-5000000/"
+            "dense_optimizer_state.pt"
+        ),
+        "b164410de9a6e06a38fb8cbb9adbdce0f004221a6c67e08316083686c7c69560",
     ),
 }
 REQUIRED_ATTACK_CATEGORIES = {
@@ -463,6 +481,10 @@ def _validate_environment(root: Path) -> dict[str, Any]:
         **{
             key: (path, digest, "sealed_component_external_data")
             for key, (path, digest) in EXTERNAL_COMPONENT_DATA.items()
+        },
+        **{
+            key: (path, digest, "retired_training_control_checkpoint")
+            for key, (path, digest) in EXTERNAL_RETIRED_CONTROLS.items()
         },
     }
     if len(assets) != len(expected_assets):

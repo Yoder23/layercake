@@ -38,7 +38,7 @@ if len(sys.argv) < 2 or sys.argv[1] != "cleanroom-run":
         sys.path.insert(0, str(ROOT))
 CONTRACT = ROOT / "moonshot/phase8_independent_verification_preregistration.json"
 CONTRACT_SHA256 = (
-    "fb06fe4fa3952ddbaa34287943e9cf7dc1389036e9f5aeda3e0aba2a14e43ace"
+    "c0a3a7ca5cc71404d398e4f9b5bd6bbc8ec28e187425aa376192b855705e5c00"
 )
 PARENT_TAG = "layercake-moonshot-phase8-repair-base-v3"
 PARENT_TAG_OBJECT = "876038a9bcd2e4203bff8934106498f898c872cf"
@@ -195,6 +195,26 @@ EXTERNAL_COMPONENT_DATA_HASHES = {
     ),
     "v2-wikitext-validation": (
         "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10"
+    ),
+}
+EXTERNAL_RETIRED_CONTROL_RELATIVE = {
+    "phase3-retired-control-model": Path(
+        "artifacts/moonshot/phase3_cpu_training/"
+        "layercake-seed9824-continuous30m-milestones/units-5000000/"
+        "model.safetensors"
+    ),
+    "phase3-retired-control-optimizer": Path(
+        "artifacts/moonshot/phase3_cpu_training/"
+        "layercake-seed9824-continuous30m-milestones/units-5000000/"
+        "dense_optimizer_state.pt"
+    ),
+}
+EXTERNAL_RETIRED_CONTROL_HASHES = {
+    "phase3-retired-control-model": (
+        "498fcd51a4e3895226770f2ce02fac5ecfd2e8fd02a6a121acfa98d35bf822fb"
+    ),
+    "phase3-retired-control-optimizer": (
+        "b164410de9a6e06a38fb8cbb9adbdce0f004221a6c67e08316083686c7c69560"
     ),
 }
 PUBLIC_KEYS_RELATIVE = {
@@ -476,6 +496,15 @@ def _copy_external_assets(
             "sealed_component_external_data",
         )
         for name, relative in EXTERNAL_COMPONENT_DATA_RELATIVE.items()
+    )
+    assets.extend(
+        (
+            name,
+            relative,
+            EXTERNAL_RETIRED_CONTROL_HASHES[name],
+            "retired_training_control_checkpoint",
+        )
+        for name, relative in EXTERNAL_RETIRED_CONTROL_RELATIVE.items()
     )
     for name, relative, expected, kind in assets:
         source = ROOT / relative
@@ -2327,6 +2356,23 @@ def cleanroom_run(target: Path, output: Path) -> dict[str, Any]:
         raise RuntimeError(
             f"clean-room worktree is dirty before execution: {status_before}"
         )
+    staged: dict[str, Any] = {}
+
+    def preserve_stage(stage: str, **values: Any) -> None:
+        staged.update(values)
+        staged["_staging"] = {
+            "format": "layercake-phase8-crash-safe-staging/1",
+            "status": "PARTIAL_NOT_PROMOTABLE",
+            "completed_stage": stage,
+            "parent_commit": PARENT_COMMIT,
+            "contract_sha256": CONTRACT_SHA256,
+        }
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(
+            json.dumps(staged, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+
     assets = _copy_external_assets(target)
     print("phase8: external release assets copied and rehashed", flush=True)
     env = dict(os.environ)
@@ -2385,17 +2431,38 @@ def cleanroom_run(target: Path, output: Path) -> dict[str, Any]:
         f"phase8: clean checkout passed {pytest_run['passed']} tests and verify-all",
         flush=True,
     )
+    prior = _prior_recomputation(target)
+    preserve_stage("typed_prior_recomputation", prior=prior)
+    print(
+        "phase8: all typed Phase 2-7 gate bundles recomputed",
+        flush=True,
+    )
     datasets = _functional_rows(target)
     performance = _fresh_performance(target, datasets)
+    preserve_stage(
+        "fresh_four_system_performance",
+        prior=prior,
+        performance=performance,
+    )
     print("phase8: fresh four-system 100+20 performance matrix complete", flush=True)
     domains = _domain_retention(target, datasets)
+    preserve_stage("domain_retention", domains=domains)
     print("phase8: fresh 384-case CPU/GPU domain retention complete", flush=True)
     lifecycle = _lifecycle_portability(target, datasets)
     routing = _routing_catalog(target, datasets)
+    preserve_stage(
+        "lifecycle_and_routing",
+        lifecycle=lifecycle,
+        routing=routing,
+    )
     print("phase8: lifecycle, 1,980 routes, and catalog reproduction complete", flush=True)
     manifests = _manifest_documents(target, performance)
     source_scan = _source_scan(target, datasets)
-    prior = _prior_recomputation(target)
+    preserve_stage(
+        "manifests_and_source_scan",
+        manifests=manifests,
+        source_scan=source_scan,
+    )
     adversarial = _adversarial_falsification(
         target,
         performance,
@@ -2406,6 +2473,7 @@ def cleanroom_run(target: Path, output: Path) -> dict[str, Any]:
         source_scan,
         prior,
     )
+    preserve_stage("adversarial_falsification", adversarial=adversarial)
     print(
         f"phase8: {len(adversarial['records'])} hostile checks complete",
         flush=True,
@@ -2736,7 +2804,8 @@ def certify() -> dict[str, Any]:
     )
     if child.returncode or not output.is_file():
         raise RuntimeError(
-            f"Phase 8 clean-room reproduction failed with {child.returncode}"
+            "Phase 8 clean-room reproduction failed with "
+            f"{child.returncode}; crash-safe staging: {output}"
         )
     result = _read(output)
     if result["environment"]["git"]["status_after"] != "":
