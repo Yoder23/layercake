@@ -1,0 +1,176 @@
+{
+  "evidence_sha256": "b14470ddad2b07d0eab1f527a6b42c64ca6d367748014596c9d98306cb2beeca",
+  "format": "layercake-phase7-cold-start/1",
+  "protocol": {
+    "single_real_request_per_system": true,
+    "transformer_load_probe_request": false,
+    "transformer_unload_control_before_request": true
+  },
+  "records": [
+    {
+      "device": "cpu",
+      "install_and_verify_seconds": 0.1623154,
+      "single_real_request": {
+        "active_tensor_bytes": 9145536,
+        "cold": true,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 40,
+        "generated_characters": 40,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206164645f746573745f303028612c2062293a0a2020202072657475726e2061202b20620a",
+        "output_sha256": "8d415208cc62c80c309255dd800867ee2a72438e019f5c14ec65d62e221a06cd",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 267.989642200329,
+          "characters_per_second_total": 267.989642200329,
+          "model_load_seconds": 0.0887112,
+          "prefill_seconds": 0.0034383,
+          "route_seconds": 0.0001515,
+          "time_to_first_output_seconds": 0.0954433,
+          "total_latency_seconds": 0.1492595
+        }
+      },
+      "system": "layercake_cpu"
+    },
+    {
+      "device": "cuda",
+      "install_and_verify_seconds": 0.2303515,
+      "single_real_request": {
+        "active_tensor_bytes": 9145536,
+        "cold": true,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 40,
+        "generated_characters": 40,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206164645f746573745f303028612c2062293a0a2020202072657475726e2061202b20620a",
+        "output_sha256": "8d415208cc62c80c309255dd800867ee2a72438e019f5c14ec65d62e221a06cd",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 140.44001964755876,
+          "characters_per_second_total": 140.44001964755876,
+          "model_load_seconds": 0.064258,
+          "prefill_seconds": 0.1110589,
+          "route_seconds": 0.0001138,
+          "time_to_first_output_seconds": 0.2227036,
+          "total_latency_seconds": 0.2848191
+        }
+      },
+      "system": "layercake_gpu"
+    },
+    {
+      "device": "cpu",
+      "model_report_after": {
+        "models": [
+          {
+            "context_length": 4096,
+            "details": {
+              "families": [
+                "qwen2"
+              ],
+              "family": "qwen2",
+              "format": "gguf",
+              "parameter_size": "494.03M",
+              "parent_model": "",
+              "quantization_level": "Q4_K_M"
+            },
+            "digest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+            "expires_at": "2026-07-28T22:32:43.4355437-04:00",
+            "model": "qwen2.5:0.5b",
+            "name": "qwen2.5:0.5b",
+            "size": 484221909,
+            "size_vram": 0
+          }
+        ]
+      },
+      "single_real_streaming_request": {
+        "authoritative_generated_tokens": 80,
+        "cold": true,
+        "done_reason": "stop",
+        "generated_bytes": 277,
+        "generated_characters": 277,
+        "output_hex": "606060707974686f6e0a646566206164645f746573745f303028612c2062293a0a202020202222220a202020204164642074776f206e756d6265727320616e642072657475726e2074686520726573756c742e0a0a20202020506172616d65746572733a0a20202020612028696e742f666c6f6174293a20546865206669727374206e756d62657220746f2062652061646465642e0a20202020622028696e742f666c6f6174293a20546865207365636f6e64206e756d62657220746f2062652061646465642e0a0a2020202052657475726e733a0a20202020696e742f666c6f61743a205468652073756d206f66206120616e6420622e0a202020202222220a2020202072657475726e2061202b20620a606060",
+        "output_sha256": "c307a9ac8139400582bcdb6095e53f6b4249dd60bf7c93cbcf03571da901937d",
+        "timing": {
+          "bytes_per_second_total": 58.79405372647326,
+          "characters_per_second_total": 58.79405372647326,
+          "eval_seconds": 0.809603,
+          "load_seconds": 1.6835127,
+          "prompt_eval_seconds": 0.134225,
+          "time_to_first_output_seconds": 3.9005934,
+          "tokens_per_second_total": 16.98023212316917,
+          "total_latency_seconds": 4.7113608
+        }
+      },
+      "system": "transformer_cpu",
+      "unload_control": {
+        "done": true,
+        "done_reason": "unload",
+        "load_duration_seconds": 0.0
+      }
+    },
+    {
+      "device": "cuda",
+      "model_report_after": {
+        "models": [
+          {
+            "context_length": 4096,
+            "details": {
+              "families": [
+                "qwen2"
+              ],
+              "family": "qwen2",
+              "format": "gguf",
+              "parameter_size": "494.03M",
+              "parent_model": "",
+              "quantization_level": "Q4_K_M"
+            },
+            "digest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+            "expires_at": "2026-07-28T22:32:55.1172082-04:00",
+            "model": "qwen2.5:0.5b",
+            "name": "qwen2.5:0.5b",
+            "size": 481810185,
+            "size_vram": 481810185
+          }
+        ]
+      },
+      "single_real_streaming_request": {
+        "authoritative_generated_tokens": 128,
+        "cold": true,
+        "done_reason": "length",
+        "generated_bytes": 425,
+        "generated_characters": 425,
+        "output_hex": "53757265212042656c6f772069732074686520507974686f6e2066756e6374696f6e20606164645f746573745f30306020746861742074616b65732074776f20617267756d656e74732060616020616e64206062602c2061646473207468656d20746f6765746865722c20616e642072657475726e732074686520726573756c743a0a0a606060707974686f6e0a646566206164645f746573745f303028612c2062293a0a2020202072657475726e2061202b20620a0a23204578616d706c652075736167653a0a726573756c74203d206164645f746573745f303028352c2033290a7072696e7428726573756c7429202023204f75747075743a20380a6060600a0a232323204578706c616e6174696f6e3a0a2d205468652066756e6374696f6e20606164645f746573745f3030602074616b65732074776f20706172616d65746572733a2060616020616e64206062602e0a2d2049742072657475726e73207468652073756d206f662060616020616e64206062602e0a0a596f752063616e2063616c6c20746869732066756e6374696f6e207769746820616e792074776f206e756d62657273",
+        "output_sha256": "b4a2fb44898edb655e22730376804f90521bc1062f748bc34dd96aad67df3a76",
+        "timing": {
+          "bytes_per_second_total": 56.77652318286303,
+          "characters_per_second_total": 56.77652318286303,
+          "eval_seconds": 0.588542,
+          "load_seconds": 4.6994487,
+          "prompt_eval_seconds": 0.116788,
+          "time_to_first_output_seconds": 6.8953298,
+          "tokens_per_second_total": 17.099752864485808,
+          "total_latency_seconds": 7.4854883
+        }
+      },
+      "system": "transformer_gpu",
+      "unload_control": {
+        "done": true,
+        "done_reason": "unload",
+        "load_duration_seconds": 0.0
+      }
+    }
+  ],
+  "status": "RAW"
+}

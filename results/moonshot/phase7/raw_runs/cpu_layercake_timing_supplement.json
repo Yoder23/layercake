@@ -1,0 +1,4019 @@
+{
+  "aggregates": {
+    "layercake_cpu": {
+      "bytes_per_second_total": {
+        "p50": 1616.7008068882806,
+        "p95_nearest_rank": 2164.5829445792124,
+        "p99_nearest_rank": 2400.0909508149784
+      },
+      "characters_per_second_total": {
+        "p50": 1616.7008068882806,
+        "p95_nearest_rank": 2164.5829445792124,
+        "p99_nearest_rank": 2400.0909508149784
+      },
+      "correct_task_completions_per_wall_second": 20.96242511501165,
+      "observations": 120,
+      "time_to_first_output_seconds": {
+        "p50": 0.0055871,
+        "p95_nearest_rank": 0.0067863,
+        "p99_nearest_rank": 0.0911449
+      },
+      "total_latency_seconds": {
+        "p50": 0.04905855,
+        "p95_nearest_rank": 0.1049449,
+        "p99_nearest_rank": 0.1525026
+      }
+    }
+  },
+  "evidence_sha256": "8261eca37348aa36652e3ed5e7ed4bc39d6d9677c8c47eb93707f7a5defccecc",
+  "format": "layercake-phase7-cpu-timing-supplement/1",
+  "memory": {
+    "loaded_tensor_bytes_by_seed": [
+      27012980,
+      27012980,
+      27012980
+    ],
+    "process_rss_samples_bytes": [
+      974454784,
+      973082624,
+      979652608
+    ]
+  },
+  "protocol": {
+    "distinct_prompts": 100,
+    "observations": 120,
+    "observations_per_seed": 40,
+    "repeated_prompt_observations": 20,
+    "seeds": [
+      10701,
+      10702,
+      10703
+    ],
+    "threads": 14,
+    "warmup_per_seed_excluded": 1
+  },
+  "purpose": "Measure warm LayerCake CPU TTFT and descriptive quantiles omitted from the sealed Phase 6 raw record; Phase 7 CPU promotion gates remain derived from the immutable Phase 6 paired evidence.",
+  "records": [
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 40,
+        "generated_characters": 40,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206164645f746573745f303028612c2062293a0a2020202072657475726e2061202b20620a",
+        "output_sha256": "8d415208cc62c80c309255dd800867ee2a72438e019f5c14ec65d62e221a06cd",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 526.0776701072147,
+          "characters_per_second_total": 526.0776701072147,
+          "model_load_seconds": 7.5e-06,
+          "prefill_seconds": 0.003044,
+          "route_seconds": 0.0001712,
+          "time_to_first_output_seconds": 0.0061605,
+          "total_latency_seconds": 0.0760344
+        }
+      },
+      "prompt_id": "test-add-00",
+      "prompt_sha256": "8439a2e075160466600b25e97a0efffe2887554c1eec360cd8305082bab0eb50",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135312046524f4d207461626c655f73716c5f746573745f3230353135303b",
+        "output_sha256": "eeec31714274cd74cac44ebfc431900be6f2dba5e608ec82136003c4d8df929f",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 543.1421631732462,
+          "characters_per_second_total": 543.1421631732462,
+          "model_load_seconds": 0.069448,
+          "prefill_seconds": 0.0033287,
+          "route_seconds": 0.0001685,
+          "time_to_first_output_seconds": 0.0768361,
+          "total_latency_seconds": 0.1049449
+        }
+      },
+      "prompt_id": "sql-test-select_column-0000",
+      "prompt_sha256": "0b7a1257b7f3680fbb65ec3da8b5e7caa26dae55bf430d3cd6ec02e0ef0d54af",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353024",
+        "output_sha256": "7ce8034193906fbeb645e773a08f9e22e5e8a953acb73ac036837001cd186062",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 289.7483803602109,
+          "characters_per_second_total": 289.7483803602109,
+          "model_load_seconds": 0.0762084,
+          "prefill_seconds": 0.0029882,
+          "route_seconds": 0.0001529,
+          "time_to_first_output_seconds": 0.0829007,
+          "total_latency_seconds": 0.0931843
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0000",
+      "prompt_sha256": "82777294eca5b2df5365fae6090c7accaa2456a604c132e7589256caa3fcb099",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 40,
+        "generated_characters": 40,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206164645f746573745f303128612c2062293a0a2020202072657475726e2061202b20620a",
+        "output_sha256": "0bd2a185126e7132acafc0227c0ed0b47c9af66e039b7e4e57831ad7f0998129",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 518.4570717544588,
+          "characters_per_second_total": 518.4570717544588,
+          "model_load_seconds": 5.3e-06,
+          "prefill_seconds": 0.0030299,
+          "route_seconds": 0.0001515,
+          "time_to_first_output_seconds": 0.0064726,
+          "total_latency_seconds": 0.077152
+        }
+      },
+      "prompt_id": "test-add-01",
+      "prompt_sha256": "0cc3bae8408626018b5dfc2ddf5da82334d79453507e1d299de75a741db66528",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135322046524f4d207461626c655f73716c5f746573745f3230353135313b",
+        "output_sha256": "a34cc6d90ecf6388e2eaff3cd8114efa3a9db76531243941a978a9acb88ee14d",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1601.123595505618,
+          "characters_per_second_total": 1601.123595505618,
+          "model_load_seconds": 2.5e-06,
+          "prefill_seconds": 0.0023911,
+          "route_seconds": 9.13e-05,
+          "time_to_first_output_seconds": 0.005941,
+          "total_latency_seconds": 0.0356
+        }
+      },
+      "prompt_id": "sql-test-select_column-0001",
+      "prompt_sha256": "f972183c62940454fdefc6b9a9e0c8313daa90efac00ecd6566d967e205c49ba",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353124",
+        "output_sha256": "3b00b47f42c4ffbceea378c246ad5c56dd42f0a21e5a186494698c3d88c5883f",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1785.3482420932216,
+          "characters_per_second_total": 1785.3482420932216,
+          "model_load_seconds": 3.1e-06,
+          "prefill_seconds": 0.0025682,
+          "route_seconds": 0.0001151,
+          "time_to_first_output_seconds": 0.0057636,
+          "total_latency_seconds": 0.0151231
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0001",
+      "prompt_sha256": "e4dcf8cf72edb69d85256ff4e4ea4db7ce7943f150a7fcadb9f5ed66f86f1a2e",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 40,
+        "generated_characters": 40,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206164645f746573745f303228612c2062293a0a2020202072657475726e2061202b20620a",
+        "output_sha256": "66a20954a3529b00a14f0b32bd4a130aeadd2ba88c081f37872e55d613c8635f",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 612.2873832061816,
+          "characters_per_second_total": 612.2873832061816,
+          "model_load_seconds": 2.1e-06,
+          "prefill_seconds": 0.0026808,
+          "route_seconds": 9.26e-05,
+          "time_to_first_output_seconds": 0.0060333,
+          "total_latency_seconds": 0.0653288
+        }
+      },
+      "prompt_id": "test-add-02",
+      "prompt_sha256": "71aab407ca8b5ede607f1d3869523ff7c00a6e61fc024cd1a39fa134edf50308",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135332046524f4d207461626c655f73716c5f746573745f3230353135323b",
+        "output_sha256": "6dad0489e35963e22636e598eb45cf594f2c501c5e34977821345df0df1ab725",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1949.1310978737374,
+          "characters_per_second_total": 1949.1310978737374,
+          "model_load_seconds": 3.7e-06,
+          "prefill_seconds": 0.0028287,
+          "route_seconds": 0.0001275,
+          "time_to_first_output_seconds": 0.0060253,
+          "total_latency_seconds": 0.0292438
+        }
+      },
+      "prompt_id": "sql-test-select_column-0002",
+      "prompt_sha256": "7a7df1c3505b3c827b9dd8c64dad1066ea8f8b77d2582f80699119767f30f2d6",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353224",
+        "output_sha256": "f99f473f648342beab2aad5f6fb096a584973a849bd58bc604ef31e7fa4b55a4",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1908.9771417662987,
+          "characters_per_second_total": 1908.9771417662987,
+          "model_load_seconds": 2e-06,
+          "prefill_seconds": 0.002213,
+          "route_seconds": 8.59e-05,
+          "time_to_first_output_seconds": 0.0054834,
+          "total_latency_seconds": 0.0141437
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0002",
+      "prompt_sha256": "c583345334766cf5b749d820fddf51e09df71c2cc1862607ea4610966954326e",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 40,
+        "generated_characters": 40,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206164645f746573745f303328612c2062293a0a2020202072657475726e2061202b20620a",
+        "output_sha256": "36de0aa785f0ffc7c0228e651de7628e010fabbfecc0044df5b2cce171d70624",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 636.1960565387435,
+          "characters_per_second_total": 636.1960565387435,
+          "model_load_seconds": 3.9e-06,
+          "prefill_seconds": 0.0025566,
+          "route_seconds": 0.0001508,
+          "time_to_first_output_seconds": 0.005871,
+          "total_latency_seconds": 0.0628737
+        }
+      },
+      "prompt_id": "test-add-03",
+      "prompt_sha256": "f3cd39ca057ddab0bc464a7709ce2fef34c5e1ee81eb830cbe664efa1167e060",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135342046524f4d207461626c655f73716c5f746573745f3230353135333b",
+        "output_sha256": "5a6f83340fd06e72c8edf81baa5565230f7291d588e3aafd75392d09c4f61dfb",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1781.1498103231695,
+          "characters_per_second_total": 1781.1498103231695,
+          "model_load_seconds": 4.2e-06,
+          "prefill_seconds": 0.0022799,
+          "route_seconds": 0.0001308,
+          "time_to_first_output_seconds": 0.005792,
+          "total_latency_seconds": 0.0320018
+        }
+      },
+      "prompt_id": "sql-test-select_column-0003",
+      "prompt_sha256": "c77efb5308dd9197f02855dcf826ba53de39d199b7e17b7abad78ce05526bb6d",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353324",
+        "output_sha256": "68a9b644bbc5e2c6720637b7e776481878a00160287ae55a9633b381ef756287",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2113.2713440405746,
+          "characters_per_second_total": 2113.2713440405746,
+          "model_load_seconds": 3.8e-06,
+          "prefill_seconds": 0.002439,
+          "route_seconds": 0.0001214,
+          "time_to_first_output_seconds": 0.0051481,
+          "total_latency_seconds": 0.0127764
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0003",
+      "prompt_sha256": "ed59632426973b8a2e3f549b2276dc61c849dc47dede185b91489d5227a14fed",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 45,
+        "generated_characters": 45,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662073756274726163745f746573745f303028612c2062293a0a2020202072657475726e2061202d20620a",
+        "output_sha256": "445371d2a405ccc4e8dcf17730222d3008de24b0032a823de261f7a721be0904",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 712.8306346093528,
+          "characters_per_second_total": 712.8306346093528,
+          "model_load_seconds": 3.6e-06,
+          "prefill_seconds": 0.0026748,
+          "route_seconds": 0.0001285,
+          "time_to_first_output_seconds": 0.005689,
+          "total_latency_seconds": 0.0631286
+        }
+      },
+      "prompt_id": "test-subtract-00",
+      "prompt_sha256": "c6e87e29735de7bcc65f90c5d6a813bcad204d5f8fe96cefead62647d001b264",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135352046524f4d207461626c655f73716c5f746573745f3230353135343b",
+        "output_sha256": "55d7d7f8c2b006b108eac36fee4e3718585b9306fbcdd6f5ce77fb8c4594088e",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2001.172616936942,
+          "characters_per_second_total": 2001.172616936942,
+          "model_load_seconds": 3.8e-06,
+          "prefill_seconds": 0.0022797,
+          "route_seconds": 0.0001266,
+          "time_to_first_output_seconds": 0.0058039,
+          "total_latency_seconds": 0.0284833
+        }
+      },
+      "prompt_id": "sql-test-select_column-0004",
+      "prompt_sha256": "81f0214948c0dc281d911a6af98c25400cfea9666e138cf534ce56ae9c72435d",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353424",
+        "output_sha256": "746c6fff8909d3689d67bd77dc3b99acd562bfd39c60fc7dc00b491e19a8b049",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1922.2280759208895,
+          "characters_per_second_total": 1922.2280759208895,
+          "model_load_seconds": 3.9e-06,
+          "prefill_seconds": 0.0024274,
+          "route_seconds": 0.0001314,
+          "time_to_first_output_seconds": 0.0055341,
+          "total_latency_seconds": 0.0140462
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0004",
+      "prompt_sha256": "a3f9417b8bdd3209d36374103eb586699b3da9282e8ad7b49e1bd62d35064584",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 45,
+        "generated_characters": 45,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662073756274726163745f746573745f303128612c2062293a0a2020202072657475726e2061202d20620a",
+        "output_sha256": "3cd1b69e41818307410ad412cba037274b02d19ae45068b7e3939f59472f5cc3",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 720.5949231685679,
+          "characters_per_second_total": 720.5949231685679,
+          "model_load_seconds": 3.5e-06,
+          "prefill_seconds": 0.002915,
+          "route_seconds": 0.0001371,
+          "time_to_first_output_seconds": 0.0061346,
+          "total_latency_seconds": 0.0624484
+        }
+      },
+      "prompt_id": "test-subtract-01",
+      "prompt_sha256": "5605ab3de85d4439df8fbafb343aed8a73e5ddb727814dde54de4f33bdeb08a3",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135362046524f4d207461626c655f73716c5f746573745f3230353135353b",
+        "output_sha256": "599c68071a4b4647ec620e4916578cdfedc7758f9a4452e5417417aadaeebf54",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1967.912666107365,
+          "characters_per_second_total": 1967.912666107365,
+          "model_load_seconds": 2.3e-06,
+          "prefill_seconds": 0.0021799,
+          "route_seconds": 9.66e-05,
+          "time_to_first_output_seconds": 0.0053178,
+          "total_latency_seconds": 0.0289647
+        }
+      },
+      "prompt_id": "sql-test-select_column-0005",
+      "prompt_sha256": "b413a88511d997b5668a7271fe109dd2e4f75c2a9ad54d88dd216c0fec064cbc",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353524",
+        "output_sha256": "ad29779711dc448b613bddd1a2d0abf906edffcbfeac440a2abb001cda0e3699",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1867.86579038395,
+          "characters_per_second_total": 1867.86579038395,
+          "model_load_seconds": 3.6e-06,
+          "prefill_seconds": 0.0023552,
+          "route_seconds": 0.0001229,
+          "time_to_first_output_seconds": 0.0054942,
+          "total_latency_seconds": 0.014455
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0005",
+      "prompt_sha256": "1bf7f015ad6dd350926981c85b08a1a377fa1c94583e1847b319357a707dec5f",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 45,
+        "generated_characters": 45,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662073756274726163745f746573745f303228612c2062293a0a2020202072657475726e2061202d20620a",
+        "output_sha256": "7318b239b2802beb5dce84922e34236a709255a8d8b23f2412fd7fe903c7a1b7",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 724.3822226944121,
+          "characters_per_second_total": 724.3822226944121,
+          "model_load_seconds": 2.1e-06,
+          "prefill_seconds": 0.0023823,
+          "route_seconds": 9.74e-05,
+          "time_to_first_output_seconds": 0.0056752,
+          "total_latency_seconds": 0.0621219
+        }
+      },
+      "prompt_id": "test-subtract-02",
+      "prompt_sha256": "b46d033773680ca581a1d4cbb6eccef3cccc6f1d1e25e2cb930f8ae4cf6ed354",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135372046524f4d207461626c655f73716c5f746573745f3230353135363b",
+        "output_sha256": "6c05332ca4962cb8523490ee7c1ba206692eb207562de501e6c5e72d003f0aba",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1971.513361326517,
+          "characters_per_second_total": 1971.513361326517,
+          "model_load_seconds": 3.5e-06,
+          "prefill_seconds": 0.0024135,
+          "route_seconds": 0.0001271,
+          "time_to_first_output_seconds": 0.0054673,
+          "total_latency_seconds": 0.0289118
+        }
+      },
+      "prompt_id": "sql-test-select_column-0006",
+      "prompt_sha256": "d063d0a0e8ee77f159f8e27659db73f4c2c33202a466f70131e34dc3280a68e7",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353624",
+        "output_sha256": "f3d383077502d919d69b1cbb986ea56e17fc1197c1d8fcbddc5602a4abd19d10",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1827.3740634707924,
+          "characters_per_second_total": 1827.3740634707924,
+          "model_load_seconds": 3.9e-06,
+          "prefill_seconds": 0.0028125,
+          "route_seconds": 0.0001277,
+          "time_to_first_output_seconds": 0.0059941,
+          "total_latency_seconds": 0.0147753
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0006",
+      "prompt_sha256": "3db6132f74b31f49f11e9cc5eb7d6a436b443cee8765323193715cf907081122",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 45,
+        "generated_characters": 45,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662073756274726163745f746573745f303328612c2062293a0a2020202072657475726e2061202d20620a",
+        "output_sha256": "9a2b2dc1847a907f112e0a44814daa3a49c2574b67ed1984790fa01f6d453581",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 731.0499664529293,
+          "characters_per_second_total": 731.0499664529293,
+          "model_load_seconds": 4.2e-06,
+          "prefill_seconds": 0.0023475,
+          "route_seconds": 0.0001409,
+          "time_to_first_output_seconds": 0.0050651,
+          "total_latency_seconds": 0.0615553
+        }
+      },
+      "prompt_id": "test-subtract-03",
+      "prompt_sha256": "0230779570a1387f7b8243607d4fbee2be4e6d4a96bedd1f018814866d872be9",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135382046524f4d207461626c655f73716c5f746573745f3230353135373b",
+        "output_sha256": "f5e1af2743f7670248359739f23e0051b7fba8cf9b2d64e7b8d543f58addd32f",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1922.5969224957332,
+          "characters_per_second_total": 1922.5969224957332,
+          "model_load_seconds": 2.4e-06,
+          "prefill_seconds": 0.0020447,
+          "route_seconds": 9.31e-05,
+          "time_to_first_output_seconds": 0.0052914,
+          "total_latency_seconds": 0.0296474
+        }
+      },
+      "prompt_id": "sql-test-select_column-0007",
+      "prompt_sha256": "d9784e47c80f7bf2f800f4210eda798825aed8d9bba710d6bbeeada18a64843b",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353724",
+        "output_sha256": "e172fea108e52319237276cb5e56f16b6d8af18e282ea6238414272e7ee6388c",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1832.2972936290346,
+          "characters_per_second_total": 1832.2972936290346,
+          "model_load_seconds": 5.7e-06,
+          "prefill_seconds": 0.0027389,
+          "route_seconds": 0.0001391,
+          "time_to_first_output_seconds": 0.0061804,
+          "total_latency_seconds": 0.0147356
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0007",
+      "prompt_sha256": "e7408de93c6d04c1807b292c65ed81944f0d81dcc16142fb1c8ebb0aa86ea467",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 45,
+        "generated_characters": 45,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206d756c7469706c795f746573745f303028612c2062293a0a2020202072657475726e2061202a20620a",
+        "output_sha256": "caf7020a3d75fcec58f414278c1dcffb88ae1c8b5be3274c43a40896373f5cf9",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 740.6468645126462,
+          "characters_per_second_total": 740.6468645126462,
+          "model_load_seconds": 3.9e-06,
+          "prefill_seconds": 0.002374,
+          "route_seconds": 0.0001306,
+          "time_to_first_output_seconds": 0.0055448,
+          "total_latency_seconds": 0.0607577
+        }
+      },
+      "prompt_id": "test-multiply-00",
+      "prompt_sha256": "18efb7a28b7967472cc6a45eaf72a703d269d2f33f752e618957b24e9bd05863",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135392046524f4d207461626c655f73716c5f746573745f3230353135383b",
+        "output_sha256": "cf1e26f8a87e8ef215868694468d2b2baf3afb688c935b98aad6a8c6ba316afd",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1990.960341467163,
+          "characters_per_second_total": 1990.960341467163,
+          "model_load_seconds": 2.4e-06,
+          "prefill_seconds": 0.0024208,
+          "route_seconds": 9.84e-05,
+          "time_to_first_output_seconds": 0.0055953,
+          "total_latency_seconds": 0.0286294
+        }
+      },
+      "prompt_id": "sql-test-select_column-0008",
+      "prompt_sha256": "108bd7228b62db90a91aae7cad943cd84a121784a6373faf64273e0253e4be87",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353824",
+        "output_sha256": "812bd70112e78cedbbcea7b1aee649683668dcd3b2c7a8af0d6ea62586ea62cd",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1992.0465696220276,
+          "characters_per_second_total": 1992.0465696220276,
+          "model_load_seconds": 4.1e-06,
+          "prefill_seconds": 0.0021399,
+          "route_seconds": 0.0001178,
+          "time_to_first_output_seconds": 0.0050292,
+          "total_latency_seconds": 0.0135539
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0008",
+      "prompt_sha256": "1cc241ceba94c8ede56218c0a174f12988fab9864f40264c3ddf79afbf67642c",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 45,
+        "generated_characters": 45,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206d756c7469706c795f746573745f303128612c2062293a0a2020202072657475726e2061202a20620a",
+        "output_sha256": "10dba9d9fe05de13b0642c8693e2c2a896da83131fb42cc8d2c688724a41cd2d",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 726.3746640517179,
+          "characters_per_second_total": 726.3746640517179,
+          "model_load_seconds": 8e-06,
+          "prefill_seconds": 0.0027779,
+          "route_seconds": 0.0001347,
+          "time_to_first_output_seconds": 0.0061556,
+          "total_latency_seconds": 0.0619515
+        }
+      },
+      "prompt_id": "test-multiply-01",
+      "prompt_sha256": "140197d473a85387108bfd7929a45db78ea7911e89c57230b85d8f4db21d5c03",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136302046524f4d207461626c655f73716c5f746573745f3230353135393b",
+        "output_sha256": "dbc37e4d0ab3c7e2e25ea6f31dd39667fc8b28b58b6012ce0ab884d1819d6086",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1991.795201520753,
+          "characters_per_second_total": 1991.795201520753,
+          "model_load_seconds": 4.1e-06,
+          "prefill_seconds": 0.0027615,
+          "route_seconds": 0.0001261,
+          "time_to_first_output_seconds": 0.0060371,
+          "total_latency_seconds": 0.0286174
+        }
+      },
+      "prompt_id": "sql-test-select_column-0009",
+      "prompt_sha256": "3661caf7bec8d158dad7d9895029bec7eef73569c750ecf0dc4a0823f7279fd5",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353924",
+        "output_sha256": "13ed6cd8adcc3b66bad8f1d59269edbae74a2706cb9c08cbd1aebac7949c5d56",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1909.9359110394296,
+          "characters_per_second_total": 1909.9359110394296,
+          "model_load_seconds": 3.8e-06,
+          "prefill_seconds": 0.0022487,
+          "route_seconds": 0.0001204,
+          "time_to_first_output_seconds": 0.0055128,
+          "total_latency_seconds": 0.0141366
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0009",
+      "prompt_sha256": "5c555c0843424342ef34cde123b63ee210111075ba09a0730b9f1e3f8b8cb9af",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 45,
+        "generated_characters": 45,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206d756c7469706c795f746573745f303228612c2062293a0a2020202072657475726e2061202a20620a",
+        "output_sha256": "fb46663cefdbceb049e7f8be3862c78a3665ebe39c036101caf611a26cf0d96c",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 733.0793077776457,
+          "characters_per_second_total": 733.0793077776457,
+          "model_load_seconds": 3.6e-06,
+          "prefill_seconds": 0.0023355,
+          "route_seconds": 0.0001325,
+          "time_to_first_output_seconds": 0.0054235,
+          "total_latency_seconds": 0.0613849
+        }
+      },
+      "prompt_id": "test-multiply-02",
+      "prompt_sha256": "a26035ecd0739e54a77d23ef770bc481b8c7c5a3fb6366ffc250c491692619ca",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136312046524f4d207461626c655f73716c5f746573745f3230353136303b",
+        "output_sha256": "62a42373ac92d0288eb443759cea112d5e4844d1f62457018b4a727476bc892e",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2010.4189078134755,
+          "characters_per_second_total": 2010.4189078134755,
+          "model_load_seconds": 2.5e-06,
+          "prefill_seconds": 0.0022703,
+          "route_seconds": 9.66e-05,
+          "time_to_first_output_seconds": 0.0051362,
+          "total_latency_seconds": 0.0283523
+        }
+      },
+      "prompt_id": "sql-test-select_column-0010",
+      "prompt_sha256": "b61238d247d5e353d72758c82274543a7073ee6b2778669df89c68c8aad16cef",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631363024",
+        "output_sha256": "cdb4b87668d13a6812db543a305d293f824af82aa28e7151603cecbc747084d9",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1891.166849946417,
+          "characters_per_second_total": 1891.166849946417,
+          "model_load_seconds": 4.1e-06,
+          "prefill_seconds": 0.0022604,
+          "route_seconds": 0.000118,
+          "time_to_first_output_seconds": 0.0054531,
+          "total_latency_seconds": 0.0142769
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0010",
+      "prompt_sha256": "e7dcbc8f13bd16a9a0c5b62fb8804428aa95eed2fcf70fe6d88584f3d50c6096",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 45,
+        "generated_characters": 45,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206d756c7469706c795f746573745f303328612c2062293a0a2020202072657475726e2061202a20620a",
+        "output_sha256": "d91a8a115e19c534f56f751ef62b3984b3656a86efda4c60c00aea2485ea2bf5",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 711.0847044099894,
+          "characters_per_second_total": 711.0847044099894,
+          "model_load_seconds": 4.3e-06,
+          "prefill_seconds": 0.0026602,
+          "route_seconds": 0.000153,
+          "time_to_first_output_seconds": 0.0059869,
+          "total_latency_seconds": 0.0632836
+        }
+      },
+      "prompt_id": "test-multiply-03",
+      "prompt_sha256": "caa604ad3e497db75482edac2b0f68f1f81d8797e55d0b278b92db14880c68d0",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136322046524f4d207461626c655f73716c5f746573745f3230353136313b",
+        "output_sha256": "931b30be8c3099e702cc54268ed17bc9cbeea638a5f3443baf7244ca041e618e",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1901.9272863168012,
+          "characters_per_second_total": 1901.9272863168012,
+          "model_load_seconds": 2.2e-06,
+          "prefill_seconds": 0.0025082,
+          "route_seconds": 8.67e-05,
+          "time_to_first_output_seconds": 0.005571,
+          "total_latency_seconds": 0.0299696
+        }
+      },
+      "prompt_id": "sql-test-select_column-0011",
+      "prompt_sha256": "4b1b4a6a15f9e26f35243cf9140ca8af8debafec5d52eec89df1120a81f9e2e7",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631363124",
+        "output_sha256": "de2a01f3c4a307e0c9e29e7e9a872cca88bcd63e9ebf3ee5248deef4fc5f3714",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1889.6976483762598,
+          "characters_per_second_total": 1889.6976483762598,
+          "model_load_seconds": 2.4e-06,
+          "prefill_seconds": 0.0024126,
+          "route_seconds": 8.54e-05,
+          "time_to_first_output_seconds": 0.0056895,
+          "total_latency_seconds": 0.014288
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0011",
+      "prompt_sha256": "773edb86a13e77bd5363659bac149dfdbefbdec559f709fbfcf783e3950ce365",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 23,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 23,
+        "generated_bytes": 61,
+        "generated_characters": 61,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206162736f6c7574655f646966666572656e63655f746573745f303028612c2062293a0a2020202072657475726e206162732861202d2062290a",
+        "output_sha256": "662fcbcb2b3e4ee3144fc00794c12a3855dd83b5dc3b84957d8b6e41d65d1fa8",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 836.2659764502017,
+          "characters_per_second_total": 836.2659764502017,
+          "model_load_seconds": 3.8e-06,
+          "prefill_seconds": 0.0022704,
+          "route_seconds": 0.0001471,
+          "time_to_first_output_seconds": 0.0056132,
+          "total_latency_seconds": 0.0729433
+        }
+      },
+      "prompt_id": "test-absolute_difference-00",
+      "prompt_sha256": "c8d03ffcdba413ea708231f65ed55090e61867df33120f9aa15e171153faacd7",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136332046524f4d207461626c655f73716c5f746573745f3230353136323b",
+        "output_sha256": "ca768a1280d66469d48168e805ee9c487df8e1cc41afe4d6a622309ef4692463",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2040.283062429082,
+          "characters_per_second_total": 2040.283062429082,
+          "model_load_seconds": 2.8e-06,
+          "prefill_seconds": 0.0023861,
+          "route_seconds": 0.0001172,
+          "time_to_first_output_seconds": 0.0058564,
+          "total_latency_seconds": 0.0279373
+        }
+      },
+      "prompt_id": "sql-test-select_column-0012",
+      "prompt_sha256": "35fdd6ec3ed9b49d06f2bb2a9d665c5fa35b2582b66dc934b5f9a84df7b6c1c4",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631363224",
+        "output_sha256": "e615ec4eab28a3ff7de40c6d172faed08cbaa9ef3a9db7c3a2f99f930253a4b2",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1932.9758521201882,
+          "characters_per_second_total": 1932.9758521201882,
+          "model_load_seconds": 2e-06,
+          "prefill_seconds": 0.0022219,
+          "route_seconds": 8.51e-05,
+          "time_to_first_output_seconds": 0.0050452,
+          "total_latency_seconds": 0.0139681
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0012",
+      "prompt_sha256": "3f0595499762b22a3ea449ff7983b5b3b0a0689b7afeefa282288a0f1da08014",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 23,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 23,
+        "generated_bytes": 61,
+        "generated_characters": 61,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206162736f6c7574655f646966666572656e63655f746573745f303128612c2062293a0a2020202072657475726e206162732861202d2062290a",
+        "output_sha256": "914c8e6caa51d189a8e3dd710b3110fc67a9d2b3abbd060e228a7472142670c5",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 863.346415626287,
+          "characters_per_second_total": 863.346415626287,
+          "model_load_seconds": 2.1e-06,
+          "prefill_seconds": 0.0024342,
+          "route_seconds": 0.0001013,
+          "time_to_first_output_seconds": 0.0055878,
+          "total_latency_seconds": 0.0706553
+        }
+      },
+      "prompt_id": "test-absolute_difference-01",
+      "prompt_sha256": "d067e6ca1c3688f72d80707a69602c200268b80460977d0fe668442f1ae4d0b1",
+      "seed": 10701,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136342046524f4d207461626c655f73716c5f746573745f3230353136333b",
+        "output_sha256": "9f198c697c9313786556577dc008ef274517a615b8e6e171ba72d5beb4340b1c",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1919.5926422350794,
+          "characters_per_second_total": 1919.5926422350794,
+          "model_load_seconds": 3.6e-06,
+          "prefill_seconds": 0.0020247,
+          "route_seconds": 0.0001156,
+          "time_to_first_output_seconds": 0.0055793,
+          "total_latency_seconds": 0.0296938
+        }
+      },
+      "prompt_id": "sql-test-select_column-0013",
+      "prompt_sha256": "9391282ca2ee9dd6a635330b287a92ab2f816fc77892ed2fa3ccd3e1f26d269b",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631363324",
+        "output_sha256": "eefddf296cf0bf34ce56d1c35ed7bb7d3228e80e6b0ab4b5dfbdf5f95cf2f2e3",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 276.0535789324088,
+          "characters_per_second_total": 276.0535789324088,
+          "model_load_seconds": 0.081918,
+          "prefill_seconds": 0.0027168,
+          "route_seconds": 0.0001298,
+          "time_to_first_output_seconds": 0.0879401,
+          "total_latency_seconds": 0.0978071
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0013",
+      "prompt_sha256": "85d0025236299089165470d67f0fb4dbef645d9d2a982a642f05c136e63a4d33",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 23,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 23,
+        "generated_bytes": 61,
+        "generated_characters": 61,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206162736f6c7574655f646966666572656e63655f746573745f303228612c2062293a0a2020202072657475726e206162732861202d2062290a",
+        "output_sha256": "53134c1d5a05fae36ea4f52cf0360d687835ee6ed2937f88e3238587151f7b68",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 399.9931804441367,
+          "characters_per_second_total": 399.9931804441367,
+          "model_load_seconds": 0.085527,
+          "prefill_seconds": 0.002414,
+          "route_seconds": 0.0001403,
+          "time_to_first_output_seconds": 0.0911449,
+          "total_latency_seconds": 0.1525026
+        }
+      },
+      "prompt_id": "test-absolute_difference-02",
+      "prompt_sha256": "5bc7178830a9b40fce1622ebca24925d737bd06b799a4b1d499ab014854a8e66",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136352046524f4d207461626c655f73716c5f746573745f3230353136343b",
+        "output_sha256": "0fc7340cf7324e9869a03a4116522d21bf74abd92897848ef8598e83ca563286",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2130.251818188613,
+          "characters_per_second_total": 2130.251818188613,
+          "model_load_seconds": 4e-06,
+          "prefill_seconds": 0.002629,
+          "route_seconds": 0.0001303,
+          "time_to_first_output_seconds": 0.0053811,
+          "total_latency_seconds": 0.0267574
+        }
+      },
+      "prompt_id": "sql-test-select_column-0014",
+      "prompt_sha256": "459ff0ecc36d7f02dfd1bff6c42bae2941f7e39ff82c2cad9494bcc8439a10ce",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631363424",
+        "output_sha256": "505382164f557181b5835e46b0ab9279617fcce85ad3fcb4e6643d17490e9c9f",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2083.1725947071986,
+          "characters_per_second_total": 2083.1725947071986,
+          "model_load_seconds": 4e-06,
+          "prefill_seconds": 0.0019716,
+          "route_seconds": 0.0001171,
+          "time_to_first_output_seconds": 0.0048723,
+          "total_latency_seconds": 0.012961
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0014",
+      "prompt_sha256": "64693d90f543a2fe2289842ddb999bdd75d115545b147b3937a76c078d0768d0",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 23,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 23,
+        "generated_bytes": 61,
+        "generated_characters": 61,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206162736f6c7574655f646966666572656e63655f746573745f303328612c2062293a0a2020202072657475726e206162732861202d2062290a",
+        "output_sha256": "efb27b30e2a279f5d79789cd8ce0b991a85db22b73acb5370c2531e3dc4d605d",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 894.8348956270446,
+          "characters_per_second_total": 894.8348956270446,
+          "model_load_seconds": 2e-06,
+          "prefill_seconds": 0.0025188,
+          "route_seconds": 9.4e-05,
+          "time_to_first_output_seconds": 0.0056793,
+          "total_latency_seconds": 0.068169
+        }
+      },
+      "prompt_id": "test-absolute_difference-03",
+      "prompt_sha256": "600f98af24d058c6649b5ad61dc2fa056d613cdd3b909e746aec5f6373036061",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136362046524f4d207461626c655f73716c5f746573745f3230353136353b",
+        "output_sha256": "da47cab2e2d237c53a67898f4a956dea5d7ff2789d40401056974592b9f4d42f",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2032.0928060349593,
+          "characters_per_second_total": 2032.0928060349593,
+          "model_load_seconds": 4.1e-06,
+          "prefill_seconds": 0.0022657,
+          "route_seconds": 0.0001205,
+          "time_to_first_output_seconds": 0.0053419,
+          "total_latency_seconds": 0.0280499
+        }
+      },
+      "prompt_id": "sql-test-select_column-0015",
+      "prompt_sha256": "db8d9a42e9571d99b9d4145d75873e049fb6d1debac3386d866c5d275b8144d1",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631363524",
+        "output_sha256": "f2b1c0318ec075399df0c9a105bb3f1310ea530b37240ae551aaa619b66f4d61",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1951.755495637465,
+          "characters_per_second_total": 1951.755495637465,
+          "model_load_seconds": 8.4e-06,
+          "prefill_seconds": 0.0024263,
+          "route_seconds": 0.0001668,
+          "time_to_first_output_seconds": 0.0057487,
+          "total_latency_seconds": 0.0138337
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0015",
+      "prompt_sha256": "a403c698587be5768a92092ec058b01d90f098b6a8efaa5f8d17ef1118b0ac8b",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 31,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 31,
+        "generated_bytes": 75,
+        "generated_characters": 75,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "64656620636c616d705f746573745f30302876616c75652c206c6f772c2068696768293a0a2020202072657475726e206d6178286c6f772c206d696e2876616c75652c206869676829290a",
+        "output_sha256": "bbebedc993ea71f69ee55e1f72f49cd1048bb42df2ab8cf06ac05e0dbd17c4c4",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 798.7245965642063,
+          "characters_per_second_total": 798.7245965642063,
+          "model_load_seconds": 2.1e-06,
+          "prefill_seconds": 0.0025847,
+          "route_seconds": 0.0001067,
+          "time_to_first_output_seconds": 0.0057771,
+          "total_latency_seconds": 0.0938997
+        }
+      },
+      "prompt_id": "test-clamp-00",
+      "prompt_sha256": "a25a41de69c1c2d3c785d60d948623ff2ffbae7f6977de250a4eb8352b65b086",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135312046524f4d207461626c655f73716c5f746573745f3231353135302057484552452066696c74657265645f73716c5f746573745f323135313532203d20276d617463685f73716c5f746573745f323135313533273b",
+        "output_sha256": "4a688aa1bffcdd2a442a03d5da846592a720854dc23fb11175be94b83421eeb1",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1884.919184089982,
+          "characters_per_second_total": 1884.919184089982,
+          "model_load_seconds": 4e-06,
+          "prefill_seconds": 0.0025192,
+          "route_seconds": 0.0001424,
+          "time_to_first_output_seconds": 0.0053261,
+          "total_latency_seconds": 0.0615411
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0000",
+      "prompt_sha256": "46f3714c9f8337e116ab022300571e1e434c07398a64f2c34a3a6955168a9ad6",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363135302e2a24",
+        "output_sha256": "0824223bd668a070a438ad7b8c177e4af2efe4091347e145e27e9d9308dd1a77",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1428.3392354937375,
+          "characters_per_second_total": 1428.3392354937375,
+          "model_load_seconds": 4.6e-06,
+          "prefill_seconds": 0.0023392,
+          "route_seconds": 0.0001288,
+          "time_to_first_output_seconds": 0.0058262,
+          "total_latency_seconds": 0.0203033
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0000",
+      "prompt_sha256": "02a7dc52e017698f670401d90bf2c3345c2c1018bff84db352ec643616e578f9",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 31,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 31,
+        "generated_bytes": 75,
+        "generated_characters": 75,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "64656620636c616d705f746573745f30312876616c75652c206c6f772c2068696768293a0a2020202072657475726e206d6178286c6f772c206d696e2876616c75652c206869676829290a",
+        "output_sha256": "40a116f01d9b39a369baccec6479fbf5663ad28eb6d66d565cb9122d1b21db4f",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 758.6838958721527,
+          "characters_per_second_total": 758.6838958721527,
+          "model_load_seconds": 3.9e-06,
+          "prefill_seconds": 0.0031532,
+          "route_seconds": 0.000146,
+          "time_to_first_output_seconds": 0.006402,
+          "total_latency_seconds": 0.0988554
+        }
+      },
+      "prompt_id": "test-clamp-01",
+      "prompt_sha256": "309b84ba73b12262fc5d96771a1b6a0ace0078a2247a47748c6145470c91e9ce",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135322046524f4d207461626c655f73716c5f746573745f3231353135312057484552452066696c74657265645f73716c5f746573745f323135313533203d20276d617463685f73716c5f746573745f323135313534273b",
+        "output_sha256": "d97b8564aaa267cfb6576bf52bf3957467e0a881887a3abe763be9b0d632d41d",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1975.1741047863916,
+          "characters_per_second_total": 1975.1741047863916,
+          "model_load_seconds": 4.1e-06,
+          "prefill_seconds": 0.0023664,
+          "route_seconds": 0.0001413,
+          "time_to_first_output_seconds": 0.0054477,
+          "total_latency_seconds": 0.058729
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0001",
+      "prompt_sha256": "2ee764279067b062a93a2cece84816608828ed86676dd362a610f50f1fad79ca",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363135312e2a24",
+        "output_sha256": "3c5a2e63e21e316a6357c359f02732cb0ac97417c1665ad71b95edf85fc165f1",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1423.9488556852386,
+          "characters_per_second_total": 1423.9488556852386,
+          "model_load_seconds": 3.6e-06,
+          "prefill_seconds": 0.0022185,
+          "route_seconds": 0.0001167,
+          "time_to_first_output_seconds": 0.0056686,
+          "total_latency_seconds": 0.0203659
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0001",
+      "prompt_sha256": "3b76c9ea8c2ca6e3f4d665c1055b4640e0691ed3d53cfe4e44ec6e1ac44a9745",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 31,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 31,
+        "generated_bytes": 75,
+        "generated_characters": 75,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "64656620636c616d705f746573745f30322876616c75652c206c6f772c2068696768293a0a2020202072657475726e206d6178286c6f772c206d696e2876616c75652c206869676829290a",
+        "output_sha256": "6e1e2ecff3263dcbb38dd1b5c7736dc1ecb5e7c59529e19afdda5b04f1238f8d",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 829.1213966384101,
+          "characters_per_second_total": 829.1213966384101,
+          "model_load_seconds": 3.7e-06,
+          "prefill_seconds": 0.0024483,
+          "route_seconds": 0.0001427,
+          "time_to_first_output_seconds": 0.0055274,
+          "total_latency_seconds": 0.0904572
+        }
+      },
+      "prompt_id": "test-clamp-02",
+      "prompt_sha256": "3ac99576112605065067900fa3a1399d87bb38501be0b5ae1fff77b600cdc3bd",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135332046524f4d207461626c655f73716c5f746573745f3231353135322057484552452066696c74657265645f73716c5f746573745f323135313534203d20276d617463685f73716c5f746573745f323135313535273b",
+        "output_sha256": "b5f16e88c8eb1485c81afa06d1b36df004dac8c99dc790fc570f66dd82c7e418",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2090.922691738512,
+          "characters_per_second_total": 2090.922691738512,
+          "model_load_seconds": 2.3e-06,
+          "prefill_seconds": 0.002502,
+          "route_seconds": 9.93e-05,
+          "time_to_first_output_seconds": 0.005827,
+          "total_latency_seconds": 0.0554779
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0002",
+      "prompt_sha256": "673cdf6a65f2d98ce55f62ca9bddecf545c0379bd28668994bc0b6775fe120b0",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363135322e2a24",
+        "output_sha256": "a3937c61e24b7005526e1129de049a94272d08209e3e63879505b0aba1e38252",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1590.4703404703405,
+          "characters_per_second_total": 1590.4703404703405,
+          "model_load_seconds": 3.9e-06,
+          "prefill_seconds": 0.002169,
+          "route_seconds": 0.0001182,
+          "time_to_first_output_seconds": 0.0051707,
+          "total_latency_seconds": 0.0182336
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0002",
+      "prompt_sha256": "e9925b7f710039526c76a114931c2093ab4d3a8ff7dac5052fec0b016d4cfa09",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 31,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 31,
+        "generated_bytes": 75,
+        "generated_characters": 75,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "64656620636c616d705f746573745f30332876616c75652c206c6f772c2068696768293a0a2020202072657475726e206d6178286c6f772c206d696e2876616c75652c206869676829290a",
+        "output_sha256": "675c758c584ed4ed868c69783596a6db931b0f23a5ca6932cb3e82d7b8005a2a",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 849.2886358386215,
+          "characters_per_second_total": 849.2886358386215,
+          "model_load_seconds": 4.4e-06,
+          "prefill_seconds": 0.0023543,
+          "route_seconds": 0.0002215,
+          "time_to_first_output_seconds": 0.0053958,
+          "total_latency_seconds": 0.0883092
+        }
+      },
+      "prompt_id": "test-clamp-03",
+      "prompt_sha256": "1492f1124cbe87ee1c190c9e7e19550f61153c0c00b0740f30185517e432dfef",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135342046524f4d207461626c655f73716c5f746573745f3231353135332057484552452066696c74657265645f73716c5f746573745f323135313535203d20276d617463685f73716c5f746573745f323135313536273b",
+        "output_sha256": "ba51fe96f8977b277b319e4eee778c3582df59d5df78a2d9fa5d4b36e90fc5f7",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1712.4677989621857,
+          "characters_per_second_total": 1712.4677989621857,
+          "model_load_seconds": 2.5e-06,
+          "prefill_seconds": 0.0028818,
+          "route_seconds": 9.87e-05,
+          "time_to_first_output_seconds": 0.0067549,
+          "total_latency_seconds": 0.0677385
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0003",
+      "prompt_sha256": "228b74da0913d5182ccb28347a36c4af4e66cf143c6b7f63090b58889c19ae4a",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363135332e2a24",
+        "output_sha256": "6fbcfde565474650d2453d3b383d85da8f1f531e6e3a59582160b55054dc9015",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1303.8395827713334,
+          "characters_per_second_total": 1303.8395827713334,
+          "model_load_seconds": 6.5e-06,
+          "prefill_seconds": 0.0028241,
+          "route_seconds": 0.0001496,
+          "time_to_first_output_seconds": 0.0060981,
+          "total_latency_seconds": 0.022242
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0003",
+      "prompt_sha256": "67a291995aeb928a37d106cfc787daf58374e53a6d9b8ba8e18bed2a31f9594b",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 21,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 21,
+        "generated_bytes": 56,
+        "generated_characters": 56,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662069735f6576656e5f746573745f3030286e756d626572293a0a2020202072657475726e206e756d62657220252032203d3d20300a",
+        "output_sha256": "154a4b05363e5b62062b08267695805876fa0161a3f5a9204169ad0548ac8dd2",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 760.2002584680879,
+          "characters_per_second_total": 760.2002584680879,
+          "model_load_seconds": 4.3e-06,
+          "prefill_seconds": 0.002829,
+          "route_seconds": 0.0001392,
+          "time_to_first_output_seconds": 0.0065053,
+          "total_latency_seconds": 0.0736648
+        }
+      },
+      "prompt_id": "test-is_even-00",
+      "prompt_sha256": "39ed31511a1059095d9f7b2149fd2f30ce540c0016c55b955e9add43a5aa1673",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135352046524f4d207461626c655f73716c5f746573745f3231353135342057484552452066696c74657265645f73716c5f746573745f323135313536203d20276d617463685f73716c5f746573745f323135313537273b",
+        "output_sha256": "892476f22f557f09d3bd6df9d92c298eab00764891620e8c80aabef949d34cf4",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1747.7328439681369,
+          "characters_per_second_total": 1747.7328439681369,
+          "model_load_seconds": 4e-06,
+          "prefill_seconds": 0.0023478,
+          "route_seconds": 0.0001455,
+          "time_to_first_output_seconds": 0.0057093,
+          "total_latency_seconds": 0.0663717
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0004",
+      "prompt_sha256": "c23ab92f178be8a1d9064cc8b97629d82f3667ce2f5255a24e56f29acebd97f4",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363135342e2a24",
+        "output_sha256": "ff21c19671bf8213fcf4ecb096de6ba7c29d125b20b953e849e2bdef3e2e243f",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1167.8385322283166,
+          "characters_per_second_total": 1167.8385322283166,
+          "model_load_seconds": 4.3e-06,
+          "prefill_seconds": 0.0024414,
+          "route_seconds": 0.0001216,
+          "time_to_first_output_seconds": 0.0056388,
+          "total_latency_seconds": 0.0248322
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0004",
+      "prompt_sha256": "9541b141a929d0739899635c67b5c78e14e5d519d8074efac8a3834259ad03f9",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 21,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 21,
+        "generated_bytes": 56,
+        "generated_characters": 56,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662069735f6576656e5f746573745f3031286e756d626572293a0a2020202072657475726e206e756d62657220252032203d3d20300a",
+        "output_sha256": "ce767e83be3a111c9b983d111c2d250a5129ece07e4de9032191649be8bbeb7a",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 671.5216080064562,
+          "characters_per_second_total": 671.5216080064562,
+          "model_load_seconds": 3.8e-06,
+          "prefill_seconds": 0.0029582,
+          "route_seconds": 0.0001393,
+          "time_to_first_output_seconds": 0.0066257,
+          "total_latency_seconds": 0.0833927
+        }
+      },
+      "prompt_id": "test-is_even-01",
+      "prompt_sha256": "78990570c4c808b46ccdf1c8e2d7cc71f6dc652854db03ed86a3aaec9bd0ee44",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135362046524f4d207461626c655f73716c5f746573745f3231353135352057484552452066696c74657265645f73716c5f746573745f323135313537203d20276d617463685f73716c5f746573745f323135313538273b",
+        "output_sha256": "95804544fca520432c06cdbdb890decf6dce8b4d1e200622cf46bb6e85504e49",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1954.3062970781436,
+          "characters_per_second_total": 1954.3062970781436,
+          "model_load_seconds": 5.9e-06,
+          "prefill_seconds": 0.002582,
+          "route_seconds": 0.0001488,
+          "time_to_first_output_seconds": 0.006007,
+          "total_latency_seconds": 0.0593561
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0005",
+      "prompt_sha256": "76b0103457b471aa8880b387f460107a202f2d26771ee83c469c953ab4318e4c",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363135352e2a24",
+        "output_sha256": "e8e81468a9d936039bbdab83b1dd47264127f1c5392092210134823e6fea8d07",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1605.003182333896,
+          "characters_per_second_total": 1605.003182333896,
+          "model_load_seconds": 2.2e-06,
+          "prefill_seconds": 0.001856,
+          "route_seconds": 8.27e-05,
+          "time_to_first_output_seconds": 0.0043658,
+          "total_latency_seconds": 0.0180685
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0005",
+      "prompt_sha256": "ee858c92e652ea452067fa1b73c2881630ee3a02347d35825cc9bab9bb4b9559",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 21,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 21,
+        "generated_bytes": 56,
+        "generated_characters": 56,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662069735f6576656e5f746573745f3032286e756d626572293a0a2020202072657475726e206e756d62657220252032203d3d20300a",
+        "output_sha256": "7968cdb6f70e1a893278311c5426cb2fb38bd3501b590d551a3fa86907e5eb1a",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 907.0118494619476,
+          "characters_per_second_total": 907.0118494619476,
+          "model_load_seconds": 3.5e-06,
+          "prefill_seconds": 0.0025593,
+          "route_seconds": 0.0001328,
+          "time_to_first_output_seconds": 0.0058039,
+          "total_latency_seconds": 0.0617412
+        }
+      },
+      "prompt_id": "test-is_even-02",
+      "prompt_sha256": "3a72b78f6db02b7999fbee6a58b5d1c3d24262ff3b921dbd76b138322e19240a",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135372046524f4d207461626c655f73716c5f746573745f3231353135362057484552452066696c74657265645f73716c5f746573745f323135313538203d20276d617463685f73716c5f746573745f323135313539273b",
+        "output_sha256": "57f4de7e100a9df7ff3200074c2c6a3123e05ccd4d64fb3108413477861a2d29",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2173.159605459127,
+          "characters_per_second_total": 2173.159605459127,
+          "model_load_seconds": 4e-06,
+          "prefill_seconds": 0.0022234,
+          "route_seconds": 0.0001464,
+          "time_to_first_output_seconds": 0.0052323,
+          "total_latency_seconds": 0.0533785
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0006",
+      "prompt_sha256": "eb5e97cd6588f8d2dc2087f6f7bd12d4592e5d9a5ef098d3de310001874fe2c9",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363135362e2a24",
+        "output_sha256": "32136f613f3c6069ce4cdca4e4da76a49bfe9760c9fbc935c5e9c46931482612",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1451.8147684605758,
+          "characters_per_second_total": 1451.8147684605758,
+          "model_load_seconds": 2e-06,
+          "prefill_seconds": 0.0018796,
+          "route_seconds": 8.36e-05,
+          "time_to_first_output_seconds": 0.0049998,
+          "total_latency_seconds": 0.019975
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0006",
+      "prompt_sha256": "53294b484e7fc86ef97bf9d1920e1573719a0bc1bad570aafc4d5eb2b0a00091",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 21,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 21,
+        "generated_bytes": 56,
+        "generated_characters": 56,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662069735f6576656e5f746573745f3033286e756d626572293a0a2020202072657475726e206e756d62657220252032203d3d20300a",
+        "output_sha256": "d8383d82e6502b4ebc3b9f8844c573f7ea67aacbba9f51b8dea4fffaa8a44cce",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 922.9090753275091,
+          "characters_per_second_total": 922.9090753275091,
+          "model_load_seconds": 3.6e-06,
+          "prefill_seconds": 0.0025911,
+          "route_seconds": 0.0001338,
+          "time_to_first_output_seconds": 0.0055987,
+          "total_latency_seconds": 0.0606777
+        }
+      },
+      "prompt_id": "test-is_even-03",
+      "prompt_sha256": "5c14ca85cc75139a33fdf9b6c33a2e8298cf6b70c56f410384b22b7e5199c52a",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135382046524f4d207461626c655f73716c5f746573745f3231353135372057484552452066696c74657265645f73716c5f746573745f323135313539203d20276d617463685f73716c5f746573745f323135313630273b",
+        "output_sha256": "d4a56e0e9da0f3ab4c10fd771b3ba04ba45ea1a86f6e92ddd6dfa7e0fdd417c9",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2103.2210104526457,
+          "characters_per_second_total": 2103.2210104526457,
+          "model_load_seconds": 3.8e-06,
+          "prefill_seconds": 0.0023014,
+          "route_seconds": 0.0001312,
+          "time_to_first_output_seconds": 0.0050585,
+          "total_latency_seconds": 0.0551535
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0007",
+      "prompt_sha256": "982406e6a5c320a8188d659ac3e7b7b8433e2e35b52e54ec649b57939e1c8a5c",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363135372e2a24",
+        "output_sha256": "4d89db50ed62e548dc3da0ee186b6a22d580410f12242333564d87880b565cf0",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1571.5175982875876,
+          "characters_per_second_total": 1571.5175982875876,
+          "model_load_seconds": 3.8e-06,
+          "prefill_seconds": 0.0020843,
+          "route_seconds": 0.0001176,
+          "time_to_first_output_seconds": 0.0051387,
+          "total_latency_seconds": 0.0184535
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0007",
+      "prompt_sha256": "60e9ae6359622c1e1fcf68f5c9b17e7610688db0c0c3d13075cd74aa499b6e97",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 33,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 33,
+        "generated_bytes": 102,
+        "generated_characters": 102,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662070616c696e64726f6d655f746573745f30302874657874293a0a202020206e6f726d616c697a6564203d20746578742e6c6f77657228290a2020202072657475726e206e6f726d616c697a6564203d3d206e6f726d616c697a65645b3a3a2d315d0a",
+        "output_sha256": "fe457204a2cd87967a1f4e9cb976111aba66b4710c9b936e00d36e720e1720f3",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1111.7008696334549,
+          "characters_per_second_total": 1111.7008696334549,
+          "model_load_seconds": 3.7e-06,
+          "prefill_seconds": 0.0023061,
+          "route_seconds": 0.000143,
+          "time_to_first_output_seconds": 0.005036,
+          "total_latency_seconds": 0.0917513
+        }
+      },
+      "prompt_id": "test-palindrome-00",
+      "prompt_sha256": "15a3fecb2f3160d31539d01906d1fc73bc8931ba7f4096ef8678dabd6ff69313",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135392046524f4d207461626c655f73716c5f746573745f3231353135382057484552452066696c74657265645f73716c5f746573745f323135313630203d20276d617463685f73716c5f746573745f323135313631273b",
+        "output_sha256": "557a4e4f298f9f2a12f6bf2958f777bf3667e19685fb21834b0688527660c9e0",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2138.5918110369776,
+          "characters_per_second_total": 2138.5918110369776,
+          "model_load_seconds": 4.7e-06,
+          "prefill_seconds": 0.0021539,
+          "route_seconds": 0.0001462,
+          "time_to_first_output_seconds": 0.0050121,
+          "total_latency_seconds": 0.0542413
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0008",
+      "prompt_sha256": "16e429aeb37afbc29cc1ce03dbc58e633d593ec81eb2361de112bd33cfeec78d",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363135382e2a24",
+        "output_sha256": "7c96a6c9194e4391db4f1b549b50b000381d8f85a948d8b92a0940280c588efe",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1444.8851067222033,
+          "characters_per_second_total": 1444.8851067222033,
+          "model_load_seconds": 2.6e-06,
+          "prefill_seconds": 0.0020284,
+          "route_seconds": 8.75e-05,
+          "time_to_first_output_seconds": 0.0044959,
+          "total_latency_seconds": 0.0200708
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0008",
+      "prompt_sha256": "ddc47e9dffaeadb06c131f7a80ed155757787887821873bc82fee8542a994ba3",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 33,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 33,
+        "generated_bytes": 102,
+        "generated_characters": 102,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662070616c696e64726f6d655f746573745f30312874657874293a0a202020206e6f726d616c697a6564203d20746578742e6c6f77657228290a2020202072657475726e206e6f726d616c697a6564203d3d206e6f726d616c697a65645b3a3a2d315d0a",
+        "output_sha256": "403806cd6f5935099efcbbf3774181bad6311495cd150c250bb8275d8d6c5553",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1087.1245024007333,
+          "characters_per_second_total": 1087.1245024007333,
+          "model_load_seconds": 2.7e-06,
+          "prefill_seconds": 0.0028414,
+          "route_seconds": 0.000106,
+          "time_to_first_output_seconds": 0.0061256,
+          "total_latency_seconds": 0.0938255
+        }
+      },
+      "prompt_id": "test-palindrome-01",
+      "prompt_sha256": "609848bbb832ee16372a831f694bef5ce2c5a5128cf342a7bc8dfb5e379997af",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136302046524f4d207461626c655f73716c5f746573745f3231353135392057484552452066696c74657265645f73716c5f746573745f323135313631203d20276d617463685f73716c5f746573745f323135313632273b",
+        "output_sha256": "9515b3f72bf68b15dd7119ac0935864d8d82e30298875a5d89aba7b6186a5b4e",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2021.3602011601909,
+          "characters_per_second_total": 2021.3602011601909,
+          "model_load_seconds": 2.4e-06,
+          "prefill_seconds": 0.0023965,
+          "route_seconds": 0.000119,
+          "time_to_first_output_seconds": 0.0055438,
+          "total_latency_seconds": 0.0573871
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0009",
+      "prompt_sha256": "6c7648e8b63faab6373b13e346c0c1f6825450a8cc9139cb3330016a8020988f",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363135392e2a24",
+        "output_sha256": "b5392dc3fbae914ebc229a36d8797223cbb7da21ea53e718e98b20891b9813ef",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1255.802674426661,
+          "characters_per_second_total": 1255.802674426661,
+          "model_load_seconds": 3.9e-06,
+          "prefill_seconds": 0.0024696,
+          "route_seconds": 0.000121,
+          "time_to_first_output_seconds": 0.0063362,
+          "total_latency_seconds": 0.0230928
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0009",
+      "prompt_sha256": "30d2dc6f9551070790e3c3c67bde21f821ee563e700961c3be721c9be4556854",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 33,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 33,
+        "generated_bytes": 102,
+        "generated_characters": 102,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662070616c696e64726f6d655f746573745f30322874657874293a0a202020206e6f726d616c697a6564203d20746578742e6c6f77657228290a2020202072657475726e206e6f726d616c697a6564203d3d206e6f726d616c697a65645b3a3a2d315d0a",
+        "output_sha256": "2e1eacedc4fbd4defdbeef838d57bf7a5a00cc05ee2cd4ea2a05e9d2571a4989",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 858.4991415008585,
+          "characters_per_second_total": 858.4991415008585,
+          "model_load_seconds": 2.5e-06,
+          "prefill_seconds": 0.0027173,
+          "route_seconds": 0.0001002,
+          "time_to_first_output_seconds": 0.0062708,
+          "total_latency_seconds": 0.118812
+        }
+      },
+      "prompt_id": "test-palindrome-02",
+      "prompt_sha256": "5381e8ac3254abd0ffc3a5f41f794316f2e396bb271a10cdde7d3161488308f4",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136312046524f4d207461626c655f73716c5f746573745f3231353136302057484552452066696c74657265645f73716c5f746573745f323135313632203d20276d617463685f73716c5f746573745f323135313633273b",
+        "output_sha256": "577ed631240310ba88bdf3088621d25eaa3e0b1d807f60fc68aa8198888d2c6d",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1699.907677427864,
+          "characters_per_second_total": 1699.907677427864,
+          "model_load_seconds": 6e-06,
+          "prefill_seconds": 0.0025605,
+          "route_seconds": 0.0001555,
+          "time_to_first_output_seconds": 0.0060627,
+          "total_latency_seconds": 0.068239
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0010",
+      "prompt_sha256": "19e7929f6ec29bc66e311da09475b0efd058d53f549413e29931058645069edb",
+      "seed": 10702,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363136302e2a24",
+        "output_sha256": "dd4691ee7d926760569534ce25b8469adb0de6808c44e31b98f999b0ed21d8f7",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1839.634610504948,
+          "characters_per_second_total": 1839.634610504948,
+          "model_load_seconds": 3.6e-06,
+          "prefill_seconds": 0.0020125,
+          "route_seconds": 0.0001256,
+          "time_to_first_output_seconds": 0.0041606,
+          "total_latency_seconds": 0.015764
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0010",
+      "prompt_sha256": "45e3180ead5cc649d7d56f836303118cde56840d41af7c1410d0c25746dbb7bc",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 33,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 33,
+        "generated_bytes": 102,
+        "generated_characters": 102,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662070616c696e64726f6d655f746573745f30332874657874293a0a202020206e6f726d616c697a6564203d20746578742e6c6f77657228290a2020202072657475726e206e6f726d616c697a6564203d3d206e6f726d616c697a65645b3a3a2d315d0a",
+        "output_sha256": "38b97e0a690f131d6972f1ef7688006cc5750b934019b8a97f852163f5650fcf",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 585.7679072694946,
+          "characters_per_second_total": 585.7679072694946,
+          "model_load_seconds": 0.0900901,
+          "prefill_seconds": 0.0028717,
+          "route_seconds": 0.000133,
+          "time_to_first_output_seconds": 0.0954833,
+          "total_latency_seconds": 0.1741304
+        }
+      },
+      "prompt_id": "test-palindrome-03",
+      "prompt_sha256": "1393196e81e8a698e8901dc0ef5aad27ff0e54420198f9964f627c3d0c6e5b6c",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136322046524f4d207461626c655f73716c5f746573745f3231353136312057484552452066696c74657265645f73716c5f746573745f323135313633203d20276d617463685f73716c5f746573745f323135313634273b",
+        "output_sha256": "b63715c32e6df6e8a90c609e494983097c4f0cd0aeab7a3d7b7658385169702d",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 914.1423335374392,
+          "characters_per_second_total": 914.1423335374392,
+          "model_load_seconds": 0.0809459,
+          "prefill_seconds": 0.0019731,
+          "route_seconds": 0.0001365,
+          "time_to_first_output_seconds": 0.0852385,
+          "total_latency_seconds": 0.1268949
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0011",
+      "prompt_sha256": "1a6838291141d1f881081898621a29cba450c42d9732c99093105a5448f863af",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363136312e2a24",
+        "output_sha256": "243e5be7a43c0d86c81bd43e881d4bc64ce54c41332ae24912e476a2fd803702",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1840.9425625920471,
+          "characters_per_second_total": 1840.9425625920471,
+          "model_load_seconds": 2.3e-06,
+          "prefill_seconds": 0.0019585,
+          "route_seconds": 8.55e-05,
+          "time_to_first_output_seconds": 0.0044384,
+          "total_latency_seconds": 0.0157528
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0011",
+      "prompt_sha256": "723a3987cea9d1c79dc377522e16bef04e692327c5a6620342781764a4f8dcfc",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 54,
+        "generated_characters": 54,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "64656620726576657273655f746578745f746573745f30302874657874293a0a2020202072657475726e20746578745b3a3a2d315d0a",
+        "output_sha256": "a28f65b72908d27487f1f9abedda2cfd1879ee182298735284296e9364fb1bfd",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1083.0542128803224,
+          "characters_per_second_total": 1083.0542128803224,
+          "model_load_seconds": 2.2e-06,
+          "prefill_seconds": 0.0025815,
+          "route_seconds": 9.48e-05,
+          "time_to_first_output_seconds": 0.0056278,
+          "total_latency_seconds": 0.049859
+        }
+      },
+      "prompt_id": "test-reverse_text-00",
+      "prompt_sha256": "af8b5b0ca96b988a2919dc86adc8db8a175459e397b98f09faf52e52760900f4",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136332046524f4d207461626c655f73716c5f746573745f3231353136322057484552452066696c74657265645f73716c5f746573745f323135313634203d20276d617463685f73716c5f746573745f323135313635273b",
+        "output_sha256": "7eb20f1c77075b2efe38f2386f3056fa1536189dfeb44d7ac633bdf3742d421d",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2257.577969152922,
+          "characters_per_second_total": 2257.577969152922,
+          "model_load_seconds": 3.5e-06,
+          "prefill_seconds": 0.0019284,
+          "route_seconds": 0.0001357,
+          "time_to_first_output_seconds": 0.0045815,
+          "total_latency_seconds": 0.0513825
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0012",
+      "prompt_sha256": "f98de13403f30ff239f20367550efbf5fb598e573061e35b24fbdd5ac67eeb50",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363136322e2a24",
+        "output_sha256": "3652a49fec2c0fb6cf72df7fd4ce9c507af4a305292d1142c9b571c7e26ceaef",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1609.1265217343057,
+          "characters_per_second_total": 1609.1265217343057,
+          "model_load_seconds": 4e-06,
+          "prefill_seconds": 0.0022085,
+          "route_seconds": 0.0001169,
+          "time_to_first_output_seconds": 0.0050517,
+          "total_latency_seconds": 0.0180222
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0012",
+      "prompt_sha256": "d3481d82f849543d0635236c0bdfc7953f59129df24c0df905783288cbe31ca2",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 54,
+        "generated_characters": 54,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "64656620726576657273655f746578745f746573745f30312874657874293a0a2020202072657475726e20746578745b3a3a2d315d0a",
+        "output_sha256": "8cc395cb6d598d56fb6ecf0dee06077e1158c45a61ddbbb98e4b3fd973b6698e",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1031.2428385913986,
+          "characters_per_second_total": 1031.2428385913986,
+          "model_load_seconds": 2.4e-06,
+          "prefill_seconds": 0.0025811,
+          "route_seconds": 9.88e-05,
+          "time_to_first_output_seconds": 0.0055864,
+          "total_latency_seconds": 0.052364
+        }
+      },
+      "prompt_id": "test-reverse_text-01",
+      "prompt_sha256": "dd0d967133b46f0ad231d78fff039b17461b4479b39a359fa837ed34bbb41b44",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136342046524f4d207461626c655f73716c5f746573745f3231353136332057484552452066696c74657265645f73716c5f746573745f323135313635203d20276d617463685f73716c5f746573745f323135313636273b",
+        "output_sha256": "36c03a3ecf04b26d2c0b770f72eeb802a0d27d93922532b06d4f7ec24f6b1596",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2162.82330479401,
+          "characters_per_second_total": 2162.82330479401,
+          "model_load_seconds": 4.1e-06,
+          "prefill_seconds": 0.0023105,
+          "route_seconds": 0.0001357,
+          "time_to_first_output_seconds": 0.0049537,
+          "total_latency_seconds": 0.0536336
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0013",
+      "prompt_sha256": "9616d261ecf8654a4f70128d8dbfeb63593d6034cfee22a831671033867fdbaf",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363136332e2a24",
+        "output_sha256": "fd48e1e88fe251e55a4851b2377a14b0ba064ca9f1c180db57d298506a68bd60",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1548.6654775763918,
+          "characters_per_second_total": 1548.6654775763918,
+          "model_load_seconds": 3.8e-06,
+          "prefill_seconds": 0.0020927,
+          "route_seconds": 0.000117,
+          "time_to_first_output_seconds": 0.0053031,
+          "total_latency_seconds": 0.0187258
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0013",
+      "prompt_sha256": "95e4fd7c0c97b2042fa979048fe08c07aefe8bc9de78a13a38cd330eefa7f1aa",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 54,
+        "generated_characters": 54,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "64656620726576657273655f746578745f746573745f30322874657874293a0a2020202072657475726e20746578745b3a3a2d315d0a",
+        "output_sha256": "1748010cd3a115a4e49b7d0d801ad1b7477f3468b2c9a7d12c991702858f36f9",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1057.8465769847846,
+          "characters_per_second_total": 1057.8465769847846,
+          "model_load_seconds": 2.8e-06,
+          "prefill_seconds": 0.0020764,
+          "route_seconds": 0.0001043,
+          "time_to_first_output_seconds": 0.0047713,
+          "total_latency_seconds": 0.0510471
+        }
+      },
+      "prompt_id": "test-reverse_text-02",
+      "prompt_sha256": "8938a1770636b3ca64d490caf746e33036385a0b07de93a4bf85f7b56ef80ef4",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136352046524f4d207461626c655f73716c5f746573745f3231353136342057484552452066696c74657265645f73716c5f746573745f323135313636203d20276d617463685f73716c5f746573745f323135313637273b",
+        "output_sha256": "c5e305e1f9f5c6049c8c7b6c0aff88858b643981f48499ff836c3ab303d978b0",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2403.741548051001,
+          "characters_per_second_total": 2403.741548051001,
+          "model_load_seconds": 2.4e-06,
+          "prefill_seconds": 0.0020884,
+          "route_seconds": 0.0001025,
+          "time_to_first_output_seconds": 0.0051008,
+          "total_latency_seconds": 0.0482581
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0014",
+      "prompt_sha256": "be5e5f5e9159587e5bbaf2590d2e942457da62ff6e93e66990d5ef6378b167ae",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363136342e2a24",
+        "output_sha256": "2f552e6a26490db675f21ff9470d431111a9ecf6823939d07e8c898dd429f985",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1354.7540187142918,
+          "characters_per_second_total": 1354.7540187142918,
+          "model_load_seconds": 2.4e-06,
+          "prefill_seconds": 0.0021353,
+          "route_seconds": 8.14e-05,
+          "time_to_first_output_seconds": 0.0047466,
+          "total_latency_seconds": 0.0214061
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0014",
+      "prompt_sha256": "a861e83e8017eb00f847f5c53d7856fb4eec32f7fa2b9d93f8543d4af72da4e3",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 54,
+        "generated_characters": 54,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "64656620726576657273655f746578745f746573745f30332874657874293a0a2020202072657475726e20746578745b3a3a2d315d0a",
+        "output_sha256": "ab87aedcfd90f599ef15fcbbeb9e643cb23270ce50d79e16749704e40fa66096",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1032.2817440973556,
+          "characters_per_second_total": 1032.2817440973556,
+          "model_load_seconds": 3.5e-06,
+          "prefill_seconds": 0.002574,
+          "route_seconds": 0.0001373,
+          "time_to_first_output_seconds": 0.0057398,
+          "total_latency_seconds": 0.0523113
+        }
+      },
+      "prompt_id": "test-reverse_text-03",
+      "prompt_sha256": "d22b9da5084fdb5c66dbf6991c7c625e20874ee7b49da0b992f2e234e14ae03d",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 19,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 19,
+        "generated_bytes": 116,
+        "generated_characters": 116,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136362046524f4d207461626c655f73716c5f746573745f3231353136352057484552452066696c74657265645f73716c5f746573745f323135313637203d20276d617463685f73716c5f746573745f323135313638273b",
+        "output_sha256": "d6af611427790e298a8ca55e92be55f51bb2b8faceb4a4606844623dd062bfc2",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2164.5829445792124,
+          "characters_per_second_total": 2164.5829445792124,
+          "model_load_seconds": 3.7e-06,
+          "prefill_seconds": 0.0025171,
+          "route_seconds": 0.0001341,
+          "time_to_first_output_seconds": 0.0056758,
+          "total_latency_seconds": 0.05359
+        }
+      },
+      "prompt_id": "sql-test-where_equal-0015",
+      "prompt_sha256": "41aaab37c83b4c8a0ca1dc29728292f880a01ff14abd6f64ccaa27f8a87dec02",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f3231363136352e2a24",
+        "output_sha256": "bf7abb5a8ef575ec0351355eaa4e180cfce47c3f8362d8cbce37ae162cf942f2",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1710.8841731414782,
+          "characters_per_second_total": 1710.8841731414782,
+          "model_load_seconds": 4.1e-06,
+          "prefill_seconds": 0.0020988,
+          "route_seconds": 0.0001164,
+          "time_to_first_output_seconds": 0.0046971,
+          "total_latency_seconds": 0.0169503
+        }
+      },
+      "prompt_id": "regex-test-starts_with-0015",
+      "prompt_sha256": "37c780c1a2516f513b5b42d70adffea0e73914ad47d98e4cebf24b5e244d0d9a",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 38,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 38,
+        "generated_bytes": 94,
+        "generated_characters": 94,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "64656620636f756e745f766f77656c735f746573745f30302874657874293a0a2020202072657475726e2073756d283120666f72206368617220696e20746578742e6c6f7765722829206966206368617220696e20226165696f7522290a",
+        "output_sha256": "faee410933c9c82021ef29061194cf9d82cce6f06fc6aeaaca81757ef78f514b",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 870.6654292102694,
+          "characters_per_second_total": 870.6654292102694,
+          "model_load_seconds": 3.9e-06,
+          "prefill_seconds": 0.0022851,
+          "route_seconds": 0.0001428,
+          "time_to_first_output_seconds": 0.005257,
+          "total_latency_seconds": 0.1079634
+        }
+      },
+      "prompt_id": "test-count_vowels-00",
+      "prompt_sha256": "62b4268b01746db5f754a4dfc28198c9d8c010fc25a21a6e4fd8c8edcc650f54",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 17,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 17,
+        "generated_bytes": 98,
+        "generated_characters": 98,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353135312046524f4d207461626c655f73716c5f746573745f323235313530204f52444552204259206f72646572696e675f73716c5f746573745f32323531353220444553433b",
+        "output_sha256": "e8731095e6d9f49d40cd387a8d90e292b7ca6e74cbd6e21a0eaa9af42d41f403",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1959.5062044364822,
+          "characters_per_second_total": 1959.5062044364822,
+          "model_load_seconds": 2.88e-05,
+          "prefill_seconds": 0.0025881,
+          "route_seconds": 0.0001324,
+          "time_to_first_output_seconds": 0.0054913,
+          "total_latency_seconds": 0.0500126
+        }
+      },
+      "prompt_id": "sql-test-order_descending-0000",
+      "prompt_sha256": "51129d1b03e289a1bb504ff9bb4c4b9fd93d3a3e4a20baab37655c5b89c819b8",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 6,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 6,
+        "generated_bytes": 29,
+        "generated_characters": 29,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e2e2a6c69746572616c5f72656765785f746573745f32323631353024",
+        "output_sha256": "b549f42569c74e7f3eb4eb31f107126d4ed9930a78dfff020c89de84a49b28e9",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1509.7797283437717,
+          "characters_per_second_total": 1509.7797283437717,
+          "model_load_seconds": 5.1e-06,
+          "prefill_seconds": 0.0023002,
+          "route_seconds": 0.0001289,
+          "time_to_first_output_seconds": 0.0051354,
+          "total_latency_seconds": 0.0192081
+        }
+      },
+      "prompt_id": "regex-test-ends_with-0000",
+      "prompt_sha256": "cdeb91c62a11dfb4802b1c7730832817be2e9494e624fe1bbb423ba0b841172b",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 38,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 38,
+        "generated_bytes": 94,
+        "generated_characters": 94,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "64656620636f756e745f766f77656c735f746573745f30312874657874293a0a2020202072657475726e2073756d283120666f72206368617220696e20746578742e6c6f7765722829206966206368617220696e20226165696f7522290a",
+        "output_sha256": "c8752d0ee94197077d0e30a1f434836555766e5d2bfd2e78ae43d9aeda192443",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 888.2824208908905,
+          "characters_per_second_total": 888.2824208908905,
+          "model_load_seconds": 4.2e-06,
+          "prefill_seconds": 0.0027499,
+          "route_seconds": 0.0001256,
+          "time_to_first_output_seconds": 0.0060141,
+          "total_latency_seconds": 0.1058222
+        }
+      },
+      "prompt_id": "test-count_vowels-01",
+      "prompt_sha256": "5b0db6449236d0146ebd10c34da78c7ad2c0dbc4d4716d6be0c3802823f931c4",
+      "seed": 10703,
+      "trial": 1
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 40,
+        "generated_characters": 40,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206164645f746573745f303028612c2062293a0a2020202072657475726e2061202b20620a",
+        "output_sha256": "8d415208cc62c80c309255dd800867ee2a72438e019f5c14ec65d62e221a06cd",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 701.3348154875767,
+          "characters_per_second_total": 701.3348154875767,
+          "model_load_seconds": 2.1e-06,
+          "prefill_seconds": 0.0022827,
+          "route_seconds": 9.35e-05,
+          "time_to_first_output_seconds": 0.0052218,
+          "total_latency_seconds": 0.0570341
+        }
+      },
+      "prompt_id": "test-add-00",
+      "prompt_sha256": "8439a2e075160466600b25e97a0efffe2887554c1eec360cd8305082bab0eb50",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135312046524f4d207461626c655f73716c5f746573745f3230353135303b",
+        "output_sha256": "eeec31714274cd74cac44ebfc431900be6f2dba5e608ec82136003c4d8df929f",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2251.9764056086065,
+          "characters_per_second_total": 2251.9764056086065,
+          "model_load_seconds": 2e-06,
+          "prefill_seconds": 0.0018651,
+          "route_seconds": 8.58e-05,
+          "time_to_first_output_seconds": 0.0044727,
+          "total_latency_seconds": 0.0253111
+        }
+      },
+      "prompt_id": "sql-test-select_column-0000",
+      "prompt_sha256": "0b7a1257b7f3680fbb65ec3da8b5e7caa26dae55bf430d3cd6ec02e0ef0d54af",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353024",
+        "output_sha256": "7ce8034193906fbeb645e773a08f9e22e5e8a953acb73ac036837001cd186062",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2065.2148970834573,
+          "characters_per_second_total": 2065.2148970834573,
+          "model_load_seconds": 2.3e-06,
+          "prefill_seconds": 0.002,
+          "route_seconds": 8.15e-05,
+          "time_to_first_output_seconds": 0.0049892,
+          "total_latency_seconds": 0.0130737
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0000",
+      "prompt_sha256": "82777294eca5b2df5365fae6090c7accaa2456a604c132e7589256caa3fcb099",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 40,
+        "generated_characters": 40,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206164645f746573745f303128612c2062293a0a2020202072657475726e2061202b20620a",
+        "output_sha256": "0bd2a185126e7132acafc0227c0ed0b47c9af66e039b7e4e57831ad7f0998129",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 704.0951936701842,
+          "characters_per_second_total": 704.0951936701842,
+          "model_load_seconds": 3.8e-06,
+          "prefill_seconds": 0.002588,
+          "route_seconds": 0.0001352,
+          "time_to_first_output_seconds": 0.0052818,
+          "total_latency_seconds": 0.0568105
+        }
+      },
+      "prompt_id": "test-add-01",
+      "prompt_sha256": "0cc3bae8408626018b5dfc2ddf5da82334d79453507e1d299de75a741db66528",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135322046524f4d207461626c655f73716c5f746573745f3230353135313b",
+        "output_sha256": "a34cc6d90ecf6388e2eaff3cd8114efa3a9db76531243941a978a9acb88ee14d",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2335.567829806763,
+          "characters_per_second_total": 2335.567829806763,
+          "model_load_seconds": 5.5e-06,
+          "prefill_seconds": 0.0021748,
+          "route_seconds": 0.0001399,
+          "time_to_first_output_seconds": 0.0047277,
+          "total_latency_seconds": 0.0244052
+        }
+      },
+      "prompt_id": "sql-test-select_column-0001",
+      "prompt_sha256": "f972183c62940454fdefc6b9a9e0c8313daa90efac00ecd6566d967e205c49ba",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353124",
+        "output_sha256": "3b00b47f42c4ffbceea378c246ad5c56dd42f0a21e5a186494698c3d88c5883f",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1983.1359990598467,
+          "characters_per_second_total": 1983.1359990598467,
+          "model_load_seconds": 4.1e-06,
+          "prefill_seconds": 0.0022668,
+          "route_seconds": 0.0001178,
+          "time_to_first_output_seconds": 0.0054116,
+          "total_latency_seconds": 0.0136148
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0001",
+      "prompt_sha256": "e4dcf8cf72edb69d85256ff4e4ea4db7ce7943f150a7fcadb9f5ed66f86f1a2e",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 40,
+        "generated_characters": 40,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206164645f746573745f303228612c2062293a0a2020202072657475726e2061202b20620a",
+        "output_sha256": "66a20954a3529b00a14f0b32bd4a130aeadd2ba88c081f37872e55d613c8635f",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 691.7327559670597,
+          "characters_per_second_total": 691.7327559670597,
+          "model_load_seconds": 2e-06,
+          "prefill_seconds": 0.0024049,
+          "route_seconds": 8.58e-05,
+          "time_to_first_output_seconds": 0.0057565,
+          "total_latency_seconds": 0.0578258
+        }
+      },
+      "prompt_id": "test-add-02",
+      "prompt_sha256": "71aab407ca8b5ede607f1d3869523ff7c00a6e61fc024cd1a39fa134edf50308",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135332046524f4d207461626c655f73716c5f746573745f3230353135323b",
+        "output_sha256": "6dad0489e35963e22636e598eb45cf594f2c501c5e34977821345df0df1ab725",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2129.6867118758055,
+          "characters_per_second_total": 2129.6867118758055,
+          "model_load_seconds": 2.3e-06,
+          "prefill_seconds": 0.0019948,
+          "route_seconds": 8.52e-05,
+          "time_to_first_output_seconds": 0.0053085,
+          "total_latency_seconds": 0.0267645
+        }
+      },
+      "prompt_id": "sql-test-select_column-0002",
+      "prompt_sha256": "7a7df1c3505b3c827b9dd8c64dad1066ea8f8b77d2582f80699119767f30f2d6",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353224",
+        "output_sha256": "f99f473f648342beab2aad5f6fb096a584973a849bd58bc604ef31e7fa4b55a4",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2078.090004387079,
+          "characters_per_second_total": 2078.090004387079,
+          "model_load_seconds": 5.9e-06,
+          "prefill_seconds": 0.0023914,
+          "route_seconds": 0.0001421,
+          "time_to_first_output_seconds": 0.005464,
+          "total_latency_seconds": 0.0129927
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0002",
+      "prompt_sha256": "c583345334766cf5b749d820fddf51e09df71c2cc1862607ea4610966954326e",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 40,
+        "generated_characters": 40,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "646566206164645f746573745f303328612c2062293a0a2020202072657475726e2061202b20620a",
+        "output_sha256": "36de0aa785f0ffc7c0228e651de7628e010fabbfecc0044df5b2cce171d70624",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 696.8009866701971,
+          "characters_per_second_total": 696.8009866701971,
+          "model_load_seconds": 3.5e-06,
+          "prefill_seconds": 0.0031188,
+          "route_seconds": 0.0001325,
+          "time_to_first_output_seconds": 0.0066174,
+          "total_latency_seconds": 0.0574052
+        }
+      },
+      "prompt_id": "test-add-03",
+      "prompt_sha256": "f3cd39ca057ddab0bc464a7709ce2fef34c5e1ee81eb830cbe664efa1167e060",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135342046524f4d207461626c655f73716c5f746573745f3230353135333b",
+        "output_sha256": "5a6f83340fd06e72c8edf81baa5565230f7291d588e3aafd75392d09c4f61dfb",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2400.0909508149784,
+          "characters_per_second_total": 2400.0909508149784,
+          "model_load_seconds": 2.2e-06,
+          "prefill_seconds": 0.0018963,
+          "route_seconds": 8.43e-05,
+          "time_to_first_output_seconds": 0.0047249,
+          "total_latency_seconds": 0.0237491
+        }
+      },
+      "prompt_id": "sql-test-select_column-0003",
+      "prompt_sha256": "c77efb5308dd9197f02855dcf826ba53de39d199b7e17b7abad78ce05526bb6d",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353324",
+        "output_sha256": "68a9b644bbc5e2c6720637b7e776481878a00160287ae55a9633b381ef756287",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 2142.7381018514843,
+          "characters_per_second_total": 2142.7381018514843,
+          "model_load_seconds": 2.3e-06,
+          "prefill_seconds": 0.0020903,
+          "route_seconds": 8.59e-05,
+          "time_to_first_output_seconds": 0.0049164,
+          "total_latency_seconds": 0.0126007
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0003",
+      "prompt_sha256": "ed59632426973b8a2e3f549b2276dc61c849dc47dede185b91489d5227a14fed",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 45,
+        "generated_characters": 45,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662073756274726163745f746573745f303028612c2062293a0a2020202072657475726e2061202d20620a",
+        "output_sha256": "445371d2a405ccc4e8dcf17730222d3008de24b0032a823de261f7a721be0904",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 672.2518345005617,
+          "characters_per_second_total": 672.2518345005617,
+          "model_load_seconds": 2.2e-06,
+          "prefill_seconds": 0.0020974,
+          "route_seconds": 9.18e-05,
+          "time_to_first_output_seconds": 0.0045869,
+          "total_latency_seconds": 0.0669392
+        }
+      },
+      "prompt_id": "test-subtract-00",
+      "prompt_sha256": "c6e87e29735de7bcc65f90c5d6a813bcad204d5f8fe96cefead62647d001b264",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135352046524f4d207461626c655f73716c5f746573745f3230353135343b",
+        "output_sha256": "55d7d7f8c2b006b108eac36fee4e3718585b9306fbcdd6f5ce77fb8c4594088e",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1775.6511499677579,
+          "characters_per_second_total": 1775.6511499677579,
+          "model_load_seconds": 7.4e-06,
+          "prefill_seconds": 0.0025334,
+          "route_seconds": 0.0001652,
+          "time_to_first_output_seconds": 0.0057207,
+          "total_latency_seconds": 0.0321009
+        }
+      },
+      "prompt_id": "sql-test-select_column-0004",
+      "prompt_sha256": "81f0214948c0dc281d911a6af98c25400cfea9666e138cf534ce56ae9c72435d",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353424",
+        "output_sha256": "746c6fff8909d3689d67bd77dc3b99acd562bfd39c60fc7dc00b491e19a8b049",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1624.2750920422552,
+          "characters_per_second_total": 1624.2750920422552,
+          "model_load_seconds": 6e-06,
+          "prefill_seconds": 0.0024228,
+          "route_seconds": 0.000137,
+          "time_to_first_output_seconds": 0.0057418,
+          "total_latency_seconds": 0.0166228
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0004",
+      "prompt_sha256": "a3f9417b8bdd3209d36374103eb586699b3da9282e8ad7b49e1bd62d35064584",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 45,
+        "generated_characters": 45,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662073756274726163745f746573745f303128612c2062293a0a2020202072657475726e2061202d20620a",
+        "output_sha256": "3cd1b69e41818307410ad412cba037274b02d19ae45068b7e3939f59472f5cc3",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 671.0858915376068,
+          "characters_per_second_total": 671.0858915376068,
+          "model_load_seconds": 7.3e-06,
+          "prefill_seconds": 0.0025799,
+          "route_seconds": 0.0001411,
+          "time_to_first_output_seconds": 0.0052473,
+          "total_latency_seconds": 0.0670555
+        }
+      },
+      "prompt_id": "test-subtract-01",
+      "prompt_sha256": "5605ab3de85d4439df8fbafb343aed8a73e5ddb727814dde54de4f33bdeb08a3",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135362046524f4d207461626c655f73716c5f746573745f3230353135353b",
+        "output_sha256": "599c68071a4b4647ec620e4916578cdfedc7758f9a4452e5417417aadaeebf54",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1626.545217957059,
+          "characters_per_second_total": 1626.545217957059,
+          "model_load_seconds": 2.6e-06,
+          "prefill_seconds": 0.0023048,
+          "route_seconds": 8.73e-05,
+          "time_to_first_output_seconds": 0.0057091,
+          "total_latency_seconds": 0.0350436
+        }
+      },
+      "prompt_id": "sql-test-select_column-0005",
+      "prompt_sha256": "b413a88511d997b5668a7271fe109dd2e4f75c2a9ad54d88dd216c0fec064cbc",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "regex",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8912932,
+        "cold": false,
+        "decode_step_calls": 4,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 4,
+        "generated_bytes": 27,
+        "generated_characters": 27,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "5e6c69746572616c5f72656765785f746573745f32303631353524",
+        "output_sha256": "ad29779711dc448b613bddd1a2d0abf906edffcbfeac440a2abb001cda0e3699",
+        "prefill_calls": 1,
+        "selected": [
+          "regex-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1684.8989372655963,
+          "characters_per_second_total": 1684.8989372655963,
+          "model_load_seconds": 2.8e-06,
+          "prefill_seconds": 0.002482,
+          "route_seconds": 9.27e-05,
+          "time_to_first_output_seconds": 0.0058622,
+          "total_latency_seconds": 0.0160247
+        }
+      },
+      "prompt_id": "regex-test-exact_literal-0005",
+      "prompt_sha256": "1bf7f015ad6dd350926981c85b08a1a377fa1c94583e1847b319357a707dec5f",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "python",
+      "layercake_cpu": {
+        "active_tensor_bytes": 9145536,
+        "cold": false,
+        "decode_step_calls": 20,
+        "functional_check_count": 4,
+        "functional_success": true,
+        "generated_actions": 20,
+        "generated_bytes": 45,
+        "generated_characters": 45,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "6465662073756274726163745f746573745f303228612c2062293a0a2020202072657475726e2061202d20620a",
+        "output_sha256": "7318b239b2802beb5dce84922e34236a709255a8d8b23f2412fd7fe903c7a1b7",
+        "prefill_calls": 1,
+        "selected": [
+          "python-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 589.0838829267782,
+          "characters_per_second_total": 589.0838829267782,
+          "model_load_seconds": 6.2e-06,
+          "prefill_seconds": 0.0029776,
+          "route_seconds": 0.0001534,
+          "time_to_first_output_seconds": 0.0067863,
+          "total_latency_seconds": 0.0763898
+        }
+      },
+      "prompt_id": "test-subtract-02",
+      "prompt_sha256": "b46d033773680ca581a1d4cbb6eccef3cccc6f1d1e25e2cb930f8ae4cf6ed354",
+      "seed": 10703,
+      "trial": 2
+    },
+    {
+      "domain": "sql",
+      "layercake_cpu": {
+        "active_tensor_bytes": 8954512,
+        "cold": false,
+        "decode_step_calls": 9,
+        "functional_check_count": 1,
+        "functional_success": true,
+        "generated_actions": 9,
+        "generated_bytes": 57,
+        "generated_characters": 57,
+        "inactive_cake_forward_calls": 0,
+        "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135372046524f4d207461626c655f73716c5f746573745f3230353135363b",
+        "output_sha256": "6c05332ca4962cb8523490ee7c1ba206692eb207562de501e6c5e72d003f0aba",
+        "prefill_calls": 1,
+        "selected": [
+          "sql-token-plan"
+        ],
+        "timing": {
+          "bytes_per_second_total": 1634.7601634760163,
+          "characters_per_second_total": 1634.7601634760163,
+          "model_load_seconds": 6.8e-06,
+          "prefill_seconds": 0.0030111,
+          "route_seconds": 0.0001515,
+          "time_to_first_output_seconds": 0.0067151,
+          "total_latency_seconds": 0.0348675
+        }
+      },
+      "prompt_id": "sql-test-select_column-0006",
+      "prompt_sha256": "d063d0a0e8ee77f159f8e27659db73f4c2c33202a466f70131e34dc3280a68e7",
+      "seed": 10703,
+      "trial": 2
+    }
+  ],
+  "status": "RAW"
+}

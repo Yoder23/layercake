@@ -1,0 +1,181 @@
+{
+  "campaign_version": 1,
+  "candidate_path": "results/moonshot/phase7/candidate.json",
+  "candidate_sha256": "252165825149c83163b9db0ab1b6215c474ed242f0eeb94bcbf16db664c51bb2",
+  "format": "layercake-moonshot-candidate-verification/1",
+  "phase": 7,
+  "status": "PASS",
+  "verification_summary": {
+    "claim_boundaries": {
+      "gpu_training_dominance_claimed": false,
+      "latent_neural_fusion_claimed": false,
+      "physical_mobile_hardware_claimed": false
+    },
+    "descriptive_performance": {
+      "layercake_cpu": {
+        "bytes_per_second_total": {
+          "p50": 1616.7008068882806,
+          "p95_nearest_rank": 2164.5829445792124,
+          "p99_nearest_rank": 2400.0909508149784
+        },
+        "characters_per_second_total": {
+          "p50": 1616.7008068882806,
+          "p95_nearest_rank": 2164.5829445792124,
+          "p99_nearest_rank": 2400.0909508149784
+        },
+        "correct_task_completions_per_wall_second": 20.96242511501165,
+        "observations": 120,
+        "time_to_first_output_seconds": {
+          "p50": 0.0055871,
+          "p95_nearest_rank": 0.0067863,
+          "p99_nearest_rank": 0.0911449
+        },
+        "total_latency_seconds": {
+          "p50": 0.04905855,
+          "p95_nearest_rank": 0.1049449,
+          "p99_nearest_rank": 0.1525026
+        }
+      },
+      "layercake_gpu": {
+        "bytes_per_second_total": {
+          "p50": 1503.070282238837,
+          "p95_nearest_rank": 2307.907214032076,
+          "p99_nearest_rank": 2425.1787446556245
+        },
+        "characters_per_second_total": {
+          "p50": 1503.070282238837,
+          "p95_nearest_rank": 2307.907214032076,
+          "p99_nearest_rank": 2425.1787446556245
+        },
+        "correct_task_completions_per_wall_second": 20.574583301678476,
+        "observations": 120,
+        "time_to_first_output_seconds": {
+          "p50": 0.00508575,
+          "p95_nearest_rank": 0.010212,
+          "p99_nearest_rank": 0.0911403
+        },
+        "total_latency_seconds": {
+          "p50": 0.0478036,
+          "p95_nearest_rank": 0.1174851,
+          "p99_nearest_rank": 0.1373082
+        }
+      },
+      "source_policy": {
+        "headline_cpu_gate_source": "results/moonshot/phase6/raw_runs/mixed_cpu_benchmark.json",
+        "layercake_cpu": "results/moonshot/phase7/raw_runs/cpu_layercake_timing_supplement.json",
+        "layercake_gpu": "results/moonshot/phase7/raw_runs/gpu_performance.json",
+        "transformer_cpu": "results/moonshot/phase6/raw_runs/mixed_cpu_benchmark.json",
+        "transformer_gpu": "results/moonshot/phase7/raw_runs/gpu_performance.json"
+      },
+      "transformer_cpu": {
+        "authoritative_tokens_per_second_total": {
+          "p50": 27.276515851973286,
+          "p95_nearest_rank": 32.75862002777573,
+          "p99_nearest_rank": 33.156058079363326
+        },
+        "bytes_per_second_total": {
+          "p50": 100.77413148456068,
+          "p95_nearest_rank": 140.98534483448842,
+          "p99_nearest_rank": 146.08796388685064
+        },
+        "characters_per_second_total": {
+          "p50": 100.77413148456068,
+          "p95_nearest_rank": 140.98534483448842,
+          "p99_nearest_rank": 146.08796388685064
+        },
+        "correct_task_completions_per_wall_second": 0.06819545073140078,
+        "observations": 120,
+        "time_to_first_output_seconds": {
+          "p50": 2.6335697,
+          "p95_nearest_rank": 2.7250943,
+          "p99_nearest_rank": 2.7489006
+        },
+        "total_latency_seconds": {
+          "p50": 3.69194905,
+          "p95_nearest_rank": 4.0581025,
+          "p99_nearest_rank": 4.0985321
+        }
+      },
+      "transformer_gpu": {
+        "authoritative_tokens_per_second_total": {
+          "p50": 39.69869890020129,
+          "p95_nearest_rank": 42.33116537136056,
+          "p99_nearest_rank": 43.149090761011074
+        },
+        "bytes_per_second_total": {
+          "p50": 132.22420176524753,
+          "p95_nearest_rank": 182.93075064652413,
+          "p99_nearest_rank": 195.51427684352367
+        },
+        "characters_per_second_total": {
+          "p50": 132.22420176524753,
+          "p95_nearest_rank": 182.93075064652413,
+          "p99_nearest_rank": 195.51427684352367
+        },
+        "correct_task_completions_per_wall_second": 0.0859111223322492,
+        "observations": 120,
+        "time_to_first_output_seconds": {
+          "p50": 2.5809488,
+          "p95_nearest_rank": 2.6213047,
+          "p99_nearest_rank": 2.643328
+        },
+        "total_latency_seconds": {
+          "p50": 3.04171055,
+          "p95_nearest_rank": 3.1699255,
+          "p99_nearest_rank": 3.2315572
+        }
+      }
+    },
+    "framework_commit": "634301db93047090fb485d809da92e33cb80863b",
+    "hardware": {
+      "cpu_logical": 20,
+      "cpu_physical": 14,
+      "cuda": "11.8",
+      "energy": "NOT_MEASURED_NO_CALIBRATED_ENERGY_METER",
+      "gpu_compute_capability": [
+        8,
+        6
+      ],
+      "gpu_name": "NVIDIA GeForce RTX 3080 Laptop GPU",
+      "gpu_total_memory_bytes": 17179344896,
+      "nvidia_smi": "NVIDIA GeForce RTX 3080 Laptop GPU, GPU-e2863cae-6a92-5833-1d9e-cc308702a966, 591.44, 16384",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "python": "3.10.0",
+      "system_ram_bytes": 68473409536,
+      "torch": "2.7.1+cu118"
+    },
+    "metrics": {
+      "cpu_cpu_median_latency_ratio": 0.014401456913476392,
+      "cpu_cpu_throughput_ratio": 9.18936295955942,
+      "cpu_gpu_median_latency_ratio": 0.016954255333722433,
+      "cpu_gpu_throughput_ratio": 7.122440893416291,
+      "general_quality_noninferior": 1.0,
+      "gpu_gpu_throughput_ratio": 10.433278509274423,
+      "mixed_domain_quality_superior": 1.0,
+      "promoted_domain_success_retention": 1.0
+    },
+    "quality": {
+      "cpu_layercake_successes": 100,
+      "cpu_mean_success_delta": 0.77,
+      "cpu_paired_bootstrap_95ci": [
+        0.69,
+        0.85
+      ],
+      "cpu_transformer_successes": 23,
+      "gpu_layercake_successes": 100,
+      "gpu_mean_success_delta": 0.76,
+      "gpu_paired_bootstrap_95ci": [
+        0.67,
+        0.84
+      ],
+      "gpu_transformer_successes": 24,
+      "paired_rows": 100
+    },
+    "seeds": [
+      10701,
+      10702,
+      10703
+    ],
+    "status": "PASS"
+  }
+}
