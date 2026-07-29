@@ -1,0 +1,279 @@
+{
+  "commands": {
+    "pip_check": {
+      "command": [
+        "C:\\Python310\\python.exe",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "duration_seconds": 0.988467600021977,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "No broken requirements found.\n"
+    },
+    "pip_dry_run": {
+      "command": [
+        "C:\\Python310\\python.exe",
+        "-m",
+        "pip",
+        "install",
+        "--dry-run",
+        "--no-deps",
+        "--no-build-isolation",
+        "."
+      ],
+      "duration_seconds": 1.1661532000289299,
+      "returncode": 0,
+      "stderr": "\n[notice] A new release of pip is available: 25.2 -> 26.1.2\n[notice] To update, run: C:\\Python310\\python.exe -m pip install --upgrade pip\n",
+      "stdout": "Processing c:\\tmp\\layercake_phase8_cleanroom_4c25a01\n  Preparing metadata (pyproject.toml): started\n  Preparing metadata (pyproject.toml): finished with status 'done'\nWould install layercake-0.1.0\n"
+    },
+    "pytest": {
+      "command": [
+        "C:\\Python310\\python.exe",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "duration_seconds": 44.40007950004656,
+      "passed": 597,
+      "returncode": 0,
+      "stderr": "sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n",
+      "stdout": "...............................................sssss.................... [ 11%]\n........................................................................ [ 23%]\n........................................................................ [ 35%]\n........................................................................ [ 47%]\n........................................................................ [ 59%]\n........................................................................ [ 71%]\n........................................................................ [ 83%]\n........................................................................ [ 95%]\n..........................                                               [100%]\n============================== warnings summary ===============================\n<frozen importlib._bootstrap>:241\n  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:241\n  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\ntests/cake/test_package_security.py::test_duplicate_entries_are_rejected\n  C:\\Python310\\lib\\zipfile.py:1506: UserWarning: Duplicate name: 'manifest.json'\n    return self._open_to_write(zinfo, force_zip64=force_zip64)\n\ntests/test_artifact_utils.py: 1 warning\ntests/test_causal_byte_models.py: 24 warnings\ntests/test_northstar_v6_configs.py: 1 warning\ntests/test_portable_domain_decoder.py: 2 warnings\ntests/test_production_cpu_game_configs.py: 3 warnings\ntests/test_tier1_dominance.py: 1 warning\ntests/test_transformer_baselines.py: 1 warning\ntests/test_variable_patch_model.py: 4 warnings\ntests/test_verify_micro_receiver_transfer_dominance.py: 2 warnings\ntests/training/test_patch_campaign.py: 1 warning\n  C:\\Python310\\lib\\site-packages\\torch\\nn\\modules\\transformer.py:382: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True\n    warnings.warn(\n\ntests/test_variable_patch_model.py::test_variable_patch_model_shapes_and_compression\ntests/test_variable_patch_model.py::test_variable_patch_model_is_causal_before_changed_patch\ntests/test_variable_patch_model.py::test_transition_difficulty_table_adds_boundaries\ntests/training/test_patch_campaign.py::test_variable_patch_campaign_model_contract\n  C:\\Python310\\lib\\site-packages\\torch\\nn\\functional.py:5962: UserWarning: Support for mismatched src_key_padding_mask and mask is deprecated. Use same type for both instead.\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n597 passed, 5 skipped, 47 warnings in 42.14s\n"
+    },
+    "verify_all": {
+      "command": [
+        "C:\\Python310\\python.exe",
+        "-m",
+        "layercake.moonshot_campaign",
+        "verify-all"
+      ],
+      "completed_phases_valid": true,
+      "duration_seconds": 32.01875019998988,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\n  \"campaign\": \"layercake-moonshot\",\n  \"completed_phases_valid\": true,\n  \"phases\": [\n    {\n      \"completion_tag\": \"layercake-moonshot-phase0\",\n      \"passed\": true,\n      \"phase\": 0,\n      \"release_commit\": \"b77202ff7e5167e25cf5ac3d9394589744d39adf\",\n      \"remote_tag_publication\": \"PUBLISHED\",\n      \"status\": \"SEALED\",\n      \"tag_commit\": \"d59aa21f6d192621afdd2b8ee54609d0477a6a1e\",\n      \"working_tree_clean\": true\n    },\n    {\n      \"completion_tag\": \"layercake-moonshot-phase1\",\n      \"passed\": true,\n      \"phase\": 1,\n      \"release_commit\": \"63acb89bff6d9b1312a80ddb7645f0c1213407d3\",\n      \"remote_tag_publication\": \"PUBLISHED\",\n      \"status\": \"SEALED\",\n      \"tag_commit\": \"e00761ee04866cf0422a7f9cac1483e006011f4b\",\n      \"working_tree_clean\": true\n    },\n    {\n      \"completion_tag\": \"layercake-moonshot-phase2-r3\",\n      \"passed\": true,\n      \"phase\": 2,\n      \"release_commit\": \"187cd9d9a43de2726157c204389e2a1eb2edf733\",\n      \"remote_tag_publication\": \"NOT_VERIFIED_OR_NOT_PUBLISHED\",\n      \"status\": \"SEALED\",\n      \"tag_commit\": \"03fe38f7aa5cb891e516de039f78e6ab3f63268c\",\n      \"working_tree_clean\": true\n    },\n    {\n      \"completion_tag\": \"layercake-moonshot-phase3\",\n      \"passed\": true,\n      \"phase\": 3,\n      \"release_commit\": \"419fc484fff4e140a9642088ea3d51a8074b5c4f\",\n      \"remote_tag_publication\": \"NOT_VERIFIED_OR_NOT_PUBLISHED\",\n      \"status\": \"SEALED\",\n      \"tag_commit\": \"7287151b49d7ad5eb46fa86ad2f374252e7dd012\",\n      \"working_tree_clean\": true\n    },\n    {\n      \"completion_tag\": \"layercake-moonshot-phase4\",\n      \"passed\": true,\n      \"phase\": 4,\n      \"release_commit\": \"219b04a612a835608f2fde844f76d6a6288400fa\",\n      \"remote_tag_publication\": \"NOT_VERIFIED_OR_NOT_PUBLISHED\",\n      \"status\": \"SEALED\",\n      \"tag_commit\": \"e1d1be330dd504fc9c2e09abda22d6ce7eb90e63\",\n      \"working_tree_clean\": true\n    },\n    {\n      \"completion_tag\": \"layercake-moonshot-phase5\",\n      \"passed\": true,\n      \"phase\": 5,\n      \"release_commit\": \"1939f697cea32ccf37af6c1be42a35565e41cfff\",\n      \"remote_tag_publication\": \"NOT_VERIFIED_OR_NOT_PUBLISHED\",\n      \"status\": \"SEALED\",\n      \"tag_commit\": \"5bf363e82fd77644b5461bb166a3b91fbefa5b28\",\n      \"working_tree_clean\": true\n    },\n    {\n      \"completion_tag\": \"layercake-moonshot-phase6\",\n      \"passed\": true,\n      \"phase\": 6,\n      \"release_commit\": \"57b10123edce76cc7fdbe1a7af6184db56a50833\",\n      \"remote_tag_publication\": \"NOT_VERIFIED_OR_NOT_PUBLISHED\",\n      \"status\": \"SEALED\",\n      \"tag_commit\": \"632a620cc9bdb09e9831c036665a73c419544cca\",\n      \"working_tree_clean\": true\n    },\n    {\n      \"completion_tag\": \"layercake-moonshot-phase7\",\n      \"passed\": true,\n      \"phase\": 7,\n      \"release_commit\": \"09024ea190eebe5f2a830b06ff81f8a1ad23e96c\",\n      \"remote_tag_publication\": \"NOT_VERIFIED_OR_NOT_PUBLISHED\",\n      \"status\": \"SEALED\",\n      \"tag_commit\": \"62aa899d1f3b50eec067f3621ba8390271837c8b\",\n      \"working_tree_clean\": true\n    },\n    {\n      \"passed\": null,\n      \"phase\": 8,\n      \"status\": \"OPEN\"\n    }\n  ]\n}\n"
+    }
+  },
+  "evidence_sha256": "43a22f86565f286c8a0c82f9cbbc761aa2f82033352d8295b089f4ff208bd1c7",
+  "external_release_assets": [
+    {
+      "bytes": 246627944,
+      "copied_and_rehashed": true,
+      "id": "seed-9824",
+      "kind": "promoted_checkpoint",
+      "path": "artifacts/moonshot/phase2_shallow_sparse_pretrained/student2400-seed-9824/model.safetensors",
+      "sha256": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 246627944,
+      "copied_and_rehashed": true,
+      "id": "seed-9825",
+      "kind": "promoted_checkpoint",
+      "path": "artifacts/moonshot/phase2_shallow_sparse_pretrained/student2400-seed-9825/model.safetensors",
+      "sha256": "81f78a2154353f0ea3c2a4ff685c3e4ffb91876328cd0075559a11bd0d1c2a01",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 246627944,
+      "copied_and_rehashed": true,
+      "id": "seed-9826",
+      "kind": "promoted_checkpoint",
+      "path": "artifacts/moonshot/phase2_shallow_sparse_pretrained/student2400-seed-9826/model.safetensors",
+      "sha256": "f2987c0629460f2050489dda07e3d660e80f48d3c19f1574d51477ce8bdcbf1d",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 63750,
+      "copied_and_rehashed": true,
+      "id": "northstar-transformer-token-accounting",
+      "kind": "historical_control_test_fixture",
+      "path": "runs_experiment/northstar_v22_fair_corrected_bpe/training_metrics.json",
+      "sha256": "1d049925188959c301953c75c5b982e8aa4b10908168af2fd9b0292efb23f7f9",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 2925,
+      "copied_and_rehashed": true,
+      "id": "northstar-equal-size-control-certificate",
+      "kind": "historical_control_test_fixture",
+      "path": "results/breakthrough_equal/measured_equal_size_dominance_transprior_certificate.json",
+      "sha256": "fa11733dd7ab7ac27b263def2364446f481b078a0e7b55ce55c68c2a3dc26ebb",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 4857,
+      "copied_and_rehashed": true,
+      "id": "northstar-bpe-equivalence-tokenizer",
+      "kind": "historical_control_test_fixture",
+      "path": "artifacts/final/medium-transformers/seed-9801/tokenizer.json",
+      "sha256": "398261a6b71f19c9633c53948c712445182c99d41eaab18768610e1b6cac7712",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 200000000,
+      "copied_and_rehashed": true,
+      "id": "phase2-english-substrate-200m",
+      "kind": "sealed_component_external_data",
+      "path": "data/moonshot/phase2/english_substrate_200m.bin",
+      "sha256": "a1fa5fbcd724016a398121c5aed8371d6784a564ce46ba4f8016cbcbaa1ff1d9",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 51475,
+      "copied_and_rehashed": true,
+      "id": "v2-python-manifest",
+      "kind": "sealed_component_external_data",
+      "path": "data/moonshot/v2/python/manifest.json",
+      "sha256": "19c7124e1fd4af3789146d166e5d65a5a9f0876d24e86d44f3fef5ecd20eb17d",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 7511343,
+      "copied_and_rehashed": true,
+      "id": "v2-python-test",
+      "kind": "sealed_component_external_data",
+      "path": "data/moonshot/v2/python/python_test.bin",
+      "sha256": "924c401c5f3ff38ddeb918bd7078f3e878a16b5cc4c64873566fd079131a2b91",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 94960275,
+      "copied_and_rehashed": true,
+      "id": "v2-python-train",
+      "kind": "sealed_component_external_data",
+      "path": "data/moonshot/v2/python/python_train.bin",
+      "sha256": "52927315379dfd689f7dd128845699e3bebcaac729548f480f5739a8931ecbd2",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 2213660,
+      "copied_and_rehashed": true,
+      "id": "v2-python-validation",
+      "kind": "sealed_component_external_data",
+      "path": "data/moonshot/v2/python/python_validation.bin",
+      "sha256": "009d445303a1917312d9f212a687def73a8d9895c1f646ca129250eb797a3b48",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 572418,
+      "copied_and_rehashed": true,
+      "id": "v2-wikitext-architecture-selection",
+      "kind": "sealed_component_external_data",
+      "path": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+      "sha256": "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 3481,
+      "copied_and_rehashed": true,
+      "id": "v2-wikitext-manifest",
+      "kind": "sealed_component_external_data",
+      "path": "data/moonshot/v2/wikitext103/manifest.json",
+      "sha256": "e49e194580e95cf08f616b296ed6372d83c7af790cba8be7770b82d188a431f3",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 1282697,
+      "copied_and_rehashed": true,
+      "id": "v2-wikitext-test",
+      "kind": "sealed_component_external_data",
+      "path": "data/moonshot/v2/wikitext103/test.bin",
+      "sha256": "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 10000000,
+      "copied_and_rehashed": true,
+      "id": "v2-wikitext-train-development",
+      "kind": "sealed_component_external_data",
+      "path": "data/moonshot/v2/wikitext103/train_development.bin",
+      "sha256": "ceca1962b8aab7bad3ba4dc47739217e3813a2cf16b546df47c81147bd200de3",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 100000000,
+      "copied_and_rehashed": true,
+      "id": "v2-wikitext-train-medium",
+      "kind": "sealed_component_external_data",
+      "path": "data/moonshot/v2/wikitext103/train_medium.bin",
+      "sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 567414,
+      "copied_and_rehashed": true,
+      "id": "v2-wikitext-validation",
+      "kind": "sealed_component_external_data",
+      "path": "data/moonshot/v2/wikitext103/validation.bin",
+      "sha256": "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 246627944,
+      "copied_and_rehashed": true,
+      "id": "phase3-retired-control-model",
+      "kind": "retired_training_control_checkpoint",
+      "path": "artifacts/moonshot/phase3_cpu_training/layercake-seed9824-continuous30m-milestones/units-5000000/model.safetensors",
+      "sha256": "498fcd51a4e3895226770f2ce02fac5ecfd2e8fd02a6a121acfa98d35bf822fb",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    },
+    {
+      "bytes": 193969151,
+      "copied_and_rehashed": true,
+      "id": "phase3-retired-control-optimizer",
+      "kind": "retired_training_control_checkpoint",
+      "path": "artifacts/moonshot/phase3_cpu_training/layercake-seed9824-continuous30m-milestones/units-5000000/dense_optimizer_state.pt",
+      "sha256": "b164410de9a6e06a38fb8cbb9adbdce0f004221a6c67e08316083686c7c69560",
+      "source": "local content-addressed release asset cache",
+      "tracked_in_git": false
+    }
+  ],
+  "format": "layercake-phase8-cleanroom-environment/1",
+  "git": {
+    "detached": true,
+    "head": "4c25a01ee4230ec3237e2c6eb3c11dffe4f8ac00",
+    "status_after": "",
+    "status_before": "",
+    "tag": "layercake-moonshot-phase8-repair-base-v3",
+    "tag_kind": "tag"
+  },
+  "hardware": {
+    "cpu_logical": 20,
+    "cpu_physical": 14,
+    "cuda": "11.8",
+    "energy": "NOT_MEASURED_NO_CALIBRATED_ENERGY_METER",
+    "gpu_compute_capability": [
+      8,
+      6
+    ],
+    "gpu_name": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "gpu_total_memory_bytes": 17179344896,
+    "nvidia_smi": "NVIDIA GeForce RTX 3080 Laptop GPU, GPU-e2863cae-6a92-5833-1d9e-cc308702a966, 591.44, 16384",
+    "physical_mobile": "NOT_RUN_NO_HARDWARE",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.10.0",
+    "system_ram_bytes": 68473409536,
+    "torch": "2.7.1+cu118"
+  },
+  "status": "PASS"
+}

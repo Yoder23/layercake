@@ -1,0 +1,13 @@
+{
+  "format": "layercake-phase8-negative-evidence/1",
+  "attempt": 6,
+  "status": "PRESERVED_VERIFIER_FAILURE",
+  "framework_commit": "a44b875e2541dc86007947ecc553a359f6e7559a",
+  "framework_evidence_sha256": "9877ea49fdaccfe74707adb4f85722ada2c614ccc9f706375c8e79291f29f7f5",
+  "contract_sha256": "c0a3a7ca5cc71404d398e4f9b5bd6bbc8ec28e187425aa376192b855705e5c00",
+  "failed_attack_id": "adv-009-profile-mismatch",
+  "observed_rejection": "permissions_denied:local-inference",
+  "required_rejection": "profile_archive_hash_mismatch",
+  "cause": "The hostile harness used RoutingPolicy() with its default deny-all permission policy. The synthetic record was therefore rejected before its intentionally forged archive hash reached the archive-bound profile check.",
+  "disposition": "No product gate was weakened and no release was certified. The complete hostile result, framework freeze, and clean-room environment are preserved beside this diagnostic. The harness must allow only the declared local-inference permission so the intended profile-hash guard is exercised."
+}

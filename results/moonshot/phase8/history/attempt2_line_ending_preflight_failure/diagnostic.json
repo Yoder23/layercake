@@ -1,0 +1,33 @@
+{
+  "format": "layercake-phase8-failed-attempt/1",
+  "status": "FAILED_CLEANROOM_PREFLIGHT_PRESERVED",
+  "attempt_id": "attempt2_line_ending_preflight_failure",
+  "parent_tag": "layercake-moonshot-phase8-repair-base",
+  "parent_commit": "84236adae8c8f221085398beaf11e1c6587afc4a",
+  "benchmark_started": false,
+  "promoted_evidence_written": false,
+  "passed_preflight_checks": [
+    "python -m pip check",
+    "python -m pip install --dry-run --no-deps --no-build-isolation .",
+    "all six external release assets copied and rehashed"
+  ],
+  "failure": {
+    "commands": [
+      "python -m pytest -q",
+      "python -m layercake.moonshot_campaign verify-all"
+    ],
+    "cause": "A global LF policy repaired byte-locked contracts but changed historical evidence and generated-corpus bytes that had been certified with CRLF on Windows."
+  },
+  "repair_scope": {
+    "selective_line_endings_only": true,
+    "source_and_contracts": "LF",
+    "historical_json_jsonl_markdown_and_generated_corpus_text": "CRLF",
+    "binary_artifacts": "no text normalization",
+    "architecture_changed": false,
+    "runtime_changed": false,
+    "abi_changed": false,
+    "model_or_checkpoint_changed": false,
+    "cake_or_router_changed": false,
+    "data_content_or_threshold_changed": false
+  }
+}

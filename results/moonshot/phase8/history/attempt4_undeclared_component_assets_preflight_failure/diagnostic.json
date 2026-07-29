@@ -1,0 +1,32 @@
+{
+  "format": "layercake-phase8-failed-attempt/1",
+  "status": "FAILED_CLEANROOM_PREFLIGHT_PRESERVED",
+  "attempt_id": "attempt4_undeclared_component_assets_preflight_failure",
+  "parent_tag": "layercake-moonshot-phase8-repair-base-v3",
+  "parent_commit": "4c25a01ee4230ec3237e2c6eb3c11dffe4f8ac00",
+  "benchmark_started": false,
+  "promoted_evidence_written": false,
+  "passed_preflight_checks": [
+    "python -m pip check",
+    "python -m pip install --dry-run --no-deps --no-build-isolation .",
+    "all six initially declared external release assets copied and rehashed",
+    "591 clean-checkout regression tests",
+    "all non-training-data prior component hashes"
+  ],
+  "failure": {
+    "commands": [
+      "python -m pytest -q",
+      "python -m layercake.moonshot_campaign verify-all"
+    ],
+    "cause": "The governed training-data component snapshot includes 11 ignored datasets present at prior seals but absent from Git; they were not yet declared in the clean-room external-asset cache."
+  },
+  "repair_scope": {
+    "declare_and_rehash_existing_external_data_only": true,
+    "architecture_changed": false,
+    "runtime_changed": false,
+    "abi_changed": false,
+    "model_or_checkpoint_changed": false,
+    "cake_or_router_changed": false,
+    "data_content_or_threshold_changed": false
+  }
+}

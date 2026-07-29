@@ -24,9 +24,9 @@
       "contract": "moonshot/phase8_independent_verification_preregistration.json",
       "contract_sha256": "c0a3a7ca5cc71404d398e4f9b5bd6bbc8ec28e187425aa376192b855705e5c00",
       "effective_while_phase8_is_open": true,
-      "repair_base_tag": "layercake-moonshot-phase8-repair-base-v3",
+      "reason": "Preserve the failed Phase 7 preflight, correct only its invalid packaging backend and nondeterministic checkout normalization, declare every ignored clean-test asset, and rerun unchanged proof thresholds.",
       "repair_base_commit": "4c25a01ee4230ec3237e2c6eb3c11dffe4f8ac00",
-      "reason": "Preserve the failed Phase 7 preflight, correct only its invalid packaging backend and nondeterministic checkout normalization, declare every ignored clean-test asset, and rerun unchanged proof thresholds."
+      "repair_base_tag": "layercake-moonshot-phase8-repair-base-v3"
     },
     {
       "amendment_id": "phase8-independent-hostile-verification/1",
@@ -37,8 +37,8 @@
       "contract": "moonshot/phase8_independent_verification_preregistration.json",
       "contract_sha256": "5426d2ff19a7f40b8fd3588567796abe5199e7da721add3486584d9929c72830",
       "effective_while_phase8_is_open": false,
-      "superseded_by": "phase8-independent-hostile-verification/2",
-      "reason": "Preregister exact-tag detached-worktree reproduction, fresh CPU/GPU and domain execution, full routing/catalog/lifecycle revalidation, hostile package and evidence falsification, preservation of the retired training gate, and the final fail-closed release."
+      "reason": "Preregister exact-tag detached-worktree reproduction, fresh CPU/GPU and domain execution, full routing/catalog/lifecycle revalidation, hostile package and evidence falsification, preservation of the retired training gate, and the final fail-closed release.",
+      "superseded_by": "phase8-independent-hostile-verification/2"
     },
     {
       "amendment_id": "phase7-integrated-performance/1",
@@ -449,6 +449,19 @@
         "porcelain": "",
         "status": "CLEAN"
       }
+    },
+    "phase8": {
+      "candidate": "results/moonshot/phase8/candidate.json",
+      "candidate_verification": "results/moonshot/phase8/candidate_verification.json",
+      "certificate": "results/moonshot/phase8/release_certificate.json",
+      "certificate_sha256": "dbc9c87f70e807c7218a25108bef859c79a34b664a47f532134d85b288f8f448",
+      "completion_tag": "layercake-moonshot-final",
+      "governance_commit": "9ac3de986157ffb88ce4e96458cc735b4ce4d217",
+      "handoff": "results/moonshot/phase8/handoff.json",
+      "handoff_sha256": "6d2bb5b56dcf7f34886bf156fdbb1e563c37e4fb4003024db5584d3d3836a9f1",
+      "inherited_model_source_commit": "6057601ba3dfef4119807237871c426b102c8d27",
+      "phase_implementation_commit": "31b881bbe852400d1a16cf25ea5fa0450a245949",
+      "raw_evidence_manifest_sha256": "532391662d57d24c23794d86e6b6071b3aae0d9c3ed8cdedb1bee4b73b71d5eb"
     }
   },
   "phases": {
@@ -460,7 +473,7 @@
     "phase5_multi_domain": "SEALED",
     "phase6_orchestration": "SEALED",
     "phase7_integrated_performance": "SEALED",
-    "phase8_independent_verification": "OPEN"
+    "phase8_independent_verification": "PASS"
   },
   "repair_history": [
     {

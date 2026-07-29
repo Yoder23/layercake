@@ -1,0 +1,31 @@
+{
+  "format": "layercake-phase8-failed-attempt/1",
+  "status": "FAILED_CLEANROOM_PREFLIGHT_PRESERVED",
+  "attempt_id": "attempt3_partial_attribute_preflight_failure",
+  "parent_tag": "layercake-moonshot-phase8-repair-base-v2",
+  "parent_commit": "f7bbffcf5f69bb2e7a4e5d29ed6ee62b1f118fa4",
+  "benchmark_started": false,
+  "promoted_evidence_written": false,
+  "passed_preflight_checks": [
+    "python -m pip check",
+    "python -m pip install --dry-run --no-deps --no-build-isolation .",
+    "all six external release assets copied and rehashed",
+    "590 clean-checkout regression tests"
+  ],
+  "failure": {
+    "commands": [
+      "python -m pytest -q",
+      "python -m layercake.moonshot_campaign verify-all"
+    ],
+    "cause": "The selective map omitted CRLF historical .txt and artifact-manifest JSON while incorrectly applying CRLF to four LF training-data .txt files."
+  },
+  "repair_scope": {
+    "attribute_patterns_only": true,
+    "architecture_changed": false,
+    "runtime_changed": false,
+    "abi_changed": false,
+    "model_or_checkpoint_changed": false,
+    "cake_or_router_changed": false,
+    "data_content_or_threshold_changed": false
+  }
+}

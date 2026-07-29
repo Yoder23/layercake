@@ -1,0 +1,36 @@
+{
+  "format": "layercake-phase8-failed-attempt/1",
+  "status": "FAILED_CLEANROOM_PREFLIGHT_PRESERVED",
+  "attempt_id": "attempt1_preflight_failure",
+  "framework_commit": "0e189a80aa8eb6915825f4d3a71874d72a557eda",
+  "framework_evidence_sha256": "ea08e6ab1e484cdb8206a21aa2b1cc06031af486db846566059ebf46396f7d2c",
+  "parent_tag": "layercake-moonshot-phase7",
+  "parent_commit": "62aa899d1f3b50eec067f3621ba8390271837c8b",
+  "benchmark_started": false,
+  "promoted_evidence_written": false,
+  "failures": [
+    {
+      "command": "python -m pip install --dry-run --no-deps .",
+      "cause": "pyproject.toml named nonexistent build backend setuptools.backends.legacy:build"
+    },
+    {
+      "command": "python -m pytest -q",
+      "cause": "Windows core.autocrlf rewrote byte-locked preregistration JSON and three ignored test fixtures were absent from the undeclared external-asset cache"
+    },
+    {
+      "command": "python -m layercake.moonshot_campaign verify-all",
+      "cause": "Windows core.autocrlf rewrote the locked Phase 2 r3 benchmark config, invalidating its protocol hash"
+    }
+  ],
+  "repair_scope": {
+    "packaging_backend_only": true,
+    "deterministic_git_line_endings_only": true,
+    "declare_and_rehash_existing_external_test_fixtures_only": true,
+    "architecture_changed": false,
+    "runtime_changed": false,
+    "abi_changed": false,
+    "model_or_checkpoint_changed": false,
+    "cake_or_router_changed": false,
+    "data_or_threshold_changed": false
+  }
+}
