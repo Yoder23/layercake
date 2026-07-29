@@ -1,0 +1,5246 @@
+{
+  "artifact": {
+    "path": "artifacts/moonshot/phase5/candidates/regex-seed10151.pt",
+    "payload_hash": "97dcf26835f20633916a3b0301f90aaaeb761cc2bf3e9a0144f314e3f89694cf",
+    "sha256": "2ad24b0284da530e97ca267b0b690ab7542ef8540d26db7a16062b3942ce84f0"
+  },
+  "autonomous_neural_generation": true,
+  "batched_generation_wall_seconds": 0.5566700999625027,
+  "dataset": {
+    "path": "data/moonshot/phase5/regex_v1.jsonl",
+    "sha256": "e662c1e919b4ba278b76ea13b2ee4c3d71d64adffc87c679233eaa1646f7900b"
+  },
+  "distinct_prompts": 128,
+  "domain_id": "regex",
+  "evaluation_device": "cuda:0",
+  "evidence_sha256": "da9da1135d54134dbb2eab0a7fc86dda0b5ae9a3681dba7a6bbc635c71d69457",
+  "families": [
+    "contains_literal",
+    "digits_then_literal",
+    "either_literal",
+    "ends_with",
+    "exact_literal",
+    "literal_then_digits",
+    "literal_twice",
+    "starts_with"
+  ],
+  "format": "layercake-phase5-generic-domain-functional/1",
+  "functional_failures": 0,
+  "functional_success_rate": 1.0,
+  "functional_successes": 128,
+  "median_generated_actions": 7.0,
+  "minimum_functional_successes": 122,
+  "neural_fixed_and_pointer_action_selection": true,
+  "protocol": {
+    "path": "moonshot/phase5_regex_validation_seed10151.json",
+    "sha256": "c6cca714cbd5b530b2f7c2698b324469e76a5ef37e23267d9c96dcc6cfe2d2aa"
+  },
+  "records": [
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106150"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106150"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106150x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        91,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0000",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631353024",
+      "output_sha256": "99e0f94e2c7bf8500a175db3d801579b9c2cda73f8799aead28ca66ff5cae964"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106151x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        87,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0001",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631353124",
+      "output_sha256": "cca6b77c1a6cd97ae1a340daf653ef5f55d2b70c1fb016ef3b0bee9bf3e01124"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106152x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        91,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0002",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631353224",
+      "output_sha256": "cd6f5154d1e58750350b9e8187406762bf86f882dd5eb152f8a3622c7642875f"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106153x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        87,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0003",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631353324",
+      "output_sha256": "1d44c9af151368232d49f5c3f369ac6c415bbc747861702d5797668397d142b5"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106154x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        91,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0004",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631353424",
+      "output_sha256": "604fa19b5f5253198b4ec8eb7aa5f15732fc4ba503a2ab4f37de77d1454716bf"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106155x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        87,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0005",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631353524",
+      "output_sha256": "7d68c27dd3c6dbde0a7a92adb2232d97caab9d52cacf3467558b5a4341614457"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106156x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        91,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0006",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631353624",
+      "output_sha256": "8cd4b86ca07864f6fce10702ab42e35464820227283c794f08269192b48a4276"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106157x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        87,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0007",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631353724",
+      "output_sha256": "0a1e6c204dd31be4916a81a4c964cd1ee9d55e148392e58cd793bc3f759aea60"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106158x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        91,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0008",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631353824",
+      "output_sha256": "9e8aae5b0b8c94f31beefba68fc58e42d26724b779375605f861b294551f048a"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106159x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        87,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0009",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631353924",
+      "output_sha256": "69c277b1bfa1bf784e19fe8c558bc3ca832fd3c6134991d07c36bf94db9afa3c"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106160x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        91,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0010",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631363024",
+      "output_sha256": "685f7f0bbd7b31e20a8c83b89ebf310b05cfb72f261aafce586af26def1cfa82"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106161x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        87,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0011",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631363124",
+      "output_sha256": "d9f3ae7c22151484f6b233119eeb74c6543e983243731a736ef7b8a197504e72"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106162x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        91,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0012",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631363224",
+      "output_sha256": "30b3ea8e0ca5ca8a1d24b74bd29abd6fd9b658b3ed7be170bb764d3cf2e15b50"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106163x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        87,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0013",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631363324",
+      "output_sha256": "c1aef461d49f99ad32efe1f02db51b77bd8ceebf8c56ba29056072f3637ff005"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106164x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        91,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0014",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631363424",
+      "output_sha256": "70dcd3f4905445bd2267be5ed7bc695a967e73aa801f74222b0df59cb9f3652e"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_106165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_106165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_106165x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        }
+      ],
+      "family": "exact_literal",
+      "functional_success": true,
+      "generated_action_count": 4,
+      "generated_actions": [
+        18,
+        87,
+        5,
+        2
+      ],
+      "id": "regex-validation-exact_literal-0015",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f31303631363524",
+      "output_sha256": "6d547b95dc6c2824d79fa56921e232d46f155f56f24cf811c662146a2912e6c5"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116150"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116150tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116150"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        95,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0000",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363135302e2a24",
+      "output_sha256": "8fde425e3795d50937b3c2eb46d077e4b390480a248482c3f13f83ac7fe4e804"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116151"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116151tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0001",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363135312e2a24",
+      "output_sha256": "bd598221aefef7f9786398bad3e2165e8dfc7aed6b6503152a1606cf49ae4477"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116152"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116152tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        95,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0002",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363135322e2a24",
+      "output_sha256": "83e9536f239feae0a6805b878903655706a9c6344de12ccf9405b49f6e48d059"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116153"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116153tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0003",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363135332e2a24",
+      "output_sha256": "3724acb459ebb1a9c5e9c3bda05b0e6fed01226be3e6aa85f348368cceba2bae"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116154"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116154tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        95,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0004",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363135342e2a24",
+      "output_sha256": "999abc515913d28ece498e72218626bf76f453c37896ea27299213394aa1fef6"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116155"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116155tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0005",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363135352e2a24",
+      "output_sha256": "ca7710db8b578b7530275f90ba3be7b7c57756dfa99b6e640e6cb16836222772"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116156"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116156tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        95,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0006",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363135362e2a24",
+      "output_sha256": "4809b72e0f46017a70aace5ab4583a99eefb1bb7c8a565004b9b94d3879f6b7d"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116157"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116157tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0007",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363135372e2a24",
+      "output_sha256": "f063c12336a0ddd4e9112288e952656a54db7c428594987796cd18c169436545"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116158"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116158tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        95,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0008",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363135382e2a24",
+      "output_sha256": "cd2223fa77f7e9c353cfe0eb940cb5b1d0f5bf99d175bd469052a3b1f9c96e7a"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116159"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116159tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0009",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363135392e2a24",
+      "output_sha256": "67935d4ddbb5b6d1b53169041383b12682083ca1e5eac75e07e6ae000088955b"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116160"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116160tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        95,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0010",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363136302e2a24",
+      "output_sha256": "5a85be51415a62aee5124644b451e2334bf83125ffa7e6b7fc8d4eae70ab4f23"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116161"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116161tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0011",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363136312e2a24",
+      "output_sha256": "32c66e96f355a145963d5c6a68943db4663bbd5dd1cccd43bc206368a82fdba5"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116162"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116162tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        95,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0012",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363136322e2a24",
+      "output_sha256": "f5774662aec6c8ae09fdf3717385a9d036e67cddc6730cd71038a48c9631e102"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116163"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116163tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0013",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363136332e2a24",
+      "output_sha256": "945c13c2e08a42b67919684d1f6a973180b148d8a05dd682d6562a805cdc28c6"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116164"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116164tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        95,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0014",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363136342e2a24",
+      "output_sha256": "306cfcca4b0f2bdca14e6a6d3049f493325ab87fbc90bc0b992e7ba6cc038be5"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116165"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_116165tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_116165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "starts_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-starts_with-0015",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3131363136352e2a24",
+      "output_sha256": "c1d56ae17485f47cbd39aec95bc2370617252cbe050d2bf9c5a19e6fd3cb3ae1"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126150"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126150"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126150x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0000",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631353024",
+      "output_sha256": "e474ab585e968a6cbae7adc87c1d71c447f3617b1f5e3eac2f05f1b6a6a3ec7a"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126151"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126151x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0001",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631353124",
+      "output_sha256": "11915ddc0c403304313fab5b9673b50cc47df448d7279a049f98cdae2b72eec9"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126152"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126152x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0002",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631353224",
+      "output_sha256": "811b400a733d000387e7737ec4906b67879c7327b9d15da12d58fda2935fed77"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126153"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126153x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0003",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631353324",
+      "output_sha256": "5f60302e8e67def56721c57e2dff5b0720ffadb05452457ae96fea1f34d240c3"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126154"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126154x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0004",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631353424",
+      "output_sha256": "84d0b26af6aa32aa90d637b67434ab0667ac1a4199eb279ea8f5b3b55cba6bdd"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126155"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126155x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0005",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631353524",
+      "output_sha256": "a610a3f3faceafc6fa04be36ca63889127b6ecd64325890f016b73c361284fb2"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126156"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126156x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0006",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631353624",
+      "output_sha256": "f563708e58eb3fa34ed43fbf71948d4aa39feea0f17df132472cf7943b52716a"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126157"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126157x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0007",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631353724",
+      "output_sha256": "7a6f92158991d00913c6f0996f63e0b56b0a24b6f4dd319af603d3a35d5475a9"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126158"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126158x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0008",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631353824",
+      "output_sha256": "bbc6c1c96e017adde42c9f844ceacf194b42cf327f81cd576dec1388907234cf"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126159"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126159x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0009",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631353924",
+      "output_sha256": "7bdc917eb5119962fbda5971a0aa05ecaeeef93a9896ea40ae56e8061b91b40c"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126160"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126160x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0010",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631363024",
+      "output_sha256": "f669650ca589c64bbc509fdee53477250a236cc0063b4dd23f0e54b844fdbfa4"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126161"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126161x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0011",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631363124",
+      "output_sha256": "d64199e824b4c004d19ffc16888d5516475e6a06f86a79dc56919033c818eb5a"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126162"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126162x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0012",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631363224",
+      "output_sha256": "d96beb728dee50f668933167dc307478e46b285b6ad894160303dc654e772b6a"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126163"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126163x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0013",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631363324",
+      "output_sha256": "697d34a843cbcfdc125db4ae5d8f11733e5eeaf980c2a3f2a78f62f93aaac3c1"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126164"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126164x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0014",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631363424",
+      "output_sha256": "1f927321d0df7f0fa53bcd62b358df0fb4e25816cf0d43f4c8748fea46fea9de"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_126165"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_126165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_126165x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "ends_with",
+      "functional_success": true,
+      "generated_action_count": 6,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-ends_with-0015",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f31323631363524",
+      "output_sha256": "ba7c3b3a08ac551f19af08f34959a9166c4b55eb5f487e9c9d26a122eff7dd16"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136150"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136150tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        91,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0000",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363135302e2a24",
+      "output_sha256": "cc341c41d7710d23cf7aee8509ce4962be22766f31428f1e810fffba19ad9783"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136151"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136151tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0001",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363135312e2a24",
+      "output_sha256": "4c1fcb1f97423889e65cf6c439ef9d5fbeba6e209a08e582290d6ececd1e3659"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136152"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136152tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        91,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0002",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363135322e2a24",
+      "output_sha256": "917747530bdadddabf5d7bed004a25c80ab80368f347245d2af6959a4f1b1090"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136153"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136153tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0003",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363135332e2a24",
+      "output_sha256": "84d55b69a5c33a6eea0af6d1b4fdfc7bbaa88a5dcfc97d9f21a9056d4c997e0e"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136154"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136154tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        91,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0004",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363135342e2a24",
+      "output_sha256": "d759c2ba58567ce118cdb66f022afb65b18a9f61bb1b3a37a48a9c9c3c6f349d"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136155"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136155tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0005",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363135352e2a24",
+      "output_sha256": "0e701fc0c552f5d0c432cfe1ed449f0fd8638c73b90fe7e15c1421d41aba4b5c"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136156"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136156tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        91,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0006",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363135362e2a24",
+      "output_sha256": "cfe427792560a4b484bcaa8873e9b57e3bd34a59136f405494fe385ab63e4e95"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136157"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136157tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0007",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363135372e2a24",
+      "output_sha256": "f1e196815f2cf5db7194981ec5c711741792152be2d0262294960a23e6c7c39f"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136158"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136158tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        91,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0008",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363135382e2a24",
+      "output_sha256": "01a47d46a09a8c9757b01a07cee55ba235cf605289c2110bda77f7ad7b6eef88"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136159"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136159tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0009",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363135392e2a24",
+      "output_sha256": "ddb996f4d426d809c363111102257a3ce00fb860535489157592d958d4f93c79"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136160"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136160tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        91,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0010",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363136302e2a24",
+      "output_sha256": "4d317440452aa72a10f91267bb7949ab9b2765342e0ce885b4d14f01fb872fc7"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136161"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136161tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0011",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363136312e2a24",
+      "output_sha256": "148e7e47bb624571bfc92a89203bf0abc674da20d713205b0f127ab9571b5a34"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136162"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136162tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        91,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0012",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363136322e2a24",
+      "output_sha256": "7d74b8c0cf58a866b4a2472a0eb3e616dde9b1f81a6bfc6a432ba5dce3b8e83d"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136163"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136163tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0013",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363136332e2a24",
+      "output_sha256": "3d37828ecb3ff21811450b43eaee8d5cf1b2580453fd466b8fd0058d781be005"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136164"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136164tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        91,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0014",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363136342e2a24",
+      "output_sha256": "84dd891ed5ffb0f2f8f175995641dc2702b3e01826aaad505aee3a6d6a85def5"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_136165"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "headliteral_regex_validation_136165tail"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "unrelated"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "different"
+        }
+      ],
+      "family": "contains_literal",
+      "functional_success": true,
+      "generated_action_count": 8,
+      "generated_actions": [
+        18,
+        10,
+        8,
+        87,
+        10,
+        8,
+        5,
+        2
+      ],
+      "id": "regex-validation-contains_literal-0015",
+      "output_hex": "5e2e2a6c69746572616c5f72656765785f76616c69646174696f6e5f3133363136352e2a24",
+      "output_sha256": "3650f83cf8810c86880df4cb9fb19708f1bb08cbf8b844b81b1691276c3b513a"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146150"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146150right_regex_validation_146151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        85,
+        70,
+        89,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0000",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363135307c72696768745f72656765785f76616c69646174696f6e5f3134363135312924",
+      "output_sha256": "88d58bda6701edee64b5336b53dcbe139381c14706b98c37db0fb2cddc7fde3f"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146151"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146151right_regex_validation_146152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        91,
+        70,
+        99,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0001",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363135317c72696768745f72656765785f76616c69646174696f6e5f3134363135322924",
+      "output_sha256": "1ebc5e160c7174a5411fd3b1f6763e9dcc485644d0cba14ca38d08a76158e653"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146152"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146152right_regex_validation_146153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        85,
+        70,
+        89,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0002",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363135327c72696768745f72656765785f76616c69646174696f6e5f3134363135332924",
+      "output_sha256": "a96b1a2e8a6629ad1cc40c86566da5560a251d8dbafe1e67c3a6341e169cf916"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146153"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146153right_regex_validation_146154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        91,
+        70,
+        99,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0003",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363135337c72696768745f72656765785f76616c69646174696f6e5f3134363135342924",
+      "output_sha256": "134054769fe49b9a5074e3093dff7ad1e5910b91c0c922fb7cf1c542bd487201"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146154"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146154right_regex_validation_146155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        85,
+        70,
+        89,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0004",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363135347c72696768745f72656765785f76616c69646174696f6e5f3134363135352924",
+      "output_sha256": "1fc96bda90bb99605452a7d41701baee61a9529c13b19678b911ff1289301333"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146155"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146155right_regex_validation_146156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        91,
+        70,
+        99,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0005",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363135357c72696768745f72656765785f76616c69646174696f6e5f3134363135362924",
+      "output_sha256": "6bbd0dccb4c8b77990305f32571c03251b1b178c2c3371da6fd0f3db12ef74d3"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146156"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146156right_regex_validation_146157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        85,
+        70,
+        89,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0006",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363135367c72696768745f72656765785f76616c69646174696f6e5f3134363135372924",
+      "output_sha256": "97652057aefe6e12319d0be08c68c4da2a1bb3e5300855c9a4fc4c1ac72edd23"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146157"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146157right_regex_validation_146158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        91,
+        70,
+        99,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0007",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363135377c72696768745f72656765785f76616c69646174696f6e5f3134363135382924",
+      "output_sha256": "aa7f7c760f46696a633e48f918df41279998f41fb30ffe59a831f71ba93b5858"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146158"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146158right_regex_validation_146159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        85,
+        70,
+        89,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0008",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363135387c72696768745f72656765785f76616c69646174696f6e5f3134363135392924",
+      "output_sha256": "73b37af0c14de26c0eef90698c0d9ab3b6e7291f1db4c37ec28f75b34010644c"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146159"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146159right_regex_validation_146160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        91,
+        70,
+        99,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0009",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363135397c72696768745f72656765785f76616c69646174696f6e5f3134363136302924",
+      "output_sha256": "8f14f1dac9308e14959914d9ec8ef528302d4a2b9cda81dc8b84ed9f86c652ee"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146160"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146160right_regex_validation_146161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        85,
+        70,
+        89,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0010",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363136307c72696768745f72656765785f76616c69646174696f6e5f3134363136312924",
+      "output_sha256": "4824d362a5e039ecf3efe812bf4ae1c5c7eaa8a429b4ab14d1bad61a6f89a796"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146161"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146161right_regex_validation_146162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        91,
+        70,
+        99,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0011",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363136317c72696768745f72656765785f76616c69646174696f6e5f3134363136322924",
+      "output_sha256": "b0ec234d132ada1be295b4349bfcb2cc67482c175b25880806955a53ef14a13f"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146162"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146162right_regex_validation_146163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        85,
+        70,
+        89,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0012",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363136327c72696768745f72656765785f76616c69646174696f6e5f3134363136332924",
+      "output_sha256": "b4802967a8616f9518051f86d51c873e219c91a54c1bc46f1d3ca59294bbc637"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146163"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146163right_regex_validation_146164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        91,
+        70,
+        99,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0013",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363136337c72696768745f72656765785f76616c69646174696f6e5f3134363136342924",
+      "output_sha256": "adfb0a971622e48f83df042bae41117467c2a9dac17ff957ea5e5b3795c3b75d"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146164"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146164right_regex_validation_146165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        85,
+        70,
+        89,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0014",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363136347c72696768745f72656765785f76616c69646174696f6e5f3134363136352924",
+      "output_sha256": "e4f35aa5e0d5adaf6cd902a0d4ddf4ff28019b433279f1ce96d5e951ab348221"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "left_regex_validation_146165"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "right_regex_validation_146166"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "left_regex_validation_146165right_regex_validation_146166"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "either_literal",
+      "functional_success": true,
+      "generated_action_count": 10,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        91,
+        70,
+        99,
+        7,
+        5,
+        2
+      ],
+      "id": "regex-validation-either_literal-0015",
+      "output_hex": "5e283f3a6c6566745f72656765785f76616c69646174696f6e5f3134363136357c72696768745f72656765785f76616c69646174696f6e5f3134363136362924",
+      "output_sha256": "366ae5887649fe2cf7cb517d507338699343f203ada6bfbec25349d823bdc6de"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561507"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156150123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156150"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156150x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156150"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0000",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363135305c642b24",
+      "output_sha256": "4941dc8eac1a779073b9c72d36dd8f0471454e59720f0cb38aaa9f876c921f9b"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561517"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156151123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156151x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156151"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0001",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363135315c642b24",
+      "output_sha256": "3e39ea6c8a88b70fa24bf965ec2e952f01653ed5f2ad360899080d74256c8e46"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561527"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156152123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156152x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156152"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0002",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363135325c642b24",
+      "output_sha256": "5e04059a0e1e7eb0c6a5b5a52251f5672c5172b3d7f4ace089f4c55c2112820d"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561537"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156153123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156153x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156153"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0003",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363135335c642b24",
+      "output_sha256": "f74bc36dd89005827feb078adad7a145db095c78342bd4057cb2b2c17ca9dc68"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561547"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156154123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156154x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156154"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0004",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363135345c642b24",
+      "output_sha256": "d504b2bd2f40fbe9200495bf25fb2bfb5dc3751a10469fb5e18e63b840142d9f"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561557"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156155123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156155x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156155"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0005",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363135355c642b24",
+      "output_sha256": "32fde6379cd07240b8628146f2de0aa23ce300e7f032ddfdd386b5f2dd23099e"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561567"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156156123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156156x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156156"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0006",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363135365c642b24",
+      "output_sha256": "4350f2e1fc30425f5c4423014bf5c93ae2dea093cd838d05c7b0a2888a853ab0"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561577"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156157123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156157x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156157"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0007",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363135375c642b24",
+      "output_sha256": "ea6264f7de2157cf14342a0359b897fc0e25428cfd7bf14ba4be0b265bf3c0d0"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561587"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156158123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156158x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156158"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0008",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363135385c642b24",
+      "output_sha256": "8dc98d2f8cc245dfa3c4d07427a8e6df801aa9e6e8734cc7d1b13f76b711c8c8"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561597"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156159123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156159x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156159"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0009",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363135395c642b24",
+      "output_sha256": "6a1a091cb30e6dc8606a133ec08b3a06bf6e0aa9edacc134c7483b9fc2c5ae1f"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561607"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156160123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156160x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156160"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0010",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363136305c642b24",
+      "output_sha256": "288023d4416f813501667a33c22c8335637ed7fab80529dd8ee2ca38b67ab02a"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561617"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156161123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156161x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156161"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0011",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363136315c642b24",
+      "output_sha256": "be1a222abbf5af06e2dc2a15a119f916ce89c383ca0fe8252a50da7ffafa5fb3"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561627"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156162123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156162x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156162"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0012",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363136325c642b24",
+      "output_sha256": "5e13e4ddd2f539f5f54330943db356d2eef543df79d5c6bb6731646de6557186"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561637"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156163123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156163x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156163"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0013",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363136335c642b24",
+      "output_sha256": "e40faebd985b4607cb769065ec28cb96ee63479714427dffd48383ede4d8cc8b"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561647"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156164123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156164x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156164"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0014",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363136345c642b24",
+      "output_sha256": "c7c766fb8af3dbb430fff5d7fb9fc5972c67a7cf9da5d6a7c885db7d30beb51e"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_1561657"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_156165123"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_156165x"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "7literal_regex_validation_156165"
+        }
+      ],
+      "family": "literal_then_digits",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        87,
+        17,
+        33,
+        9,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_then_digits-0015",
+      "output_hex": "5e6c69746572616c5f72656765785f76616c69646174696f6e5f3135363136355c642b24",
+      "output_sha256": "7be6945609f4cbfc8b52438dac77e6222726a52957fa4bf92ab14abd58ebac17"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166150"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166150"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166150"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166150"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661507"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        101,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0000",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631353024",
+      "output_sha256": "33a8e89f29a2e30ce298d9f1f96a119610f657063856ad625145ad6daee71157"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166151"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661517"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0001",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631353124",
+      "output_sha256": "ab51de6ec92f6c87f8e87d222df9ea2c22ab950323c6871244515ac5e96953cd"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166152"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661527"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        101,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0002",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631353224",
+      "output_sha256": "039f779934f5feffdf685da7433d19e137c9188b0dd060c0d3ab8f79fe599406"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166153"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661537"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0003",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631353324",
+      "output_sha256": "14113acf91826258d7e2ebef80bf8e931bd9a571539cbe63ea8527ccec110b82"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166154"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661547"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        101,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0004",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631353424",
+      "output_sha256": "f958dd992665518bf6dc4c1637cef200ce3c5330c9a7f3378062de7f4ab9b816"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166155"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661557"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0005",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631353524",
+      "output_sha256": "d34ecdff7b78d660c11b49182f6b60f7e39fc71fd25905f8db8ed9823db79629"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166156"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661567"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        101,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0006",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631353624",
+      "output_sha256": "790785774c44d9e388add920febf8fca35852508340c8aabfae1017c2e13073a"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166157"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661577"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0007",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631353724",
+      "output_sha256": "25c96cdbab13dab11a5de6dc80e90c569309f0835a591da2b12ce7c235540597"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166158"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661587"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        101,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0008",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631353824",
+      "output_sha256": "eecc2a0dd4c10ae50407042f8a02f1c86db0e6d62dcd9b4c02182129ff9397b4"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166159"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661597"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0009",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631353924",
+      "output_sha256": "a2a6dba8d929587928b39b257dd429a26f242f39d76ea90ac571ffdf54340344"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166160"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661607"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        101,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0010",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631363024",
+      "output_sha256": "829cb6abe174ec7ddd55a692f6f84481802cff611e1fc2e48990ac05e4059e61"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166161"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661617"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0011",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631363124",
+      "output_sha256": "d86a78e30ef5e4f5c522193c0dba48750edd9eb1eb5b6a5e838e107c48d8fd7f"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166162"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661627"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        101,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0012",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631363224",
+      "output_sha256": "78adb30caf99d554696301eaea962226011da5d780f89b4512eed3b05c24f169"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166163"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661637"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0013",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631363324",
+      "output_sha256": "f4f63eac6ce7eb6660b844472a50b92da35f440013833c582cab7b155cee0e0f"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166164"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661647"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        101,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0014",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631363424",
+      "output_sha256": "8d7f296f4732b9063c4a95781fdf9c1ace44586dd3d85855b6f4923d365a84df"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "7literal_regex_validation_166165"
+        },
+        {
+          "expected": true,
+          "observed": true,
+          "text": "123literal_regex_validation_166165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_166165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "xliteral_regex_validation_166165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_1661657"
+        }
+      ],
+      "family": "digits_then_literal",
+      "functional_success": true,
+      "generated_action_count": 7,
+      "generated_actions": [
+        18,
+        17,
+        33,
+        9,
+        95,
+        5,
+        2
+      ],
+      "id": "regex-validation-digits_then_literal-0015",
+      "output_hex": "5e5c642b6c69746572616c5f72656765785f76616c69646174696f6e5f31363631363524",
+      "output_sha256": "b35eda202869fa6948127d773770721de44a365f7ec37dc183a623d3ecc9c9de"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176150literal_regex_validation_176150"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176150"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176150literal_regex_validation_176150literal_regex_validation_176150"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        95,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0000",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313530297b327d24",
+      "output_sha256": "9a42dd5ae6368de6d343517f1bbe028d23f9a25cc6cd822be4509bcfddfbc757"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176151literal_regex_validation_176151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176151literal_regex_validation_176151literal_regex_validation_176151"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        87,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0001",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313531297b327d24",
+      "output_sha256": "7220118f4cefd3a01c6057ac46f9f1bd0b5a0f6bb196953cdac6c46834d8e439"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176152literal_regex_validation_176152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176152literal_regex_validation_176152literal_regex_validation_176152"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        95,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0002",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313532297b327d24",
+      "output_sha256": "bd86e33d7c2e77a8da1dd407e28cc67c9683c7ebece3c539613546ebb207ed30"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176153literal_regex_validation_176153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176153literal_regex_validation_176153literal_regex_validation_176153"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        87,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0003",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313533297b327d24",
+      "output_sha256": "bbcd52d1bb8691434b44ce351e365f6f8b970c78cd399d0ee17d1fe595451395"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176154literal_regex_validation_176154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176154literal_regex_validation_176154literal_regex_validation_176154"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        95,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0004",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313534297b327d24",
+      "output_sha256": "bd3d7976c693f3be3e0ead1ab058a0629f66a7703e48d29f1145b87681b064a8"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176155literal_regex_validation_176155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176155literal_regex_validation_176155literal_regex_validation_176155"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        87,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0005",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313535297b327d24",
+      "output_sha256": "def3e4c4998e4ea9067f022a083fd7b78ca452ce5c2aef7bc35d9657d5538f3f"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176156literal_regex_validation_176156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176156literal_regex_validation_176156literal_regex_validation_176156"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        95,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0006",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313536297b327d24",
+      "output_sha256": "a5c6bfc014e9a5e930b27212d2a603f6ff06706b0a25edbeb537618b99d54a37"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176157literal_regex_validation_176157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176157literal_regex_validation_176157literal_regex_validation_176157"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        87,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0007",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313537297b327d24",
+      "output_sha256": "b95163a8efb322b696326aea50ab3f98249abcc431074613ae70d18c5ad23c52"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176158literal_regex_validation_176158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176158literal_regex_validation_176158literal_regex_validation_176158"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        95,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0008",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313538297b327d24",
+      "output_sha256": "d9bc4529aee64485d0714c23fb8f1ce8726d8ba36f4a9d1e6b69cdef41f8974c"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176159literal_regex_validation_176159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176159literal_regex_validation_176159literal_regex_validation_176159"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        87,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0009",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313539297b327d24",
+      "output_sha256": "5a66c35c96e771d7cb122e223b25d606fce4f45f7ce7d39d683128643b992d75"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176160literal_regex_validation_176160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176160literal_regex_validation_176160literal_regex_validation_176160"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        95,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0010",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313630297b327d24",
+      "output_sha256": "a586892da06a07fcc1eb8ce97102c4b42cc68c47e8c99f76eca2addbfb0468a1"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176161literal_regex_validation_176161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176161literal_regex_validation_176161literal_regex_validation_176161"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        87,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0011",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313631297b327d24",
+      "output_sha256": "a0cdb1600f5d6d888f75f63af55859e1f8a110cf1ba8e6f0da966036ec20c90d"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176162literal_regex_validation_176162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176162literal_regex_validation_176162literal_regex_validation_176162"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        95,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0012",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313632297b327d24",
+      "output_sha256": "8c347cf1e6e234386f8323984cd6a5051a1b7ac9511ae208cf7b1a8af941e00f"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176163literal_regex_validation_176163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176163literal_regex_validation_176163literal_regex_validation_176163"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        87,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0013",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313633297b327d24",
+      "output_sha256": "08d2be631d50683dddcfea7704b98772ccd18b5de578161fed5d181fe286393c"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176164literal_regex_validation_176164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176164literal_regex_validation_176164literal_regex_validation_176164"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        95,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0014",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313634297b327d24",
+      "output_sha256": "cc69d1cc26ed269efa59c40094a158fc0a32cbb349d4a5622bebdea29e750299"
+    },
+    {
+      "checks": [
+        {
+          "expected": true,
+          "observed": true,
+          "text": "literal_regex_validation_176165literal_regex_validation_176165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "literal_regex_validation_176165literal_regex_validation_176165literal_regex_validation_176165"
+        },
+        {
+          "expected": false,
+          "observed": false,
+          "text": "other"
+        }
+      ],
+      "family": "literal_twice",
+      "functional_success": true,
+      "generated_action_count": 11,
+      "generated_actions": [
+        18,
+        6,
+        13,
+        12,
+        87,
+        7,
+        69,
+        11,
+        71,
+        5,
+        2
+      ],
+      "id": "regex-validation-literal_twice-0015",
+      "output_hex": "5e283f3a6c69746572616c5f72656765785f76616c69646174696f6e5f313736313635297b327d24",
+      "output_sha256": "c52faa0a333313d4d98885613d72c0bdb36c9bcd7ed4ace565a4979de463a2a0"
+    }
+  ],
+  "seed": 10151,
+  "split": "validation",
+  "status": "PASS",
+  "teacher_at_inference": false,
+  "templates_retrieval_stored_answers_or_output_rewrite": false,
+  "test_accessed": false
+}

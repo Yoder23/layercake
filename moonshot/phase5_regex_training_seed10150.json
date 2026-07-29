@@ -1,0 +1,41 @@
+{
+  "format": "layercake-phase5-generic-domain-training-protocol/1",
+  "status": "PREREGISTERED_BEFORE_TRAINING",
+  "parent_contract": {
+    "path": "moonshot/phase5_generic_multidomain_preregistration.json",
+    "sha256": "49ae047d9a2a11e066404cd2944b43590d08ce20971928996b77e3c62b747597"
+  },
+  "framework_commit": "b1304d0c9de54924956c6006e44a2263a2a2ec44",
+  "domain_id": "regex",
+  "dataset": {
+    "path": "data/moonshot/phase5/regex_v1.jsonl",
+    "sha256": "e662c1e919b4ba278b76ea13b2ee4c3d71d64adffc87c679233eaa1646f7900b",
+    "train_rows": 1024
+  },
+  "model": {
+    "architecture": "portable_token_plan_pointer_transformer",
+    "model_width": 192,
+    "attention_heads": 6,
+    "encoder_layers": 2,
+    "decoder_layers": 2,
+    "feedforward_width": 768,
+    "pointer_width": 128,
+    "dropout": 0.1,
+    "maximum_source_lexemes": 96,
+    "maximum_target_actions": 96
+  },
+  "training": {
+    "seed": 10150,
+    "primary_device": "cuda:0",
+    "required_device_name": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "precision": "fp32",
+    "optimizer": "AdamW",
+    "optimizer_steps": 2500,
+    "batch_size": 64,
+    "learning_rate": 0.0005,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0
+  },
+  "validation_access_allowed": false,
+  "test_access_allowed": false
+}

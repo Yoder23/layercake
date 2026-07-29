@@ -1,0 +1,6590 @@
+{
+  "artifact": {
+    "path": "artifacts/moonshot/phase5/candidates/sql-seed10152.pt",
+    "payload_hash": "687432ae8905d832a97311e11e9202d695ae9e2da64dac369c07d82dc94c1699",
+    "sha256": "e5cb83ed5059ba78235f6725b7017cf7be370d69421791bc2725b3db0deafab6"
+  },
+  "autonomous_neural_generation": true,
+  "batched_generation_wall_seconds": 0.6709848000318743,
+  "dataset": {
+    "path": "data/moonshot/phase5/sql_v1.jsonl",
+    "sha256": "269bd669233cbd92cafb35f53ed41c05eb33bf14377eeece883bbf5a47c31355"
+  },
+  "distinct_prompts": 128,
+  "domain_id": "sql",
+  "evaluation_device": "cuda:0",
+  "evidence_sha256": "eefbcd095a1b6147b21b7b3fcd39505a26c304d9a9cc5949a1da5c3a983e0406",
+  "families": [
+    "count_threshold",
+    "distinct_ordered",
+    "group_count",
+    "inner_join",
+    "limit_rows",
+    "order_descending",
+    "select_column",
+    "where_equal"
+  ],
+  "format": "layercake-phase5-generic-domain-functional/1",
+  "functional_failures": 0,
+  "functional_success_rate": 1.0,
+  "functional_successes": 128,
+  "median_generated_actions": 19.5,
+  "minimum_functional_successes": 122,
+  "neural_fixed_and_pointer_action_selection": true,
+  "protocol": {
+    "path": "moonshot/phase5_sql_final_test.json",
+    "sha256": "749d924f962a0bca53cc31ed764c333895351cfe956b14c432a712cfa1312445"
+  },
+  "records": [
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        116,
+        4,
+        24,
+        4,
+        124,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0000",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135312046524f4d207461626c655f73716c5f746573745f3230353135303b",
+      "output_sha256": "eeec31714274cd74cac44ebfc431900be6f2dba5e608ec82136003c4d8df929f"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        118,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0001",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135322046524f4d207461626c655f73716c5f746573745f3230353135313b",
+      "output_sha256": "a34cc6d90ecf6388e2eaff3cd8114efa3a9db76531243941a978a9acb88ee14d"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        116,
+        4,
+        24,
+        4,
+        124,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0002",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135332046524f4d207461626c655f73716c5f746573745f3230353135323b",
+      "output_sha256": "6dad0489e35963e22636e598eb45cf594f2c501c5e34977821345df0df1ab725"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        118,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0003",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135342046524f4d207461626c655f73716c5f746573745f3230353135333b",
+      "output_sha256": "5a6f83340fd06e72c8edf81baa5565230f7291d588e3aafd75392d09c4f61dfb"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        116,
+        4,
+        24,
+        4,
+        124,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0004",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135352046524f4d207461626c655f73716c5f746573745f3230353135343b",
+      "output_sha256": "55d7d7f8c2b006b108eac36fee4e3718585b9306fbcdd6f5ce77fb8c4594088e"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        118,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0005",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135362046524f4d207461626c655f73716c5f746573745f3230353135353b",
+      "output_sha256": "599c68071a4b4647ec620e4916578cdfedc7758f9a4452e5417417aadaeebf54"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        116,
+        4,
+        24,
+        4,
+        124,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0006",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135372046524f4d207461626c655f73716c5f746573745f3230353135363b",
+      "output_sha256": "6c05332ca4962cb8523490ee7c1ba206692eb207562de501e6c5e72d003f0aba"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        118,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0007",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135382046524f4d207461626c655f73716c5f746573745f3230353135373b",
+      "output_sha256": "f5e1af2743f7670248359739f23e0051b7fba8cf9b2d64e7b8d543f58addd32f"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        116,
+        4,
+        24,
+        4,
+        124,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0008",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353135392046524f4d207461626c655f73716c5f746573745f3230353135383b",
+      "output_sha256": "cf1e26f8a87e8ef215868694468d2b2baf3afb688c935b98aad6a8c6ba316afd"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        118,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0009",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136302046524f4d207461626c655f73716c5f746573745f3230353135393b",
+      "output_sha256": "dbc37e4d0ab3c7e2e25ea6f31dd39667fc8b28b58b6012ce0ab884d1819d6086"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        116,
+        4,
+        24,
+        4,
+        124,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0010",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136312046524f4d207461626c655f73716c5f746573745f3230353136303b",
+      "output_sha256": "62a42373ac92d0288eb443759cea112d5e4844d1f62457018b4a727476bc892e"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        118,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0011",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136322046524f4d207461626c655f73716c5f746573745f3230353136313b",
+      "output_sha256": "931b30be8c3099e702cc54268ed17bc9cbeea638a5f3443baf7244ca041e618e"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        116,
+        4,
+        24,
+        4,
+        124,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0012",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136332046524f4d207461626c655f73716c5f746573745f3230353136323b",
+      "output_sha256": "ca768a1280d66469d48168e805ee9c487df8e1cc41afe4d6a622309ef4692463"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        118,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0013",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136342046524f4d207461626c655f73716c5f746573745f3230353136333b",
+      "output_sha256": "9f198c697c9313786556577dc008ef274517a615b8e6e171ba72d5beb4340b1c"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        116,
+        4,
+        24,
+        4,
+        124,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0014",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136352046524f4d207461626c655f73716c5f746573745f3230353136343b",
+      "output_sha256": "0fc7340cf7324e9869a03a4116522d21bf74abd92897848ef8598e83ca563286"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ],
+            [
+              8
+            ],
+            [
+              13
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "select_column",
+      "functional_success": true,
+      "generated_action_count": 9,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        118,
+        15,
+        2
+      ],
+      "id": "sql-test-select_column-0015",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3230353136362046524f4d207461626c655f73716c5f746573745f3230353136353b",
+      "output_sha256": "da47cab2e2d237c53a67898f4a956dea5d7ff2789d40401056974592b9f4d42f"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        115,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        16,
+        4,
+        5,
+        129,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0000",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135312046524f4d207461626c655f73716c5f746573745f3231353135302057484552452066696c74657265645f73716c5f746573745f323135313532203d20276d617463685f73716c5f746573745f323135313533273b",
+      "output_sha256": "4a688aa1bffcdd2a442a03d5da846592a720854dc23fb11175be94b83421eeb1"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        38,
+        4,
+        122,
+        4,
+        16,
+        4,
+        5,
+        128,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0001",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135322046524f4d207461626c655f73716c5f746573745f3231353135312057484552452066696c74657265645f73716c5f746573745f323135313533203d20276d617463685f73716c5f746573745f323135313534273b",
+      "output_sha256": "d97b8564aaa267cfb6576bf52bf3957467e0a881887a3abe763be9b0d632d41d"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        115,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        16,
+        4,
+        5,
+        129,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0002",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135332046524f4d207461626c655f73716c5f746573745f3231353135322057484552452066696c74657265645f73716c5f746573745f323135313534203d20276d617463685f73716c5f746573745f323135313535273b",
+      "output_sha256": "b5f16e88c8eb1485c81afa06d1b36df004dac8c99dc790fc570f66dd82c7e418"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        38,
+        4,
+        122,
+        4,
+        16,
+        4,
+        5,
+        128,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0003",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135342046524f4d207461626c655f73716c5f746573745f3231353135332057484552452066696c74657265645f73716c5f746573745f323135313535203d20276d617463685f73716c5f746573745f323135313536273b",
+      "output_sha256": "ba51fe96f8977b277b319e4eee778c3582df59d5df78a2d9fa5d4b36e90fc5f7"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        115,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        16,
+        4,
+        5,
+        129,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0004",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135352046524f4d207461626c655f73716c5f746573745f3231353135342057484552452066696c74657265645f73716c5f746573745f323135313536203d20276d617463685f73716c5f746573745f323135313537273b",
+      "output_sha256": "892476f22f557f09d3bd6df9d92c298eab00764891620e8c80aabef949d34cf4"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        38,
+        4,
+        122,
+        4,
+        16,
+        4,
+        5,
+        128,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0005",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135362046524f4d207461626c655f73716c5f746573745f3231353135352057484552452066696c74657265645f73716c5f746573745f323135313537203d20276d617463685f73716c5f746573745f323135313538273b",
+      "output_sha256": "95804544fca520432c06cdbdb890decf6dce8b4d1e200622cf46bb6e85504e49"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        115,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        16,
+        4,
+        5,
+        129,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0006",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135372046524f4d207461626c655f73716c5f746573745f3231353135362057484552452066696c74657265645f73716c5f746573745f323135313538203d20276d617463685f73716c5f746573745f323135313539273b",
+      "output_sha256": "57f4de7e100a9df7ff3200074c2c6a3123e05ccd4d64fb3108413477861a2d29"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        38,
+        4,
+        122,
+        4,
+        16,
+        4,
+        5,
+        128,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0007",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135382046524f4d207461626c655f73716c5f746573745f3231353135372057484552452066696c74657265645f73716c5f746573745f323135313539203d20276d617463685f73716c5f746573745f323135313630273b",
+      "output_sha256": "d4a56e0e9da0f3ab4c10fd771b3ba04ba45ea1a86f6e92ddd6dfa7e0fdd417c9"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        115,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        16,
+        4,
+        5,
+        129,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0008",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353135392046524f4d207461626c655f73716c5f746573745f3231353135382057484552452066696c74657265645f73716c5f746573745f323135313630203d20276d617463685f73716c5f746573745f323135313631273b",
+      "output_sha256": "557a4e4f298f9f2a12f6bf2958f777bf3667e19685fb21834b0688527660c9e0"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        38,
+        4,
+        122,
+        4,
+        16,
+        4,
+        5,
+        128,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0009",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136302046524f4d207461626c655f73716c5f746573745f3231353135392057484552452066696c74657265645f73716c5f746573745f323135313631203d20276d617463685f73716c5f746573745f323135313632273b",
+      "output_sha256": "9515b3f72bf68b15dd7119ac0935864d8d82e30298875a5d89aba7b6186a5b4e"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        115,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        16,
+        4,
+        5,
+        129,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0010",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136312046524f4d207461626c655f73716c5f746573745f3231353136302057484552452066696c74657265645f73716c5f746573745f323135313632203d20276d617463685f73716c5f746573745f323135313633273b",
+      "output_sha256": "577ed631240310ba88bdf3088621d25eaa3e0b1d807f60fc68aa8198888d2c6d"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        38,
+        4,
+        122,
+        4,
+        16,
+        4,
+        5,
+        128,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0011",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136322046524f4d207461626c655f73716c5f746573745f3231353136312057484552452066696c74657265645f73716c5f746573745f323135313633203d20276d617463685f73716c5f746573745f323135313634273b",
+      "output_sha256": "b63715c32e6df6e8a90c609e494983097c4f0cd0aeab7a3d7b7658385169702d"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        115,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        16,
+        4,
+        5,
+        129,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0012",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136332046524f4d207461626c655f73716c5f746573745f3231353136322057484552452066696c74657265645f73716c5f746573745f323135313634203d20276d617463685f73716c5f746573745f323135313635273b",
+      "output_sha256": "7eb20f1c77075b2efe38f2386f3056fa1536189dfeb44d7ac633bdf3742d421d"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        38,
+        4,
+        122,
+        4,
+        16,
+        4,
+        5,
+        128,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0013",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136342046524f4d207461626c655f73716c5f746573745f3231353136332057484552452066696c74657265645f73716c5f746573745f323135313635203d20276d617463685f73716c5f746573745f323135313636273b",
+      "output_sha256": "36c03a3ecf04b26d2c0b770f72eeb802a0d27d93922532b06d4f7ec24f6b1596"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        115,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        16,
+        4,
+        5,
+        129,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0014",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136352046524f4d207461626c655f73716c5f746573745f3231353136342057484552452066696c74657265645f73716c5f746573745f323135313636203d20276d617463685f73716c5f746573745f323135313637273b",
+      "output_sha256": "c5e305e1f9f5c6049c8c7b6c0aff88858b643981f48499ff836c3ab303d978b0"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "where_equal",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        38,
+        4,
+        122,
+        4,
+        16,
+        4,
+        5,
+        128,
+        5,
+        15,
+        2
+      ],
+      "id": "sql-test-where_equal-0015",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3231353136362046524f4d207461626c655f73716c5f746573745f3231353136352057484552452066696c74657265645f73716c5f746573745f323135313637203d20276d617463685f73716c5f746573745f323135313638273b",
+      "output_sha256": "d6af611427790e298a8ca55e92be55f51bb2b8faceb4a4606844623dd062bfc2"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        118,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0000",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353135312046524f4d207461626c655f73716c5f746573745f323235313530204f52444552204259206f72646572696e675f73716c5f746573745f32323531353220444553433b",
+      "output_sha256": "e8731095e6d9f49d40cd387a8d90e292b7ca6e74cbd6e21a0eaa9af42d41f403"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        121,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0001",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353135322046524f4d207461626c655f73716c5f746573745f323235313531204f52444552204259206f72646572696e675f73716c5f746573745f32323531353320444553433b",
+      "output_sha256": "241f4d2ea987dcb197f2ad9ef3021411b4805f55806b4fa232742b497773efea"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        118,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0002",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353135332046524f4d207461626c655f73716c5f746573745f323235313532204f52444552204259206f72646572696e675f73716c5f746573745f32323531353420444553433b",
+      "output_sha256": "701d8b2289f8f4df7c7bfa6b3ae7d73191ea45dd4cd6d465b6df3acc6cdf5691"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        121,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0003",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353135342046524f4d207461626c655f73716c5f746573745f323235313533204f52444552204259206f72646572696e675f73716c5f746573745f32323531353520444553433b",
+      "output_sha256": "278cb58b70dfb6c0f6e73484e90b00cc25080fa57c3df31e41a50372d8da83ba"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        118,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0004",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353135352046524f4d207461626c655f73716c5f746573745f323235313534204f52444552204259206f72646572696e675f73716c5f746573745f32323531353620444553433b",
+      "output_sha256": "0bc355958c8d8b1ec446898f8b40411a82b9deae6734b6d1200f80add0123d4e"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        121,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0005",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353135362046524f4d207461626c655f73716c5f746573745f323235313535204f52444552204259206f72646572696e675f73716c5f746573745f32323531353720444553433b",
+      "output_sha256": "e50721e7122be3e608300b6596ba2d3ea3667c10dde0dca4768574a14b894f25"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        118,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0006",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353135372046524f4d207461626c655f73716c5f746573745f323235313536204f52444552204259206f72646572696e675f73716c5f746573745f32323531353820444553433b",
+      "output_sha256": "b3995c444d77c396fcf03f672bfe3ffa9df31d5f9e40d74de4428d8fd860eb8d"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        121,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0007",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353135382046524f4d207461626c655f73716c5f746573745f323235313537204f52444552204259206f72646572696e675f73716c5f746573745f32323531353920444553433b",
+      "output_sha256": "71ba73fe9c46350b6bc0739afb3bddb37e1df546bb6d46b694fcfb13581294f4"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        118,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0008",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353135392046524f4d207461626c655f73716c5f746573745f323235313538204f52444552204259206f72646572696e675f73716c5f746573745f32323531363020444553433b",
+      "output_sha256": "f9115d6dae3bc9fe510dc64c61cf052bbdec5ccdb5854a384de0bb1a4069a007"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        121,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0009",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353136302046524f4d207461626c655f73716c5f746573745f323235313539204f52444552204259206f72646572696e675f73716c5f746573745f32323531363120444553433b",
+      "output_sha256": "68c77b058de810486de660b0d4ed70c4db9881aa330d5a3d4c3d7a39e7d74227"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        118,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0010",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353136312046524f4d207461626c655f73716c5f746573745f323235313630204f52444552204259206f72646572696e675f73716c5f746573745f32323531363220444553433b",
+      "output_sha256": "25127fc422dcd69ac049158d6390e9b525f0f0b71e425fad4950d9be12848c8b"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        121,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0011",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353136322046524f4d207461626c655f73716c5f746573745f323235313631204f52444552204259206f72646572696e675f73716c5f746573745f32323531363320444553433b",
+      "output_sha256": "cee135eddfce6903a5c8c7201f6d08bbac20e6fc35a4ce72fc41f11230d53126"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        118,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0012",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353136332046524f4d207461626c655f73716c5f746573745f323235313632204f52444552204259206f72646572696e675f73716c5f746573745f32323531363420444553433b",
+      "output_sha256": "33c1e03acb372575495fc52db3e7b7958ba4cd8a244ec25722bc22a51103bb71"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        121,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0013",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353136342046524f4d207461626c655f73716c5f746573745f323235313633204f52444552204259206f72646572696e675f73716c5f746573745f32323531363520444553433b",
+      "output_sha256": "2909f7acac9522953600f3d8d87f88a99e4ea58f20a6e379f1aed454d929d27a"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        118,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0014",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353136352046524f4d207461626c655f73716c5f746573745f323235313634204f52444552204259206f72646572696e675f73716c5f746573745f32323531363620444553433b",
+      "output_sha256": "9ac06e70727b682f03a92fc9abfc83f73b2a608ee4b075ddd778041a57e47da6"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "high"
+            ],
+            [
+              "middle"
+            ],
+            [
+              "low"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "order_descending",
+      "functional_success": true,
+      "generated_action_count": 17,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        121,
+        4,
+        22,
+        15,
+        2
+      ],
+      "id": "sql-test-order_descending-0015",
+      "output_hex": "53454c4543542073656c65637465645f73716c5f746573745f3232353136362046524f4d207461626c655f73716c5f746573745f323235313635204f52444552204259206f72646572696e675f73716c5f746573745f32323531363720444553433b",
+      "output_sha256": "d77062011fabd8926d6bfdadda32469221ce2f5f0ce55ea16c4e7fbfdd41a713"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        112,
+        4,
+        38,
+        4,
+        116,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0000",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531353020574845524520636f6c756d6e5f73716c5f746573745f323335313531203e3d20353b",
+      "output_sha256": "7b5499d70c822ba9d344675f04b75156e1854038b677e221b2cd894374b0600a"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0001",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531353120574845524520636f6c756d6e5f73716c5f746573745f323335313532203e3d20353b",
+      "output_sha256": "6ff4bdd693b9c1ab703d1f9b21397a0d7e4cfaccafdf5ed4c2eae572a66e4811"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        112,
+        4,
+        38,
+        4,
+        116,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0002",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531353220574845524520636f6c756d6e5f73716c5f746573745f323335313533203e3d20353b",
+      "output_sha256": "3a7a3def5c61395a34673048a28f11a1df07369b7ead470cdf8292a24de965f0"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0003",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531353320574845524520636f6c756d6e5f73716c5f746573745f323335313534203e3d20353b",
+      "output_sha256": "80e0ec484ee82342b0ac08fb7bb7d8910815db7fefb59cca7f20502379766e7e"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        112,
+        4,
+        38,
+        4,
+        116,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0004",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531353420574845524520636f6c756d6e5f73716c5f746573745f323335313535203e3d20353b",
+      "output_sha256": "ec5d8eaf6f99c45e67e6692ed7f20e51b3e4443a7c9d85e840c34c011f1eb798"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0005",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531353520574845524520636f6c756d6e5f73716c5f746573745f323335313536203e3d20353b",
+      "output_sha256": "bf3bb75eaa9159bdfb7f4b0fadecca03e742fb3277064af9a7d841a625427377"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        112,
+        4,
+        38,
+        4,
+        116,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0006",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531353620574845524520636f6c756d6e5f73716c5f746573745f323335313537203e3d20353b",
+      "output_sha256": "00ddf896f078b29bd2551ebd5940085801d23d45e4172b4a89f70f5f6d37e756"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0007",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531353720574845524520636f6c756d6e5f73716c5f746573745f323335313538203e3d20353b",
+      "output_sha256": "1ad03ccc23ed3019eb7d88de681b8094ba1193145bede779ae2c043ca599ba38"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        112,
+        4,
+        38,
+        4,
+        116,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0008",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531353820574845524520636f6c756d6e5f73716c5f746573745f323335313539203e3d20353b",
+      "output_sha256": "dc94d55164c0fcca444bfbd7c2a210a6437bc5d1e05bd2e6ecb905335dba177c"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0009",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531353920574845524520636f6c756d6e5f73716c5f746573745f323335313630203e3d20353b",
+      "output_sha256": "6ebd99c3bf03660343d56a23d09ce0c54c4d761cad49d3e1057a1ad3a844145c"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        112,
+        4,
+        38,
+        4,
+        116,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0010",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531363020574845524520636f6c756d6e5f73716c5f746573745f323335313631203e3d20353b",
+      "output_sha256": "a6fc8de5b85f7faf25d3d5aa65c26a6861b91a711185b59b6dc9bcbf63a54882"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0011",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531363120574845524520636f6c756d6e5f73716c5f746573745f323335313632203e3d20353b",
+      "output_sha256": "e824f2c1787ad3635b9d10d5cac8e6742f96e27fc46b3db10899126023111c72"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        112,
+        4,
+        38,
+        4,
+        116,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0012",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531363220574845524520636f6c756d6e5f73716c5f746573745f323335313633203e3d20353b",
+      "output_sha256": "7ad60c92483fa405c8df8548d9ba4ff63ac3ff6e1621f5fa473f7473d13b9106"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0013",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531363320574845524520636f6c756d6e5f73716c5f746573745f323335313634203e3d20353b",
+      "output_sha256": "ac531e61754322c7dff0a6a69bf3b8553f1ade52c8a0752457339878c13b3b08"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        112,
+        4,
+        38,
+        4,
+        116,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0014",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531363420574845524520636f6c756d6e5f73716c5f746573745f323335313635203e3d20353b",
+      "output_sha256": "7573cd22de1a87e7f164cd56b895c13151bd0cbc7bd0dfa1f30fbfe327e72b11"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              3
+            ]
+          ],
+          "observed_rows": [
+            [
+              3
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "count_threshold",
+      "functional_success": true,
+      "generated_action_count": 20,
+      "generated_actions": [
+        35,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        38,
+        4,
+        119,
+        4,
+        17,
+        4,
+        13,
+        15,
+        2
+      ],
+      "id": "sql-test-count_threshold-0015",
+      "output_hex": "53454c45435420434f554e54282a292046524f4d207461626c655f73716c5f746573745f32333531363520574845524520636f6c756d6e5f73716c5f746573745f323335313636203e3d20353b",
+      "output_sha256": "c760cf828f22606809e1cb172fc71c0e45c9bccf79ef017cae141c293cea6adc"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0000",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353135312c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353135302047524f55502042592063617465676f72795f73716c5f746573745f323435313531204f524445522042592063617465676f72795f73716c5f746573745f3234353135313b",
+      "output_sha256": "d7dbf9bb67aad19bfbac0274eef047c386a40e2ae86f32c7a8bf00f9783e9a46"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        118,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0001",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353135322c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353135312047524f55502042592063617465676f72795f73716c5f746573745f323435313532204f524445522042592063617465676f72795f73716c5f746573745f3234353135323b",
+      "output_sha256": "13d157f93f11014c80498f89c36309c2cb39a75e56ca8609d35b550d3d9833e4"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0002",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353135332c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353135322047524f55502042592063617465676f72795f73716c5f746573745f323435313533204f524445522042592063617465676f72795f73716c5f746573745f3234353135333b",
+      "output_sha256": "0c1720161e0f80feb426ffe9be5b7cb322840c276fa37cec45bded5c6caddf44"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        118,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0003",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353135342c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353135332047524f55502042592063617465676f72795f73716c5f746573745f323435313534204f524445522042592063617465676f72795f73716c5f746573745f3234353135343b",
+      "output_sha256": "3f5b005c0e14d8e90ca4067134e94d9d4cc62cefbac3bcca4712db3f321f3fd7"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0004",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353135352c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353135342047524f55502042592063617465676f72795f73716c5f746573745f323435313535204f524445522042592063617465676f72795f73716c5f746573745f3234353135353b",
+      "output_sha256": "3ce4c5afe47d725f5b8c0421dc17a0f9e95618e0f8bf6a7df07819fe1efa0192"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        118,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0005",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353135362c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353135352047524f55502042592063617465676f72795f73716c5f746573745f323435313536204f524445522042592063617465676f72795f73716c5f746573745f3234353135363b",
+      "output_sha256": "2510e88ff82a0f15ee0cd9cf5cc5468a1d51ca04f5f674cd0a6c730d3a87873e"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0006",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353135372c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353135362047524f55502042592063617465676f72795f73716c5f746573745f323435313537204f524445522042592063617465676f72795f73716c5f746573745f3234353135373b",
+      "output_sha256": "1d3f642e3bddf121ef2fe09c0477fb86c84f28124b3ef74b02f7fc72ef053182"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        118,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0007",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353135382c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353135372047524f55502042592063617465676f72795f73716c5f746573745f323435313538204f524445522042592063617465676f72795f73716c5f746573745f3234353135383b",
+      "output_sha256": "0c3de210344fa6e05c30399f7cc22e438122c0964b3a8fa91cfa0f07816df258"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0008",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353135392c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353135382047524f55502042592063617465676f72795f73716c5f746573745f323435313539204f524445522042592063617465676f72795f73716c5f746573745f3234353135393b",
+      "output_sha256": "2cb90b62cfe6090be15e7e81be6baa755151102457c4eb91719ba2a775cac8a7"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        118,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0009",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353136302c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353135392047524f55502042592063617465676f72795f73716c5f746573745f323435313630204f524445522042592063617465676f72795f73716c5f746573745f3234353136303b",
+      "output_sha256": "669b82234f26d741479315249c677438d9885fb4d6412c9c9172a7c24bb2bf16"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0010",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353136312c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353136302047524f55502042592063617465676f72795f73716c5f746573745f323435313631204f524445522042592063617465676f72795f73716c5f746573745f3234353136313b",
+      "output_sha256": "087e86eb1e12a081cffb2563c08c241ec864e463c9435c62b4de743a373ee5b5"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        118,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0011",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353136322c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353136312047524f55502042592063617465676f72795f73716c5f746573745f323435313632204f524445522042592063617465676f72795f73716c5f746573745f3234353136323b",
+      "output_sha256": "c03d23df795486a3bc5394d03574e58d52e68eb0e53d9771bd6a82dcf79868eb"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0012",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353136332c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353136322047524f55502042592063617465676f72795f73716c5f746573745f323435313633204f524445522042592063617465676f72795f73716c5f746573745f3234353136333b",
+      "output_sha256": "b8afbec63dc83342278b1bb05fef5ccdedb9f3cb15b0efcc2cad3891f01460bc"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        118,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0013",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353136342c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353136332047524f55502042592063617465676f72795f73716c5f746573745f323435313634204f524445522042592063617465676f72795f73716c5f746573745f3234353136343b",
+      "output_sha256": "2c1e0321d783895284fae38d6d0339e8def170bdf6aee6d7413ac72ec7cae468"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        110,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0014",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353136352c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353136342047524f55502042592063617465676f72795f73716c5f746573745f323435313635204f524445522042592063617465676f72795f73716c5f746573745f3234353136353b",
+      "output_sha256": "a82e849955acd9a96c881df0695d06d108fbbe757950b882d7ddb2ff7caf874c"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "observed_rows": [
+            [
+              "blue",
+              2
+            ],
+            [
+              "red",
+              1
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "group_count",
+      "functional_success": true,
+      "generated_action_count": 27,
+      "generated_actions": [
+        35,
+        4,
+        114,
+        9,
+        4,
+        20,
+        6,
+        8,
+        7,
+        4,
+        24,
+        4,
+        118,
+        4,
+        26,
+        4,
+        19,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        114,
+        15,
+        2
+      ],
+      "id": "sql-test-group_count-0015",
+      "output_hex": "53454c4543542063617465676f72795f73716c5f746573745f3234353136362c20434f554e54282a292046524f4d207461626c655f73716c5f746573745f3234353136352047524f55502042592063617465676f72795f73716c5f746573745f323435313636204f524445522042592063617465676f72795f73716c5f746573745f3234353136363b",
+      "output_sha256": "f26dbb55224e06e4ee19fc20cf91d8fb5e37236cb2715c333aea84d6a4e27132"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        116,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0000",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353135312046524f4d207461626c655f73716c5f746573745f323535313530204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313531204153433b",
+      "output_sha256": "f8d281cb9bb09f0e1e6f1084b48391e48d60199d492e2fcef9b3fac093710755"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0001",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353135322046524f4d207461626c655f73716c5f746573745f323535313531204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313532204153433b",
+      "output_sha256": "1bb103de4a575f75e3144f24a5e69f119c054bc535437102c8a8a7dc440db7af"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        116,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0002",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353135332046524f4d207461626c655f73716c5f746573745f323535313532204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313533204153433b",
+      "output_sha256": "d0cf22e4b95789d233ba2955004a68934b2ef271a80b5dc9df8f5cb9e3dbcbbf"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0003",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353135342046524f4d207461626c655f73716c5f746573745f323535313533204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313534204153433b",
+      "output_sha256": "77b4108dfd1a2e124afc392bcc56d314528385ea189955d976ab2003356a2614"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        116,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0004",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353135352046524f4d207461626c655f73716c5f746573745f323535313534204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313535204153433b",
+      "output_sha256": "bb58e8a0e64d8570b45cc837ccafac2aecf3afc27f1aabf27baa415348092924"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0005",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353135362046524f4d207461626c655f73716c5f746573745f323535313535204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313536204153433b",
+      "output_sha256": "ade1205ae31689f6a912ca6f05f207ff1c684be0d00186eba7cb7503a208798d"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        116,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0006",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353135372046524f4d207461626c655f73716c5f746573745f323535313536204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313537204153433b",
+      "output_sha256": "f960f3cf9c74ad6d678cb439a5ac3d7e4cd8ee20ff09c3270a823630f660bfef"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0007",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353135382046524f4d207461626c655f73716c5f746573745f323535313537204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313538204153433b",
+      "output_sha256": "6b0b65bb3e8efc02011fd3f3af4ff2313c563ea555ab91fd0fcee9174c3fcba2"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        116,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0008",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353135392046524f4d207461626c655f73716c5f746573745f323535313538204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313539204153433b",
+      "output_sha256": "b1620b8dcbb7dbbdb25f0e92cde17e69e09971a85835472b43e11d69c0a5e2d4"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0009",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353136302046524f4d207461626c655f73716c5f746573745f323535313539204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313630204153433b",
+      "output_sha256": "876390ce75bd6fcaa2f6296c7a4a686221df70708d2a466f42e2244866d67444"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        116,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0010",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353136312046524f4d207461626c655f73716c5f746573745f323535313630204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313631204153433b",
+      "output_sha256": "ad28db50d0b249538c84d7af1f00209a11133147fc5bc75c6e980642508f1b56"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0011",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353136322046524f4d207461626c655f73716c5f746573745f323535313631204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313632204153433b",
+      "output_sha256": "fa17dfa03e11ede43af312a96905a90dd2cabec35ebb9396da3b96ceee175cc1"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        116,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0012",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353136332046524f4d207461626c655f73716c5f746573745f323535313632204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313633204153433b",
+      "output_sha256": "89ce6ffac017ab361fea024bcfeb2c4a2b59b49fcfa6157507f5e7ead23ffa6b"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0013",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353136342046524f4d207461626c655f73716c5f746573745f323535313633204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313634204153433b",
+      "output_sha256": "6649a96029df09bc086a1fe48a1c19b3bcd36067598c7a00bd75bb0c2656307f"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        116,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0014",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353136352046524f4d207461626c655f73716c5f746573745f323535313634204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313635204153433b",
+      "output_sha256": "eb2cb2e404bf8bab91a585607efcef80dcd9fb68f85172a8f4dcb7d976025980"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              4
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "distinct_ordered",
+      "functional_success": true,
+      "generated_action_count": 19,
+      "generated_actions": [
+        35,
+        4,
+        23,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        15,
+        2
+      ],
+      "id": "sql-test-distinct_ordered-0015",
+      "output_hex": "53454c4543542044495354494e435420636f6c756d6e5f73716c5f746573745f3235353136362046524f4d207461626c655f73716c5f746573745f323535313635204f5244455220425920636f6c756d6e5f73716c5f746573745f323535313636204153433b",
+      "output_sha256": "f473f14f3726c4812a6d2b215b64e863a1c01a05e3f346c22753508b417b7a13"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        127,
+        4,
+        24,
+        4,
+        108,
+        4,
+        28,
+        4,
+        112,
+        4,
+        31,
+        4,
+        108,
+        11,
+        116,
+        4,
+        16,
+        4,
+        112,
+        11,
+        120,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0000",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353135342046524f4d206c6566747461626c655f73716c5f746573745f323635313530204a4f494e2072696768747461626c655f73716c5f746573745f323635313531204f4e206c6566747461626c655f73716c5f746573745f3236353135302e6c6566746b65795f73716c5f746573745f323635313532203d2072696768747461626c655f73716c5f746573745f3236353135312e72696768746b65795f73716c5f746573745f3236353135333b",
+      "output_sha256": "27f79ca997b6f6554115fe4009ec10a6fddeaaf088fbf249b2a82c40a5aef763"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        128,
+        4,
+        24,
+        4,
+        114,
+        4,
+        28,
+        4,
+        120,
+        4,
+        31,
+        4,
+        114,
+        11,
+        116,
+        4,
+        16,
+        4,
+        120,
+        11,
+        122,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0001",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353135352046524f4d206c6566747461626c655f73716c5f746573745f323635313531204a4f494e2072696768747461626c655f73716c5f746573745f323635313532204f4e206c6566747461626c655f73716c5f746573745f3236353135312e6c6566746b65795f73716c5f746573745f323635313533203d2072696768747461626c655f73716c5f746573745f3236353135322e72696768746b65795f73716c5f746573745f3236353135343b",
+      "output_sha256": "92b087db5efb7930b9a43a22544f597c71a4d5b1e8f0675a549cb6e2097c4630"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        127,
+        4,
+        24,
+        4,
+        108,
+        4,
+        28,
+        4,
+        112,
+        4,
+        31,
+        4,
+        108,
+        11,
+        116,
+        4,
+        16,
+        4,
+        112,
+        11,
+        120,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0002",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353135362046524f4d206c6566747461626c655f73716c5f746573745f323635313532204a4f494e2072696768747461626c655f73716c5f746573745f323635313533204f4e206c6566747461626c655f73716c5f746573745f3236353135322e6c6566746b65795f73716c5f746573745f323635313534203d2072696768747461626c655f73716c5f746573745f3236353135332e72696768746b65795f73716c5f746573745f3236353135353b",
+      "output_sha256": "72c9a3cceab3cc7db6268c4afc4a26ec287a1bc3663e6d6c04143839e0494493"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        128,
+        4,
+        24,
+        4,
+        114,
+        4,
+        28,
+        4,
+        120,
+        4,
+        31,
+        4,
+        114,
+        11,
+        116,
+        4,
+        16,
+        4,
+        120,
+        11,
+        122,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0003",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353135372046524f4d206c6566747461626c655f73716c5f746573745f323635313533204a4f494e2072696768747461626c655f73716c5f746573745f323635313534204f4e206c6566747461626c655f73716c5f746573745f3236353135332e6c6566746b65795f73716c5f746573745f323635313535203d2072696768747461626c655f73716c5f746573745f3236353135342e72696768746b65795f73716c5f746573745f3236353135363b",
+      "output_sha256": "e04679bdc30adc64c1758ba82040523c1dac1444358f308c237463c8addbb6c6"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        127,
+        4,
+        24,
+        4,
+        108,
+        4,
+        28,
+        4,
+        112,
+        4,
+        31,
+        4,
+        108,
+        11,
+        116,
+        4,
+        16,
+        4,
+        112,
+        11,
+        120,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0004",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353135382046524f4d206c6566747461626c655f73716c5f746573745f323635313534204a4f494e2072696768747461626c655f73716c5f746573745f323635313535204f4e206c6566747461626c655f73716c5f746573745f3236353135342e6c6566746b65795f73716c5f746573745f323635313536203d2072696768747461626c655f73716c5f746573745f3236353135352e72696768746b65795f73716c5f746573745f3236353135373b",
+      "output_sha256": "796baa284796b8cb06329093121b089afe59c25fd9e6ea0179ffe18230b50080"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        128,
+        4,
+        24,
+        4,
+        114,
+        4,
+        28,
+        4,
+        120,
+        4,
+        31,
+        4,
+        114,
+        11,
+        116,
+        4,
+        16,
+        4,
+        120,
+        11,
+        122,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0005",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353135392046524f4d206c6566747461626c655f73716c5f746573745f323635313535204a4f494e2072696768747461626c655f73716c5f746573745f323635313536204f4e206c6566747461626c655f73716c5f746573745f3236353135352e6c6566746b65795f73716c5f746573745f323635313537203d2072696768747461626c655f73716c5f746573745f3236353135362e72696768746b65795f73716c5f746573745f3236353135383b",
+      "output_sha256": "d5759ee4acfa1c64fecdb6792d980a9ef3cd610b7d0121f38caaff1744d4a247"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        127,
+        4,
+        24,
+        4,
+        108,
+        4,
+        28,
+        4,
+        112,
+        4,
+        31,
+        4,
+        108,
+        11,
+        116,
+        4,
+        16,
+        4,
+        112,
+        11,
+        120,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0006",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353136302046524f4d206c6566747461626c655f73716c5f746573745f323635313536204a4f494e2072696768747461626c655f73716c5f746573745f323635313537204f4e206c6566747461626c655f73716c5f746573745f3236353135362e6c6566746b65795f73716c5f746573745f323635313538203d2072696768747461626c655f73716c5f746573745f3236353135372e72696768746b65795f73716c5f746573745f3236353135393b",
+      "output_sha256": "b06840a54c41b41d6a306e707c193c30695e3d70f85f1648f7167cbb5debcc80"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        128,
+        4,
+        24,
+        4,
+        114,
+        4,
+        28,
+        4,
+        120,
+        4,
+        31,
+        4,
+        114,
+        11,
+        116,
+        4,
+        16,
+        4,
+        120,
+        11,
+        122,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0007",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353136312046524f4d206c6566747461626c655f73716c5f746573745f323635313537204a4f494e2072696768747461626c655f73716c5f746573745f323635313538204f4e206c6566747461626c655f73716c5f746573745f3236353135372e6c6566746b65795f73716c5f746573745f323635313539203d2072696768747461626c655f73716c5f746573745f3236353135382e72696768746b65795f73716c5f746573745f3236353136303b",
+      "output_sha256": "45c189c47e2118804141fa8bdbf8f1ac109dca6e6f762893dc63f929a132a67b"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        127,
+        4,
+        24,
+        4,
+        108,
+        4,
+        28,
+        4,
+        112,
+        4,
+        31,
+        4,
+        108,
+        11,
+        116,
+        4,
+        16,
+        4,
+        112,
+        11,
+        120,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0008",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353136322046524f4d206c6566747461626c655f73716c5f746573745f323635313538204a4f494e2072696768747461626c655f73716c5f746573745f323635313539204f4e206c6566747461626c655f73716c5f746573745f3236353135382e6c6566746b65795f73716c5f746573745f323635313630203d2072696768747461626c655f73716c5f746573745f3236353135392e72696768746b65795f73716c5f746573745f3236353136313b",
+      "output_sha256": "7a01bc253c8cb6f39243c291d8af0429ffac1ed63e201f14f63200ad2ae787ec"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        128,
+        4,
+        24,
+        4,
+        114,
+        4,
+        28,
+        4,
+        120,
+        4,
+        31,
+        4,
+        114,
+        11,
+        116,
+        4,
+        16,
+        4,
+        120,
+        11,
+        122,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0009",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353136332046524f4d206c6566747461626c655f73716c5f746573745f323635313539204a4f494e2072696768747461626c655f73716c5f746573745f323635313630204f4e206c6566747461626c655f73716c5f746573745f3236353135392e6c6566746b65795f73716c5f746573745f323635313631203d2072696768747461626c655f73716c5f746573745f3236353136302e72696768746b65795f73716c5f746573745f3236353136323b",
+      "output_sha256": "4d66864c4cedc5db837c968ff3c1daa052b3fc7e1fc4e5379ec94083ce4d0f73"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        127,
+        4,
+        24,
+        4,
+        108,
+        4,
+        28,
+        4,
+        112,
+        4,
+        31,
+        4,
+        108,
+        11,
+        116,
+        4,
+        16,
+        4,
+        112,
+        11,
+        120,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0010",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353136342046524f4d206c6566747461626c655f73716c5f746573745f323635313630204a4f494e2072696768747461626c655f73716c5f746573745f323635313631204f4e206c6566747461626c655f73716c5f746573745f3236353136302e6c6566746b65795f73716c5f746573745f323635313632203d2072696768747461626c655f73716c5f746573745f3236353136312e72696768746b65795f73716c5f746573745f3236353136333b",
+      "output_sha256": "9f6631a8b806aef0f4a0bf513ea2103ed502565f7491cb4eb5962ea6b50fbd7e"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        128,
+        4,
+        24,
+        4,
+        114,
+        4,
+        28,
+        4,
+        120,
+        4,
+        31,
+        4,
+        114,
+        11,
+        116,
+        4,
+        16,
+        4,
+        120,
+        11,
+        122,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0011",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353136352046524f4d206c6566747461626c655f73716c5f746573745f323635313631204a4f494e2072696768747461626c655f73716c5f746573745f323635313632204f4e206c6566747461626c655f73716c5f746573745f3236353136312e6c6566746b65795f73716c5f746573745f323635313633203d2072696768747461626c655f73716c5f746573745f3236353136322e72696768746b65795f73716c5f746573745f3236353136343b",
+      "output_sha256": "86d2e8556e8c825aafe2aaff89cc648050f027f529c4189f0476f3e3b5f4ef82"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        127,
+        4,
+        24,
+        4,
+        108,
+        4,
+        28,
+        4,
+        112,
+        4,
+        31,
+        4,
+        108,
+        11,
+        116,
+        4,
+        16,
+        4,
+        112,
+        11,
+        120,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0012",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353136362046524f4d206c6566747461626c655f73716c5f746573745f323635313632204a4f494e2072696768747461626c655f73716c5f746573745f323635313633204f4e206c6566747461626c655f73716c5f746573745f3236353136322e6c6566746b65795f73716c5f746573745f323635313634203d2072696768747461626c655f73716c5f746573745f3236353136332e72696768746b65795f73716c5f746573745f3236353136353b",
+      "output_sha256": "4fd60ce74991e8056d4c0bbef3427781810ce09ce20ebdc840614f37cb7e151c"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        128,
+        4,
+        24,
+        4,
+        114,
+        4,
+        28,
+        4,
+        120,
+        4,
+        31,
+        4,
+        114,
+        11,
+        116,
+        4,
+        16,
+        4,
+        120,
+        11,
+        122,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0013",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353136372046524f4d206c6566747461626c655f73716c5f746573745f323635313633204a4f494e2072696768747461626c655f73716c5f746573745f323635313634204f4e206c6566747461626c655f73716c5f746573745f3236353136332e6c6566746b65795f73716c5f746573745f323635313635203d2072696768747461626c655f73716c5f746573745f3236353136342e72696768746b65795f73716c5f746573745f3236353136363b",
+      "output_sha256": "d6c2811b19a9b50d0257e4df4bba1e90e05e42082c16ca9fcf972cf02de819a4"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        127,
+        4,
+        24,
+        4,
+        108,
+        4,
+        28,
+        4,
+        112,
+        4,
+        31,
+        4,
+        108,
+        11,
+        116,
+        4,
+        16,
+        4,
+        112,
+        11,
+        120,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0014",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353136382046524f4d206c6566747461626c655f73716c5f746573745f323635313634204a4f494e2072696768747461626c655f73716c5f746573745f323635313635204f4e206c6566747461626c655f73716c5f746573745f3236353136342e6c6566746b65795f73716c5f746573745f323635313636203d2072696768747461626c655f73716c5f746573745f3236353136352e72696768746b65795f73716c5f746573745f3236353136373b",
+      "output_sha256": "1b90c60e4800fed5b15ae59a83fb0fc01ada8bde9d0f45600c1b673cfdddcb26"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "observed_rows": [
+            [
+              "matched"
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "inner_join",
+      "functional_success": true,
+      "generated_action_count": 25,
+      "generated_actions": [
+        35,
+        4,
+        128,
+        4,
+        24,
+        4,
+        114,
+        4,
+        28,
+        4,
+        120,
+        4,
+        31,
+        4,
+        114,
+        11,
+        116,
+        4,
+        16,
+        4,
+        120,
+        11,
+        122,
+        15,
+        2
+      ],
+      "id": "sql-test-inner_join-0015",
+      "output_hex": "53454c4543542076616c7565636f6c756d6e5f73716c5f746573745f3236353136392046524f4d206c6566747461626c655f73716c5f746573745f323635313635204a4f494e2072696768747461626c655f73716c5f746573745f323635313636204f4e206c6566747461626c655f73716c5f746573745f3236353136352e6c6566746b65795f73716c5f746573745f323635313637203d2072696768747461626c655f73716c5f746573745f3236353136362e72696768746b65795f73716c5f746573745f3236353136383b",
+      "output_sha256": "8dd8ac1ea7841b6b4a902acbb1fdb00e4068430b1fa3c7795d6c9e03b39b2935"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        108,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0000",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353135312046524f4d207461626c655f73716c5f746573745f323735313530204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531353120415343204c494d495420323b",
+      "output_sha256": "b5e31cea95cc8675e8141845a089246c0d3a472f6c3334fc513a019217791bad"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0001",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353135322046524f4d207461626c655f73716c5f746573745f323735313531204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531353220415343204c494d495420323b",
+      "output_sha256": "b9ef100522f53cf05c7591e92a8fcc000a869cb612fdd7eea1aa37a32ed5d7bb"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        108,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0002",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353135332046524f4d207461626c655f73716c5f746573745f323735313532204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531353320415343204c494d495420323b",
+      "output_sha256": "84fc01af77ac77f76c5b952ed7f7e66f8d78f5ab380ce83475261395cff70b52"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0003",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353135342046524f4d207461626c655f73716c5f746573745f323735313533204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531353420415343204c494d495420323b",
+      "output_sha256": "9e86f452044ebf90c803bcdd29a7be60af11b199fb66c6cb93902d5d5a534a7f"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        108,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0004",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353135352046524f4d207461626c655f73716c5f746573745f323735313534204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531353520415343204c494d495420323b",
+      "output_sha256": "b77787ed4553d0c81af5b84a601975ef38c1efd3b17d932e1cd9f36d2a12d1af"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0005",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353135362046524f4d207461626c655f73716c5f746573745f323735313535204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531353620415343204c494d495420323b",
+      "output_sha256": "efaa1a3a6d7523a7a6d981fbb313e80f581e14a2ac3d114b57e85bcc9a6bf1aa"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        108,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0006",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353135372046524f4d207461626c655f73716c5f746573745f323735313536204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531353720415343204c494d495420323b",
+      "output_sha256": "48e054231448d14af7c3a652aa0f6067e4aada168354d6d73c100dd2bbf11290"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0007",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353135382046524f4d207461626c655f73716c5f746573745f323735313537204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531353820415343204c494d495420323b",
+      "output_sha256": "aa0a74679f59f20ca63d555d8f4c63bf709b19c76c7c34422da6756e40d6b582"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        108,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0008",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353135392046524f4d207461626c655f73716c5f746573745f323735313538204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531353920415343204c494d495420323b",
+      "output_sha256": "6374f4d850af2a3205fa1c83c03ae751e2422d765a1597374909fa346098f530"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0009",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353136302046524f4d207461626c655f73716c5f746573745f323735313539204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531363020415343204c494d495420323b",
+      "output_sha256": "b0994ce6ded4271866f6d36582620fc385bfd747b316ec4a65633d17481b9922"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        108,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0010",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353136312046524f4d207461626c655f73716c5f746573745f323735313630204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531363120415343204c494d495420323b",
+      "output_sha256": "67d5484786fb7a256e41d60500bd8a1ef8c9b8950ac7fd99ceedb73f361da2e8"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0011",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353136322046524f4d207461626c655f73716c5f746573745f323735313631204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531363220415343204c494d495420323b",
+      "output_sha256": "b93265d7fe3d466a1e3950177f8f6f00332e03c9bbb5d92ceed44fcbd8f2c85e"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        108,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0012",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353136332046524f4d207461626c655f73716c5f746573745f323735313632204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531363320415343204c494d495420323b",
+      "output_sha256": "5cd7e73f6724dee6cc82f99c7818e4029c3b3f5a508622625251df56558e446c"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0013",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353136342046524f4d207461626c655f73716c5f746573745f323735313633204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531363420415343204c494d495420323b",
+      "output_sha256": "af41049b0c8f75b0ad79e9d69bc6dce08ab4775d8c18d142c098c23def8ba71a"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        108,
+        4,
+        24,
+        4,
+        112,
+        4,
+        32,
+        4,
+        19,
+        4,
+        108,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0014",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353136352046524f4d207461626c655f73716c5f746573745f323735313634204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531363520415343204c494d495420323b",
+      "output_sha256": "203e35f743354e523bd21b06542a74fe1d7956234cfea8bef39ecfefef082919"
+    },
+    {
+      "checks": [
+        {
+          "expected_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "observed_rows": [
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ],
+          "status": "PASS"
+        }
+      ],
+      "family": "limit_rows",
+      "functional_success": true,
+      "generated_action_count": 21,
+      "generated_actions": [
+        35,
+        4,
+        110,
+        4,
+        24,
+        4,
+        114,
+        4,
+        32,
+        4,
+        19,
+        4,
+        110,
+        4,
+        18,
+        4,
+        30,
+        4,
+        12,
+        15,
+        2
+      ],
+      "id": "sql-test-limit_rows-0015",
+      "output_hex": "53454c45435420636f6c756d6e5f73716c5f746573745f3237353136362046524f4d207461626c655f73716c5f746573745f323735313635204f5244455220425920636f6c756d6e5f73716c5f746573745f32373531363620415343204c494d495420323b",
+      "output_sha256": "b08920dbf679fb65b3293c85455b4f346d2e5e47563b504c65ad0b9529ebcac2"
+    }
+  ],
+  "seed": 10152,
+  "split": "test",
+  "status": "PASS",
+  "teacher_at_inference": false,
+  "templates_retrieval_stored_answers_or_output_rewrite": false,
+  "test_accessed": true
+}

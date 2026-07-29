@@ -1,0 +1,192 @@
+{
+  "format": "layercake-generic-domain-authoring-config/1",
+  "domain_id": "regex",
+  "description": "Regular-expression generation checked behaviorally against required full matches and required rejections on held-out literals.",
+  "data_seed": 6150,
+  "rows_per_family": {
+    "train": 128,
+    "validation": 16,
+    "test": 16
+  },
+  "families": [
+    {
+      "id": "exact_literal",
+      "prompt_templates": [
+        "Return one regular expression only. Match exactly the literal {literal}.",
+        "Write regex only: accept the complete string {literal} and reject extra characters."
+      ],
+      "response_template": "^{literal}$",
+      "copy_slots": [
+        "literal"
+      ],
+      "evaluation": {
+        "kind": "regex_fullmatch",
+        "must_match": [
+          "{literal}"
+        ],
+        "must_not_match": [
+          "x{literal}",
+          "{literal}x",
+          "unrelated"
+        ]
+      }
+    },
+    {
+      "id": "starts_with",
+      "prompt_templates": [
+        "Return regex only. Match strings that start with the exact literal {literal}.",
+        "Write one regular expression only: require prefix {literal} and allow any suffix."
+      ],
+      "response_template": "^{literal}.*$",
+      "copy_slots": [
+        "literal"
+      ],
+      "evaluation": {
+        "kind": "regex_fullmatch",
+        "must_match": [
+          "{literal}",
+          "{literal}tail"
+        ],
+        "must_not_match": [
+          "x{literal}",
+          "other"
+        ]
+      }
+    },
+    {
+      "id": "ends_with",
+      "prompt_templates": [
+        "Return regex only. Match strings that end with the exact literal {literal}.",
+        "Write one regular expression only: allow any prefix but require suffix {literal}."
+      ],
+      "response_template": "^.*{literal}$",
+      "copy_slots": [
+        "literal"
+      ],
+      "evaluation": {
+        "kind": "regex_fullmatch",
+        "must_match": [
+          "{literal}",
+          "head{literal}"
+        ],
+        "must_not_match": [
+          "{literal}x",
+          "other"
+        ]
+      }
+    },
+    {
+      "id": "contains_literal",
+      "prompt_templates": [
+        "Return regex only. Match strings containing the exact literal {literal} anywhere.",
+        "Write one regular expression only: require substring {literal} with any surrounding text."
+      ],
+      "response_template": "^.*{literal}.*$",
+      "copy_slots": [
+        "literal"
+      ],
+      "evaluation": {
+        "kind": "regex_fullmatch",
+        "must_match": [
+          "{literal}",
+          "head{literal}tail"
+        ],
+        "must_not_match": [
+          "unrelated",
+          "different"
+        ]
+      }
+    },
+    {
+      "id": "either_literal",
+      "prompt_templates": [
+        "Return regex only. Match exactly either {left} or {right}.",
+        "Write one anchored regular expression only: accept complete literal {left} or complete literal {right}."
+      ],
+      "response_template": "^(?:{left}|{right})$",
+      "copy_slots": [
+        "left",
+        "right"
+      ],
+      "evaluation": {
+        "kind": "regex_fullmatch",
+        "must_match": [
+          "{left}",
+          "{right}"
+        ],
+        "must_not_match": [
+          "{left}{right}",
+          "other"
+        ]
+      }
+    },
+    {
+      "id": "literal_then_digits",
+      "prompt_templates": [
+        "Return regex only. Match the exact prefix {literal} followed by one or more decimal digits.",
+        "Write one anchored regular expression only: require {literal} first and digits afterward."
+      ],
+      "response_template": "^{literal}\\d+$",
+      "copy_slots": [
+        "literal"
+      ],
+      "evaluation": {
+        "kind": "regex_fullmatch",
+        "must_match": [
+          "{literal}7",
+          "{literal}123"
+        ],
+        "must_not_match": [
+          "{literal}",
+          "{literal}x",
+          "7{literal}"
+        ]
+      }
+    },
+    {
+      "id": "digits_then_literal",
+      "prompt_templates": [
+        "Return regex only. Match one or more decimal digits followed by the exact suffix {literal}.",
+        "Write one anchored regular expression only: require digits first and then {literal}."
+      ],
+      "response_template": "^\\d+{literal}$",
+      "copy_slots": [
+        "literal"
+      ],
+      "evaluation": {
+        "kind": "regex_fullmatch",
+        "must_match": [
+          "7{literal}",
+          "123{literal}"
+        ],
+        "must_not_match": [
+          "{literal}",
+          "x{literal}",
+          "{literal}7"
+        ]
+      }
+    },
+    {
+      "id": "literal_twice",
+      "prompt_templates": [
+        "Return regex only. Match exactly two consecutive copies of the literal {literal}.",
+        "Write one anchored regular expression only: require {literal} repeated exactly twice."
+      ],
+      "response_template": "^(?:{literal}){{2}}$",
+      "copy_slots": [
+        "literal"
+      ],
+      "evaluation": {
+        "kind": "regex_fullmatch",
+        "must_match": [
+          "{literal}{literal}"
+        ],
+        "must_not_match": [
+          "{literal}",
+          "{literal}{literal}{literal}",
+          "other"
+        ]
+      }
+    }
+  ]
+}

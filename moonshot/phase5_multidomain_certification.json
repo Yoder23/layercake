@@ -1,0 +1,60 @@
+{
+  "format": "layercake-phase5-multidomain-certification-protocol/1",
+  "status": "PREREGISTERED_BEFORE_PACKAGE_BUILD_AND_CERTIFICATION",
+  "parent_contract": {
+    "path": "moonshot/phase5_generic_multidomain_preregistration.json",
+    "sha256": "49ae047d9a2a11e066404cd2944b43590d08ce20971928996b77e3c62b747597"
+  },
+  "framework_commit": "b1304d0c9de54924956c6006e44a2263a2a2ec44",
+  "selection_record": {
+    "path": "results/moonshot/phase5/seed_selection.json",
+    "sha256": "eeb7fe8639ea354dce76805f28b2fdacbb4d909aab9d3ed94aa09c52dd15cd4f",
+    "test_accessed": false
+  },
+  "publisher_public_key": "moonshot/phase5-multidomain-publisher.public.pem",
+  "minimum_test_successes": 122,
+  "domains": {
+    "sql": {
+      "artifact": {
+        "path": "artifacts/moonshot/phase5/candidates/sql-seed10152.pt",
+        "sha256": "e5cb83ed5059ba78235f6725b7017cf7be370d69421791bc2725b3db0deafab6",
+        "payload_hash": "687432ae8905d832a97311e11e9202d695ae9e2da64dac369c07d82dc94c1699"
+      },
+      "test_evidence": {
+        "path": "results/moonshot/phase5/sql_test.json",
+        "sha256": "895753315ab7d67ad69c04e337c2c470a13169de785ed4028688819212fd8326"
+      },
+      "dataset": {
+        "path": "data/moonshot/phase5/sql_v1.jsonl",
+        "sha256": "269bd669233cbd92cafb35f53ed41c05eb33bf14377eeece883bbf5a47c31355"
+      },
+      "package_path": "artifacts/moonshot/phase5/release/sql-token-plan-v1.0.0.cake"
+    },
+    "regex": {
+      "artifact": {
+        "path": "artifacts/moonshot/phase5/candidates/regex-seed10151.pt",
+        "sha256": "2ad24b0284da530e97ca267b0b690ab7542ef8540d26db7a16062b3942ce84f0",
+        "payload_hash": "97dcf26835f20633916a3b0301f90aaaeb761cc2bf3e9a0144f314e3f89694cf"
+      },
+      "test_evidence": {
+        "path": "results/moonshot/phase5/regex_test.json",
+        "sha256": "5cf1ee437a419c79460ccacb1ee121ba8106ac45a855d572a8b7576e93576fb5"
+      },
+      "dataset": {
+        "path": "data/moonshot/phase5/regex_v1.jsonl",
+        "sha256": "e662c1e919b4ba278b76ea13b2ee4c3d71d64adffc87c679233eaa1646f7900b"
+      },
+      "package_path": "artifacts/moonshot/phase5/release/regex-token-plan-v1.0.0.cake"
+    }
+  },
+  "receiver_matrix": [
+    "phase2-core-seed9824 CPU",
+    "phase2-core-seed9825 CPU",
+    "phase2-core-seed9826 CUDA"
+  ],
+  "receiver_training_examples": 0,
+  "receiver_calibration_runs": 0,
+  "manual_selection_only": true,
+  "routing_fusion_or_composition_claimed": false,
+  "private_signing_key_may_be_written_or_committed": false
+}
