@@ -1,0 +1,440 @@
+{
+  "evidence_sha256": "93c30932d4b21d187071dd973a0d77cf3c206dc141f4562abccd044e8f62d529",
+  "format": "layercake-phase8-adversarial-falsification/1",
+  "records": [
+    {
+      "attack_id": "adv-001-stale-self-hash",
+      "category": "raw_evidence_and_certificate_mutation",
+      "evidence": "forged metric invalidated canonical document hash",
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-002-timing-recompute",
+      "category": "raw_evidence_and_certificate_mutation",
+      "evidence": "forged bytes/second fails raw bytes/wall-time recomputation",
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-003-payload-tamper",
+      "category": "package_payload_tampering",
+      "evidence": "PackageError: tensor payload hash mismatch",
+      "outcome": "DETECTED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-004-wrong-trust-key",
+      "category": "signature_and_trust_confusion",
+      "evidence": "PackageError: invalid package signature",
+      "outcome": "DETECTED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-005-path-traversal",
+      "category": "archive_structure_and_path_traversal",
+      "evidence": "PackageError: package contains missing or unsupported entries",
+      "outcome": "DETECTED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-006-duplicate-member",
+      "category": "archive_structure_and_path_traversal",
+      "evidence": "PackageError: duplicate or case-ambiguous archive entries",
+      "outcome": "DETECTED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-007-abi-mismatch",
+      "category": "abi_and_profile_mismatch",
+      "evidence": "InstallationError: cake ABI version/hash is incompatible with this host",
+      "outcome": "DETECTED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-008-registry-corruption",
+      "category": "registry_blob_corruption",
+      "evidence": "InstallationError: installed content-addressed blob is missing or corrupt",
+      "outcome": "DETECTED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-009-profile-mismatch",
+      "category": "abi_and_profile_mismatch",
+      "evidence": {
+        "eligible": [],
+        "rejected": [
+          {
+            "cake_id": "python-token-plan",
+            "reason": "profile_archive_hash_mismatch"
+          }
+        ]
+      },
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-010-router-injection",
+      "category": "router_control_injection",
+      "evidence": "adversarial_control_phrase",
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-011-inactive-cake",
+      "category": "inactive_cake_execution",
+      "evidence": {
+        "python-token-plan": {
+          "decode_step_calls": 0,
+          "module_load_calls": 0,
+          "prefill_calls": 0
+        },
+        "regex-token-plan": {
+          "decode_step_calls": 0,
+          "module_load_calls": 0,
+          "prefill_calls": 0
+        },
+        "sql-token-plan": {
+          "decode_step_calls": 9,
+          "module_load_calls": 1,
+          "prefill_calls": 1
+        }
+      },
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-012-unsigned-auto",
+      "category": "unsigned_or_permissioned_auto_activation",
+      "evidence": {
+        "eligible": [],
+        "rejected": [
+          {
+            "cake_id": "python-token-plan",
+            "reason": "untrusted_cake"
+          }
+        ]
+      },
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-013-permission-auto",
+      "category": "unsigned_or_permissioned_auto_activation",
+      "evidence": {
+        "eligible": [],
+        "rejected": [
+          {
+            "cake_id": "python-token-plan",
+            "reason": "permissions_denied:network"
+          }
+        ]
+      },
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-014-content-address-traversal",
+      "category": "archive_structure_and_path_traversal",
+      "evidence": "RegistryError: invalid content address",
+      "outcome": "DETECTED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-015-no-training-api",
+      "category": "receiver_training_or_calibration",
+      "evidence": "(self, source: 'str | Path', *, trusted_local: 'bool' = False) -> 'dict[str, Any]'",
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-016-core-immutability",
+      "category": "core_or_package_mutation",
+      "evidence": [
+        {
+          "seed-9824": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+          "seed-9825": "81f78a2154353f0ea3c2a4ff685c3e4ffb91876328cd0075559a11bd0d1c2a01",
+          "seed-9826": "f2987c0629460f2050489dda07e3d660e80f48d3c19f1574d51477ce8bdcbf1d"
+        },
+        {
+          "seed-9824": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+          "seed-9825": "81f78a2154353f0ea3c2a4ff685c3e4ffb91876328cd0075559a11bd0d1c2a01",
+          "seed-9826": "f2987c0629460f2050489dda07e3d660e80f48d3c19f1574d51477ce8bdcbf1d"
+        },
+        {
+          "seed-9824": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+          "seed-9825": "81f78a2154353f0ea3c2a4ff685c3e4ffb91876328cd0075559a11bd0d1c2a01",
+          "seed-9826": "f2987c0629460f2050489dda07e3d660e80f48d3c19f1574d51477ce8bdcbf1d"
+        }
+      ],
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-017-package-immutability",
+      "category": "core_or_package_mutation",
+      "evidence": {
+        "python": "0585c79bfbea16b1c4165bf0030ba6985b8a8cdeab529cd7afe3f9c76c564ef7",
+        "regex": "c336a552415b2d6161eb6696338086f89c3c3b6e25949e6cf0a94373e9690f15",
+        "sql": "24efdb68885581318bee3a0b7c3cac0b0fe0b75eefa90070c601384a8bf5e105"
+      },
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-018-no-runtime-backdoor",
+      "category": "hidden_retrieval_templates_or_stored_answers",
+      "evidence": {
+        "committed_private_keys": [],
+        "executable_package_members": [],
+        "format": "layercake-phase8-source-security-scan/1",
+        "hard_coded_promoted_output_hashes": [],
+        "heldout_prompt_literals_in_runtime": [],
+        "runtime_files_scanned": [
+          "layercake/models/direct_cake_host.py",
+          "layercake/routing/direct_orchestrator.py",
+          "layercake/routing/catalog_router.py",
+          "layercake/cake/package.py",
+          "layercake/cake/installer.py"
+        ],
+        "status": "PASS",
+        "tracked_files_scanned": 2431,
+        "unresolved_runtime_backdoors": []
+      },
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-019-no-hardcoded-output",
+      "category": "hard_coded_benchmark_outputs_or_verifier_values",
+      "evidence": [],
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-020-data-isolation",
+      "category": "data_split_overlap_or_prompt_duplication",
+      "evidence": {
+        "all_hashes_match": true,
+        "dataset_duplicate_prompt_count": 0,
+        "duplicate_performance_prompt_count": 0,
+        "files": {
+          "performance_parent": {
+            "bytes": 303499,
+            "path": "results/moonshot/phase6/raw_runs/mixed_cpu_benchmark.json",
+            "sha256": "5aac50d5259c4e8d43fddf57d9e8771ce890682b84c992d636c2f73b9efbb303"
+          },
+          "phase2_quality": {
+            "bytes": 4223,
+            "path": "results/moonshot/phase2_recertification/raw_runs/quality_seeds.json",
+            "sha256": "cfea5e15b55be36a24cc957ea54631e1c06ceda92fbe184934e2fc93fd006a93"
+          },
+          "python": {
+            "bytes": 477065,
+            "path": "data/moonshot/phase4/python_functional_v1.jsonl",
+            "sha256": "9f8bbaee5794b3aab388d2e4f5269c641648e98af919261463f5396128f8a8c3"
+          },
+          "regex": {
+            "bytes": 739674,
+            "path": "data/moonshot/phase5/regex_v1.jsonl",
+            "sha256": "e662c1e919b4ba278b76ea13b2ee4c3d71d64adffc87c679233eaa1646f7900b"
+          },
+          "routing_suite": {
+            "bytes": 676143,
+            "path": "results/moonshot/phase6/final_routing_suite.jsonl",
+            "sha256": "2b71009f9f47724796fc52a1e5eaf49ef1e03d8122e9a2c8f14b3f29530e8971"
+          },
+          "sql": {
+            "bytes": 996170,
+            "path": "data/moonshot/phase5/sql_v1.jsonl",
+            "sha256": "269bd669233cbd92cafb35f53ed41c05eb33bf14377eeece883bbf5a47c31355"
+          }
+        },
+        "format": "layercake-phase8-data-hash-manifest/1",
+        "split_prompt_overlap_count": 0,
+        "status": "PASS"
+      },
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-021-failed-seed-omission",
+      "category": "failed_seed_omission",
+      "evidence": {
+        "phase2": [
+          9824,
+          9825,
+          9826
+        ],
+        "phase4_unique_training_seeds": 3,
+        "phase5_selected_seeds": {
+          "regex": 10151,
+          "sql": 10152
+        },
+        "phase5_unique_training_seeds": 3
+      },
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-022-baseline-residency",
+      "category": "baseline_runtime_or_gpu_residency",
+      "evidence": {
+        "models": [
+          {
+            "context_length": 4096,
+            "details": {
+              "families": [
+                "qwen2"
+              ],
+              "family": "qwen2",
+              "format": "gguf",
+              "parameter_size": "494.03M",
+              "parent_model": "",
+              "quantization_level": "Q4_K_M"
+            },
+            "digest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+            "expires_at": "2026-07-29T10:15:19.4235174-04:00",
+            "model": "qwen2.5:0.5b",
+            "name": "qwen2.5:0.5b",
+            "size": 481810185,
+            "size_vram": 481810185
+          }
+        ]
+      },
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-023-timing-accounting",
+      "category": "timing_and_token_accounting",
+      "evidence": "all 480 system observations recompute",
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-024-authoritative-tokens",
+      "category": "timing_and_token_accounting",
+      "evidence": "all 240 transformer observations have eval_count",
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-025-memory-scope",
+      "category": "incompatible_memory_accounting",
+      "evidence": {
+        "layercake_cpu_loaded_tensor_bytes_by_seed": [
+          27012980,
+          27012980,
+          27012980
+        ],
+        "layercake_cpu_process_rss_samples_bytes": [
+          647667712,
+          649805824,
+          651399168
+        ],
+        "layercake_cuda_loaded_tensor_bytes_by_seed": [
+          27012980,
+          27012980,
+          27012980
+        ],
+        "layercake_cuda_process_rss_samples_bytes": [
+          959524864,
+          956059648,
+          960589824
+        ],
+        "layercake_gpu_peak_allocated_bytes": 46142464,
+        "layercake_gpu_peak_reserved_bytes": 60817408,
+        "process_rss_bytes": 960598016,
+        "qwen_gpu_vram_bytes": 481810185
+      },
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-026-private-key-scan",
+      "category": "private_key_or_secret_leakage",
+      "evidence": [],
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-027-one-lineage",
+      "category": "one_lineage_and_stale_artifacts",
+      "evidence": "sealed tags plus exact checkpoint/package/ABI lineage",
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-028-uninstall-reinstall",
+      "category": "uninstall_reinstall_identity",
+      "evidence": [
+        10801,
+        10802,
+        10803
+      ],
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-029-cross-host",
+      "category": "cross_host_semantic_retention",
+      "evidence": [
+        {
+          "python": "8d415208cc62c80c309255dd800867ee2a72438e019f5c14ec65d62e221a06cd",
+          "regex": "7ce8034193906fbeb645e773a08f9e22e5e8a953acb73ac036837001cd186062",
+          "sql": "eeec31714274cd74cac44ebfc431900be6f2dba5e608ec82136003c4d8df929f"
+        },
+        {
+          "python": "8d415208cc62c80c309255dd800867ee2a72438e019f5c14ec65d62e221a06cd",
+          "regex": "7ce8034193906fbeb645e773a08f9e22e5e8a953acb73ac036837001cd186062",
+          "sql": "eeec31714274cd74cac44ebfc431900be6f2dba5e608ec82136003c4d8df929f"
+        },
+        {
+          "python": "8d415208cc62c80c309255dd800867ee2a72438e019f5c14ec65d62e221a06cd",
+          "regex": "7ce8034193906fbeb645e773a08f9e22e5e8a953acb73ac036837001cd186062",
+          "sql": "eeec31714274cd74cac44ebfc431900be6f2dba5e608ec82136003c4d8df929f"
+        }
+      ],
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-030-dynamic-catalog",
+      "category": "dynamic_catalog_discovery",
+      "evidence": {
+        "largest_size": 500,
+        "lookup_milliseconds_p50": 0.22,
+        "lookup_milliseconds_p95": 0.3064,
+        "lookup_milliseconds_p99": 0.4404,
+        "lookup_observations": 600,
+        "management_only_descriptors": 497,
+        "real_promoted_capabilities": 3
+      },
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-031-claim-boundaries",
+      "category": "claim_boundary_overreach",
+      "evidence": "training/mobile/energy/latent-fusion scopes remain excluded",
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    },
+    {
+      "attack_id": "adv-032-full-domain-identity",
+      "category": "cross_host_semantic_retention",
+      "evidence": "384/384 CPU/GPU outputs match",
+      "outcome": "INVARIANT_RETAINED",
+      "resolved": true
+    }
+  ],
+  "status": "PASS",
+  "unresolved_by_severity": {
+    "critical": 0,
+    "high": 0,
+    "low": 0,
+    "medium": 0
+  },
+  "unresolved_findings": []
+}
