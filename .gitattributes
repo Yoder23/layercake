@@ -1,4 +1,13 @@
 * text=auto eol=lf
+# Historical evidence and generated research corpora were hashed on Windows
+# with CRLF bytes. Preserve those exact byte identities in fresh worktrees
+# while keeping source and contracts platform-invariant LF.
+data/moonshot/**/*.json text eol=crlf
+data/moonshot/**/*.jsonl text eol=crlf
+data/moonshot/**/*.txt text eol=crlf
+results/**/*.json text eol=crlf
+results/**/*.jsonl text eol=crlf
+results/**/*.md text eol=crlf
 *.safetensors -text
 *.pt -text
 *.onnx -text
