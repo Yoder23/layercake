@@ -1,12 +1,12 @@
 {
-  "format": "layercake-phase8-independent-verification-preregistration/1",
+  "format": "layercake-phase8-independent-verification-preregistration/2",
   "status": "LOCKED",
   "phase": 8,
   "objective": "Independently and adversarially reproduce the complete sealed LayerCake campaign from a detached clean worktree, attempt to falsify every promoted product claim, and issue the final release only if all required gates survive.",
   "accepted_parent": {
-    "tag": "layercake-moonshot-phase7",
-    "annotated_tag_object": "718b592cf541d8a89e376dc91ac4aa85ce7d1db2",
-    "tag_commit": "62aa899d1f3b50eec067f3621ba8390271837c8b",
+    "tag": "layercake-moonshot-phase8-repair-base-v3",
+    "annotated_tag_object": "876038a9bcd2e4203bff8934106498f898c872cf",
+    "tag_commit": "4c25a01ee4230ec3237e2c6eb3c11dffe4f8ac00",
     "release_commit": "09024ea190eebe5f2a830b06ff81f8a1ad23e96c",
     "handoff": "results/moonshot/phase7/handoff.json",
     "handoff_sha256": "4a0891c817ffe432b54ebc590d10d9b3b7ebc007233681ea8e59ecffad0fa3da",
@@ -20,22 +20,147 @@
     "abi_changes_allowed": false,
     "router_or_runtime_changes_allowed": false,
     "threshold_changes_after_lock_allowed": false,
-    "historical_evidence_may_be_overwritten_without_archive": false
+    "historical_evidence_may_be_overwritten_without_archive": false,
+    "repair_base_changes": [
+      "replace the nonexistent setuptools.backends.legacy build backend with setuptools.build_meta:__legacy__",
+      "lock deterministic LF source/contract checkout, CRLF historical-evidence checkout, and binary artifact attributes"
+    ]
   },
   "clean_room": {
     "checkout_kind": "detached git worktree",
-    "revision": "layercake-moonshot-phase7",
-    "required_head": "62aa899d1f3b50eec067f3621ba8390271837c8b",
+    "revision": "layercake-moonshot-phase8-repair-base-v3",
+    "required_head": "4c25a01ee4230ec3237e2c6eb3c11dffe4f8ac00",
     "required_worktree_state": "clean",
     "dependency_resolution": [
       "python -m pip check",
-      "python -m pip install --dry-run --no-deps ."
+      "python -m pip install --dry-run --no-deps --no-build-isolation ."
     ],
     "required_commands": [
       "python -m pytest -q",
       "python -m layercake.moonshot_campaign verify-all"
     ],
     "minimum_clean_checkout_tests": 597,
+    "external_release_asset_cache": [
+      {
+        "id": "seed-9824",
+        "kind": "promoted_checkpoint",
+        "path": "artifacts/moonshot/phase2_shallow_sparse_pretrained/student2400-seed-9824/model.safetensors",
+        "sha256": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
+        "bytes": 246627944
+      },
+      {
+        "id": "seed-9825",
+        "kind": "promoted_checkpoint",
+        "path": "artifacts/moonshot/phase2_shallow_sparse_pretrained/student2400-seed-9825/model.safetensors",
+        "sha256": "81f78a2154353f0ea3c2a4ff685c3e4ffb91876328cd0075559a11bd0d1c2a01",
+        "bytes": 246627944
+      },
+      {
+        "id": "seed-9826",
+        "kind": "promoted_checkpoint",
+        "path": "artifacts/moonshot/phase2_shallow_sparse_pretrained/student2400-seed-9826/model.safetensors",
+        "sha256": "f2987c0629460f2050489dda07e3d660e80f48d3c19f1574d51477ce8bdcbf1d",
+        "bytes": 246627944
+      },
+      {
+        "id": "northstar-transformer-token-accounting",
+        "kind": "historical_control_test_fixture",
+        "path": "runs_experiment/northstar_v22_fair_corrected_bpe/training_metrics.json",
+        "sha256": "1d049925188959c301953c75c5b982e8aa4b10908168af2fd9b0292efb23f7f9",
+        "bytes": 63750
+      },
+      {
+        "id": "northstar-equal-size-control-certificate",
+        "kind": "historical_control_test_fixture",
+        "path": "results/breakthrough_equal/measured_equal_size_dominance_transprior_certificate.json",
+        "sha256": "fa11733dd7ab7ac27b263def2364446f481b078a0e7b55ce55c68c2a3dc26ebb",
+        "bytes": 2925
+      },
+      {
+        "id": "northstar-bpe-equivalence-tokenizer",
+        "kind": "historical_control_test_fixture",
+        "path": "artifacts/final/medium-transformers/seed-9801/tokenizer.json",
+        "sha256": "398261a6b71f19c9633c53948c712445182c99d41eaab18768610e1b6cac7712",
+        "bytes": 4857
+      },
+      {
+        "id": "phase2-english-substrate-200m",
+        "kind": "sealed_component_external_data",
+        "path": "data/moonshot/phase2/english_substrate_200m.bin",
+        "sha256": "a1fa5fbcd724016a398121c5aed8371d6784a564ce46ba4f8016cbcbaa1ff1d9",
+        "bytes": 200000000
+      },
+      {
+        "id": "v2-python-manifest",
+        "kind": "sealed_component_external_data",
+        "path": "data/moonshot/v2/python/manifest.json",
+        "sha256": "19c7124e1fd4af3789146d166e5d65a5a9f0876d24e86d44f3fef5ecd20eb17d",
+        "bytes": 51475
+      },
+      {
+        "id": "v2-python-test",
+        "kind": "sealed_component_external_data",
+        "path": "data/moonshot/v2/python/python_test.bin",
+        "sha256": "924c401c5f3ff38ddeb918bd7078f3e878a16b5cc4c64873566fd079131a2b91",
+        "bytes": 7511343
+      },
+      {
+        "id": "v2-python-train",
+        "kind": "sealed_component_external_data",
+        "path": "data/moonshot/v2/python/python_train.bin",
+        "sha256": "52927315379dfd689f7dd128845699e3bebcaac729548f480f5739a8931ecbd2",
+        "bytes": 94960275
+      },
+      {
+        "id": "v2-python-validation",
+        "kind": "sealed_component_external_data",
+        "path": "data/moonshot/v2/python/python_validation.bin",
+        "sha256": "009d445303a1917312d9f212a687def73a8d9895c1f646ca129250eb797a3b48",
+        "bytes": 2213660
+      },
+      {
+        "id": "v2-wikitext-architecture-selection",
+        "kind": "sealed_component_external_data",
+        "path": "data/moonshot/v2/wikitext103/architecture_selection.bin",
+        "sha256": "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93",
+        "bytes": 572418
+      },
+      {
+        "id": "v2-wikitext-manifest",
+        "kind": "sealed_component_external_data",
+        "path": "data/moonshot/v2/wikitext103/manifest.json",
+        "sha256": "e49e194580e95cf08f616b296ed6372d83c7af790cba8be7770b82d188a431f3",
+        "bytes": 3481
+      },
+      {
+        "id": "v2-wikitext-test",
+        "kind": "sealed_component_external_data",
+        "path": "data/moonshot/v2/wikitext103/test.bin",
+        "sha256": "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388",
+        "bytes": 1282697
+      },
+      {
+        "id": "v2-wikitext-train-development",
+        "kind": "sealed_component_external_data",
+        "path": "data/moonshot/v2/wikitext103/train_development.bin",
+        "sha256": "ceca1962b8aab7bad3ba4dc47739217e3813a2cf16b546df47c81147bd200de3",
+        "bytes": 10000000
+      },
+      {
+        "id": "v2-wikitext-train-medium",
+        "kind": "sealed_component_external_data",
+        "path": "data/moonshot/v2/wikitext103/train_medium.bin",
+        "sha256": "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6",
+        "bytes": 100000000
+      },
+      {
+        "id": "v2-wikitext-validation",
+        "kind": "sealed_component_external_data",
+        "path": "data/moonshot/v2/wikitext103/validation.bin",
+        "sha256": "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10",
+        "bytes": 567414
+      }
+    ],
     "methodological_independence": "Phase 8 uses a separately implemented raw-evidence verifier and fresh detached-worktree executions; it does not claim an external organization or independent human laboratory."
   },
   "fresh_reproduction": {
@@ -158,6 +283,32 @@
     "existing_release_certificate_sha256": "ec4d074a57401f126f6140d0938502967b022b5081ff118ebe72b03ce8b4710e",
     "disposition": "Preserve the pre-gated NOT_YET_PROVEN certificate under a content-addressed history directory before writing the gated final release."
   },
+  "preserved_failed_attempts": [
+    {
+      "attempt_id": "attempt1_preflight_failure",
+      "path": "results/moonshot/phase8/history/attempt1_preflight_failure",
+      "benchmark_started": false,
+      "disposition": "Historical negative evidence; never promoted."
+    },
+    {
+      "attempt_id": "attempt2_line_ending_preflight_failure",
+      "path": "results/moonshot/phase8/history/attempt2_line_ending_preflight_failure",
+      "benchmark_started": false,
+      "disposition": "Historical negative evidence; never promoted."
+    },
+    {
+      "attempt_id": "attempt3_partial_attribute_preflight_failure",
+      "path": "results/moonshot/phase8/history/attempt3_partial_attribute_preflight_failure",
+      "benchmark_started": false,
+      "disposition": "Historical negative evidence; never promoted."
+    },
+    {
+      "attempt_id": "attempt4_undeclared_component_assets_preflight_failure",
+      "path": "results/moonshot/phase8/history/attempt4_undeclared_component_assets_preflight_failure",
+      "benchmark_started": false,
+      "disposition": "Historical negative evidence; never promoted."
+    }
+  ],
   "release": {
     "phase_evidence_directory": "results/moonshot/phase8",
     "final_bundle_directory": "results/moonshot/final",

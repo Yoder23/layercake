@@ -30,7 +30,7 @@ CONTRACT = Path(
     "moonshot/phase8_independent_verification_preregistration.json"
 )
 CONTRACT_SHA256 = (
-    "5426d2ff19a7f40b8fd3588567796abe5199e7da721add3486584d9929c72830"
+    "fb06fe4fa3952ddbaa34287943e9cf7dc1389036e9f5aeda3e0aba2a14e43ace"
 )
 FRAMEWORK = Path("results/moonshot/phase8/framework_freeze.json")
 SOURCE_AUDIT = Path("results/moonshot/phase8/source_audit.json")
@@ -75,8 +75,8 @@ LEGACY_CERTIFICATE_SHA256 = (
     "ec4d074a57401f126f6140d0938502967b022b5081ff118ebe72b03ce8b4710e"
 )
 SEEDS = (10801, 10802, 10803)
-PARENT_TAG = "layercake-moonshot-phase7"
-PARENT_COMMIT = "62aa899d1f3b50eec067f3621ba8390271837c8b"
+PARENT_TAG = "layercake-moonshot-phase8-repair-base-v3"
+PARENT_COMMIT = "4c25a01ee4230ec3237e2c6eb3c11dffe4f8ac00"
 QWEN_DIGEST = (
     "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67"
 )
@@ -127,6 +127,75 @@ CHECKPOINTS = {
             "student2400-seed-9826/model.safetensors"
         ),
         "f2987c0629460f2050489dda07e3d660e80f48d3c19f1574d51477ce8bdcbf1d",
+    ),
+}
+EXTERNAL_FIXTURES = {
+    "northstar-transformer-token-accounting": (
+        Path(
+            "runs_experiment/northstar_v22_fair_corrected_bpe/"
+            "training_metrics.json"
+        ),
+        "1d049925188959c301953c75c5b982e8aa4b10908168af2fd9b0292efb23f7f9",
+    ),
+    "northstar-equal-size-control-certificate": (
+        Path(
+            "results/breakthrough_equal/"
+            "measured_equal_size_dominance_transprior_certificate.json"
+        ),
+        "fa11733dd7ab7ac27b263def2364446f481b078a0e7b55ce55c68c2a3dc26ebb",
+    ),
+    "northstar-bpe-equivalence-tokenizer": (
+        Path(
+            "artifacts/final/medium-transformers/seed-9801/"
+            "tokenizer.json"
+        ),
+        "398261a6b71f19c9633c53948c712445182c99d41eaab18768610e1b6cac7712",
+    ),
+}
+EXTERNAL_COMPONENT_DATA = {
+    "phase2-english-substrate-200m": (
+        Path("data/moonshot/phase2/english_substrate_200m.bin"),
+        "a1fa5fbcd724016a398121c5aed8371d6784a564ce46ba4f8016cbcbaa1ff1d9",
+    ),
+    "v2-python-manifest": (
+        Path("data/moonshot/v2/python/manifest.json"),
+        "19c7124e1fd4af3789146d166e5d65a5a9f0876d24e86d44f3fef5ecd20eb17d",
+    ),
+    "v2-python-test": (
+        Path("data/moonshot/v2/python/python_test.bin"),
+        "924c401c5f3ff38ddeb918bd7078f3e878a16b5cc4c64873566fd079131a2b91",
+    ),
+    "v2-python-train": (
+        Path("data/moonshot/v2/python/python_train.bin"),
+        "52927315379dfd689f7dd128845699e3bebcaac729548f480f5739a8931ecbd2",
+    ),
+    "v2-python-validation": (
+        Path("data/moonshot/v2/python/python_validation.bin"),
+        "009d445303a1917312d9f212a687def73a8d9895c1f646ca129250eb797a3b48",
+    ),
+    "v2-wikitext-architecture-selection": (
+        Path("data/moonshot/v2/wikitext103/architecture_selection.bin"),
+        "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93",
+    ),
+    "v2-wikitext-manifest": (
+        Path("data/moonshot/v2/wikitext103/manifest.json"),
+        "e49e194580e95cf08f616b296ed6372d83c7af790cba8be7770b82d188a431f3",
+    ),
+    "v2-wikitext-test": (
+        Path("data/moonshot/v2/wikitext103/test.bin"),
+        "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388",
+    ),
+    "v2-wikitext-train-development": (
+        Path("data/moonshot/v2/wikitext103/train_development.bin"),
+        "ceca1962b8aab7bad3ba4dc47739217e3813a2cf16b546df47c81147bd200de3",
+    ),
+    "v2-wikitext-train-medium": (
+        Path("data/moonshot/v2/wikitext103/train_medium.bin"),
+        "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6",
+    ),
+    "v2-wikitext-validation": (
+        Path("data/moonshot/v2/wikitext103/validation.bin"),
+        "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10",
     ),
 }
 REQUIRED_ATTACK_CATEGORIES = {
@@ -310,7 +379,7 @@ def _validate_framework(root: Path) -> dict[str, Any]:
     _validate_self_hash(audit, SOURCE_AUDIT)
     if (
         framework.get("format")
-        != "layercake-phase8-framework-freeze/1"
+        != "layercake-phase8-framework-freeze/2"
         or framework.get("status") != "FROZEN"
         or framework.get("contract_sha256") != CONTRACT_SHA256
         or framework.get("parent_tag") != PARENT_TAG
@@ -382,20 +451,35 @@ def _validate_environment(root: Path) -> dict[str, Any]:
             "detached clean-room environment did not reproduce"
         )
     assets = document.get("external_release_assets", [])
-    if len(assets) != 3:
+    expected_assets = {
+        **{
+            key: (path, digest, "promoted_checkpoint")
+            for key, (path, digest) in CHECKPOINTS.items()
+        },
+        **{
+            key: (path, digest, "historical_control_test_fixture")
+            for key, (path, digest) in EXTERNAL_FIXTURES.items()
+        },
+        **{
+            key: (path, digest, "sealed_component_external_data")
+            for key, (path, digest) in EXTERNAL_COMPONENT_DATA.items()
+        },
+    }
+    if len(assets) != len(expected_assets):
         raise Phase8EvidenceError(
-            "clean checkout lacks declared external checkpoint assets"
+            "clean checkout lacks declared external release assets"
         )
     for row in assets:
-        expected = CHECKPOINTS.get(row.get("id"))
+        expected = expected_assets.get(row.get("id"))
         if (
             expected is None
             or row.get("path") != expected[0].as_posix()
             or row.get("sha256") != expected[1]
+            or row.get("kind") != expected[2]
             or row.get("copied_and_rehashed") is not True
         ):
             raise Phase8EvidenceError(
-                "external clean-room checkpoint identity is invalid"
+                "external clean-room release asset identity is invalid"
             )
     return document
 

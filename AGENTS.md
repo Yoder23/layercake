@@ -302,8 +302,19 @@ through Phase 7 claim as untrusted until the raw evidence, artifact hashes,
 required gates, commit/tag history, and current physical executions have been
 independently recomputed.
 
-The reproduction runs from a detached clean worktree at the exact annotated
-`layercake-moonshot-phase7` tag. It must validate dependency resolution, run
+The first detached Phase 7 preflight failed before benchmarking and is
+preserved as negative evidence. It found a nonexistent packaging backend,
+platform-dependent line endings in byte-locked contracts, and three undeclared
+ignored test fixtures. The only permitted repair base changes are the corrected
+setuptools backend and deterministic Git text/binary attributes; architecture,
+runtime, ABI, models, checkpoints, cakes, router, data, and thresholds remain
+unchanged.
+
+The controlling reproduction runs from a detached clean worktree at the exact
+annotated `layercake-moonshot-phase8-repair-base-v3` tag. Its six ignored external
+assets (three promoted checkpoints and three historical-control test fixtures)
+must be copied from the local content-addressed cache and rehashed against the
+v2 preregistration. It must validate dependency resolution, run
 the complete clean-checkout test suite, run the campaign-wide verifier, and
 recheck every data, checkpoint, package, ABI, router, and runtime identity.
 Fresh execution must repeat the 100-distinct-plus-20-repeat CPU/GPU matrix,

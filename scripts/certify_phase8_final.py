@@ -38,11 +38,11 @@ if len(sys.argv) < 2 or sys.argv[1] != "cleanroom-run":
         sys.path.insert(0, str(ROOT))
 CONTRACT = ROOT / "moonshot/phase8_independent_verification_preregistration.json"
 CONTRACT_SHA256 = (
-    "5426d2ff19a7f40b8fd3588567796abe5199e7da721add3486584d9929c72830"
+    "fb06fe4fa3952ddbaa34287943e9cf7dc1389036e9f5aeda3e0aba2a14e43ace"
 )
-PARENT_TAG = "layercake-moonshot-phase7"
-PARENT_TAG_OBJECT = "718b592cf541d8a89e376dc91ac4aa85ce7d1db2"
-PARENT_COMMIT = "62aa899d1f3b50eec067f3621ba8390271837c8b"
+PARENT_TAG = "layercake-moonshot-phase8-repair-base-v3"
+PARENT_TAG_OBJECT = "876038a9bcd2e4203bff8934106498f898c872cf"
+PARENT_COMMIT = "4c25a01ee4230ec3237e2c6eb3c11dffe4f8ac00"
 PARENT_RELEASE_COMMIT = "09024ea190eebe5f2a830b06ff81f8a1ad23e96c"
 ABI_VERSION = "lc-direct-neural-decoder/1"
 ABI_HASH = (
@@ -53,7 +53,7 @@ QWEN_DIGEST = (
     "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67"
 )
 SEEDS = (10801, 10802, 10803)
-CLEAN_ROOT = Path(r"C:\tmp\layercake_phase8_cleanroom_62aa899")
+CLEAN_ROOT = Path(r"C:\tmp\layercake_phase8_cleanroom_4c25a01")
 PROFILES_RELATIVE = Path("moonshot/phase6_router_profiles.json")
 PACKAGES_RELATIVE = {
     "python": Path(
@@ -102,6 +102,100 @@ CHECKPOINT_HASHES = {
     "seed-9824": "9e0e6b9add32b4c460f7b570a32584f380e59bf6d631e313ff813069d24e09e1",
     "seed-9825": "81f78a2154353f0ea3c2a4ff685c3e4ffb91876328cd0075559a11bd0d1c2a01",
     "seed-9826": "f2987c0629460f2050489dda07e3d660e80f48d3c19f1574d51477ce8bdcbf1d",
+}
+EXTERNAL_FIXTURES_RELATIVE = {
+    "northstar-transformer-token-accounting": Path(
+        "runs_experiment/northstar_v22_fair_corrected_bpe/"
+        "training_metrics.json"
+    ),
+    "northstar-equal-size-control-certificate": Path(
+        "results/breakthrough_equal/"
+        "measured_equal_size_dominance_transprior_certificate.json"
+    ),
+    "northstar-bpe-equivalence-tokenizer": Path(
+        "artifacts/final/medium-transformers/seed-9801/tokenizer.json"
+    ),
+}
+EXTERNAL_FIXTURE_HASHES = {
+    "northstar-transformer-token-accounting": (
+        "1d049925188959c301953c75c5b982e8aa4b10908168af2fd9b0292efb23f7f9"
+    ),
+    "northstar-equal-size-control-certificate": (
+        "fa11733dd7ab7ac27b263def2364446f481b078a0e7b55ce55c68c2a3dc26ebb"
+    ),
+    "northstar-bpe-equivalence-tokenizer": (
+        "398261a6b71f19c9633c53948c712445182c99d41eaab18768610e1b6cac7712"
+    ),
+}
+EXTERNAL_COMPONENT_DATA_RELATIVE = {
+    "phase2-english-substrate-200m": Path(
+        "data/moonshot/phase2/english_substrate_200m.bin"
+    ),
+    "v2-python-manifest": Path(
+        "data/moonshot/v2/python/manifest.json"
+    ),
+    "v2-python-test": Path(
+        "data/moonshot/v2/python/python_test.bin"
+    ),
+    "v2-python-train": Path(
+        "data/moonshot/v2/python/python_train.bin"
+    ),
+    "v2-python-validation": Path(
+        "data/moonshot/v2/python/python_validation.bin"
+    ),
+    "v2-wikitext-architecture-selection": Path(
+        "data/moonshot/v2/wikitext103/architecture_selection.bin"
+    ),
+    "v2-wikitext-manifest": Path(
+        "data/moonshot/v2/wikitext103/manifest.json"
+    ),
+    "v2-wikitext-test": Path(
+        "data/moonshot/v2/wikitext103/test.bin"
+    ),
+    "v2-wikitext-train-development": Path(
+        "data/moonshot/v2/wikitext103/train_development.bin"
+    ),
+    "v2-wikitext-train-medium": Path(
+        "data/moonshot/v2/wikitext103/train_medium.bin"
+    ),
+    "v2-wikitext-validation": Path(
+        "data/moonshot/v2/wikitext103/validation.bin"
+    ),
+}
+EXTERNAL_COMPONENT_DATA_HASHES = {
+    "phase2-english-substrate-200m": (
+        "a1fa5fbcd724016a398121c5aed8371d6784a564ce46ba4f8016cbcbaa1ff1d9"
+    ),
+    "v2-python-manifest": (
+        "19c7124e1fd4af3789146d166e5d65a5a9f0876d24e86d44f3fef5ecd20eb17d"
+    ),
+    "v2-python-test": (
+        "924c401c5f3ff38ddeb918bd7078f3e878a16b5cc4c64873566fd079131a2b91"
+    ),
+    "v2-python-train": (
+        "52927315379dfd689f7dd128845699e3bebcaac729548f480f5739a8931ecbd2"
+    ),
+    "v2-python-validation": (
+        "009d445303a1917312d9f212a687def73a8d9895c1f646ca129250eb797a3b48"
+    ),
+    "v2-wikitext-architecture-selection": (
+        "815e926aac0851b836b083888eb73c425e38504ba571c67312a6c2c31706cb93"
+    ),
+    "v2-wikitext-manifest": (
+        "e49e194580e95cf08f616b296ed6372d83c7af790cba8be7770b82d188a431f3"
+    ),
+    "v2-wikitext-test": (
+        "520d28c4bab85387c325b8298a513525d33beb75451711b37231ff5842ee6388"
+    ),
+    "v2-wikitext-train-development": (
+        "ceca1962b8aab7bad3ba4dc47739217e3813a2cf16b546df47c81147bd200de3"
+    ),
+    "v2-wikitext-train-medium": (
+        "ec54bd8fa09c2cf1a6d442538a98c62ce8e62de14378a19556310836891d23b6"
+    ),
+    "v2-wikitext-validation": (
+        "fdd0a46dc8028b25ad9b8bc1d47c6741c20766d0f3e787b41cebb2da2297eb10"
+    ),
 }
 PUBLIC_KEYS_RELATIVE = {
     "4d64fb4eb20e06035d287ced76b54be9": Path(
@@ -280,12 +374,14 @@ def freeze_framework() -> dict[str, Any]:
         raise RuntimeError(
             "pre-gated final certificate is absent or already changed"
         )
-    if RESULTS.exists():
+    if RESULTS.exists() and any(
+        path.name != "history" for path in RESULTS.iterdir()
+    ):
         raise RuntimeError("Phase 8 evidence predates the framework freeze")
     matrix = _read(ROOT / "moonshot/invalidation_matrix.yaml")
     commit = _git(ROOT, "rev-parse", "HEAD")
     document = {
-        "format": "layercake-phase8-framework-freeze/1",
+        "format": "layercake-phase8-framework-freeze/2",
         "status": "FROZEN",
         "framework_commit": commit,
         "framework_tree": _git(ROOT, "show", "-s", "--format=%T", commit),
@@ -350,24 +446,50 @@ def _command(
     }
 
 
-def _copy_external_checkpoints(
+def _copy_external_assets(
     target: Path,
 ) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
-    for name, relative in CHECKPOINTS_RELATIVE.items():
+    assets = [
+        (
+            name,
+            relative,
+            CHECKPOINT_HASHES[name],
+            "promoted_checkpoint",
+        )
+        for name, relative in CHECKPOINTS_RELATIVE.items()
+    ]
+    assets.extend(
+        (
+            name,
+            relative,
+            EXTERNAL_FIXTURE_HASHES[name],
+            "historical_control_test_fixture",
+        )
+        for name, relative in EXTERNAL_FIXTURES_RELATIVE.items()
+    )
+    assets.extend(
+        (
+            name,
+            relative,
+            EXTERNAL_COMPONENT_DATA_HASHES[name],
+            "sealed_component_external_data",
+        )
+        for name, relative in EXTERNAL_COMPONENT_DATA_RELATIVE.items()
+    )
+    for name, relative, expected, kind in assets:
         source = ROOT / relative
         destination = target / relative
-        expected = CHECKPOINT_HASHES[name]
         if not source.is_file() or _sha256(source) != expected:
             raise RuntimeError(
-                f"external release checkpoint is stale: {name}"
+                f"external release asset is stale: {name}"
             )
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
         actual = _sha256(destination)
         if actual != expected:
             raise RuntimeError(
-                f"clean-room checkpoint copy is stale: {name}"
+                f"clean-room asset copy is stale: {name}"
             )
         records.append(
             {
@@ -375,6 +497,7 @@ def _copy_external_checkpoints(
                 "path": relative.as_posix(),
                 "sha256": actual,
                 "bytes": destination.stat().st_size,
+                "kind": kind,
                 "source": "local content-addressed release asset cache",
                 "copied_and_rehashed": True,
                 "tracked_in_git": False,
@@ -2204,8 +2327,8 @@ def cleanroom_run(target: Path, output: Path) -> dict[str, Any]:
         raise RuntimeError(
             f"clean-room worktree is dirty before execution: {status_before}"
         )
-    assets = _copy_external_checkpoints(target)
-    print("phase8: external checkpoint assets copied and rehashed", flush=True)
+    assets = _copy_external_assets(target)
+    print("phase8: external release assets copied and rehashed", flush=True)
     env = dict(os.environ)
     env["PYTHONPATH"] = str(target)
     pip_check = _command(
@@ -2221,6 +2344,7 @@ def cleanroom_run(target: Path, output: Path) -> dict[str, Any]:
             "install",
             "--dry-run",
             "--no-deps",
+            "--no-build-isolation",
             ".",
         ],
         cwd=target,

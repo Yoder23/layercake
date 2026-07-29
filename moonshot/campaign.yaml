@@ -16,6 +16,19 @@
   "current_phase": 8,
   "forward_contract_amendments": [
     {
+      "amendment_id": "phase8-independent-hostile-verification/2",
+      "applies_to_phases": [
+        8
+      ],
+      "architecture_changes_allowed": false,
+      "contract": "moonshot/phase8_independent_verification_preregistration.json",
+      "contract_sha256": "fb06fe4fa3952ddbaa34287943e9cf7dc1389036e9f5aeda3e0aba2a14e43ace",
+      "effective_while_phase8_is_open": true,
+      "repair_base_tag": "layercake-moonshot-phase8-repair-base-v3",
+      "repair_base_commit": "4c25a01ee4230ec3237e2c6eb3c11dffe4f8ac00",
+      "reason": "Preserve the failed Phase 7 preflight, correct only its invalid packaging backend and nondeterministic checkout normalization, declare every ignored clean-test asset, and rerun unchanged proof thresholds."
+    },
+    {
       "amendment_id": "phase8-independent-hostile-verification/1",
       "applies_to_phases": [
         8
@@ -23,7 +36,8 @@
       "architecture_changes_allowed": false,
       "contract": "moonshot/phase8_independent_verification_preregistration.json",
       "contract_sha256": "5426d2ff19a7f40b8fd3588567796abe5199e7da721add3486584d9929c72830",
-      "effective_while_phase8_is_open": true,
+      "effective_while_phase8_is_open": false,
+      "superseded_by": "phase8-independent-hostile-verification/2",
       "reason": "Preregister exact-tag detached-worktree reproduction, fresh CPU/GPU and domain execution, full routing/catalog/lifecycle revalidation, hostile package and evidence falsification, preservation of the retired training gate, and the final fail-closed release."
     },
     {

@@ -251,10 +251,17 @@ The immutable preregistration is
 
 ## Phase 8 final hostile-verification lock
 
-Phase 8 is open on the exact annotated `layercake-moonshot-phase7` seal.
-Architecture, core, cakes, ABI, router, runtime, baselines, and promotion
-thresholds are immutable. Any required product change reopens the earliest
-affected phase instead of being repaired inside final verification.
+The first exact-Phase-7 clean-room preflight failed before benchmarking. Its
+framework and diagnostic are preserved under Phase 8 history. The discovered
+defects were limited to an invalid setuptools backend, platform-dependent Git
+line endings, and undeclared ignored test fixtures.
+
+Phase 8 is now open on the exact annotated
+`layercake-moonshot-phase8-repair-base-v3` tag. That repair base changes only the
+packaging backend and deterministic Git text/binary attributes. Architecture,
+core, cakes, ABI, router, runtime, baselines, data, and promotion thresholds
+remain immutable. Six preregistered external release assets must be copied
+from the local content-addressed cache and rehashed in the detached checkout.
 
 The final gate uses a detached clean worktree and a separately implemented
 fail-closed verifier. It reruns all feasible tests, executions, routing,
