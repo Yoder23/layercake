@@ -29,6 +29,11 @@ information accounting, and independent artifact validation. ABI code and
 evidence do not belong in this LayerCake repository. A future ABI artifact may
 enter only as an independently validated, signed, content-addressed package.
 
+The separate [ABI repository](https://github.com/Yoder23/abi) owns all
+foreign-teacher acquisition research. LayerCake remains in release stewardship
+unless an independently validated external artifact enters the governed handoff
+defined in `docs/ABI_HANDOFF_STATUS.md`.
+
 ## 4. Governed recertification
 
 Any change to the host, ABI, package format, package payload, router, runtime

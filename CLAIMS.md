@@ -7,6 +7,7 @@ below is bounded by the exact release lineage and raw evidence paths.
 | --- | --- | --- |
 | Campaign completion | `moonshot/campaign.yaml`, Phase 8 seal | All eight phases sealed; `verify-all` validates the completed campaign. |
 | Phase 3 disposition | `results/moonshot/phase3/release_certificate.json` | `RETIRED_BY_GOVERNANCE`; zero headline claims and no training-efficiency, acquisition, ABI, or host-certification proof. |
+| Faster full-core training | `TRAINING_NORTHSTAR.md` | OPEN; no training-dominance claim. |
 | Independent reproduction | `results/moonshot/phase8/raw_runs/cleanroom_environment.json` | Detached Phase 7 checkout, 597 passing tests, all prior typed gates recomputed. |
 | CPU performance | `phase8/raw_runs/reproduction_performance.json` | 9.91x LayerCake/Qwen output-byte throughput; 0.0179x median latency ratio. |
 | GPU performance | same | 8.25x LayerCake/Qwen output-byte throughput. |
@@ -26,3 +27,10 @@ publication. See [docs/VERIFICATION_AND_LIMITS.md](docs/VERIFICATION_AND_LIMITS.
 
 All earlier claim tables are historical research context. They do not modify
 this evidence map or survive changes that trigger the invalidation matrix.
+
+## External ABI research is not an inherited claim
+
+Capability acquisition from foreign teachers is researched in the separate
+[ABI repository](https://github.com/Yoder23/abi). No external ABI result
+changes or inherits this release's claims. See `docs/ABI_HANDOFF_STATUS.md` for
+the repository and recertification boundary.

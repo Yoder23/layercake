@@ -37,3 +37,11 @@ English acquisition. ABI extraction is separate from LayerCake.
 Do not silently modify a sealed product and continue to use its claim. Use the
 invalidation matrix, preserve prior evidence, open a governed recertification,
 and obtain a new annotated seal for any affected claim.
+
+## External artifact handoff
+
+Foreign-teacher acquisition work belongs to the separate
+[ABI repository](https://github.com/Yoder23/abi). No external result changes
+this release automatically. Before accepting any externally produced artifact,
+follow `docs/ABI_HANDOFF_STATUS.md` and `moonshot/invalidation_matrix.yaml` and
+open a governed recertification.

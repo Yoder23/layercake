@@ -13,12 +13,20 @@ the original faster-training requirement with zero headline scientific claims.
 It was not skipped, but it also must not be described as a training-efficiency
 or host-certification proof.
 
+Full-core training speed is a separate, currently open gate. This release does
+not claim faster full-core training or training dominance.
+
 LayerCake is a capability host: an English core executes selected, signed,
 non-executable capability packages over a byte-facing interface. It is designed
 for fast CPU and GPU inference, immutable packages, persistent incremental
 state, selected-only execution, lossless package transfer, and safe dynamic
 routing. ABI extraction is a separate project and is not bundled into this
 repository or release.
+
+Foreign-teacher capability acquisition is maintained separately in the
+[ABI repository](https://github.com/Yoder23/abi). External ABI research does
+not change this sealed release; see the
+[artifact handoff boundary](docs/ABI_HANDOFF_STATUS.md).
 
 ## Certified release scope
 
@@ -104,6 +112,7 @@ and [the cake registry specification](docs/CAKE_REGISTRY_SPEC.md).
 - [Registry and package format](docs/CAKE_REGISTRY_SPEC.md)
 - [Threat model](docs/CAKE_THREAT_MODEL.md)
 - [Post-release operating plan](ROADMAP.md)
+- [LayerCake/ABI handoff status](docs/ABI_HANDOFF_STATUS.md)
 
 Older North Star, tokenizer, byte-patch, and V2 development documents remain in
 the repository as historical research. They are not the release source of truth
