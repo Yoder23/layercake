@@ -1,0 +1,25 @@
+{
+  "format": "layercake-direct-neural-core-host-preexecution-failures/1",
+  "date": "2026-08-06",
+  "status": "PRESERVED_IMPLEMENTATION_TEST_FAILURES_BEFORE_CERTIFICATION",
+  "attempts": [
+    {
+      "attempt": 1,
+      "tests_failed": 3,
+      "cause": "The construct fixture called the Phase 4 Python-specific tokenizer builder without function_name fields.",
+      "repair": "Use the already implemented generic lossless lexeme tokenizer with explicit copy_lexemes.",
+      "scientific_result_produced": false
+    },
+    {
+      "attempt": 2,
+      "tests_failed": 2,
+      "cause": "An untrained random construct artifact selected non-realizable special actions, and mutating the final ZIP byte did not reach authenticated content.",
+      "repair": "Deterministically force EOS for the construct-only artifact and mutate a byte inside the archive payload.",
+      "scientific_result_produced": false
+    }
+  ],
+  "training_performed": false,
+  "external_artifact_used": false,
+  "sealed_release_changed": false,
+  "final_test_accessed": false
+}

@@ -1,0 +1,52 @@
+{
+  "format": "layercake-canonical-direct-neural-core-abi/1",
+  "status": "POSTRELEASE_CONSTRUCT",
+  "version": "lc-direct-neural-core/1",
+  "scope": "One signed neural artifact executing as the LayerCake English core",
+  "external_boundary": {
+    "input": "UTF-8 bytes",
+    "output": "UTF-8 bytes",
+    "lossless_roundtrip_required": true
+  },
+  "artifact": {
+    "cake_type": "portable_decoder",
+    "domain_marker": "english-core",
+    "composition": "direct_core_only_no_router",
+    "non_executable": true,
+    "safetensors_only": true,
+    "signed": true,
+    "content_addressed": true,
+    "unchanged_after_installation": true
+  },
+  "execution": {
+    "complete_prompt_encoded_once": true,
+    "persistent_incremental_state": true,
+    "completed_context_recomputation_allowed": false,
+    "teacher_at_inference_allowed": false,
+    "receiver_training_or_calibration_allowed": false,
+    "core_only_no_router": true
+  },
+  "compatibility": {
+    "existing_capability_packages_rewritten": false,
+    "existing_semantic_abi_rewritten": false,
+    "sealed_english_core_rewritten": false,
+    "future_domain_packages_require_independent_compatibility_certification": true
+  },
+  "claim_boundary": {
+    "construct_pass_may_prove": [
+      "safe signed installation",
+      "exact artifact identity",
+      "teacher-free host execution",
+      "persistent incremental state",
+      "zero receiver learning"
+    ],
+    "construct_pass_may_not_prove": [
+      "English quality",
+      "teacher-relative quality",
+      "CPU or GPU performance",
+      "domain compatibility",
+      "external acquisition success",
+      "ABI superiority"
+    ]
+  }
+}
