@@ -409,3 +409,10 @@ The separately versioned `lc-direct-neural-core/3` BPE host construct is now
 preregistered. It is generic LayerCake hosting work and imports no external
 acquisition evidence or tokenizer. Execute only its construct gates; a pass may
 open external-artifact conformance but inherits no English quality or speed.
+
+That v3 construct now passes under
+`moonshot/postrelease_bpe_direct_neural_core_decision_v8.json`: 616 tests, the
+unchanged Phase 0-8 verifier, exact UTF-8 BPE concatenation, same-package CPU/
+CUDA identity, persistent state, lifecycle, and zero learning. Its next gate is
+one real independently validated external v3 artifact; it remains construct-
+only and inherits no acquisition, English-quality, or performance result.
