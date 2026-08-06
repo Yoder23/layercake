@@ -1,0 +1,78 @@
+{
+  "format": "layercake-postrelease-direct-neural-core-host-preregistration/1",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION",
+  "date": "2026-08-06",
+  "basis": {
+    "audit": "results/moonshot/postrelease/external_capability_host_interface_audit_v1.json",
+    "audit_file_sha256": "c15b05aeadcc2b9c93d18c43296547a9c273e53a22c6e37ea4f900711d22fce4",
+    "audit_evidence_sha256": "8143c5939030737ce497257d3432edc4c2bee3ade3f3b9a05ac6264b60c36354",
+    "finding": "The safe direct neural decoder is certified only as a selected capability cake; no signed external English-core role exists."
+  },
+  "objective": "Implement the minimum LayerCake host surface that installs and executes an unchanged signed byte-facing self-causal neural artifact in the English-core role.",
+  "repository_boundary": {
+    "external_acquisition_code_or_evidence_import_allowed": false,
+    "external_artifact_used_for_construct_test": false,
+    "layercake_owns": "host role, package validation, immutable installation, loading, execution, lifecycle, and interface verification only"
+  },
+  "release_boundary": {
+    "sealed_layercake_release_mutation_allowed": false,
+    "sealed_core_checkpoint_mutation_allowed": false,
+    "sealed_package_relabeling_allowed": false,
+    "parallel_postrelease_interface": true,
+    "prior_quality_or_performance_inheritance_allowed": false
+  },
+  "interface": {
+    "version": "lc-direct-neural-core/1",
+    "canonical_contract_path": "moonshot/canonical_direct_neural_core_abi_v1.json",
+    "external_input": "UTF-8 bytes",
+    "external_output": "UTF-8 bytes",
+    "artifact_role": "english-core",
+    "execution": "direct_core_only_no_router",
+    "teacher_at_inference": false,
+    "receiver_training_or_calibration": 0,
+    "persistent_incremental_state": true,
+    "completed_context_recomputation": false,
+    "package": "signed non-executable .cake with safetensors only"
+  },
+  "implementation_scope": {
+    "new_files": [
+      "moonshot/canonical_direct_neural_core_abi_v1.json",
+      "layercake/models/direct_neural_core.py",
+      "tests/models/test_direct_neural_core.py"
+    ],
+    "existing_runtime_files_may_change": false,
+    "existing_package_schema_may_change": false,
+    "existing_installer_may_change": false,
+    "existing_model_or_checkpoint_may_change": false
+  },
+  "construct_gates": {
+    "signed_package_required": true,
+    "exact_abi_version_and_hash_required": true,
+    "english_core_role_required": true,
+    "capability_cake_role_rejected": true,
+    "tensor_identity_before_after_install": true,
+    "archive_identity_before_after_install": true,
+    "receiver_training_steps": 0,
+    "receiver_calibration_runs": 0,
+    "cpu_prefill_and_incremental_decode": true,
+    "cuda_same_package_execution_when_available": true,
+    "tampered_package_rejected": true,
+    "remove_and_reinstall_exact": true,
+    "existing_sealed_campaign_verify_all": true
+  },
+  "quality_and_systems_gates_deferred": [
+    "English functional quality",
+    "teacher-relative quality",
+    "CPU throughput",
+    "GPU throughput",
+    "TTFT",
+    "RSS and active memory",
+    "future domain compatibility",
+    "external artifact acceptance"
+  ],
+  "decision_rule": "Pass only if every construct gate succeeds without changing any sealed runtime, model, checkpoint, package, router, or evidence file. A pass proves the host construct only and authorizes an independently validated external artifact acceptance campaign; it does not certify an English core.",
+  "failure_rule": "Preserve the failure and stop. Do not modify sealed LayerCake machinery or fall back to hidden-state hooks or semantic-residual relabeling.",
+  "final_test_access_allowed": false,
+  "training_allowed": false,
+  "claim_boundary": "No external acquisition, English quality, performance, ABI superiority, or revised LayerCake moonshot claim can result from this construct test."
+}
