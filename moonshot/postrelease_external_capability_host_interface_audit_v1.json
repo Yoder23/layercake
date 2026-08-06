@@ -1,0 +1,41 @@
+{
+  "format": "layercake-external-capability-host-interface-audit/1",
+  "status": "PREREGISTERED_READ_ONLY_POSTRELEASE_AUDIT",
+  "date": "2026-08-06",
+  "objective": "Determine whether the sealed LayerCake release already exposes a canonical interface capable of accepting an independently validated external English core artifact without retraining or mutating that artifact.",
+  "scope": "LayerCake host interfaces and preserved LayerCake evidence only",
+  "sealed_campaign_mutation_allowed": false,
+  "external_acquisition_code_allowed": false,
+  "training_allowed": false,
+  "runtime_mutation_allowed": false,
+  "final_test_access_allowed": false,
+  "interfaces": [
+    "ad_hoc_hidden_state_hooks",
+    "lc-semantic-gpt2-768/1",
+    "lc-direct-neural-decoder/1"
+  ],
+  "questions": [
+    "Is the interface canonical and content-addressed?",
+    "Can it carry persistent self-causal generation state?",
+    "Has it preserved useful autonomous behavior rather than teacher-forced fit alone?",
+    "Can an unchanged signed artifact execute on CPU and CUDA without receiver learning?",
+    "Is it certified as the LayerCake English core rather than only a selected domain cake?"
+  ],
+  "decision_rule": "If no existing interface passes all five questions, record a host-interface scope gap without invalidating the sealed LayerCake release or blaming external extraction. The next repair must be a separately versioned direct neural core artifact interface and must independently recertify all affected behavior and performance.",
+  "bindings": {
+    "layercake/evaluation/external_capability_host_audit.py": "81378add46cdf327ab597c1071a6115d1fb90eb63c46da29792f3adfb6115391",
+    "tests/evaluation/test_external_capability_host_audit.py": "4bd26d71399230bc117da27b36cd355d3f7d3af0911971d06c7e9f977fbf18af",
+    "moonshot/phase2_canonical_semantic_abi_r3.json": "d024de52144a2d797d0501acb7deb55575ffca7e33f72900beff599cf0a97761",
+    "moonshot/phase4_canonical_direct_decoder_abi_v1.json": "de765899700aefe22bfe6c9d00ed5b0c1f87a7ef864cf7211aa8aa4491a0742a",
+    "moonshot/phase4_direct_decoder_interface_amendment.json": "3d77053b71565153618d9dc10da5eeda1ba3f6508bfba3ae480263f227f37adf",
+    "results/moonshot/phase4/direct_decoder_transfer_certificate.json": "c72d37ad95feeb763190ca6ffad3edbb5cc1bf6443bb957f5c75c48b416b131a",
+    "moonshot/phase4_semantic_action_plan_lexical_repair_decision.json": "7fd99600f9fd05b9fcc319c1ec753b6383926ad85e1ebf8d1989bf362e53e2f8",
+    "results/moonshot/phase4/branch_ledger.json": "01a7e64da9f6bbffb791e0a95a5a1ad576624a437cef4b1475a90f9ba154b066",
+    "layercake/semantic_token_plan.py": "71a2c470e92c69d71663b6117609237fbf216129045bbeb528b9315b69f1c5f2",
+    "layercake/semantic_action_plan.py": "f0dc42be7a83588c76205031ef3cb375522ca605d40c58e2d4e270c7906dce1a",
+    "layercake/portable_token_plan.py": "0988a83f65d96e928a57edf1f5a565c334ab6e66579b9e6bca21f3c76b920a14",
+    "layercake/models/portable_decoder.py": "90797d0b5f168aad55ee934936a70af57c0f9f1df7329501342c81ffd77d7b13",
+    "results/moonshot/phase8/release_certificate.json": "963b2392f0be226dcba1973c07e19c75f79ff005c629c6284ab51dcd6e7e26f6"
+  },
+  "claim_boundary": "This audit may identify an interface scope gap. It cannot claim a model defect, external acquisition failure, quality result, new host feature, or inherited certification."
+}
