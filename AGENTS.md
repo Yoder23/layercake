@@ -390,3 +390,8 @@ That v2 implementation is now frozen under
 Execute only its deterministic construct. A pass remains construct-only and
 does not authorize an old checkpoint, inherit English quality/performance, or
 import ABI research into this repository.
+
+The first v2 construct wrote its immutable evidence successfully, then CP1252
+stdout failed on an emoji. Preserve that attempt. Repair V3 changes only stdout
+to ASCII-escaped JSON and authorizes verification of the existing result; it
+does not authorize overwriting or a new scientific execution.

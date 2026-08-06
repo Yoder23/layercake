@@ -76,6 +76,8 @@ def execute(root: Path, protocol_path: Path) -> dict[str, Any]:
     for relative, expected in protocol.get("bindings", {}).items():
         if _sha256(root / relative) != expected:
             raise UnicodeConstructError(f"Unicode construct binding changed: {relative}")
+    result_protocol_name = str(protocol.get("result_protocol", protocol_path.name))
+    result_protocol_sha256 = str(protocol.get("result_protocol_sha256", _sha256(protocol_path)))
     sealed = subprocess.run(["C:\\Python310\\python.exe", "-m", "layercake.moonshot_campaign", "verify-all"], cwd=root, check=True, capture_output=True, text=True)
     sealed_result = json.loads(sealed.stdout)
     samples = ["“café 🙂”", "東京", "e\u0301", "مرحبا", "नमस्ते", "🏳️‍🌈"]
@@ -138,7 +140,7 @@ def execute(root: Path, protocol_path: Path) -> dict[str, Any]:
         result: dict[str, Any] = {
             "format": "layercake-postrelease-unicode-direct-core-construct/1",
             "status": "PASS_CONSTRUCT_ONLY" if sealed_result.get("completed_phases_valid") is True and all(row["exact_roundtrip"] and row["all_pieces_valid_utf8"] for row in sample_rows) and invalid_input_rejected and invalid_output_rejected and v1_package_rejected and wrong_role_rejected and tamper_rejected else "FAIL",
-            "protocol": {"path": protocol_path.name, "sha256": _sha256(protocol_path)},
+            "protocol": {"path": result_protocol_name, "sha256": result_protocol_sha256},
             "sealed_campaign_valid": sealed_result.get("completed_phases_valid") is True,
             "interface": UNICODE_DIRECT_NEURAL_CORE_ABI_VERSION,
             "interface_sha256": UNICODE_DIRECT_NEURAL_CORE_ABI_SHA256,
@@ -192,7 +194,7 @@ def main(argv: Iterable[str] | None = None) -> int:
         output.write_text(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
     else:
         result = verify(root, protocol, output)
-    print(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False))
+    print(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=True))
     return 0
 
 
