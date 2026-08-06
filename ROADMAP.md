@@ -46,6 +46,14 @@ hardware claim invokes `moonshot/invalidation_matrix.yaml`. The change must:
 4. rerun every required dependent phase; and
 5. receive a new annotated seal before a public claim changes.
 
+The current evidence-supported candidate for such a future track is a signed,
+byte-facing, self-causal direct neural core artifact interface. The post-release
+V2 audit found that the existing direct interface is capability-cake-only and
+the semantic-residual family is not autonomously qualified for an external
+English core. See
+`docs/POSTRELEASE_EXTERNAL_CORE_HOST_INTERFACE_AUDIT.md`. No implementation or
+claim is authorized without a new preregistration.
+
 ## 5. Bounded research controls
 
 Older byte, token, hybrid, training-efficiency, and architecture experiments can

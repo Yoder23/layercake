@@ -34,3 +34,11 @@ Capability acquisition from foreign teachers is researched in the separate
 [ABI repository](https://github.com/Yoder23/abi). No external ABI result
 changes or inherits this release's claims. See `docs/ABI_HANDOFF_STATUS.md` for
 the repository and recertification boundary.
+
+## Post-release host-interface audit
+
+The read-only audit in
+`docs/POSTRELEASE_EXTERNAL_CORE_HOST_INTERFACE_AUDIT.md` establishes only that
+the sealed product has no canonical signed direct neural English-core artifact
+role. It does not invalidate the release, prove an external acquisition
+failure, add a host feature, or permit inherited speed or quality claims.

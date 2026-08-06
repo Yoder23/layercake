@@ -354,3 +354,18 @@ the final claim unless separately measured.
 
 The immutable preregistration is
 `moonshot/phase8_independent_verification_preregistration.json`.
+
+## Post-release external English-core host audit
+
+The read-only V2 audit under
+`moonshot/postrelease_external_capability_host_interface_audit_repair1_v2.json`
+identified a host-interface scope gap without changing the sealed release. The
+semantic-residual interface is not certified for external autonomous English,
+and the direct neural decoder is certified only as a selected capability cake.
+Ad hoc hidden-state hooks are not a canonical host interface.
+
+Any repair must be a separately versioned signed direct neural *core* artifact
+interface using the existing byte-facing, self-causal package primitives. It
+must not import external acquisition code or evidence, mutate the sealed
+lineage, claim semantic fusion, or inherit quality/performance. Implementation
+requires a new preregistration and complete affected-gate recertification.

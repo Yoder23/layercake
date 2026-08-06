@@ -19,6 +19,9 @@ The expected aggregate result is `completed_phases_valid: true` with Phase 8
 2. Use the documented package authoring and registry contracts for a new cake.
 3. Keep ABI extraction in its separate repository and campaign.
 4. Start a governed recertification before changing a sealed dependency.
+5. For an external English core, use the post-release host-interface audit as
+   the ownership boundary; do not attach ad hoc hidden-state hooks to the
+   sealed core.
 
 ## Actions that require new authority
 
