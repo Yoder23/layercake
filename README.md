@@ -28,6 +28,12 @@ Foreign-teacher capability acquisition is maintained separately in the
 not change this sealed release; see the
 [artifact handoff boundary](docs/ABI_HANDOFF_STATUS.md).
 
+Post-release host work has construct-certified a Unicode-safe external English-
+core interface, `lc-direct-neural-core/2`. It is not part of the sealed Phase
+0–8 product and has not accepted a real external English artifact. V1 remains
+historical after a local UTF-8 conformance failure. See the
+[v2 construct report](docs/POSTRELEASE_UNICODE_DIRECT_NEURAL_CORE_V2.md).
+
 ## Certified release scope
 
 The final independent clean-room verification reran the sealed Phase 7 product
@@ -113,6 +119,7 @@ and [the cake registry specification](docs/CAKE_REGISTRY_SPEC.md).
 - [Threat model](docs/CAKE_THREAT_MODEL.md)
 - [Post-release operating plan](ROADMAP.md)
 - [LayerCake/ABI handoff status](docs/ABI_HANDOFF_STATUS.md)
+- [Post-release Unicode-safe external-core host](docs/POSTRELEASE_UNICODE_DIRECT_NEURAL_CORE_V2.md)
 
 Older North Star, tokenizer, byte-patch, and V2 development documents remain in
 the repository as historical research. They are not the release source of truth

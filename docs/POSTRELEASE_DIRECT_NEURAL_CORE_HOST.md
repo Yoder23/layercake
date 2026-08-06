@@ -40,6 +40,10 @@ bytes. See `POSTRELEASE_DIRECT_NEURAL_CORE_UTF8_AUDIT.md`. External English
 artifacts must target a separately certified Unicode-atomic successor rather
 than v1.
 
+That successor is now construct-certified as `lc-direct-neural-core/2`. See
+`POSTRELEASE_UNICODE_DIRECT_NEURAL_CORE_V2.md`. V1 remains historical and
+incompatible; no v1 checkpoint or package is automatically upgraded.
+
 Evidence:
 
 - `moonshot/canonical_direct_neural_core_abi_v1.json`

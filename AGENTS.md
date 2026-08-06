@@ -395,3 +395,12 @@ The first v2 construct wrote its immutable evidence successfully, then CP1252
 stdout failed on an emoji. Preserve that attempt. Repair V3 changes only stdout
 to ASCII-escaped JSON and authorizes verification of the existing result; it
 does not authorize overwriting or a new scientific execution.
+
+V2 is now construct-certified under
+`moonshot/postrelease_unicode_direct_neural_core_decision_v4.json`. It passes
+Unicode-atomic action validity, strict input/output rejection, same-package
+CPU/CUDA identity, lifecycle, persistent state, v1/role/tamper rejection, zero
+learning, all 613 tests, and the unchanged Phase 0-8 verifier. The only next
+gate is a real independently validated external artifact targeting v2. Do not
+claim English quality, performance, or ABI acquisition before that same
+artifact is certified.

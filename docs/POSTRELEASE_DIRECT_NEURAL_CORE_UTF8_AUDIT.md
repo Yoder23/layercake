@@ -28,3 +28,7 @@ Evidence:
 - `moonshot/postrelease_direct_neural_core_utf8_audit_preregistration_v1.json`
 - `results/moonshot/postrelease/direct_neural_core_utf8_audit_v1.json`
 - `moonshot/postrelease_direct_neural_core_utf8_audit_decision_v1.json`
+
+The separately versioned repair is now construct-certified as
+`lc-direct-neural-core/2`; see `POSTRELEASE_UNICODE_DIRECT_NEURAL_CORE_V2.md`.
+This does not change or erase the v1 failure.

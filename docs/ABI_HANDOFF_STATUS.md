@@ -1,6 +1,6 @@
 # External capability-artifact handoff
 
-Status date: 2026-08-03
+Status date: 2026-08-06
 
 This document defines LayerCake's boundary for externally produced capability
 artifacts. It does not import external code or evidence, and it does not expand
@@ -23,6 +23,17 @@ complete provenance, license, deletion lineage, and imported-information
 accounting.
 
 ## Acceptance rule
+
+The post-release `lc-direct-neural-core/2` interface is construct-certified as
+the current English-core handoff target. It uses Unicode-atomic fixed and
+pointer actions, strict UTF-8 input/output validation, signed safetensors-only
+packages, persistent incremental state, and zero receiver learning. It passed
+the same deterministic package on CPU and CUDA. The older v1 interface failed
+its UTF-8 conformance audit and must not receive new external English artifacts.
+
+This host readiness is not an acquisition result. No ABI-derived English
+artifact has passed v2, and no external artifact is part of the sealed release.
+See `POSTRELEASE_UNICODE_DIRECT_NEURAL_CORE_V2.md` for the exact construct scope.
 
 An external artifact never inherits this release's quality, speed, TTFT,
 memory, portability, routing, or verification evidence. Integrating it requires
