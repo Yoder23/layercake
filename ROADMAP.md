@@ -54,6 +54,11 @@ English core. See
 `docs/POSTRELEASE_EXTERNAL_CORE_HOST_INTERFACE_AUDIT.md`. No implementation or
 claim is authorized without a new preregistration.
 
+The construct implementation is now complete and isolated under
+`layercake_extensions/`. The next governed recertification input is one real,
+independently validated external English artifact. The host construct itself
+supplies no English or performance credit.
+
 ## 5. Bounded research controls
 
 Older byte, token, hybrid, training-efficiency, and architecture experiments can

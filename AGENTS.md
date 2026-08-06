@@ -369,3 +369,10 @@ interface using the existing byte-facing, self-causal package primitives. It
 must not import external acquisition code or evidence, mutate the sealed
 lineage, claim semantic fusion, or inherit quality/performance. Implementation
 requires a new preregistration and complete affected-gate recertification.
+
+That construct is now implemented as the isolated `lc-direct-neural-core/1`
+extension and passes CPU/CUDA package, identity, lifecycle, persistent-state,
+role, tamper, and zero-learning gates. It is not an English or performance
+certificate. The only authorized next gate is acceptance and same-artifact
+recertification of an independently validated external English artifact. Do
+not reopen hidden-state bridge or semantic-residual sweeps.

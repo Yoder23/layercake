@@ -22,6 +22,9 @@ The expected aggregate result is `completed_phases_valid: true` with Phase 8
 5. For an external English core, use the post-release host-interface audit as
    the ownership boundary; do not attach ad hoc hidden-state hooks to the
    sealed core.
+6. Accept a real external English artifact only through
+   `lc-direct-neural-core/1`, then recertify quality and systems evidence on
+   that unchanged artifact before any promotion.
 
 ## Actions that require new authority
 

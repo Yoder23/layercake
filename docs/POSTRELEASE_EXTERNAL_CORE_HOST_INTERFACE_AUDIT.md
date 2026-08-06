@@ -25,14 +25,17 @@ block-hook bridge. The required future repair is a separately versioned direct
 neural core artifact interface that reuses the existing package safety and
 incremental execution primitives.
 
+That construct repair is now complete under `lc-direct-neural-core/1`; see
+`POSTRELEASE_DIRECT_NEURAL_CORE_HOST.md`. The remaining gate is acceptance and
+full recertification of a real independently validated English artifact.
+
 That future interface must independently recertify core-only English behavior,
 artifact immutability, teacher absence, CPU and CUDA execution, persistent
 state, same-artifact CPU speed/TTFT/RSS/memory, and compatibility with future
 domain packages. It may not inherit any of those results from the sealed core
 or the existing capability packages.
 
-The controlling audit is
-`moonshot/postrelease_external_capability_host_interface_audit_repair1_v2.json`.
-Its raw result is
-`results/moonshot/postrelease/external_capability_host_interface_audit_v1.json`.
-The first implementation-field failure is preserved separately.
+The original audit and its failure remain historical. The current successor is
+`moonshot/postrelease_external_capability_host_interface_audit_successor_v3.json`,
+with raw result
+`results/moonshot/postrelease/external_capability_host_interface_audit_v2.json`.

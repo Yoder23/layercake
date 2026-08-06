@@ -39,6 +39,9 @@ the repository and recertification boundary.
 
 The read-only audit in
 `docs/POSTRELEASE_EXTERNAL_CORE_HOST_INTERFACE_AUDIT.md` establishes only that
-the sealed product has no canonical signed direct neural English-core artifact
-role. It does not invalidate the release, prove an external acquisition
-failure, add a host feature, or permit inherited speed or quality claims.
+the sealed product originally had no canonical signed direct neural English-
+core artifact role. The isolated `lc-direct-neural-core/1` extension now passes
+its mechanical host construct on CPU and CUDA. It does not invalidate the
+release or certify English, external acquisition, speed, memory, TTFT, domain
+compatibility, or ABI superiority. See
+`docs/POSTRELEASE_DIRECT_NEURAL_CORE_HOST.md`.
