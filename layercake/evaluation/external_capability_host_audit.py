@@ -92,7 +92,7 @@ def audit(root: Path, protocol_path: Path) -> dict[str, Any]:
         and action_decision.get("lexical_validation", {}).get("exact_response_successes") == 189
         and action_decision.get("lexical_validation", {}).get("minimum_exact_response_successes") == 231,
         "direct_decoder_has_prefill_api": "def prefill_bytes(" in portable_source,
-        "direct_decoder_has_incremental_step_api": "def step_bytes(" in portable_source,
+        "direct_decoder_has_incremental_step_api": "def decode_step(" in portable_source,
         "signed_direct_english_core_interface_absent": not (root / "moonshot/canonical_direct_neural_core_abi_v1.json").exists(),
     }
     if not all(facts.values()):
@@ -168,7 +168,7 @@ def write_result(result: Mapping[str, Any], path: Path) -> None:
 
 def main(argv: Iterable[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--protocol", default="moonshot/postrelease_external_capability_host_interface_audit_v1.json")
+    parser.add_argument("--protocol", default="moonshot/postrelease_external_capability_host_interface_audit_repair1_v2.json")
     parser.add_argument("--output", default="results/moonshot/postrelease/external_capability_host_interface_audit_v1.json")
     parser.add_argument("--write", action="store_true")
     args = parser.parse_args(argv)

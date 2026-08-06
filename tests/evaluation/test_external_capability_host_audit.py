@@ -10,7 +10,7 @@ from layercake.evaluation.external_capability_host_audit import (
 
 
 ROOT = Path(__file__).resolve().parents[2]
-PROTOCOL = ROOT / "moonshot/postrelease_external_capability_host_interface_audit_v1.json"
+PROTOCOL = ROOT / "moonshot/postrelease_external_capability_host_interface_audit_repair1_v2.json"
 
 
 def test_sealed_host_interface_audit_identifies_scope_gap():
