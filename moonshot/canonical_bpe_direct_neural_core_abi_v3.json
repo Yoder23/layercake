@@ -1,0 +1,12 @@
+{
+  "format": "layercake-canonical-bpe-direct-neural-core-abi/1",
+  "status": "POSTRELEASE_CONSTRUCT_CANDIDATE",
+  "version": "lc-direct-neural-core/3",
+  "scope": "One signed UTF-8-concatenative BPE neural artifact executing as the LayerCake English core",
+  "external_boundary": {"input": "UTF-8 bytes", "output": "UTF-8 bytes", "strict_input_validation": true, "strict_output_validation": true, "lossless_roundtrip_required": true},
+  "action_contract": {"tokenizer": "layercake-utf8-concatenative-bpe/1", "every_fixed_action_is_complete_valid_utf8": true, "every_pointer_action_is_complete_valid_utf8": true, "token_pieces_concatenate_exactly": true, "normalization": "NONE", "private_representation": "portable_token_plan_pointer_transformer"},
+  "artifact": {"cake_type": "portable_decoder", "domain_marker": "english-core", "composition": "direct_core_only_no_router", "non_executable": true, "safetensors_only": true, "signed": true, "content_addressed": true, "unchanged_after_installation": true},
+  "execution": {"complete_prompt_encoded_once": true, "persistent_incremental_state": true, "completed_context_recomputation_allowed": false, "teacher_at_inference_allowed": false, "receiver_training_or_calibration_allowed": false, "core_only_no_router": true},
+  "compatibility": {"v1_or_v2_packages_accepted": false, "external_artifact_conformance_required": true, "sealed_release_rewritten": false, "existing_capability_packages_rewritten": false},
+  "claim_boundary": {"construct_pass_may_prove": ["strict UTF-8 concatenative BPE actions", "signed non-executable installation", "exact artifact identity", "teacher-free host execution", "persistent incremental state", "zero receiver learning"], "construct_pass_may_not_prove": ["English quality", "teacher-relative quality", "CPU or GPU performance", "external acquisition success", "ABI superiority"]}
+}

@@ -404,3 +404,8 @@ learning, all 613 tests, and the unchanged Phase 0-8 verifier. The only next
 gate is a real independently validated external artifact targeting v2. Do not
 claim English quality, performance, or ABI acquisition before that same
 artifact is certified.
+
+The separately versioned `lc-direct-neural-core/3` BPE host construct is now
+preregistered. It is generic LayerCake hosting work and imports no external
+acquisition evidence or tokenizer. Execute only its construct gates; a pass may
+open external-artifact conformance but inherits no English quality or speed.
