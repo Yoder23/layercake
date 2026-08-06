@@ -376,3 +376,11 @@ role, tamper, and zero-learning gates. It is not an English or performance
 certificate. The only authorized next gate is acceptance and same-artifact
 recertification of an independently validated external English artifact. Do
 not reopen hidden-state bridge or semantic-residual sweeps.
+
+The only currently open post-release task is the read-only UTF-8 action-
+atomicity audit in
+`moonshot/postrelease_direct_neural_core_utf8_audit_preregistration_v1.json`.
+It imports no ABI evidence and changes no sealed artifact. If v1 can emit or
+pass through invalid UTF-8 despite its declared boundary, preserve the original
+construct result but fail v1 UTF-8 conformance and require a separately
+versioned extension repair.

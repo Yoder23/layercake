@@ -1,0 +1,35 @@
+{
+  "format": "layercake-postrelease-direct-core-utf8-audit-preregistration/1",
+  "status": "PREREGISTERED_READ_ONLY",
+  "effective_date": "2026-08-06",
+  "historical_phase_evidence_changed": false,
+  "objective": "Determine locally whether lc-direct-neural-core/1 guarantees that every autonomous fixed or pointer action realizes a complete valid UTF-8 sequence and whether the host rejects invalid bytes before the declared output boundary.",
+  "scope": {
+    "external_abi_evidence_imported": false,
+    "training": false,
+    "checkpoint_or_package_changed": false,
+    "sealed_phase_recertification": false,
+    "v1_construct_identity_changed": false
+  },
+  "probes": {
+    "unicode_character": "LEFT DOUBLE QUOTATION MARK U+201C",
+    "expected_utf8_hex": "e2809c",
+    "tokenizer_action_atomicity": "Split the valid character using the exact v1 tokenizer, realize each resulting action separately, and strictly decode each result as UTF-8.",
+    "combined_roundtrip_control": "Realize the full ordered action sequence and require exact U+201C roundtrip.",
+    "host_boundary": "Give the exact v1 host a fixture module returning one invalid byte and record whether generate rejects it before returning."
+  },
+  "gates": {
+    "every_action_realizes_valid_utf8": true,
+    "host_fails_closed_before_invalid_output": true,
+    "combined_declared_text_roundtrips": true
+  },
+  "decision_rule": "If either action atomicity or host fail-closed validation fails, mark v1 UTF-8 output conformance failed while preserving the original construct scope. Any repair must be a separately versioned post-release interface; do not edit sealed model/runtime files or relabel old artifacts.",
+  "bindings": {
+    "moonshot/canonical_direct_neural_core_abi_v1.json": "ed32179655dc8991610a1b47e55d8c8ccc80bb7f35f74764cbd54e79bc520213",
+    "layercake/portable_token_plan.py": "0988a83f65d96e928a57edf1f5a565c334ab6e66579b9e6bca21f3c76b920a14",
+    "layercake_extensions/direct_neural_core.py": "1854355b50c9593da221a075a9c07ff5b1bf0da333e980ba730d43f8e51f80e9",
+    "layercake/evaluation/direct_core_utf8_audit.py": "d50a078ab5c8c5b5e6924000022a7878193863e42e8acf4d2720e136023b90fd",
+    "tests/models/test_direct_neural_core_utf8_audit.py": "d7aeabfd3d929ea40bd286ccf12fed7144ada99337cfea60ca888922b10393e4"
+  },
+  "claim_boundary": "This audit can establish only local v1 UTF-8 conformance or a bounded host/action-surface gap. It cannot assess ABI acquisition, English quality, teacher parity, or performance."
+}
