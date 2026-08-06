@@ -15,7 +15,7 @@ import torch
 from layercake.cake.manifest import CakeManifest
 from layercake.cake.package import build_package, tensor_specs
 from layercake.cake.signing import generate_keypair
-from layercake.models.direct_neural_core import (
+from layercake_extensions.direct_neural_core import (
     DIRECT_NEURAL_CORE_ABI_SHA256,
     DIRECT_NEURAL_CORE_ABI_VERSION,
     DirectNeuralCoreError,
@@ -200,7 +200,7 @@ def execute(repo: Path, protocol_path: Path) -> dict[str, Any]:
 
 def main(argv: Iterable[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--protocol", default="moonshot/postrelease_direct_neural_core_host_execution_v2.json")
+    parser.add_argument("--protocol", default="moonshot/postrelease_direct_neural_core_host_execution_repair1_v3.json")
     parser.add_argument("--output", default="results/moonshot/postrelease/direct_neural_core_host_construct_v1.json")
     args = parser.parse_args(argv)
     repo = Path.cwd().resolve()

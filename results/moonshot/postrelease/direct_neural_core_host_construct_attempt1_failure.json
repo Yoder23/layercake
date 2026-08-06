@@ -1,0 +1,13 @@
+{
+  "format": "layercake-direct-neural-core-host-construct-execution-failure/1",
+  "date": "2026-08-06",
+  "status": "FAILED_BEFORE_PACKAGE_EXECUTION_SEALED_INVALIDATION_DETECTED",
+  "protocol": "moonshot/postrelease_direct_neural_core_host_execution_v2.json",
+  "failure": "sealed Phase 6 typed evidence failed: Phase 6 dependent components changed after freeze: ['core_architecture', 'output_contract', 'patching_contract']",
+  "cause": "The additive host module was placed under layercake/models, which is deliberately covered by the sealed invalidation matrix.",
+  "scientific_result_produced": false,
+  "construct_package_created": false,
+  "training_performed": false,
+  "external_artifact_used": false,
+  "authorized_repair": "Relocate the unchanged additive host into an isolated post-release extension namespace, update imports, bind the new hashes, and rerun every unchanged construct gate."
+}

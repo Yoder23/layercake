@@ -8,7 +8,7 @@ import torch
 from layercake.cake.manifest import CakeManifest
 from layercake.cake.package import build_package, tensor_specs
 from layercake.cake.signing import generate_keypair
-from layercake.models.direct_neural_core import (
+from layercake_extensions.direct_neural_core import (
     DIRECT_NEURAL_CORE_ABI_SHA256,
     DIRECT_NEURAL_CORE_ABI_VERSION,
     DirectNeuralCoreError,
