@@ -33,6 +33,13 @@ English behavior, immutability, teacher absence, CPU/CUDA execution, persistent
 state, CPU speed/TTFT/RSS/memory, and future domain compatibility. No evidence
 may be borrowed from the sealed core or existing capability packages.
 
+Post-release UTF-8 audit: the v1 package construct remains valid, but v1 UTF-8
+output conformance is failed. Its byte-regex tokenizer can expose fragments of
+a multibyte character as separate actions, and the host does not validate final
+bytes. See `POSTRELEASE_DIRECT_NEURAL_CORE_UTF8_AUDIT.md`. External English
+artifacts must target a separately certified Unicode-atomic successor rather
+than v1.
+
 Evidence:
 
 - `moonshot/canonical_direct_neural_core_abi_v1.json`

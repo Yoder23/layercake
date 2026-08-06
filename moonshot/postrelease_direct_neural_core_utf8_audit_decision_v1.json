@@ -1,0 +1,29 @@
+{
+  "format": "layercake-postrelease-direct-core-utf8-audit-decision/1",
+  "status": "COMPLETE_FAILED_V1_UTF8_CONFORMANCE_REPAIR_REQUIRED",
+  "status_date": "2026-08-06",
+  "preregistration": "moonshot/postrelease_direct_neural_core_utf8_audit_preregistration_v1.json",
+  "result": "results/moonshot/postrelease/direct_neural_core_utf8_audit_v1.json",
+  "result_sha256": "b90ed1c501df9a39db3fe44f2eb3d291d0621ab05d4a8d2179a8e3822cbed5d3",
+  "gates": {
+    "every_action_realizes_valid_utf8": false,
+    "host_fails_closed_before_invalid_output": false,
+    "combined_declared_text_roundtrips": true
+  },
+  "decision": {
+    "v1_construct_scope_preserved": true,
+    "v1_utf8_output_conformance": "FAILED",
+    "v1_artifacts_eligible_for_v2_relabeling": false,
+    "separate_v2_repair_authorized_for_preregistration": true,
+    "repair_requirements": [
+      "Every fixed action is one complete valid UTF-8 sequence.",
+      "Every source-pointer action is one complete valid UTF-8 sequence.",
+      "Invalid UTF-8 input is rejected before model execution.",
+      "Invalid UTF-8 output is rejected before crossing the host boundary.",
+      "The interface, tokenizer, and package ABI receive new identities.",
+      "No sealed Phase 0-8 component or evidence is modified.",
+      "Existing v1 packages are rejected rather than silently upgraded."
+    ]
+  },
+  "claim_boundary": "This decision closes a post-release v1 UTF-8 conformance audit only. It neither invalidates the historical construct-only result nor certifies a replacement, English quality, ABI acquisition, or performance."
+}

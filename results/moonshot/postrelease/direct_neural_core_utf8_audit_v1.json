@@ -1,0 +1,66 @@
+{
+  "canonical": {
+    "declared_output": "UTF-8 bytes",
+    "path": "moonshot/canonical_direct_neural_core_abi_v1.json",
+    "sha256": "ed32179655dc8991610a1b47e55d8c8ccc80bb7f35f74764cbd54e79bc520213"
+  },
+  "claim_boundary": "This local audit proves a UTF-8 conformance gap in the post-release v1 direct-core action surface. It does not import ABI evidence, assess English quality, or alter any sealed Phase 0-8 certificate.",
+  "decision": {
+    "external_artifact_retraining_required": true,
+    "reason": "Changing action atomicity changes tokenizer identity and model action semantics; an old checkpoint cannot inherit v2 conformance.",
+    "repair_required": true,
+    "required_repair": "A separately versioned interface must make every fixed and pointer lexeme a complete valid UTF-8 sequence and must strictly validate output before it crosses the host boundary.",
+    "v1_construct_invalidated": false,
+    "v1_utf8_output_conformance": "FAILED"
+  },
+  "evidence_sha256": "11ef2d0d26dda9039c864bfe739442b0aea29042c4ab44c73e4adf76de0346da",
+  "format": "layercake-postrelease-direct-core-utf8-audit/1",
+  "gates": {
+    "combined_declared_text_roundtrips": true,
+    "every_action_realizes_valid_utf8": false,
+    "host_fails_closed_before_invalid_output": false
+  },
+  "historical_release_changed": false,
+  "host_probe": {
+    "fixture_returned_hex": "9c",
+    "fixture_valid_utf8": false,
+    "v1_host_passed_bytes_through": true,
+    "v1_host_rejected_invalid_utf8_before_boundary": false
+  },
+  "status": "FAIL_V1_UTF8_ACTION_ATOMICITY_AND_HOST_VALIDATION",
+  "tokenizer_probe": {
+    "character": "\u201c",
+    "combined_roundtrip_hex": "e2809c",
+    "combined_roundtrip_text": "\u201c",
+    "fragment_count": 3,
+    "fragments": [
+      {
+        "action": 6,
+        "decode_error": "UnicodeDecodeError: unexpected end of data",
+        "fragment_hex": "e2",
+        "valid_utf8": false
+      },
+      {
+        "action": 4,
+        "decode_error": "UnicodeDecodeError: invalid start byte",
+        "fragment_hex": "80",
+        "valid_utf8": false
+      },
+      {
+        "action": 5,
+        "decode_error": "UnicodeDecodeError: invalid start byte",
+        "fragment_hex": "9c",
+        "valid_utf8": false
+      }
+    ],
+    "invalid_standalone_fragments": 3,
+    "lossless_sequence_roundtrip": true,
+    "split_fragment_hex": [
+      "e2",
+      "80",
+      "9c"
+    ],
+    "unicode_atomic_actions": false,
+    "utf8_hex": "e2809c"
+  }
+}

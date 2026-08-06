@@ -377,10 +377,10 @@ certificate. The only authorized next gate is acceptance and same-artifact
 recertification of an independently validated external English artifact. Do
 not reopen hidden-state bridge or semantic-residual sweeps.
 
-The only currently open post-release task is the read-only UTF-8 action-
-atomicity audit in
-`moonshot/postrelease_direct_neural_core_utf8_audit_preregistration_v1.json`.
-It imports no ABI evidence and changes no sealed artifact. If v1 can emit or
-pass through invalid UTF-8 despite its declared boundary, preserve the original
-construct result but fail v1 UTF-8 conformance and require a separately
-versioned extension repair.
+The read-only UTF-8 action-atomicity audit is complete failed under
+`moonshot/postrelease_direct_neural_core_utf8_audit_decision_v1.json`. V1 splits
+multibyte characters into independently selectable invalid byte fragments and
+does not validate output before returning it. Preserve the original construct
+scope, but do not claim v1 UTF-8 conformance or relabel a v1 package. A
+separately preregistered v2 extension may make actions Unicode-atomic and add
+strict input/output validation without editing sealed model/runtime paths.
