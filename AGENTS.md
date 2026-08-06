@@ -384,3 +384,9 @@ does not validate output before returning it. Preserve the original construct
 scope, but do not claim v1 UTF-8 conformance or relabel a v1 package. A
 separately preregistered v2 extension may make actions Unicode-atomic and add
 strict input/output validation without editing sealed model/runtime paths.
+
+That v2 implementation is now frozen under
+`moonshot/postrelease_unicode_direct_neural_core_implementation_v2.json`.
+Execute only its deterministic construct. A pass remains construct-only and
+does not authorize an old checkpoint, inherit English quality/performance, or
+import ABI research into this repository.

@@ -1,0 +1,66 @@
+{
+  "format": "layercake-postrelease-unicode-direct-core-implementation/1",
+  "status": "PREREGISTERED_IMPLEMENTATION_FROZEN",
+  "effective_date": "2026-08-06",
+  "parent_audit": "moonshot/postrelease_direct_neural_core_utf8_audit_decision_v1.json",
+  "historical_phase_evidence_changed": false,
+  "objective": "Implement and construct-certify a separately versioned Unicode-atomic direct English-core host that closes the measured v1 UTF-8 action and boundary gaps without editing sealed release components.",
+  "interface": {
+    "version": "lc-direct-neural-core/2",
+    "canonical_contract": "moonshot/canonical_unicode_direct_neural_core_abi_v2.json",
+    "canonical_sha256": "d34ba8a41815b06820988f501aab920adef627b6929a058cc9fe40528c92624f",
+    "tokenizer": "layercake-unicode-atomic-lexeme-pointer/1",
+    "token_plan": "layercake-unicode-atomic-token-plan/1",
+    "v1_packages_accepted": false,
+    "old_checkpoints_relabelable": false
+  },
+  "required_gates": {
+    "sealed_campaign_verify_all": true,
+    "unicode_samples": [
+      "smart punctuation and accented Latin",
+      "CJK",
+      "combining sequence",
+      "Arabic",
+      "Devanagari",
+      "emoji ZWJ sequence"
+    ],
+    "every_sample_roundtrips_exact_utf8": true,
+    "every_sample_action_valid_utf8": true,
+    "every_fixed_action_valid_utf8": true,
+    "invalid_input_rejected_before_model": true,
+    "invalid_output_rejected_before_boundary": true,
+    "same_signed_package_cpu_and_cuda": true,
+    "same_state_cpu_and_cuda": true,
+    "persistent_incremental_state": true,
+    "exact_install_verify_remove_reinstall": true,
+    "receiver_training_steps": 0,
+    "receiver_calibration_runs": 0,
+    "teacher_present": false,
+    "v1_package_rejected": true,
+    "wrong_role_rejected": true,
+    "tamper_rejected": true
+  },
+  "implementation_boundaries": {
+    "allowed_new_paths": [
+      "layercake_extensions/unicode_direct_neural_core.py",
+      "layercake/evaluation/unicode_direct_core_construct.py",
+      "tests/models/test_unicode_direct_neural_core.py",
+      "moonshot/canonical_unicode_direct_neural_core_abi_v2.json",
+      "results/moonshot/postrelease/unicode_direct_neural_core_construct_v1.json"
+    ],
+    "sealed_model_paths_changed": false,
+    "sealed_runtime_paths_changed": false,
+    "package_schema_changed": false,
+    "v1_interface_changed": false,
+    "external_acquisition_code_or_evidence_imported": false
+  },
+  "bindings": {
+    "moonshot/postrelease_direct_neural_core_utf8_audit_decision_v1.json": "f08250096f301909386c724b0d647e45ef0abb0a96c667ecb3cdf1f430dafa2e",
+    "moonshot/canonical_unicode_direct_neural_core_abi_v2.json": "d34ba8a41815b06820988f501aab920adef627b6929a058cc9fe40528c92624f",
+    "layercake_extensions/unicode_direct_neural_core.py": "4cfc2d5957aaa440d5cc90846f6e1a09ef045e3e0f464abce81e0525aed7648b",
+    "tests/models/test_unicode_direct_neural_core.py": "7f77964093bc0a1dd203c766923ced9df136e2b6111bd908ed7fb89d4a933661",
+    "layercake/evaluation/unicode_direct_core_construct.py": "eaec189cbe8cd45c3582f1da5253c83f1ea53ff8e3f239d6a4b696a6443eb877"
+  },
+  "decision_rule": "Pass only if the clean sealed campaign remains valid and every Unicode, package, device, identity, lifecycle, invalid-input, invalid-output, v1-rejection, role, tamper, and zero-learning gate passes on the same deterministic signed fixture package. Otherwise preserve the failure and do not authorize external artifacts.",
+  "claim_boundary": "A pass certifies a Unicode-safe host construct only. It cannot certify English quality, external acquisition, ABI transfer, matched performance, or LoRA/distillation superiority."
+}
