@@ -1,0 +1,42 @@
+{
+  "format": "layercake-external-capability-host-interface-audit/1",
+  "status": "PREREGISTERED_READ_ONLY_POSTRELEASE_AUDIT",
+  "date": "2026-08-06",
+  "supersedes": "moonshot/postrelease_external_capability_host_interface_audit_repair1_v2.json",
+  "objective": "Re-audit the host boundary after the isolated direct-neural-core construct and determine the exact remaining external-artifact acceptance work.",
+  "scope": "LayerCake host interfaces and preserved LayerCake evidence only",
+  "expected_direct_core_interface_present": true,
+  "sealed_campaign_mutation_allowed": false,
+  "external_acquisition_code_allowed": false,
+  "training_allowed": false,
+  "runtime_mutation_allowed": false,
+  "final_test_access_allowed": false,
+  "interfaces": [
+    "ad_hoc_hidden_state_hooks",
+    "lc-semantic-gpt2-768/1",
+    "lc-direct-neural-decoder/1",
+    "lc-direct-neural-core/1"
+  ],
+  "decision_rule": "Report the host scope gap repaired only when the construct result passes every gate while retaining explicit false values for English quality, performance, and external artifact acceptance. The next gate is acceptance and full recertification of an independently validated external artifact.",
+  "bindings": {
+    "layercake/evaluation/external_capability_host_audit.py": "bb7a1ede751857277a5524aa0e5531f4aeda4b3b64b53bf0fe39a0b43d192af3",
+    "tests/evaluation/test_external_capability_host_audit.py": "bb4ca839c08554356cf90471c92e15ee5468d6a235c64a29a7d83e1389bb7d1b",
+    "moonshot/postrelease_external_capability_host_interface_audit_repair1_v2.json": "0b94ee04ae68aa9e93251b6bd3e71c38b405d5abbe048034d1d26415d9bba8fb",
+    "results/moonshot/postrelease/external_capability_host_interface_audit_v1.json": "c15b05aeadcc2b9c93d18c43296547a9c273e53a22c6e37ea4f900711d22fce4",
+    "moonshot/canonical_direct_neural_core_abi_v1.json": "ed32179655dc8991610a1b47e55d8c8ccc80bb7f35f74764cbd54e79bc520213",
+    "layercake_extensions/direct_neural_core.py": "1854355b50c9593da221a075a9c07ff5b1bf0da333e980ba730d43f8e51f80e9",
+    "moonshot/postrelease_direct_neural_core_host_execution_repair1_v3.json": "f14127db1e87f2d45ee978a2c8b5a9216bc738e6ff03b3216cbfdd469ed00d7d",
+    "results/moonshot/postrelease/direct_neural_core_host_construct_v1.json": "21bf013adcfcfabaae3935f4ed355c744108e48f46667ab19514f7ab3f1f02d9",
+    "moonshot/phase2_canonical_semantic_abi_r3.json": "d024de52144a2d797d0501acb7deb55575ffca7e33f72900beff599cf0a97761",
+    "moonshot/phase4_canonical_direct_decoder_abi_v1.json": "de765899700aefe22bfe6c9d00ed5b0c1f87a7ef864cf7211aa8aa4491a0742a",
+    "results/moonshot/phase4/direct_decoder_transfer_certificate.json": "c72d37ad95feeb763190ca6ffad3edbb5cc1bf6443bb957f5c75c48b416b131a",
+    "moonshot/phase4_semantic_action_plan_lexical_repair_decision.json": "7fd99600f9fd05b9fcc319c1ec753b6383926ad85e1ebf8d1989bf362e53e2f8",
+    "results/moonshot/phase4/branch_ledger.json": "01a7e64da9f6bbffb791e0a95a5a1ad576624a437cef4b1475a90f9ba154b066",
+    "layercake/semantic_token_plan.py": "71a2c470e92c69d71663b6117609237fbf216129045bbeb528b9315b69f1c5f2",
+    "layercake/semantic_action_plan.py": "f0dc42be7a83588c76205031ef3cb375522ca605d40c58e2d4e270c7906dce1a",
+    "layercake/portable_token_plan.py": "0988a83f65d96e928a57edf1f5a565c334ab6e66579b9e6bca21f3c76b920a14",
+    "layercake/models/portable_decoder.py": "90797d0b5f168aad55ee934936a70af57c0f9f1df7329501342c81ffd77d7b13",
+    "results/moonshot/phase8/release_certificate.json": "963b2392f0be226dcba1973c07e19c75f79ff005c629c6284ab51dcd6e7e26f6"
+  },
+  "claim_boundary": "The repaired construct proves host mechanics only. It does not certify English, performance, domain compatibility, an external artifact, or ABI superiority."
+}

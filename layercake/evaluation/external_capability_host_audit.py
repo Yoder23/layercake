@@ -58,6 +58,9 @@ def _semantic_branch(ledger: Mapping[str, Any]) -> Mapping[str, Any]:
 
 def audit(root: Path, protocol_path: Path) -> dict[str, Any]:
     protocol, protocol_sha = load_protocol(root, protocol_path)
+    expected_direct_core = bool(
+        protocol.get("expected_direct_core_interface_present", False)
+    )
     semantic = _json(root / "moonshot/phase2_canonical_semantic_abi_r3.json")
     direct = _json(root / "moonshot/phase4_canonical_direct_decoder_abi_v1.json")
     direct_certificate = _json(root / "results/moonshot/phase4/direct_decoder_transfer_certificate.json")
@@ -65,6 +68,11 @@ def audit(root: Path, protocol_path: Path) -> dict[str, Any]:
     branch = _semantic_branch(_json(root / "results/moonshot/phase4/branch_ledger.json"))
     portable_source = (root / "layercake/portable_token_plan.py").read_text(encoding="utf-8")
 
+    direct_core_path = root / "moonshot/canonical_direct_neural_core_abi_v1.json"
+    direct_core_present = direct_core_path.exists()
+    direct_core = _json(direct_core_path) if direct_core_present else None
+    construct_path = root / "results/moonshot/postrelease/direct_neural_core_host_construct_v1.json"
+    construct = _json(construct_path) if construct_path.exists() else None
     facts = {
         "sealed_semantic_interface_is_residual_only": semantic.get("attachment", {}).get("cake_output")
         == "semantic residual with identical shape",
@@ -93,15 +101,31 @@ def audit(root: Path, protocol_path: Path) -> dict[str, Any]:
         and action_decision.get("lexical_validation", {}).get("minimum_exact_response_successes") == 231,
         "direct_decoder_has_prefill_api": "def prefill_bytes(" in portable_source,
         "direct_decoder_has_incremental_step_api": "def decode_step(" in portable_source,
-        "signed_direct_english_core_interface_absent": not (root / "moonshot/canonical_direct_neural_core_abi_v1.json").exists(),
+        "direct_core_interface_presence_matches_protocol": direct_core_present
+        == expected_direct_core,
     }
+    if expected_direct_core:
+        facts.update(
+            {
+                "direct_core_interface_versioned": direct_core is not None
+                and direct_core.get("version") == "lc-direct-neural-core/1",
+                "direct_core_construct_passed": construct is not None
+                and construct.get("status") == "PASS_CONSTRUCT_ONLY"
+                and all(construct.get("gates", {}).values()),
+                "direct_core_construct_claim_limited": construct is not None
+                and construct.get("english_quality_certified") is False
+                and construct.get("performance_certified") is False,
+            }
+        )
     if not all(facts.values()):
         failed = [name for name, passed in facts.items() if not passed]
         raise ExternalCapabilityHostAuditError(f"host-interface audit fact failed: {failed}")
 
     result: dict[str, Any] = {
         "format": "layercake-external-capability-host-interface-audit-result/1",
-        "status": "HOST_SCOPE_GAP_DIRECT_ENGLISH_CORE_ARTIFACT_INTERFACE_ABSENT",
+        "status": "HOST_CONSTRUCT_READY_EXTERNAL_ARTIFACT_NOT_YET_ACCEPTED"
+        if expected_direct_core
+        else "HOST_SCOPE_GAP_DIRECT_ENGLISH_CORE_ARTIFACT_INTERFACE_ABSENT",
         "protocol": {"path": protocol_path.name, "sha256": protocol_sha},
         "facts": facts,
         "interface_matrix": {
@@ -124,15 +148,26 @@ def audit(root: Path, protocol_path: Path) -> dict[str, Any]:
                 "external_english_core_role_certified": False,
                 "finding": "proven for selected capability cakes, not for replacing or supplying the English core",
             },
+            "lc-direct-neural-core/1": {
+                "canonical": expected_direct_core,
+                "byte_facing": expected_direct_core,
+                "persistent_incremental_state": expected_direct_core,
+                "signed_exact_transfer_construct": expected_direct_core,
+                "external_english_artifact_accepted": False,
+                "finding": "host construct passes; English quality and performance require an independently validated external artifact",
+            },
         },
         "ownership": {
             "sealed_layercake_regression": False,
             "general_layercake_quality_failure": False,
-            "host_interface_scope_gap": True,
+            "host_interface_scope_gap": not expected_direct_core,
+            "host_construct_ready": expected_direct_core,
             "external_extraction_or_labeling_failure_evaluated": False,
         },
         "required_repair": {
-            "design": "version a signed byte-facing self-causal direct neural core artifact interface using existing package safety and incremental execution primitives",
+            "design": "accept and recertify an independently validated external English artifact"
+            if expected_direct_core
+            else "version a signed byte-facing self-causal direct neural core artifact interface using existing package safety and incremental execution primitives",
             "must_not": [
                 "reuse ad hoc block hooks",
                 "claim semantic-residual fusion",
@@ -168,8 +203,8 @@ def write_result(result: Mapping[str, Any], path: Path) -> None:
 
 def main(argv: Iterable[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--protocol", default="moonshot/postrelease_external_capability_host_interface_audit_repair1_v2.json")
-    parser.add_argument("--output", default="results/moonshot/postrelease/external_capability_host_interface_audit_v1.json")
+    parser.add_argument("--protocol", default="moonshot/postrelease_external_capability_host_interface_audit_successor_v3.json")
+    parser.add_argument("--output", default="results/moonshot/postrelease/external_capability_host_interface_audit_v2.json")
     parser.add_argument("--write", action="store_true")
     args = parser.parse_args(argv)
     root = Path.cwd().resolve()

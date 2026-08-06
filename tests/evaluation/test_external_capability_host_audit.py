@@ -10,14 +10,15 @@ from layercake.evaluation.external_capability_host_audit import (
 
 
 ROOT = Path(__file__).resolve().parents[2]
-PROTOCOL = ROOT / "moonshot/postrelease_external_capability_host_interface_audit_repair1_v2.json"
+PROTOCOL = ROOT / "moonshot/postrelease_external_capability_host_interface_audit_successor_v3.json"
 
 
-def test_sealed_host_interface_audit_identifies_scope_gap():
+def test_sealed_host_interface_audit_identifies_repaired_construct_boundary():
     result = audit(ROOT, PROTOCOL)
-    assert result["status"] == "HOST_SCOPE_GAP_DIRECT_ENGLISH_CORE_ARTIFACT_INTERFACE_ABSENT"
+    assert result["status"] == "HOST_CONSTRUCT_READY_EXTERNAL_ARTIFACT_NOT_YET_ACCEPTED"
     assert result["ownership"]["sealed_layercake_regression"] is False
-    assert result["ownership"]["host_interface_scope_gap"] is True
+    assert result["ownership"]["host_interface_scope_gap"] is False
+    assert result["ownership"]["host_construct_ready"] is True
     assert result["runtime_changed"] is False
 
 
