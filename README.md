@@ -92,6 +92,14 @@ C:\Python310\python.exe -m layercake.moonshot_final verify
 in this checkout; remote publication is intentionally not claimed by the
 verifier.
 
+Post-release external English cores may target the construct-certified
+`lc-direct-neural-core/4` interface when their declarative tokenizer requires
+normalization and sequence decoding. V4 preserves the UTF-8 byte boundary,
+shifts external token IDs above LayerCake's four reserved actions, prohibits
+pointer actions, and performs no receiver learning. This is a hosting interface
+only; an external artifact must independently prove English quality and
+performance before LayerCake can inherit either claim.
+
 ## Architecture at a glance
 
 ```text
