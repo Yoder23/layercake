@@ -1,0 +1,12 @@
+{
+  "format": "layercake-canonical-decoder-direct-neural-core-abi/1",
+  "status": "POSTRELEASE_CONSTRUCT_CANDIDATE",
+  "version": "lc-direct-neural-core/4",
+  "scope": "One signed decoder-aware external-token neural artifact executing as the LayerCake English core",
+  "external_boundary": {"input": "UTF-8 bytes", "output": "UTF-8 bytes", "strict_input_validation": true, "strict_output_validation": true, "per-request_input_roundtrip_required": true},
+  "action_contract": {"tokenizer": "layercake-decoder-aware-external-tokenizer/1", "teacher_token_ids_shifted_by_host_special_count": 4, "host_special_ids": {"pad": 0, "bos": 1, "eos": 2, "unknown_source": 3}, "fixed_actions_decode_as_one_sequence": true, "pointer_actions": "PROHIBITED", "private_representation": "portable_token_plan_fixed_action_transformer"},
+  "artifact": {"cake_type": "portable_decoder", "domain_marker": "english-core", "composition": "direct_core_only_no_router", "non_executable": true, "safetensors_only": true, "signed": true, "content_addressed": true, "unchanged_after_installation": true},
+  "execution": {"complete_prompt_encoded_once": true, "persistent_incremental_state": true, "completed_context_recomputation_allowed": false, "teacher_at_inference_allowed": false, "receiver_training_or_calibration_allowed": false, "core_only_no_router": true},
+  "compatibility": {"v1_v2_or_v3_packages_accepted": false, "declarative_tokenizer_json_only": true, "external_artifact_conformance_required": true, "sealed_release_rewritten": false, "existing_capability_packages_rewritten": false},
+  "claim_boundary": {"construct_pass_may_prove": ["decoder-aware tokenizer execution", "collision-free teacher action mapping", "strict UTF-8 byte boundary", "signed non-executable installation", "exact artifact identity", "teacher-free host execution", "persistent incremental state", "zero receiver learning"], "construct_pass_may_not_prove": ["English quality", "teacher-relative quality", "CPU or GPU performance", "external acquisition success", "ABI superiority"]}
+}

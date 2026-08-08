@@ -416,3 +416,13 @@ unchanged Phase 0-8 verifier, exact UTF-8 BPE concatenation, same-package CPU/
 CUDA identity, persistent state, lifecycle, and zero learning. Its next gate is
 one real independently validated external v3 artifact; it remains construct-
 only and inherits no acquisition, English-quality, or performance result.
+
+A separate ABI-side read-only audit has identified a measured interface need:
+exact teacher-native actions require a declarative tokenizer graph with
+normalization, post-processing, sequence decoding, and byte fallback, which v3
+correctly rejects. The isolated `lc-direct-neural-core/4` decoder-aware host is
+now preregistered under
+`moonshot/postrelease_decoder_direct_neural_core_preregistration_v9.json`.
+Execute only its construct gates. It shifts every external token ID by the four
+reserved host actions and prohibits pointer actions. A pass remains construct-
+only and imports no ABI evidence or quality claim.
