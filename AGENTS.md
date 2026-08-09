@@ -20,6 +20,16 @@ all 622 tests, and the unchanged Phase 0-8 verifier. Its next gate is one
 independently validated external v5 artifact evaluated for quality and
 performance as the same immutable payload. This remains construct-only.
 
+The isolated `lc-direct-neural-core/6` tied decoder-only causal host now passes
+its generic construct under `moonshot/postrelease_causal_core_decision_v14.json`.
+It provides a decoder-aware external-token boundary, tied input/output
+vocabulary, strict UTF-8 realization, and persistent per-layer incremental
+state. The same signed package passes CPU/CUDA identity, lifecycle, zero
+learning, all 625 tests, and the unchanged Phase 0-8 verifier. Its next gate is
+one independently validated external v6 artifact evaluated for quality and
+performance as the same immutable payload. This remains construct-only and
+imports no external acquisition implementation or evidence.
+
 The final release does not claim physical mobile performance, calibrated energy
 dominance, GPU-training dominance, latent neural fusion, or faster from-scratch
 English acquisition. ABI extraction remains a separate repository and evidence
