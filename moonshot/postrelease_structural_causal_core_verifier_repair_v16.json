@@ -1,0 +1,37 @@
+{
+  "format": "layercake-postrelease-structural-causal-core-construct/1",
+  "protocol_id": "layercake-postrelease-structural-causal-core-verifier-repair-v16",
+  "status": "PREREGISTERED_CONSTRUCT_ONLY",
+  "effective_date": "2026-08-09",
+  "historical_release_changed": false,
+  "sealed_phase_evidence_changed": false,
+  "repair_scope": "Verifier stimulus only. V15 used an intentional EOS-first lifecycle fixture and therefore could not exercise cache growth. V16 sets one valid nonterminal action in the already constructed state before checking one cache append. Model, ABI, package, implementation, gates, and thresholds are unchanged.",
+  "preserved_failure": "results/moonshot/postrelease_structural_causal_core_construct_v15.json",
+  "interface": "lc-direct-neural-core/7",
+  "interface_sha256": "e36ac987f0c3837ccaf56dee2d4e91542666a755657c3b688757a12aedfa5711",
+  "canonical_abi": "moonshot/canonical_structural_causal_core_abi_v7.json",
+  "objective": "Re-execute the exact v7 construct checks with a nonterminal incremental-cache stimulus.",
+  "required_checks": [
+    "canonical ABI identity",
+    "signed exclusive English-core package role",
+    "exact 14,654,784-parameter target construct",
+    "CPU package and tensor identity",
+    "first and second incremental predictions equal full causal forward",
+    "per-layer rotary key/value state grows by exactly one cached position",
+    "strict UTF-8 byte boundary",
+    "install verify remove reinstall identity",
+    "zero receiver training and calibration",
+    "same immutable package executes on CUDA"
+  ],
+  "decision_rule": "Pass only if every unchanged construct check passes after the isolated verifier-stimulus repair. Complete suite and sealed verifier remain independently required before the decision document.",
+  "bindings": {
+    "layercake/structural_causal_core.py": "c462ff60c39f59f2af3cbe6578a5ef34f9dc7d4a34853dec3f73f79844dd68fb",
+    "layercake_extensions/structural_causal_core.py": "31aa7058d642eb437468f359eaaf7b31a98c78f36d189354ddb7efb1fad0ca6e",
+    "tests/models/test_structural_causal_core.py": "3946c502f81d25d36a26338146a66d2b7c8439e65e795b224ff369eaa97c6f81",
+    "layercake/evaluation/structural_causal_core_construct.py": "f9d8f39eb23fd3384446e67b9235b36a1d065581b181b911901c8339fe15971d",
+    "moonshot/canonical_structural_causal_core_abi_v7.json": "e36ac987f0c3837ccaf56dee2d4e91542666a755657c3b688757a12aedfa5711",
+    "moonshot/postrelease_structural_causal_core_preregistration_v15.json": "a72d7913c92778bbb2760295c5a8f35b34990f505378e9f4c3f5d0d496882d7b",
+    "results/moonshot/postrelease_structural_causal_core_construct_v15.json": "e84982b87de9fb9b0875e5caf30f46585793a143daeb3fa4e102c8ea92e01c11"
+  },
+  "claim_boundary": "Verifier repair for the generic construct only; no acquisition, quality, performance, or release claim."
+}

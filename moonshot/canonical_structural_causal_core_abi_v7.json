@@ -1,0 +1,41 @@
+{
+  "abi_version": "lc-direct-neural-core/7",
+  "artifact_role": "english-core",
+  "cake_type": "portable_decoder",
+  "execution": {
+    "architecture": "untied_phi_compatible_structural_causal_decoder",
+    "attention": "full_multihead_rotary_key_value_cache",
+    "activation": "swiglu",
+    "normalization": "rmsnorm",
+    "incremental_state": "persistent_per_layer_rotary_keys_and_values",
+    "output_selection": "autonomous_neural_argmax",
+    "pointer_actions": "PROHIBITED",
+    "receiver_calibration": "PROHIBITED",
+    "receiver_training": "PROHIBITED",
+    "source_teacher_at_inference": "PROHIBITED",
+    "input_output_embeddings_tied": false
+  },
+  "external_boundary": {
+    "input": "UTF-8 bytes",
+    "output": "UTF-8 bytes",
+    "output_validation": "strict UTF-8 after external sequence decoding",
+    "tokenizer": "declarative decoder-aware external tokenizer graph"
+  },
+  "host_capabilities": [
+    "byte_input",
+    "decoder_aware_external_tokenizer",
+    "decoder_only_causal_execution",
+    "persistent_rotary_kv_state",
+    "safe_tensors",
+    "strict_utf8_boundary",
+    "structural_source_compatible_execution"
+  ],
+  "package_contract": {
+    "dependencies": [],
+    "domains": ["english-core"],
+    "executable_payload": false,
+    "signature": "ed25519",
+    "tensor_payload": "safetensors"
+  },
+  "scope": "generic construct-only source-compatible external English-core host; no acquisition, quality, or performance claim"
+}
