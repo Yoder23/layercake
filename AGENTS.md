@@ -30,6 +30,18 @@ one independently validated external v6 artifact evaluated for quality and
 performance as the same immutable payload. This remains construct-only and
 imports no external acquisition implementation or evidence.
 
+The isolated `lc-direct-neural-core/7` structural causal host now passes its
+generic construct under
+`moonshot/postrelease_structural_causal_core_decision_v17.json`. It supplies an
+untied Phi-compatible execution boundary with RMSNorm, rotary full-MHA,
+SwiGLU, strict UTF-8 realization, and persistent per-layer rotary key/value
+state. The exact 14,654,784-parameter target geometry, signed package
+lifecycle, first- and second-step incremental identity, CPU/CUDA package
+identity, all 629 tests, and the unchanged sealed verifier pass. The preserved
+V15 failure was a verifier-stimulus error: its EOS-first fixture could not grow
+the cache; V16 changed only that stimulus and retained the failed receipt. The
+v7 result is construct-only and imports no ABI extraction code or evidence.
+
 The final release does not claim physical mobile performance, calibrated energy
 dominance, GPU-training dominance, latent neural fusion, or faster from-scratch
 English acquisition. ABI extraction remains a separate repository and evidence
