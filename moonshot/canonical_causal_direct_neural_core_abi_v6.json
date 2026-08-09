@@ -1,0 +1,39 @@
+{
+  "abi_version": "lc-direct-neural-core/6",
+  "artifact_role": "english-core",
+  "cake_type": "portable_decoder",
+  "execution": {
+    "architecture": "tied_decoder_only_causal_transformer",
+    "incremental_state": "persistent_per_layer_normalized_attention_inputs",
+    "output_selection": "autonomous_neural_argmax",
+    "pointer_actions": "PROHIBITED",
+    "receiver_calibration": "PROHIBITED",
+    "receiver_training": "PROHIBITED",
+    "source_teacher_at_inference": "PROHIBITED",
+    "tied_input_output_embedding": true
+  },
+  "external_boundary": {
+    "input": "UTF-8 bytes",
+    "output": "UTF-8 bytes",
+    "output_validation": "strict UTF-8 after external sequence decoding",
+    "tokenizer": "declarative decoder-aware external tokenizer graph"
+  },
+  "host_capabilities": [
+    "byte_input",
+    "decoder_aware_external_tokenizer",
+    "decoder_only_causal_execution",
+    "persistent_incremental_state",
+    "safe_tensors",
+    "strict_utf8_boundary"
+  ],
+  "package_contract": {
+    "dependencies": [],
+    "domains": [
+      "english-core"
+    ],
+    "executable_payload": false,
+    "signature": "ed25519",
+    "tensor_payload": "safetensors"
+  },
+  "scope": "generic construct-only external English-core host; no quality, acquisition, or performance claim"
+}

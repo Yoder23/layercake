@@ -1,0 +1,36 @@
+{
+  "format": "layercake-postrelease-causal-core-construct/1",
+  "protocol_id": "layercake-postrelease-causal-core-construct-v13",
+  "status": "PREREGISTERED_CONSTRUCT_ONLY",
+  "effective_date": "2026-08-09",
+  "historical_release_changed": false,
+  "sealed_phase_evidence_changed": false,
+  "interface": "lc-direct-neural-core/6",
+  "interface_sha256": "ea6e2149ceb010b1c78e53892e1bf0a5dc414b29577701d15ceaa909344f7b9e",
+  "canonical_abi": "moonshot/canonical_causal_direct_neural_core_abi_v6.json",
+  "objective": "Construct-certify a generic signed decoder-only causal English-core host with tied input/output vocabulary, decoder-aware external tokenization, strict UTF-8 output, persistent per-layer incremental state, and zero receiver learning.",
+  "scope": "Isolated post-release generic host construct. It contains no external acquisition implementation or evidence and changes no sealed release architecture, model, package, router, benchmark, certificate, or phase claim.",
+  "required_checks": [
+    "canonical ABI identity",
+    "signed exclusive English-core package role",
+    "CPU package and tensor identity",
+    "first incremental prediction equals full causal forward",
+    "per-layer state persists completed context",
+    "strict UTF-8 byte boundary",
+    "install verify remove reinstall identity",
+    "zero receiver training and calibration",
+    "same immutable package executes on CUDA",
+    "complete test suite",
+    "unchanged sealed Phase 0-8 verifier"
+  ],
+  "decision_rule": "Pass only if every construct check, the complete repository suite, and the unchanged sealed verifier pass. A pass remains construct-only and authorizes acceptance of one independently validated external v6 artifact; it does not inherit English quality, acquisition, or performance evidence.",
+  "bindings": {
+    "layercake/native_causal_core.py": "6a22691fc7fb617a483c8cd594480338d74ca804fa0e12e2ea3a1bb21b611f8b",
+    "layercake_extensions/causal_direct_neural_core.py": "667448ea6d9e127f811ad937fd153810cf33f5e41d37469001108c856f4b2c18",
+    "tests/models/test_causal_direct_neural_core.py": "2e45953ead40d30c6e596833b3546b03b6aeac06e578debfab008668170114cc",
+    "layercake/evaluation/causal_core_construct.py": "6fcbc48b8ca07cf0a61ccd061691b55d076567546eea71c6ba6edf553a5ab64e",
+    "moonshot/canonical_causal_direct_neural_core_abi_v6.json": "ea6e2149ceb010b1c78e53892e1bf0a5dc414b29577701d15ceaa909344f7b9e",
+    "moonshot/postrelease_selective_boundary_bpe_decision_v12.json": "d35402e3345b5e4e7367838601285fca35b0beed6ced765645645e167f64b1e5"
+  },
+  "claim_boundary": "Generic construct only; no external acquisition, English quality, performance, Phase recertification, or superiority claim."
+}
