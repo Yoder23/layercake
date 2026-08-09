@@ -10,6 +10,16 @@ opens affected work. Do not relabel older byte, token, V2, North Star, or
 training experiments as an open Moonshot phase or use them to expand the sealed
 claim.
 
+The isolated `lc-direct-neural-core/5` selective-boundary BPE host now passes
+its construct under
+`moonshot/postrelease_selective_boundary_bpe_decision_v12.json`. It preserves
+stable boundaries only around digit-or-underscore identifier units while
+retaining raw concatenative BPE elsewhere. The exact signed package passes
+CPU/CUDA identity, UTF-8 validity, persistent state, lifecycle, zero learning,
+all 622 tests, and the unchanged Phase 0-8 verifier. Its next gate is one
+independently validated external v5 artifact evaluated for quality and
+performance as the same immutable payload. This remains construct-only.
+
 The final release does not claim physical mobile performance, calibrated energy
 dominance, GPU-training dominance, latent neural fusion, or faster from-scratch
 English acquisition. ABI extraction remains a separate repository and evidence

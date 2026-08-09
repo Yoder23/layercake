@@ -35,6 +35,12 @@ This host readiness is not an acquisition result. No ABI-derived English
 artifact has passed v2, and no external artifact is part of the sealed release.
 See `POSTRELEASE_UNICODE_DIRECT_NEURAL_CORE_V2.md` for the exact construct scope.
 
+The later `lc-direct-neural-core/5` interface is also construct-certified for
+selective-boundary UTF-8 BPE token plans. It provides stable pointer pieces for
+digit-or-underscore identifiers without disabling ordinary raw-BPE
+compression. This is a generic LayerCake hosting surface only: no external
+artifact, English quality, or performance result is imported into this repo.
+
 An external artifact never inherits this release's quality, speed, TTFT,
 memory, portability, routing, or verification evidence. Integrating it requires
 a governed successor lineage and every recertification required by

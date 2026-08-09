@@ -100,6 +100,11 @@ pointer actions, and performs no receiver learning. This is a hosting interface
 only; an external artifact must independently prove English quality and
 performance before LayerCake can inherit either claim.
 
+The construct-certified `lc-direct-neural-core/5` interface is available for
+portable token-plan cores that need raw UTF-8 BPE compression plus stable
+source-pointer boundaries around digit-or-underscore identifiers. It likewise
+inherits no quality or speed claim until the same external artifact is tested.
+
 ## Architecture at a glance
 
 ```text
