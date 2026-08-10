@@ -1,0 +1,45 @@
+{
+  "abi_version": "lc-direct-neural-core/15",
+  "artifact_role": "english-core",
+  "cake_type": "portable_decoder",
+  "execution": {
+    "architecture": "source_aligned_dual_compact_attention_rank768_linear_plus_sparse_three_route_residual",
+    "attention": "two independent width192 causal attention paths with persistent rotary KV state",
+    "residual": "shared full_width_to_rank768_linear_coefficients plus shared 384 source-derived gated features and one hard-top1 route-specific rank768 correction",
+    "routes": ["generic", "abstention", "conversation"],
+    "router": "source_prompt_mean_l2_normalized_copied_embeddings_linear_top1_once_per_request",
+    "physical_sparse_execution": "only_selected_route_output_projection_executes",
+    "causal_prompt_response_boundary": "first_response_predicted_from_final_prompt_action_no_injected_bos",
+    "incremental_state": "persistent_route_and_per_replacement_dual_rotary_keys_and_values",
+    "receiver_training": "PROHIBITED",
+    "source_teacher_at_inference": "PROHIBITED",
+    "source_transformer_blocks_at_inference": 0
+  },
+  "external_boundary": {
+    "input": "UTF-8 bytes",
+    "output": "UTF-8 bytes",
+    "output_validation": "strict UTF-8 after external sequence decoding",
+    "tokenizer": "declarative decoder-aware external tokenizer graph"
+  },
+  "host_capabilities": [
+    "byte_input",
+    "decoder_aware_external_tokenizer",
+    "dual_compact_attention_execution",
+    "hard_top1_request_routing",
+    "persistent_request_route",
+    "persistent_rotary_kv_state",
+    "rank768_linear_plus_sparse_residual_execution",
+    "safe_tensors",
+    "source_aligned_prompt_response_boundary",
+    "strict_utf8_boundary",
+    "zero_source_transformer_blocks"
+  ],
+  "package_contract": {
+    "dependencies": [],
+    "domains": ["english-core"],
+    "executable_payload": false,
+    "signature": "ed25519",
+    "tensor_payload": "safetensors"
+  },
+  "scope": "generic construct-only routed sparse rank768 progressive host; no ABI acquisition, quality, or performance claim"
+}
