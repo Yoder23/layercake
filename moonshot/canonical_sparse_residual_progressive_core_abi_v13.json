@@ -1,0 +1,38 @@
+{
+  "abi_version": "lc-direct-neural-core/13",
+  "artifact_role": "english-core",
+  "cake_type": "portable_decoder",
+  "execution": {
+    "architecture": "source_aligned_compact_attention_hard_top1_rank192_residual_experts",
+    "residual_union": "four immutable rank192 expert bases with one hard-selected expert per token",
+    "causal_prompt_response_boundary": "first_response_predicted_from_final_prompt_action_no_injected_bos",
+    "incremental_state": "persistent_per_replacement_rotary_keys_and_values",
+    "receiver_training": "PROHIBITED",
+    "source_teacher_at_inference": "PROHIBITED",
+    "source_transformer_blocks_at_inference": 0
+  },
+  "external_boundary": {
+    "input": "UTF-8 bytes",
+    "output": "UTF-8 bytes",
+    "output_validation": "strict UTF-8 after external sequence decoding",
+    "tokenizer": "declarative decoder-aware external tokenizer graph"
+  },
+  "host_capabilities": [
+    "byte_input",
+    "decoder_aware_external_tokenizer",
+    "hard_top1_sparse_residual_execution",
+    "persistent_rotary_kv_state",
+    "safe_tensors",
+    "source_aligned_prompt_response_boundary",
+    "strict_utf8_boundary",
+    "zero_source_transformer_blocks"
+  ],
+  "package_contract": {
+    "dependencies": [],
+    "domains": ["english-core"],
+    "executable_payload": false,
+    "signature": "ed25519",
+    "tensor_payload": "safetensors"
+  },
+  "scope": "generic construct-only sparse-residual progressive host; no acquisition, quality, or performance claim"
+}
