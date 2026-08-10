@@ -1,0 +1,22 @@
+{
+  "format": "layercake-postrelease-routed-sparse-rank768-fp16-construct/1",
+  "status": "PREREGISTERED_CONSTRUCT_ONLY",
+  "effective_date": "2026-08-10",
+  "historical_evidence_changed": false,
+  "canonical_abi": "moonshot/canonical_routed_sparse_rank768_progressive_core_abi_v16.json",
+  "interface": "lc-direct-neural-core/16",
+  "accepted_artifact_interface": "lc-direct-neural-core/15",
+  "source_transformer_blocks": 0,
+  "receiver_training_steps": 0,
+  "target_parameters": 536758275,
+  "objective": "Repair the generic routed host's physical fp16 execution boundary without changing artifact tensors, state-dict keys, shapes, parameter count, topology, routes, sparse selection, or incremental-state semantics. Router normalization and the router linear operation execute explicitly in fp32; replacement layers retain the artifact dtype.",
+  "decision_rule": "Pass construct-only only if an exact fp16 v15-compatible state dict strict-loads without mutation, CPU fp16 route selection succeeds, CUDA fp16 prefill and incremental execution are finite, CPU/CUDA routes match, production count and zero-source/zero-learning gates pass, the focused tests pass, the complete repository suite passes, and the unchanged sealed campaign verifier passes.",
+  "bindings": {
+    "layercake/routed_sparse_rank768_progressive_core_fp16.py": "17e024b7c6f61b370780c2fa53f9c592a66f3960ae046cf586f72e49a3ff889a",
+    "tests/models/test_routed_sparse_rank768_progressive_core_fp16.py": "025c03f55a7d4afc0843dd22f4477062e7481ac8694d580b27869cbae694911e",
+    "moonshot/canonical_routed_sparse_rank768_progressive_core_abi_v16.json": "43a47adc54a1b12f0a01bce50d042af19bfbb13ae8817e1ebb1e7ef64d3cdffa",
+    "layercake/evaluation/routed_sparse_rank768_fp16_construct.py": "e14e76ca615ab57123e42b1637d9fbf4458668d2a6efbdce3d3b0069dc9e1a45",
+    "moonshot/postrelease_routed_sparse_rank768_progressive_decision_v40.json": "869ae4a69a0b003a46a6e8ce20fcee600d6cb7e1df18ba85df29f484dbeafdaa"
+  },
+  "claim_boundary": "Generic precision-conformant routed host construct only; no external acquisition artifact, English quality, measured performance, or superiority claim."
+}

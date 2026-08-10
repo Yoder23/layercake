@@ -1,0 +1,22 @@
+{
+  "abi_version": "lc-direct-neural-core/16",
+  "artifact_compatibility": {
+    "accepted_artifact_abi": "lc-direct-neural-core/15",
+    "state_dict_keys_and_shapes": "IDENTICAL",
+    "artifact_tensor_mutation": "PROHIBITED"
+  },
+  "precision_contract": {
+    "artifact_tensor_dtype": "fp16",
+    "router_reduction_dtype": "fp32",
+    "router_weight_compute_dtype": "fp32",
+    "replacement_execution_dtype": "artifact_dtype"
+  },
+  "runtime_change_from_v15": "Only source-prompt router linear computation explicitly promotes stored fp16 router weights and bias to fp32, matching the v15 training-time router arithmetic and eliminating mixed Float/Half matmul.",
+  "architecture_changed": false,
+  "parameter_count_changed": false,
+  "state_dict_changed": false,
+  "source_transformer_blocks": 0,
+  "teacher_required_at_inference": false,
+  "receiver_training_steps": 0,
+  "claim_boundary": "Precision-conformant generic host interface only; no external artifact quality, performance, acquisition, or superiority claim."
+}
