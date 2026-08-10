@@ -1,0 +1,22 @@
+{
+  "format": "layercake-postrelease-routed-sparse-rank768-progressive-construct/1",
+  "status": "PREREGISTERED_CONSTRUCT_ONLY",
+  "effective_date": "2026-08-10",
+  "historical_evidence_changed": false,
+  "implementation_commit": "0a61598cf74303d33fff9404596e32b1d6714c28",
+  "canonical_abi": "moonshot/canonical_routed_sparse_rank768_progressive_core_abi_v15.json",
+  "interface_sha256": "6fe3ff87c1bcaece3aa7a87bc0f2b92127ef9a10e2f778c838ff039c95265a3f",
+  "source_transformer_blocks": 0,
+  "target_parameters": 536758275,
+  "objective": "Verify the generic signed v15 host with two width192 attention paths, rank768 linear plus sparse residual execution, a persistent source-prompt hard-top1 route, exactly three route outputs, physical sparse execution, persistent dual KV state, CPU/CUDA package identity, and zero receiver learning.",
+  "decision_rule": "Pass construct-only only if every bound interface, count, topology, physical-sparsity poison, incremental identity, lifecycle, CPU/CUDA identity, zero-learning, zero-source-block, focused-test, full-suite, and unchanged sealed-campaign check passes.",
+  "bindings": {
+    "layercake/routed_sparse_rank768_progressive_core.py": "e521624e10450b27642846ed373a5400958f3986fb24a53109ffa1b91956cd76",
+    "layercake_extensions/routed_sparse_rank768_progressive_core.py": "1ca340c5d5e56cada906a9ca236f463b056b1524e1a3812a7d6641c4848e4875",
+    "tests/models/test_routed_sparse_rank768_progressive_core.py": "5ca5632f942a8570cf4315d7a4aaaf013434666ed3d0d54a9a5f5e32a4e1eaff",
+    "layercake/evaluation/routed_sparse_rank768_progressive_construct.py": "36a9dec372222123343990a3f8845d1ef46419e9e9f3cf43c9c891bb17276741",
+    "moonshot/canonical_routed_sparse_rank768_progressive_core_abi_v15.json": "6fe3ff87c1bcaece3aa7a87bc0f2b92127ef9a10e2f778c838ff039c95265a3f",
+    "moonshot/postrelease_nonlinear_rank768_progressive_decision_v35.json": "9452e2432056b910b795899a478ce219d04fb1251a134a3d24ecf6cf8f7c26c4"
+  },
+  "claim_boundary": "Generic routed sparse rank768 v15 host construct only; no ABI extraction, English quality, measured runtime, Phase 3 certificate, or superiority claim."
+}
