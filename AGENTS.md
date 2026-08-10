@@ -90,6 +90,16 @@ incremental identity, persistent state, same-package CPU/CUDA execution, all
 645 tests, and unchanged sealed verifier pass. This remains construct-only and
 inherits no ABI extraction, English quality, speed, or memory claim.
 
+The isolated `lc-direct-neural-core/12` direct-linear successor passes its
+generic construct at
+`results/moonshot/postrelease_direct_linear_progressive_construct_v30.json`.
+It removes the nonlinear MLP coefficient network and executes one full-width-
+to-rank-192 coefficient projection, immutable output basis, and residual mean.
+The exact 277,220,352-parameter geometry, signed lifecycle, zero learning,
+two-step incremental identity, persistent state, same-package CPU/CUDA, all
+648 tests, and unchanged sealed verifier pass. It remains construct-only and
+inherits no ABI extraction, English quality, speed, or memory claim.
+
 The final release does not claim physical mobile performance, calibrated energy
 dominance, GPU-training dominance, latent neural fusion, or faster from-scratch
 English acquisition. ABI extraction remains a separate repository and evidence
