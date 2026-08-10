@@ -1,0 +1,38 @@
+{
+  "format": "layercake-postrelease-routed-sparse-rank768-fp16-decision/1",
+  "version": 43,
+  "status": "PASS_CONSTRUCT_ONLY_EXTERNAL_ARTIFACT_REPLAY_AUTHORIZED",
+  "status_date": "2026-08-10",
+  "historical_evidence_changed": false,
+  "protocol": {
+    "path": "moonshot/postrelease_routed_sparse_rank768_fp16_preregistration_v41.json",
+    "sha256": "905979484903cf88a87eec3ee045c5288fe841546695358b1a252864ffc33311"
+  },
+  "evidence": {
+    "path": "results/moonshot/postrelease_routed_sparse_rank768_fp16_construct_v42.json",
+    "sha256": "03929ba5293a051f4445dcc33ea7ff4db6f37895d77296673d6ab1bc5773e885",
+    "evidence_sha256": "c184ee98a538782af2001b05291ac01b4e4ce4e151dec0fbc653ca027f4cf30e"
+  },
+  "checks": {
+    "exact_v15_state_dict_compatibility": true,
+    "artifact_tensor_mutation": false,
+    "true_fp16_parameters": true,
+    "cpu_fp16_router_execution": true,
+    "cuda_fp16_prefill": true,
+    "cuda_fp16_incremental_decode": true,
+    "cpu_cuda_route_identity": true,
+    "production_parameters": 536758275,
+    "source_transformer_blocks": 0,
+    "receiver_training_steps": 0,
+    "focused_tests_passed": 2,
+    "complete_repository_tests_passed": 660,
+    "complete_repository_tests_failed": 0,
+    "unchanged_sealed_campaign_verifier": "PASS_PHASES_0_THROUGH_8"
+  },
+  "decision": "The separately versioned lc-direct-neural-core/16 host is construct-certified for exact v15-compatible fp16 tensor states. It changes no artifact tensor, state key, tensor shape, parameter count, architecture, route set, or incremental-state contract. It explicitly performs source-prompt router reduction and linear selection in fp32, while replacement execution retains artifact precision.",
+  "authorized_next_action": "ONE_UNCHANGED_EXTERNAL_V15_ARTIFACT_AUTONOMOUS_QUALITY_REPLAY_THROUGH_V16_HOST",
+  "external_artifact_used": false,
+  "english_quality_tested": false,
+  "performance_tested": false,
+  "claim_boundary": "Generic precision-conformant host construct only; no external acquisition, English quality, performance, Phase 3, or superiority claim."
+}
