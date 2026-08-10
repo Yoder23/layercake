@@ -1,0 +1,22 @@
+{
+  "format": "layercake-postrelease-sparse-residual-progressive-construct/1",
+  "status": "PREREGISTERED_CONSTRUCT_ONLY",
+  "effective_date": "2026-08-10",
+  "historical_evidence_changed": false,
+  "implementation_commit": "d31cdcf0f5652e761d587608c58ec4d040070437",
+  "canonical_abi": "moonshot/canonical_sparse_residual_progressive_core_abi_v13.json",
+  "interface_sha256": "684add397ac89442d6d29d2598c095074f21c4dc3ebe7f01c357e11290515540",
+  "source_transformer_blocks": 0,
+  "target_parameters": 391154688,
+  "objective": "Verify a signed generic v13 host with four stored rank-192 residual experts, hard top-1 token execution, persistent incremental state, CPU/CUDA package identity, and zero receiver learning.",
+  "decision_rule": "Pass construct-only only if every bound interface, count, hard-top-1 poison test, incremental identity, lifecycle, CPU/CUDA identity, zero-learning, and zero-source-block check passes. No English quality or performance claim is authorized.",
+  "bindings": {
+    "layercake/sparse_residual_progressive_core.py": "dce9d391a4db97952548df738f3607e57b8748f46cdd1244989e4f483ec93f80",
+    "layercake_extensions/sparse_residual_progressive_core.py": "4ba5b2ae99d8946243eb0345048cd66a70e2c47a578979d418b94e5530c2e927",
+    "tests/models/test_sparse_residual_progressive_core.py": "4e6cebaebb2c493eb6ea5d36bc8b941337a957f95585fe88c1cc02c7e2531ec3",
+    "layercake/evaluation/sparse_residual_progressive_construct.py": "9f46ef9d604e61aacee738a68562d9bf8a2a9e9fed094235c7955b5d9e2a86ea",
+    "moonshot/canonical_sparse_residual_progressive_core_abi_v13.json": "684add397ac89442d6d29d2598c095074f21c4dc3ebe7f01c357e11290515540",
+    "moonshot/postrelease_direct_linear_progressive_decision_v31.json": "db23ff57fa0666eef4ed58446a19dc201e83aa6ad46ab66114afda19da53cc3a"
+  },
+  "claim_boundary": "Generic sparse-residual v13 host construct only; no ABI extraction, English quality, measured speed, memory, Phase 3 certificate, or superiority claim."
+}
