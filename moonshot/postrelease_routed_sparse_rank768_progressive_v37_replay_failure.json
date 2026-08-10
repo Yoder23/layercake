@@ -1,0 +1,12 @@
+{
+  "format": "layercake-postrelease-routed-sparse-rank768-progressive-replay-failure/1",
+  "status": "FAIL_NONDETERMINISTIC_EVIDENCE_ENVELOPE",
+  "effective_date": "2026-08-10",
+  "historical_evidence_changed": false,
+  "protocol": {"path": "moonshot/postrelease_routed_sparse_rank768_progressive_preregistration_v36.json", "sha256": "079e0b6986da89f77c8ad65f64057b0b81ce6dddddc6f1cead8dab7e4523f563"},
+  "stored_result": {"path": "moonshot/postrelease_routed_sparse_rank768_progressive_result_v37.json", "sha256": "ba432a37c396612ecc7afd1ee733e72c87e4baf5f94c79f111652dae7ae4d834", "reported_status": "PASS"},
+  "failure": "The verify command recomputed fresh random signing keys and package hashes, so the stored result differed even though its boolean construct checks replayed. The V37 result is not promotion evidence.",
+  "decision": "Preserve V37 and preregister a deterministic replay envelope that retains only reproducible checks and excludes random package identifiers from evidence identity.",
+  "construct_promoted": false,
+  "claim_boundary": "Operational verifier failure only; no construct, quality, runtime, or superiority claim."
+}
