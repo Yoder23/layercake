@@ -44,13 +44,17 @@ v7 result is construct-only and imports no ABI extraction code or evidence.
 
 The isolated `lc-direct-neural-core/8` progressive replacement host has a
 passing generic construct receipt under
-`results/moonshot/postrelease_progressive_replacement_core_construct_v18.json`.
+`results/moonshot/postrelease_progressive_replacement_core_construct_v18.json`,
+with corrected runtime-vocabulary accounting under
+`results/moonshot/postrelease_progressive_replacement_core_construct_repair_v21.json`.
 It preserves a full-width residual stream while executing compact rotary
 causal replacement cakes, declares zero source transformer blocks, retains
 persistent per-replacement key/value state, and accepts only immutable signed
-packages with no receiver learning. Exact 253,836,288-parameter accounting,
-fixture CPU/CUDA package identity, incremental/full-forward identity, and all
-633 tests pass. This remains construct-only: no external artifact, English
+packages with no receiver learning. The initial 253,836,288 count incorrectly
+included all 32,064 source weight rows; the deployable 32,011-action tokenizer
+plus four host specials yields the corrected 253,535,232-parameter target.
+The original receipt and reporter failure are preserved. Fixture CPU/CUDA
+package identity and incremental/full-forward identity pass. This remains construct-only: no external artifact, English
 quality, physical performance, or ABI acquisition claim is inherited.
 
 The final release does not claim physical mobile performance, calibrated energy
