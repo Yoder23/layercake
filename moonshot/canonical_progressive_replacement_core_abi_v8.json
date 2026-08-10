@@ -1,0 +1,43 @@
+{
+  "abi_version": "lc-direct-neural-core/8",
+  "artifact_role": "english-core",
+  "cake_type": "portable_decoder",
+  "execution": {
+    "architecture": "full_residual_width_progressive_bottleneck_replacement_decoder",
+    "attention": "per_replacement_rotary_full_multihead_key_value_cache",
+    "activation": "swiglu",
+    "normalization": "source_width_and_bottleneck_rmsnorm",
+    "incremental_state": "persistent_per_replacement_rotary_keys_and_values",
+    "output_selection": "autonomous_neural_argmax",
+    "pointer_actions": "PROHIBITED",
+    "receiver_calibration": "PROHIBITED",
+    "receiver_training": "PROHIBITED",
+    "source_teacher_at_inference": "PROHIBITED",
+    "source_transformer_blocks_at_inference": 0,
+    "input_output_embeddings_tied": false
+  },
+  "external_boundary": {
+    "input": "UTF-8 bytes",
+    "output": "UTF-8 bytes",
+    "output_validation": "strict UTF-8 after external sequence decoding",
+    "tokenizer": "declarative decoder-aware external tokenizer graph"
+  },
+  "host_capabilities": [
+    "byte_input",
+    "decoder_aware_external_tokenizer",
+    "decoder_only_causal_execution",
+    "full_residual_width_replacement_execution",
+    "persistent_rotary_kv_state",
+    "safe_tensors",
+    "strict_utf8_boundary",
+    "zero_source_transformer_blocks"
+  ],
+  "package_contract": {
+    "dependencies": [],
+    "domains": ["english-core"],
+    "executable_payload": false,
+    "signature": "ed25519",
+    "tensor_payload": "safetensors"
+  },
+  "scope": "generic construct-only progressive replacement English-core host; no acquisition, quality, or performance claim"
+}

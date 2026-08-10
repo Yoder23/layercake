@@ -42,6 +42,17 @@ V15 failure was a verifier-stimulus error: its EOS-first fixture could not grow
 the cache; V16 changed only that stimulus and retained the failed receipt. The
 v7 result is construct-only and imports no ABI extraction code or evidence.
 
+The isolated `lc-direct-neural-core/8` progressive replacement host has a
+passing generic construct receipt under
+`results/moonshot/postrelease_progressive_replacement_core_construct_v18.json`.
+It preserves a full-width residual stream while executing compact rotary
+causal replacement cakes, declares zero source transformer blocks, retains
+persistent per-replacement key/value state, and accepts only immutable signed
+packages with no receiver learning. Exact 253,836,288-parameter accounting,
+fixture CPU/CUDA package identity, incremental/full-forward identity, and all
+633 tests pass. This remains construct-only: no external artifact, English
+quality, physical performance, or ABI acquisition claim is inherited.
+
 The final release does not claim physical mobile performance, calibrated energy
 dominance, GPU-training dominance, latent neural fusion, or faster from-scratch
 English acquisition. ABI extraction remains a separate repository and evidence
