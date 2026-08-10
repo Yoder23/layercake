@@ -1,0 +1,42 @@
+{
+  "format": "layercake-postrelease-dual-path-progressive-decision/1",
+  "status": "PASS_CONSTRUCT_ONLY",
+  "effective_date": "2026-08-09",
+  "protocol": {
+    "path": "moonshot/postrelease_dual_path_progressive_preregistration_v25.json",
+    "sha256": "fb6549150689dfe1d965ca9ff0fe0d6b139c5713e82f10fd816ae0b9958eca51"
+  },
+  "raw_result": {
+    "path": "results/moonshot/postrelease_dual_path_progressive_construct_v25.json",
+    "sha256": "1fc25bd18c88b6183490f3f6057b82dc71455a2052dc6127f897dc34ea759f45",
+    "evidence_sha256": "42e00a9450a0a1bc32d94d6227682a905c4697f4957f047c6a3325cb20036fc8"
+  },
+  "implementation_commit": "f58beb41d8161508bbf524810a0e780a9e54843a",
+  "interface": {
+    "version": "lc-direct-neural-core/10",
+    "sha256": "951bdf91c6840e126ab598564c554f5e6e0bce9b07eafe1972c06435c542a1a0",
+    "runtime_vocabulary": 32015,
+    "parameters": 291283968,
+    "source_transformer_blocks": 0,
+    "causal_boundary": "first response predicted from final prompt action with no injected BOS",
+    "replacement_topology": "separate attention and MLP residual paths"
+  },
+  "checks": {
+    "signed_exclusive_core_package": true,
+    "separate_attention_mlp_residual_paths": true,
+    "no_injected_boundary_action": true,
+    "first_and_second_incremental_full_forward_identity": true,
+    "persistent_rotary_key_value_state": true,
+    "cpu_cuda_same_package_identity": true,
+    "receiver_training_steps": 0,
+    "receiver_calibration_runs": 0,
+    "complete_test_suite": {"passed": 641, "failed": 0},
+    "unchanged_phase_0_through_8_verifier": "PASS",
+    "sealed_release_changed": false
+  },
+  "external_artifact_used": false,
+  "english_quality_tested": false,
+  "performance_tested": false,
+  "next_gate": "One independently governed v10 artifact may undergo exact extraction, local topology-aware conformance, autonomous quality, and physical performance testing as the same immutable lineage.",
+  "claim_boundary": "Generic source-aligned dual-path v10 host construct only; no ABI acquisition, English quality, speed, memory, or superiority claim."
+}

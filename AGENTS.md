@@ -66,6 +66,18 @@ action. The v8 construct remains historical and valid for its declared
 boundary, but external source-model conformance work must use v9. This is still
 construct-only and inherits no acquisition, quality, or performance claim.
 
+The isolated `lc-direct-neural-core/10` dual-path successor has a passing
+generic construct receipt at
+`results/moonshot/postrelease_dual_path_progressive_construct_v25.json`. It
+retains the v9 source-aligned causal boundary while replacing each fused
+bottleneck block with separate attention and MLP residual paths and their
+source-width normalizations. The exact 291,283,968-parameter target geometry,
+signed lifecycle, zero receiver learning, first- and second-step incremental
+identity, persistent rotary state, same-package CPU/CUDA execution, all 641
+tests, and the unchanged sealed verifier pass. This result is construct-only;
+external acquisition, English quality, physical speed, and memory remain ABI-
+side integrated-candidate gates and are not inherited here.
+
 The final release does not claim physical mobile performance, calibrated energy
 dominance, GPU-training dominance, latent neural fusion, or faster from-scratch
 English acquisition. ABI extraction remains a separate repository and evidence
