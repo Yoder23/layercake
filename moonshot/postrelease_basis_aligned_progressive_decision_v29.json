@@ -1,0 +1,50 @@
+{
+  "format": "layercake-postrelease-basis-aligned-progressive-decision/1",
+  "status": "PASS_CONSTRUCT_ONLY",
+  "effective_date": "2026-08-09",
+  "protocol": {
+    "path": "moonshot/postrelease_basis_aligned_progressive_preregistration_v27.json",
+    "sha256": "57126b43e0197adbc9f9c8dad7163324586aa546678ed6cf1528066be0a1a60a"
+  },
+  "preserved_reporter_failure": {
+    "path": "results/moonshot/postrelease_basis_aligned_progressive_construct_v27.json",
+    "sha256": "87d67f0d67bc7bc72d3121a4b2127a538e756622d479496fa9d6d0127055ca46"
+  },
+  "repair_protocol": {
+    "path": "moonshot/postrelease_basis_aligned_progressive_reporter_repair_v28.json",
+    "sha256": "1341a28bc016994087aa8d829ebdaef80f2fda02c6ea10ebfe636cafdb304f26"
+  },
+  "raw_result": {
+    "path": "results/moonshot/postrelease_basis_aligned_progressive_construct_repair_v28.json",
+    "sha256": "1b89a6b2d686dc317df246f12e5772e13caa826ad784151fbbf539d352842985",
+    "evidence_sha256": "44ab8ed8faf04aff066e74dbae823059bfe19eee0b9387beb2ce3ac516ad2a2d"
+  },
+  "implementation_commit": "49b5e39554eb15c28d21bf65bcb2b5799e7d6e7f",
+  "interface": {
+    "version": "lc-direct-neural-core/11",
+    "sha256": "3fa806fb44e9a4c4aa36bdd933064d25506e4fff2f884cd4e8363c3ba69ed902",
+    "runtime_vocabulary": 32015,
+    "parameters": 291382272,
+    "mlp_output_rank": 192,
+    "explicit_residual_mean": true,
+    "source_transformer_blocks": 0
+  },
+  "checks": {
+    "signed_exclusive_core_package": true,
+    "basis_and_residual_mean_shapes": true,
+    "no_injected_boundary_action": true,
+    "first_and_second_incremental_full_forward_identity": true,
+    "persistent_rotary_key_value_state": true,
+    "cpu_cuda_same_package_identity": true,
+    "receiver_training_steps": 0,
+    "receiver_calibration_runs": 0,
+    "complete_test_suite": {"passed": 645, "failed": 0},
+    "unchanged_phase_0_through_8_verifier": "PASS",
+    "sealed_release_changed": false
+  },
+  "external_artifact_used": false,
+  "english_quality_tested": false,
+  "performance_tested": false,
+  "next_gate": "One independently governed v11 artifact may extract immutable MLP bases and means, fit coefficient maps, and undergo local, autonomous-quality, and physical-performance testing as one lineage.",
+  "claim_boundary": "Generic rank-192 basis-aligned v11 host construct only; no ABI acquisition, English quality, speed, memory, or superiority claim."
+}

@@ -78,6 +78,18 @@ tests, and the unchanged sealed verifier pass. This result is construct-only;
 external acquisition, English quality, physical speed, and memory remain ABI-
 side integrated-candidate gates and are not inherited here.
 
+The isolated `lc-direct-neural-core/11` basis-aligned successor has a passing
+generic construct receipt at
+`results/moonshot/postrelease_basis_aligned_progressive_construct_repair_v28.json`.
+It adds an explicit per-layer MLP residual mean while retaining the rank-192
+output basis and v10's separate attention/MLP paths. The first V27 reporter
+incorrectly required the small fixture's width 8 to equal production rank 192;
+that failure is preserved and V28 changes only the stimulus check. The exact
+291,382,272-parameter production geometry, signed lifecycle, zero learning,
+incremental identity, persistent state, same-package CPU/CUDA execution, all
+645 tests, and unchanged sealed verifier pass. This remains construct-only and
+inherits no ABI extraction, English quality, speed, or memory claim.
+
 The final release does not claim physical mobile performance, calibrated energy
 dominance, GPU-training dominance, latent neural fusion, or faster from-scratch
 English acquisition. ABI extraction remains a separate repository and evidence
