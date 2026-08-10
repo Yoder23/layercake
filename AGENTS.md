@@ -57,6 +57,15 @@ The original receipt and reporter failure are preserved. Fixture CPU/CUDA
 package identity and incremental/full-forward identity pass. This remains construct-only: no external artifact, English
 quality, physical performance, or ABI acquisition claim is inherited.
 
+The isolated `lc-direct-neural-core/9` source-aligned successor has a passing
+construct receipt at
+`results/moonshot/postrelease_source_aligned_progressive_construct_v23.json`.
+It removes the injected BOS action between prompt and response so the first
+response distribution is computed directly from the final external prompt
+action. The v8 construct remains historical and valid for its declared
+boundary, but external source-model conformance work must use v9. This is still
+construct-only and inherits no acquisition, quality, or performance claim.
+
 The final release does not claim physical mobile performance, calibrated energy
 dominance, GPU-training dominance, latent neural fusion, or faster from-scratch
 English acquisition. ABI extraction remains a separate repository and evidence
