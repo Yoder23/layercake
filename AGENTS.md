@@ -2,6 +2,14 @@
 
 ## Current sealed release state
 
+Post-release update (2026-08-10): `lc-direct-neural-core/16` is a
+construct-certified true-fp16 routed host at commit `ef705af`. It is state-
+compatible with the external v15 artifact, passes CPU/CUDA route conformance,
+660 tests, and the unchanged sealed verifier. This does not alter the sealed
+release or import ABI research claims. The current ABI artifact fails its
+autonomous English gates; therefore no external English quality, acquisition,
+or runtime claim attaches to this host.
+
 The eight-phase campaign is sealed locally at the annotated
 `layercake-moonshot-final` tag. `moonshot/campaign.yaml`, the phase seals, and
 `results/moonshot/phase8/` are the release source of truth. Treat the current

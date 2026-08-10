@@ -34,6 +34,15 @@ core interface, `lc-direct-neural-core/2`. It is not part of the sealed Phase
 historical after a local UTF-8 conformance failure. See the
 [v2 construct report](docs/POSTRELEASE_UNICODE_DIRECT_NEURAL_CORE_V2.md).
 
+The latest post-release execution boundary is the construct-only
+`lc-direct-neural-core/16` precision-conformant routed host at commit
+`ef705af`. It accepts the unchanged v15 artifact state, fixes true-fp16 router
+execution on CPU and CUDA, preserves exact route identity, and passes 660 tests
+plus the unchanged sealed Phase 0-8 verifier. This is host-conformance evidence
+only. ABI's current external English artifact fails autonomous quality, so the
+v16 host carries no inherited English-quality, acquisition, or performance
+claim.
+
 ## Certified release scope
 
 The final independent clean-room verification reran the sealed Phase 7 product
