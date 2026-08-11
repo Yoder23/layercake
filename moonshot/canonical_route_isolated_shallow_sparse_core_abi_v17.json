@@ -1,0 +1,43 @@
+{
+  "abi_version": "lc-direct-neural-core/17",
+  "artifact_role": "english-core",
+  "cake_type": "portable_decoder",
+  "scope": "one signed guarded route-isolated shallow-sparse English core",
+  "external_boundary": {
+    "input": "UTF-8 bytes",
+    "output": "UTF-8 bytes",
+    "strict_input_validation": true,
+    "strict_output_validation": true
+  },
+  "package": {
+    "single_archive": true,
+    "non_executable": true,
+    "signed": true,
+    "content_addressed": true,
+    "safetensors_only": true,
+    "tensor_namespaces": ["model.", "router.", "residual."]
+  },
+  "execution": {
+    "architecture": "three_block_gpt2_compatible_shallow_sparse_core_plus_sparse_capability_router_plus_four_route_rank16_residual",
+    "model_tokenizer": "declarative_tokenizers_json",
+    "router_tokenizer": "declarative_utf8_concatenative_bpe",
+    "capability_routes": 14,
+    "weak_capability_routes": 4,
+    "physical_sparse_execution": "one task cake and at most one rank16 residual expert execute per sequence",
+    "residual_reuse": "same selected residual expert before each of three blocks",
+    "guard": "declarative contiguous_loop_and_fourgram_collapse_stop_plus_abstention_clause",
+    "persistent_incremental_state": true,
+    "teacher_at_inference": false,
+    "source_transformer_blocks": 0,
+    "receiver_training": "PROHIBITED",
+    "receiver_calibration": "PROHIBITED"
+  },
+  "compatibility": {
+    "v2_v5_v15_packages_accepted": false,
+    "artifact_tensor_mutation": "PROHIBITED",
+    "sealed_release_rewritten": false,
+    "existing_packages_rewritten": false,
+    "external_artifact_requires_same_artifact_quality_and_performance_certification": true
+  },
+  "claim_boundary": "Generic construct-only host interface. It proves no external acquisition, English quality, information minimum, CPU/GPU performance, or ABI superiority."
+}
