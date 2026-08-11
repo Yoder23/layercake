@@ -1,0 +1,24 @@
+{
+  "abi_version": "lc-direct-neural-core/18",
+  "artifact_role": "english-core",
+  "cake_type": "portable_decoder",
+  "scope": "one signed guarded route-isolated shallow-sparse English core with explicit-route residual tensors",
+  "external_boundary": {"input": "UTF-8 bytes", "output": "UTF-8 bytes", "strict_input_validation": true, "strict_output_validation": true},
+  "package": {"single_archive": true, "non_executable": true, "signed": true, "content_addressed": true, "safetensors_only": true, "tensor_namespaces": ["model.", "router.", "residual."]},
+  "execution": {
+    "architecture": "three_block_gpt2_compatible_shallow_sparse_core_plus_sparse_capability_router_plus_four_route_rank16_residual",
+    "residual_tensor_schema": {"down": [4, 16, 768], "up": [4, 768, 16], "norm.weight": [768], "norm.bias": [768]},
+    "model_tokenizer": "declarative_tokenizers_json",
+    "router_tokenizer": "declarative_utf8_concatenative_bpe",
+    "physical_sparse_execution": "index-select exactly one route's down and up tensors",
+    "residual_reuse": "same selected residual expert before each of three blocks",
+    "guard": "declarative contiguous_loop_and_fourgram_collapse_stop_plus_abstention_clause",
+    "persistent_incremental_state": true,
+    "teacher_at_inference": false,
+    "source_transformer_blocks": 0,
+    "receiver_training": "PROHIBITED",
+    "receiver_calibration": "PROHIBITED"
+  },
+  "compatibility": {"v17_packages_accepted": false, "artifact_tensor_mutation": "PROHIBITED", "sealed_release_rewritten": false, "external_artifact_requires_same_artifact_quality_and_performance_certification": true},
+  "claim_boundary": "Generic construct-only exact-schema host. It proves no external acquisition, English quality, information minimum, CPU/GPU performance, or ABI superiority."
+}

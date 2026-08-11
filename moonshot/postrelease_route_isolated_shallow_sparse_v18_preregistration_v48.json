@@ -1,0 +1,28 @@
+{
+  "format": "layercake-postrelease-route-isolated-shallow-sparse-v18-construct/1",
+  "version": 48,
+  "status": "PREREGISTERED_CONSTRUCT_ONLY",
+  "status_date": "2026-08-11",
+  "historical_evidence_changed": false,
+  "supersedes_for_exact_external_schema_only": "lc-direct-neural-core/17",
+  "preserved_failure": "moonshot/postrelease_route_isolated_v17_external_conformance_failure_v47.json",
+  "canonical_abi": "moonshot/canonical_route_isolated_shallow_sparse_core_abi_v18.json",
+  "interface": "lc-direct-neural-core/18",
+  "objective": "Construct-certify the explicit-route residual tensor schema used by the immutable external composite: down [routes,rank,width], up [routes,width,rank], and norm tensors, with exactly one route physically selected and no tensor reshaping or relabeling.",
+  "training_authorized": false,
+  "external_artifact_used": false,
+  "english_quality_tested": false,
+  "performance_tested": false,
+  "receiver_training_steps": 0,
+  "bindings": {
+    "moonshot/canonical_route_isolated_shallow_sparse_core_abi_v18.json": "9c984b783d04c13d592d608610c6396bfbbfa16f4fd91bd8515e6df9aadbf370",
+    "layercake_extensions/route_isolated_shallow_sparse_core.py": "15e05cfad0a7458d76ab2b1636ea8864fbc716fea33f57107c45696c857073b0",
+    "layercake_extensions/route_isolated_shallow_sparse_core_v18.py": "2beeb2fc3fd8bc7e40add90bf8da1595faef2782a70ba8c416b554304a238849",
+    "tests/test_route_isolated_shallow_sparse_core.py": "77a232563a094abced8618273ce83ef9520c8c18a5c9d239dc90eb992215246e",
+    "layercake/evaluation/route_isolated_shallow_sparse_construct.py": "ddb7e1b5b25d9a28dcdfb10be6c115051f8587c193aa44b7035758839c38da9e",
+    "layercake/evaluation/route_isolated_shallow_sparse_v18_construct.py": "86a2e47e92764425f1a768439f9a70eccf31c57e63503f285fc1f038d6281966",
+    "moonshot/postrelease_route_isolated_v17_external_conformance_failure_v47.json": "8edc9eb774e3c92ffbca2018b621f8b50c36df8d8803a4cf1e857a233293f012"
+  },
+  "decision_rule": "Pass only if the exact explicit-route keys strict-load unchanged, route axes and physical selected-only execution pass, the signed package has persistent state and CPU/CUDA identity, receiver learning remains zero, focused and complete tests pass, and the unchanged sealed verifier passes.",
+  "claim_boundary": "Generic exact-schema host construct only; no external artifact, acquisition, English quality, information minimum, performance, or superiority claim."
+}

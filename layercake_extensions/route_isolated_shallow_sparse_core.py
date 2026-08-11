@@ -222,6 +222,11 @@ def _bag(sequences: Sequence[Sequence[int]], device: torch.device):
 class RouteIsolatedShallowSparseCoreHost:
     """Install and execute one signed v17 English core without receiver learning."""
 
+    ABI_VERSION = ROUTE_ISOLATED_CORE_ABI_VERSION
+    ABI_SHA256 = ROUTE_ISOLATED_CORE_ABI_SHA256
+    ARCHITECTURE_FORMAT = ARCHITECTURE_FORMAT
+    RESIDUAL_TYPE = RouteIsolatedResidual
+
     def __init__(
         self,
         registry_root: str | Path,
@@ -233,8 +238,8 @@ class RouteIsolatedShallowSparseCoreHost:
         self.installer = CakeInstaller(
             self.registry,
             HostCapabilities(
-                abi_version=ROUTE_ISOLATED_CORE_ABI_VERSION,
-                abi_hash=ROUTE_ISOLATED_CORE_ABI_SHA256,
+                abi_version=self.ABI_VERSION,
+                abi_hash=self.ABI_SHA256,
                 precisions=("fp32",),
                 backends=("pytorch", "cuda"),
                 capabilities=frozenset(
@@ -266,14 +271,14 @@ class RouteIsolatedShallowSparseCoreHost:
         self.receiver_training_steps = 0
         self.receiver_calibration_runs = 0
 
-    @staticmethod
-    def _validate_role(package: CakePackage) -> None:
+    @classmethod
+    def _validate_role(cls, package: CakePackage) -> None:
         manifest = package.manifest
         if not package.signed or manifest.cake_type != "portable_decoder":
             raise RouteIsolatedCoreError("v17 requires a signed portable decoder")
         if (
-            manifest.abi_version != ROUTE_ISOLATED_CORE_ABI_VERSION
-            or manifest.abi_hash != ROUTE_ISOLATED_CORE_ABI_SHA256
+            manifest.abi_version != cls.ABI_VERSION
+            or manifest.abi_hash != cls.ABI_SHA256
         ):
             raise RouteIsolatedCoreError("v17 ABI identity mismatch")
         if manifest.domains != (ROLE,) or manifest.dependencies:
@@ -316,8 +321,8 @@ class RouteIsolatedShallowSparseCoreHost:
             raise RouteIsolatedCoreError(f"missing {prefix} tensor namespace")
         return values
 
-    @staticmethod
-    def _architecture(package: CakePackage) -> dict[str, Any]:
+    @classmethod
+    def _architecture(cls, package: CakePackage) -> dict[str, Any]:
         architecture = package.manifest.architecture
         required = {
             "format",
@@ -331,7 +336,7 @@ class RouteIsolatedShallowSparseCoreHost:
             "weak_capabilities",
             "guard",
         }
-        if set(architecture) != required or architecture.get("format") != ARCHITECTURE_FORMAT:
+        if set(architecture) != required or architecture.get("format") != cls.ARCHITECTURE_FORMAT:
             raise RouteIsolatedCoreError("v17 architecture declaration changed")
         if tuple(architecture["capabilities"]) != CAPABILITIES:
             raise RouteIsolatedCoreError("v17 capability order changed")
@@ -418,7 +423,7 @@ class RouteIsolatedShallowSparseCoreHost:
             or int(residual_config["routes"]) != len(WEAK_CAPABILITIES)
         ):
             raise RouteIsolatedCoreError("v17 residual geometry changed")
-        residual = RouteIsolatedResidual(
+        residual = self.RESIDUAL_TYPE(
             int(residual_config["width"]),
             int(residual_config["rank"]),
             int(residual_config["routes"]),

@@ -78,7 +78,15 @@ def _router_document():
     return Utf8ConcatenativeBpeTokenizer(raw).canonical_dict()
 
 
-def _fixture(directory: Path, *, abi_version=ROUTE_ISOLATED_CORE_ABI_VERSION, domain="english-core"):
+def _fixture(
+    directory: Path,
+    *,
+    abi_version=ROUTE_ISOLATED_CORE_ABI_VERSION,
+    abi_hash=ROUTE_ISOLATED_CORE_ABI_SHA256,
+    architecture_format=ARCHITECTURE_FORMAT,
+    residual_type=RouteIsolatedResidual,
+    domain="english-core",
+):
     torch.manual_seed(17044)
     tokenizer = Tokenizer(WordLevel({"<eos>": 0, "[UNK]": 1, "hello": 2}, unk_token="[UNK]"))
     tokenizer.pre_tokenizer = Whitespace()
@@ -89,14 +97,14 @@ def _fixture(directory: Path, *, abi_version=ROUTE_ISOLATED_CORE_ABI_VERSION, do
     router_doc = _router_document()
     router_tokenizer = Utf8ConcatenativeBpeTokenizer.from_document(router_doc)
     router = SparseCapabilityRouter(router_tokenizer.vocab_size, 32, len(CAPABILITIES) + 1).eval()
-    residual = RouteIsolatedResidual(16, 16, len(WEAK_CAPABILITIES)).eval()
+    residual = residual_type(16, 16, len(WEAK_CAPABILITIES)).eval()
     with torch.no_grad():
         for module in (model, router, residual):
             for parameter in module.parameters():
                 parameter.zero_()
         router.bias[0] = 10.0
     architecture = {
-        "format": ARCHITECTURE_FORMAT,
+        "format": architecture_format,
         "model": config.canonical_dict(),
         "model_tokenizer": {"format": "declarative-tokenizers-json/1", "tokenizers_json": tokenizer_doc, "sha256": hashlib.sha256(tokenizer_raw).hexdigest(), "eos_token_id": 0},
         "router": {"vocabulary": router_tokenizer.vocab_size, "character_hash_buckets": 32, "character_ngram_minimum": 2, "character_ngram_maximum": 5, "hash_seed": 450045, "classes": len(CAPABILITIES) + 1},
@@ -113,7 +121,7 @@ def _fixture(directory: Path, *, abi_version=ROUTE_ISOLATED_CORE_ABI_VERSION, do
     private, public, signer = _keys()
     manifest = CakeManifest(
         schema_version="1", cake_id=f"route-isolated-{domain}-construct", name="Route-isolated core construct", description="Generic construct-only route-isolated shallow-sparse core", version="17.0.0",
-        publisher={"id": "construct", "name": "Construct", "key_id": signer}, abi_version=abi_version, abi_hash=ROUTE_ISOLATED_CORE_ABI_SHA256, cake_type="portable_decoder",
+        publisher={"id": "construct", "name": "Construct", "key_id": signer}, abi_version=abi_version, abi_hash=abi_hash, cake_type="portable_decoder",
         input_contract={"external": "UTF-8 bytes", "role": "english-core", "validity": "strict_utf8"}, output_contract={"external": "UTF-8 bytes", "role": "english-core", "composition": "direct_core_only_no_router", "validity": "strict_utf8"}, architecture=architecture,
         supported_precisions=("fp32",), supported_backends=("pytorch", "cuda"), minimum_host_capabilities={"features": ["byte_input", "safe_tensors", "persistent_incremental_state", "physical_route_isolation", "declarative_runtime_guard", "strict_utf8_boundary"]},
         tensor_payload_hash="", tensor_shapes=tensor_specs(tensors), package_hash="", training_data_provenance={"dataset": "construct-only", "external_teacher": False}, evaluation_evidence={"status": "CONSTRUCT_ONLY"}, license="Apache-2.0", dependencies=(), parent_version=None, signature={"algorithm": "ed25519", "key_id": signer}, domains=(domain,), permissions=("local-inference",),

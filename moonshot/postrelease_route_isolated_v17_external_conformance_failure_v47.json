@@ -1,0 +1,22 @@
+{
+  "format": "layercake-postrelease-route-isolated-external-conformance-failure/1",
+  "version": 47,
+  "status_date": "2026-08-11",
+  "status": "FAIL_EXTERNAL_ARTIFACT_RESIDUAL_SCHEMA_MISMATCH",
+  "historical_evidence_changed": false,
+  "interface": "lc-direct-neural-core/17",
+  "construct_decision": "moonshot/postrelease_route_isolated_shallow_sparse_decision_v46.json",
+  "failure_boundary": "strict state-dict load before model execution",
+  "expected_keys": ["residual.down.weight", "residual.up.weight"],
+  "external_keys": ["residual.down", "residual.up"],
+  "external_shapes": {
+    "residual.down": [4, 16, 768],
+    "residual.up": [4, 768, 16]
+  },
+  "artifact_mutated": false,
+  "receiver_training_steps": 0,
+  "quality_tested": false,
+  "performance_tested": false,
+  "decision": "Preserve v17 for its exact construct schema. Do not reshape or relabel the external artifact. A separately versioned v18 successor may accept the explicit-route residual tensors unchanged and must repeat all construct gates.",
+  "claim_boundary": "External conformance failure only; the generic v17 construct remains valid for its declared fixture, and no external quality or performance claim was made."
+}
