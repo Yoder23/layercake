@@ -41,6 +41,16 @@ digit-or-underscore identifiers without disabling ordinary raw-BPE
 compression. This is a generic LayerCake hosting surface only: no external
 artifact, English quality, or performance result is imported into this repo.
 
+The separately versioned `lc-direct-neural-core/17` interface is now
+construct-certified for one signed shallow-sparse English-core package with
+three strict tensor namespaces (model, sparse capability router, and physically
+selected rank-16 residual), declarative tokenizers, a declarative guard, and
+persistent KV state. The construct passes CPU/CUDA identity, hostile package
+checks, 664 tests, and the unchanged sealed verifier. It was added as generic
+LayerCake hosting work only; no external acquisition code or evidence is
+present here. No real v17 artifact has passed package-output conformance,
+English quality, or performance certification yet.
+
 An external artifact never inherits this release's quality, speed, TTFT,
 memory, portability, routing, or verification evidence. Integrating it requires
 a governed successor lineage and every recertification required by

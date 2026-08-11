@@ -35,13 +35,13 @@ historical after a local UTF-8 conformance failure. See the
 [v2 construct report](docs/POSTRELEASE_UNICODE_DIRECT_NEURAL_CORE_V2.md).
 
 The latest post-release execution boundary is the construct-only
-`lc-direct-neural-core/16` precision-conformant routed host at commit
-`ef705af`. It accepts the unchanged v15 artifact state, fixes true-fp16 router
-execution on CPU and CUDA, preserves exact route identity, and passes 660 tests
-plus the unchanged sealed Phase 0-8 verifier. This is host-conformance evidence
-only. ABI's current external English artifact fails autonomous quality, so the
-v16 host carries no inherited English-quality, acquisition, or performance
-claim.
+`lc-direct-neural-core/17` signed route-isolated shallow-sparse host. It accepts
+one namespaced model/router/rank-16-residual English-core package with
+declarative tokenizers and guard, and passes CPU/CUDA package identity, 664
+tests, and the unchanged sealed verifier. No real v17 artifact has yet passed
+output conformance, English quality, or performance certification. The earlier
+`lc-direct-neural-core/16` precision-conformant routed host remains certified at
+commit `ef705af` for its exact v15-compatible construct.
 
 ## Certified release scope
 
