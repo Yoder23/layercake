@@ -2,14 +2,16 @@
 
 ## Current sealed release state
 
-Post-release update (2026-08-11): `lc-direct-neural-core/17` is now a
+Post-release update (2026-08-11): `lc-direct-neural-core/18` is now the latest
 construct-certified signed route-isolated shallow-sparse host under
-`moonshot/postrelease_route_isolated_shallow_sparse_decision_v46.json`. It
-accepts one namespaced model/router/rank-16-residual package with declarative
-tokenizers and guard, passes CPU/CUDA identity, 664 tests, and the unchanged
-sealed verifier. No external artifact has yet passed conformance, so it carries
-no external English quality, acquisition, information-minimum, or performance
-claim. The earlier `lc-direct-neural-core/16` remains a
+`moonshot/postrelease_route_isolated_shallow_sparse_v18_decision_v50.json`. It
+accepts one namespaced model/router/explicit-route rank-16 residual package
+with declarative tokenizers and guard, passes CPU/CUDA identity, 665 tests, and
+the unchanged sealed verifier. The immutable external candidate's v17 schema
+failure is preserved; v18 accepts its `residual.down` and `residual.up` keys
+without mutation. No external artifact has yet passed output conformance, so
+v18 carries no external English quality, acquisition, information-minimum, or
+performance claim. The earlier `lc-direct-neural-core/16` remains a
 construct-certified true-fp16 routed host at commit `ef705af`. It is state-
 compatible with the external v15 artifact, passes CPU/CUDA route conformance,
 660 tests, and the unchanged sealed verifier. This does not alter the sealed

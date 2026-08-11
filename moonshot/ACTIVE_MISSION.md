@@ -46,8 +46,10 @@ this release automatically. Before accepting any externally produced artifact,
 follow `docs/ABI_HANDOFF_STATUS.md` and `moonshot/invalidation_matrix.yaml` and
 open a governed recertification.
 
-The post-release `lc-direct-neural-core/17` generic host construct is certified
-under `moonshot/postrelease_route_isolated_shallow_sparse_decision_v46.json`.
-It adds a safe hosting surface without changing the sealed product. Its next
-gate is one independently validated immutable external v17 package tested for
+The post-release `lc-direct-neural-core/18` exact-schema host construct is
+certified under
+`moonshot/postrelease_route_isolated_shallow_sparse_v18_decision_v50.json`.
+It adds a safe hosting surface without changing the sealed product. The v17
+external schema failure is preserved rather than patched in place. Its next
+gate is one independently validated immutable external v18 package tested for
 exact output conformance and then same-artifact quality and performance.

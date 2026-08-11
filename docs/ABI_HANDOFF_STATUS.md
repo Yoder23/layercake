@@ -1,6 +1,6 @@
 # External capability-artifact handoff
 
-Status date: 2026-08-06
+Status date: 2026-08-11
 
 This document defines LayerCake's boundary for externally produced capability
 artifacts. It does not import external code or evidence, and it does not expand
@@ -41,15 +41,18 @@ digit-or-underscore identifiers without disabling ordinary raw-BPE
 compression. This is a generic LayerCake hosting surface only: no external
 artifact, English quality, or performance result is imported into this repo.
 
-The separately versioned `lc-direct-neural-core/17` interface is now
-construct-certified for one signed shallow-sparse English-core package with
-three strict tensor namespaces (model, sparse capability router, and physically
-selected rank-16 residual), declarative tokenizers, a declarative guard, and
-persistent KV state. The construct passes CPU/CUDA identity, hostile package
-checks, 664 tests, and the unchanged sealed verifier. It was added as generic
-LayerCake hosting work only; no external acquisition code or evidence is
-present here. No real v17 artifact has passed package-output conformance,
-English quality, or performance certification yet.
+The separately versioned `lc-direct-neural-core/18` interface is now the latest
+construct-certified target for one signed shallow-sparse English-core package.
+It retains the model, sparse capability router, declarative tokenizers, guard,
+and persistent KV-state boundary while accepting explicit route-indexed
+`residual.down` and `residual.up` tensors and physically executing only the
+selected route slice. The construct passes CPU/CUDA identity, five focused
+tests, all 665 repository tests, and the unchanged sealed verifier. V17 remains
+valid for its own declared schema, but a real immutable external candidate was
+correctly rejected at its strict state-dict boundary; V18 repairs that interface
+without reshaping or mutating the artifact. No acquisition code or evidence is
+present here, and no real v18 artifact has yet passed package-output
+conformance, English quality, or performance certification.
 
 An external artifact never inherits this release's quality, speed, TTFT,
 memory, portability, routing, or verification evidence. Integrating it requires

@@ -35,13 +35,14 @@ historical after a local UTF-8 conformance failure. See the
 [v2 construct report](docs/POSTRELEASE_UNICODE_DIRECT_NEURAL_CORE_V2.md).
 
 The latest post-release execution boundary is the construct-only
-`lc-direct-neural-core/17` signed route-isolated shallow-sparse host. It accepts
-one namespaced model/router/rank-16-residual English-core package with
-declarative tokenizers and guard, and passes CPU/CUDA package identity, 664
-tests, and the unchanged sealed verifier. No real v17 artifact has yet passed
-output conformance, English quality, or performance certification. The earlier
-`lc-direct-neural-core/16` precision-conformant routed host remains certified at
-commit `ef705af` for its exact v15-compatible construct.
+`lc-direct-neural-core/18` signed route-isolated shallow-sparse host. It accepts
+one namespaced model/router/explicit-route rank-16 residual English-core package
+with declarative tokenizers and guard, and passes CPU/CUDA package identity,
+665 tests, and the unchanged sealed verifier. V18 was introduced because an
+immutable external candidate uses `residual.down` and `residual.up` tensors;
+the v17 host correctly rejected that schema before execution, and that failure
+is preserved. No real v18 artifact has yet passed output conformance, English
+quality, or performance certification.
 
 ## Certified release scope
 
