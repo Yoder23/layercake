@@ -1,0 +1,25 @@
+{
+  "format": "layercake-postrelease-route-isolated-prompt-span-v19-verifier-failure/1",
+  "version": 55,
+  "status": "FAIL_NONDETERMINISTIC_TIMING_FIELD",
+  "status_date": "2026-08-13",
+  "historical_evidence_changed": false,
+  "protocol": {
+    "path": "moonshot/postrelease_route_isolated_prompt_span_v19_repair_preregistration_v53.json",
+    "sha256": "3e4b59102d95009ad664a1daaf6f8b49a0087f3cb7494b2753720e11c172cbbb"
+  },
+  "preserved_execution": {
+    "path": "results/moonshot/postrelease_route_isolated_prompt_span_v19_construct_v54.json",
+    "sha256": "beaeef4e9576fbb6f85c011456e2400d4ed53a518586b5c06402863667384051",
+    "evidence_sha256": "0eaf4296ef60a6d0e7ebfa27dd07aee7bd3910e6415a6099da82a1877794e73c",
+    "execution_status": "PASS_CONSTRUCT_ONLY"
+  },
+  "verification_command": "C:\\Python310\\python.exe -m layercake.evaluation.route_isolated_prompt_span_v19_construct verify --protocol moonshot/postrelease_route_isolated_prompt_span_v19_repair_preregistration_v53.json --output results/moonshot/postrelease_route_isolated_prompt_span_v19_construct_v54.json",
+  "failure": {
+    "type": "ConstructError",
+    "message": "stored v19 construct differs from recomputation",
+    "cause": "The result serialized per-device wall_seconds even though runtime performance was explicitly outside construct scope. Recomputed elapsed time necessarily differs."
+  },
+  "scientific_effect": "V54 remains immutable evidence of one passing execution but is not promoted as a reproducibly verified construct result.",
+  "authorized_repair": "Remove only wall_seconds from the construct evidence before comparison. Preserve timing measurement in the runtime host and measure it later under a dedicated performance protocol. Bind the repaired evaluator and this failure record before a new execution."
+}

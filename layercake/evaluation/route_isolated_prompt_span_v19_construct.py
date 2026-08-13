@@ -102,7 +102,7 @@ def execute(root: Path, protocol_path: Path) -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="layercake-prompt-span-v19-") as raw:
         temp = Path(raw); package, public, signer, tensors = _fixture(temp); executions = {}
         for device in ["cpu"] + (["cuda"] if torch.cuda.is_available() else []):
-            host = PromptSpanRouteIsolatedShallowSparseCoreHost(temp / f"registry-{device}", trust_store={signer: public}, device=device); active = host.activate(package); generated = host.generate(prompt, maximum_tokens=64); pointer = dict(host.last_pointer_execution or {}); ordinary = host.generate("hello", maximum_tokens=2); verified = host.verify(); executions[device] = {"active": active, "generated_hex": generated.hex(), "pointer": pointer, "ordinary_hex": ordinary.hex(), "ordinary_used_pointer": host.last_pointer_execution is not None, "verify": verified}
+            host = PromptSpanRouteIsolatedShallowSparseCoreHost(temp / f"registry-{device}", trust_store={signer: public}, device=device); active = host.activate(package); generated = host.generate(prompt, maximum_tokens=64); pointer = dict(host.last_pointer_execution or {}); pointer.pop("wall_seconds", None); ordinary = host.generate("hello", maximum_tokens=2); verified = host.verify(); executions[device] = {"active": active, "generated_hex": generated.hex(), "pointer": pointer, "ordinary_hex": ordinary.hex(), "ordinary_used_pointer": host.last_pointer_execution is not None, "verify": verified}
         v18, v18_public, v18_signer, _ = _fixture(temp / "v18", v18=True); v18_rejected = False
         try: PromptSpanRouteIsolatedShallowSparseCoreHost(temp / "registry-v18", trust_store={v18_signer: v18_public}).activate(v18)
         except Exception: v18_rejected = True
