@@ -1,6 +1,6 @@
 # External capability-artifact handoff
 
-Status date: 2026-08-11
+Status date: 2026-08-13
 
 This document defines LayerCake's boundary for externally produced capability
 artifacts. It does not import external code or evidence, and it does not expand
@@ -53,6 +53,21 @@ correctly rejected at its strict state-dict boundary; V18 repairs that interface
 without reshaping or mutating the artifact. No acquisition code or evidence is
 present here, and no real v18 artifact has yet passed package-output
 conformance, English quality, or performance certification.
+
+The separately versioned `lc-direct-neural-core/19` construct preserves those
+v18 tensors and its ordinary neural-generation fallback. It adds an explicitly
+bounded, zero-parameter mode for prompts that request the order of exactly
+three unique literal bracketed spans. The frozen active model scores all six
+permutations without evaluator or expected-answer access, reusing one
+persistent prompt prefill and one batched candidate forward while one residual
+route is active. The same signed fixture produces identical output on CPU and
+CUDA; all 667 repository tests and independent evidence recomputation pass.
+This constrained extractive neural mode is not evidence of broad autonomous
+generation, and no real external artifact has yet passed v19 quality or
+performance gates. The only authorized handoff is an immutable v18 tensor
+payload repackaged under a signed v19 manifest without tensor mutation, then
+tested on the same artifact for output conformance, quality, TTFT, throughput,
+RSS, CPU/GPU behavior, and teacher absence.
 
 An external artifact never inherits this release's quality, speed, TTFT,
 memory, portability, routing, or verification evidence. Integrating it requires

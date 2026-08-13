@@ -2,8 +2,18 @@
 
 ## Current sealed release state
 
-Post-release update (2026-08-11): `lc-direct-neural-core/18` is now the latest
+Post-release update (2026-08-13): `lc-direct-neural-core/19` is now the latest
 construct-certified signed route-isolated shallow-sparse host under
+`moonshot/postrelease_route_isolated_prompt_span_v19_decision_v58.json`. It
+preserves the v18 tensor schema and ordinary neural fallback while adding a
+zero-parameter, evaluator-blind constrained mode for explicit three-span order
+requests. The frozen active model scores all six literal prompt-span
+permutations from one persistent prefill and one batched scoring forward; only
+one residual route executes. The construct passes CPU/CUDA output identity,
+667 tests, independent evidence recomputation, and the unchanged sealed
+verifier. It is not broad autonomous generation and carries no external
+artifact, English-quality, acquisition, information-minimum, or performance
+claim. V18 remains construct-certified under
 `moonshot/postrelease_route_isolated_shallow_sparse_v18_decision_v50.json`. It
 accepts one namespaced model/router/explicit-route rank-16 residual package
 with declarative tokenizers and guard, passes CPU/CUDA identity, 665 tests, and

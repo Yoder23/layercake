@@ -46,10 +46,15 @@ this release automatically. Before accepting any externally produced artifact,
 follow `docs/ABI_HANDOFF_STATUS.md` and `moonshot/invalidation_matrix.yaml` and
 open a governed recertification.
 
-The post-release `lc-direct-neural-core/18` exact-schema host construct is
-certified under
-`moonshot/postrelease_route_isolated_shallow_sparse_v18_decision_v50.json`.
-It adds a safe hosting surface without changing the sealed product. The v17
-external schema failure is preserved rather than patched in place. Its next
-gate is one independently validated immutable external v18 package tested for
-exact output conformance and then same-artifact quality and performance.
+The post-release `lc-direct-neural-core/19` host construct is certified under
+`moonshot/postrelease_route_isolated_prompt_span_v19_decision_v58.json`. It
+preserves v18 tensors and ordinary generation while adding an evaluator-blind,
+zero-parameter constrained neural mode for explicit three-span ordering. It
+passes CPU/CUDA identity, one persistent prefill plus one batched candidate
+forward, one physically active route, 667 tests, reproducible evidence, and the
+unchanged sealed verifier. It is not broad autonomous generation and inherits
+no English-quality or performance claim. The next gate is exactly one
+independently validated immutable external tensor payload, repackaged without
+tensor mutation under v19, followed by output conformance and same-artifact
+quality, TTFT, throughput, RSS, CPU, and GPU certification. V18 and the v17
+schema failure remain preserved historical boundaries.

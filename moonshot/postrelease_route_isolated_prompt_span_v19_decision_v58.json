@@ -1,0 +1,50 @@
+{
+  "format": "layercake-postrelease-route-isolated-prompt-span-v19-decision/1",
+  "version": 58,
+  "status": "PASS_CONSTRUCT_ONLY_EXTERNAL_V19_ARTIFACT_RECERTIFICATION_AUTHORIZED",
+  "status_date": "2026-08-13",
+  "historical_evidence_changed": false,
+  "preserved_failures": [
+    "moonshot/postrelease_route_isolated_prompt_span_v19_execution_failure_v52.json",
+    "moonshot/postrelease_route_isolated_prompt_span_v19_verifier_failure_v55.json"
+  ],
+  "preserved_nonpromoted_execution": "results/moonshot/postrelease_route_isolated_prompt_span_v19_construct_v54.json",
+  "protocol": {
+    "path": "moonshot/postrelease_route_isolated_prompt_span_v19_reproducibility_preregistration_v56.json",
+    "sha256": "d650bfc87adb1ef1835be928fa24c2dcea211453e4cca976d86bbb8f749fad7b"
+  },
+  "evidence": {
+    "path": "results/moonshot/postrelease_route_isolated_prompt_span_v19_construct_v57.json",
+    "sha256": "c8749fb4fe9ff9099f0717fe64327e446861f1f33ed26682d1d0e79a8696708c",
+    "evidence_sha256": "ee314bcbc96ae3db5c10f65844ba432d39b86d30dee947c53455122f4e5151d0",
+    "independent_recomputation": "PASS"
+  },
+  "checks": {
+    "canonical_abi_identity": true,
+    "v18_tensor_schema_unchanged": true,
+    "v18_manifest_rejected": true,
+    "literal_prompt_spans_preserved": true,
+    "exact_six_candidate_rendering": true,
+    "frozen_model_argmax_without_evaluator": true,
+    "persistent_prompt_prefill_forward_passes": 1,
+    "batched_candidate_scoring_forward_passes": 1,
+    "physical_active_residual_routes": 1,
+    "cpu_cuda_same_signed_package": true,
+    "cpu_cuda_output_identity": true,
+    "ordinary_v18_fallback_preserved": true,
+    "receiver_training_steps": 0,
+    "receiver_calibration_runs": 0,
+    "focused_tests_passed": 7,
+    "complete_repository_tests_passed": 667,
+    "complete_repository_tests_failed": 0,
+    "unchanged_sealed_campaign_verifier": "PASS_PHASES_0_THROUGH_8",
+    "hardware": "NVIDIA GeForce RTX 3080 Laptop GPU plus host CPU"
+  },
+  "decision": "The separately versioned lc-direct-neural-core/19 host is construct-certified for a generic evaluator-blind model-ranked literal prompt-span mode. It adds zero parameters, preserves the v18 tensor schema and ordinary fallback, reuses persistent prompt state, and performs one batched six-candidate neural scoring forward with one physical residual route. It changes no sealed release artifact and imports no ABI acquisition implementation or result.",
+  "authorized_next_action": "ONE_INDEPENDENTLY_VALIDATED_IMMUTABLE_EXTERNAL_V18_TENSOR_PAYLOAD_MAY_BE_REPACKAGED_WITH_IDENTICAL_TENSOR_BYTES_UNDER_A_SIGNED_V19_MANIFEST_THEN_UNDERGO_EXACT_OUTPUT_CONFORMANCE_AND_SAME_ARTIFACT_QUALITY_TTFT_THROUGHPUT_RSS_CPU_GPU_CERTIFICATION",
+  "external_artifact_used": false,
+  "english_quality_tested": false,
+  "performance_tested": false,
+  "neural_generation_boundary": "The constrained decoder is separately reported extractive neural execution. It cannot replace broad autonomous neural-generation evidence and may satisfy only explicit prompt-span selection tasks after same-artifact certification.",
+  "claim_boundary": "Generic v19 host construct only; no external acquisition, English quality, information minimum, CPU/GPU performance, broad neural-generation replacement, or ABI superiority claim."
+}
