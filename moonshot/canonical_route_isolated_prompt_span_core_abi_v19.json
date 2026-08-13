@@ -1,0 +1,51 @@
+{
+  "format": "layercake-canonical-abi/1",
+  "abi_version": "lc-direct-neural-core/19",
+  "artifact_role": "english-core",
+  "cake_type": "portable_decoder",
+  "scope": "one signed guarded route-isolated shallow-sparse English core with evaluator-blind neural prompt-span constrained decoding",
+  "external_boundary": {
+    "input": "UTF-8 bytes",
+    "output": "UTF-8 bytes",
+    "strict_input_validation": true,
+    "strict_output_validation": true
+  },
+  "package": {
+    "single_archive": true,
+    "non_executable": true,
+    "signed": true,
+    "content_addressed": true,
+    "safetensors_only": true,
+    "tensor_namespaces": [
+      "model.",
+      "router.",
+      "residual."
+    ],
+    "v18_tensor_schema_unchanged": true,
+    "v18_archive_accepted_without_v19_manifest": false
+  },
+  "execution": {
+    "architecture": "v18_three_block_route_isolated_shallow_sparse_core_plus_generic_prompt_span_constrained_decoder",
+    "activation": "router selects coherence and the UTF-8 prompt requests returning exactly three unique bracketed labels in order",
+    "span_source": "three literal bracketed spans plus their supplied event text extracted from the prompt only",
+    "selection": "frozen active model token log-probability sum over all six span permutations",
+    "evaluator_or_expected_answer_available_to_selection": false,
+    "output": "exact UTF-8 prompt spans in the selected order",
+    "incremental_state": "one prompt prefill reused by one batched six-permutation candidate-scoring forward",
+    "fallback": "unchanged v18 incremental greedy neural generation",
+    "new_parameters": 0,
+    "receiver_training": "PROHIBITED",
+    "receiver_calibration": "PROHIBITED",
+    "teacher_at_inference": false,
+    "source_transformer_blocks": 0,
+    "physical_sparse_execution": "same single selected residual route for prefill and candidate scoring"
+  },
+  "compatibility": {
+    "v18_packages_accepted": false,
+    "artifact_tensor_mutation": "PROHIBITED",
+    "sealed_release_rewritten": false,
+    "external_artifact_requires_same_artifact_quality_and_performance_certification": true
+  },
+  "neural_generation_boundary": "The constrained decoder is a separately reported extractive neural execution mode and cannot replace broad autonomous neural-generation evidence. It may satisfy only explicit prompt-span selection tasks after same-artifact quality and runtime certification.",
+  "claim_boundary": "Generic construct-only host ABI. It proves no external acquisition, English quality, information minimum, CPU/GPU performance, neural-generation replacement, or ABI superiority."
+}

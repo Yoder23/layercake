@@ -40,6 +40,14 @@ from layercake_extensions.route_isolated_shallow_sparse_core_v18 import (
     ExactRouteIsolatedShallowSparseCoreHost,
     ExplicitRouteResidual,
 )
+from layercake_extensions.route_isolated_prompt_span_core_v19 import (
+    ARCHITECTURE_V19_FORMAT,
+    PROMPT_SPAN_FEATURE,
+    ROUTE_ISOLATED_PROMPT_SPAN_CORE_V19_ABI_SHA256,
+    ROUTE_ISOLATED_PROMPT_SPAN_CORE_V19_ABI_VERSION,
+    PromptSpanRouteIsolatedShallowSparseCoreHost,
+    extract_prompt_segments,
+)
 
 
 def _keys():
@@ -58,6 +66,8 @@ def _keys():
 
 
 def _router_tokenizer_document():
+    vocabulary = {"[UNK]": 0}
+    vocabulary.update({chr(value): value - 30 for value in range(32, 127)})
     raw = {
         "version": "1.0",
         "truncation": None,
@@ -86,7 +96,7 @@ def _router_tokenizer_document():
             "fuse_unk": False,
             "byte_fallback": False,
             "ignore_merges": False,
-            "vocab": {"[UNK]": 0, "h": 1, "e": 2, "l": 3, "o": 4},
+            "vocab": vocabulary,
             "merges": [],
         },
     }
@@ -100,6 +110,8 @@ def _fixture(
     abi_hash=ROUTE_ISOLATED_CORE_ABI_SHA256,
     architecture_format=ARCHITECTURE_FORMAT,
     residual_type=RouteIsolatedResidual,
+    router_class=0,
+    extra_host_features=(),
 ):
     torch.manual_seed(17017)
     tokenizer = Tokenizer(WordLevel({"<eos>": 0, "[UNK]": 1, "hello": 2}, unk_token="[UNK]"))
@@ -111,7 +123,7 @@ def _fixture(
         width=16,
         layers=3,
         heads=4,
-        max_tokens=32,
+        max_tokens=128,
         task_cakes=10,
         task_cake_rank=64,
     )
@@ -124,7 +136,7 @@ def _fixture(
         for module in (model, router, residual):
             for parameter in module.parameters():
                 parameter.zero_()
-        router.bias[0] = 10.0
+        router.bias[router_class] = 10.0
     architecture = {
         "format": architecture_format,
         "model": config.canonical_dict(),
@@ -183,7 +195,7 @@ def _fixture(
         architecture=architecture,
         supported_precisions=("fp32",),
         supported_backends=("pytorch", "cuda"),
-        minimum_host_capabilities={"features": ["byte_input", "safe_tensors", "persistent_incremental_state", "physical_route_isolation", "declarative_runtime_guard", "strict_utf8_boundary"]},
+        minimum_host_capabilities={"features": ["byte_input", "safe_tensors", "persistent_incremental_state", "physical_route_isolation", "declarative_runtime_guard", "strict_utf8_boundary", *extra_host_features]},
         tensor_payload_hash="",
         tensor_shapes=tensor_specs(tensors),
         package_hash="",
@@ -263,3 +275,58 @@ def test_v18_accepts_exact_explicit_route_schema_and_v17_rejects_it(tmp_path):
         RouteIsolatedShallowSparseCoreHost(
             tmp_path / "registry-v17", trust_store={signer: public}
         ).activate(package)
+
+
+def test_v19_prompt_span_mode_is_model_ranked_literal_and_persistent(tmp_path):
+    package, public, signer = _fixture(
+        tmp_path,
+        abi_version=ROUTE_ISOLATED_PROMPT_SPAN_CORE_V19_ABI_VERSION,
+        abi_hash=ROUTE_ISOLATED_PROMPT_SPAN_CORE_V19_ABI_SHA256,
+        architecture_format=ARCHITECTURE_V19_FORMAT,
+        residual_type=ExplicitRouteResidual,
+        router_class=CAPABILITIES.index("coherence"),
+        extra_host_features=(PROMPT_SPAN_FEATURE,),
+    )
+    host = PromptSpanRouteIsolatedShallowSparseCoreHost(
+        tmp_path / "registry-v19", trust_store={signer: public}
+    )
+    host.activate(package)
+    prompt = (
+        "Return the labels in order without commentary: "
+        "[X-START] begin; [X-MIDDLE] continue; [X-END] finish."
+    )
+    result = host.generate(prompt, maximum_tokens=64).decode("utf-8")
+    assert all(segment in result for segment in extract_prompt_segments(prompt))
+    assert host.last_pointer_execution is not None
+    assert host.last_pointer_execution["candidate_count"] == 6
+    assert host.last_pointer_execution["persistent_prompt_state_reused"] is True
+    assert host.last_pointer_execution["candidate_scoring_forward_passes"] == 1
+    assert host.last_pointer_execution["evaluator_used"] is False
+
+
+def test_v19_rejects_v18_manifest_and_falls_back_for_ordinary_prompts(tmp_path):
+    v18, public, signer = _fixture(
+        tmp_path / "v18",
+        abi_version=ROUTE_ISOLATED_CORE_V18_ABI_VERSION,
+        abi_hash=ROUTE_ISOLATED_CORE_V18_ABI_SHA256,
+        architecture_format=ARCHITECTURE_V18_FORMAT,
+        residual_type=ExplicitRouteResidual,
+    )
+    with pytest.raises(Exception):
+        PromptSpanRouteIsolatedShallowSparseCoreHost(
+            tmp_path / "registry-reject", trust_store={signer: public}
+        ).activate(v18)
+    v19, public, signer = _fixture(
+        tmp_path / "v19",
+        abi_version=ROUTE_ISOLATED_PROMPT_SPAN_CORE_V19_ABI_VERSION,
+        abi_hash=ROUTE_ISOLATED_PROMPT_SPAN_CORE_V19_ABI_SHA256,
+        architecture_format=ARCHITECTURE_V19_FORMAT,
+        residual_type=ExplicitRouteResidual,
+        extra_host_features=(PROMPT_SPAN_FEATURE,),
+    )
+    host = PromptSpanRouteIsolatedShallowSparseCoreHost(
+        tmp_path / "registry-fallback", trust_store={signer: public}
+    )
+    host.activate(v19)
+    assert host.generate("hello", maximum_tokens=2) == b""
+    assert host.last_pointer_execution is None
