@@ -1,0 +1,39 @@
+{
+  "format": "layercake-postrelease-route-isolated-prompt-span-v19-construct/1",
+  "version": 53,
+  "status": "PREREGISTERED_CONSTRUCT_ONLY",
+  "status_date": "2026-08-13",
+  "historical_evidence_changed": false,
+  "supersedes_failed_protocol": "moonshot/postrelease_route_isolated_prompt_span_v19_preregistration_v51.json",
+  "preserved_execution_failure": "moonshot/postrelease_route_isolated_prompt_span_v19_execution_failure_v52.json",
+  "canonical_abi": "moonshot/canonical_route_isolated_prompt_span_core_abi_v19.json",
+  "interface": "lc-direct-neural-core/19",
+  "objective": "Rerun the complete V51 construct after the sole authorized harness repair: importing the already-bound generic render_prompt_segments function used to verify that output is exactly one of the six possible literal-span renderings.",
+  "repair_scope": {
+    "implementation_under_test_changed": false,
+    "test_changed": false,
+    "decision_rule_changed": false,
+    "evaluator_change": "one missing import only",
+    "prior_output_written": false
+  },
+  "training_authorized": false,
+  "external_artifact_used": false,
+  "english_quality_tested": false,
+  "performance_tested": false,
+  "receiver_training_steps": 0,
+  "receiver_calibration_runs": 0,
+  "gpu_required": true,
+  "bindings": {
+    "moonshot/canonical_route_isolated_prompt_span_core_abi_v19.json": "3592565074037138585bc10d1ef09b28459d0688226f5ca2991857d094abe1b8",
+    "layercake_extensions/route_isolated_shallow_sparse_core.py": "15e05cfad0a7458d76ab2b1636ea8864fbc716fea33f57107c45696c857073b0",
+    "layercake_extensions/route_isolated_shallow_sparse_core_v18.py": "2beeb2fc3fd8bc7e40add90bf8da1595faef2782a70ba8c416b554304a238849",
+    "layercake_extensions/route_isolated_prompt_span_core_v19.py": "d9223820a3059586e256513e9b74f3ee924ee233e4dfd6422dd64c1e2086390f",
+    "tests/test_route_isolated_shallow_sparse_core.py": "8bfefc675adc04e2b8ece4a51bfc648edeceddd3d3b85a65ef702d1ac399477b",
+    "layercake/evaluation/route_isolated_prompt_span_v19_construct.py": "1a2d07affd9f85d43e51e45f4d72879d27b16a97a095518c1c8eb0045a86ce64",
+    "moonshot/postrelease_route_isolated_shallow_sparse_v18_decision_v50.json": "2b85501bbb9d33a9b3d4d788f792ac6189c8919f6116b297eb5daed3ebf50899",
+    "moonshot/postrelease_route_isolated_prompt_span_v19_execution_failure_v52.json": "49915fe1020a3fc6533ff25c5d07ae4beacdf538ce3d7d702e85a24a353c6b8c"
+  },
+  "decision_rule": "Pass only if CUDA is available; the v19 ABI identity and unchanged v18 tensor schema pass; literal prompt spans are emitted as exactly one of the six candidate renderings; the selected candidate equals the frozen model score argmax without evaluator access; one prompt prefill is reused by one batched candidate-scoring forward; exactly one residual route is physically active; the same signed package produces identical CPU/CUDA output; ordinary prompts retain the v18 greedy fallback; v18 manifests are rejected; receiver learning remains zero; focused tests pass; and the unchanged sealed verifier passes.",
+  "neural_generation_boundary": "This is a separately reported constrained extractive neural execution mode. It cannot replace broad autonomous neural-generation evidence and may satisfy only explicit prompt-span selection tasks after same-artifact quality and runtime certification.",
+  "claim_boundary": "Generic v19 host construct only; no external artifact, acquisition, English quality, information minimum, CPU/GPU performance, broad neural-generation replacement, or ABI superiority claim."
+}

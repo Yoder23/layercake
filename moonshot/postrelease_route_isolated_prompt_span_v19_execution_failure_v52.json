@@ -1,0 +1,20 @@
+{
+  "format": "layercake-postrelease-route-isolated-prompt-span-v19-execution-failure/1",
+  "version": 52,
+  "status": "FAIL_HARNESS_IMPORT_BEFORE_RESULT",
+  "status_date": "2026-08-13",
+  "historical_evidence_changed": false,
+  "protocol": {
+    "path": "moonshot/postrelease_route_isolated_prompt_span_v19_preregistration_v51.json",
+    "sha256": "7d03eb0216d6daf088a153cc108fbaf48fe6441f76000429c7dc0b46eaabc567"
+  },
+  "command": "C:\\Python310\\python.exe -m layercake.evaluation.route_isolated_prompt_span_v19_construct execute --protocol moonshot/postrelease_route_isolated_prompt_span_v19_preregistration_v51.json --output results/moonshot/postrelease_route_isolated_prompt_span_v19_construct_v52.json",
+  "output_written": false,
+  "failure": {
+    "type": "NameError",
+    "message": "name 'render_prompt_segments' is not defined",
+    "location": "route_isolated_prompt_span_v19_construct.py expected-candidate construction"
+  },
+  "scientific_effect": "No construct result exists and no v19 construct claim is authorized by V51. The implementation-under-test completed its focused tests and sealed-campaign verification before the harness failed, but those partial observations are not promoted.",
+  "authorized_repair": "Import the already-bound generic render_prompt_segments function into the evaluator, bind the repaired evaluator and this failure record in a new preregistration, then rerun the complete construct from a clean commit."
+}
