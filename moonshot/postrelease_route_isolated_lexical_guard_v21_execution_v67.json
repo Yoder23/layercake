@@ -1,0 +1,20 @@
+{
+  "format":"layercake-postrelease-route-isolated-lexical-guard-v21-construct/1","version":67,"status":"PREREGISTERED_CONSTRUCT_EXECUTION","status_date":"2026-08-13","historical_evidence_changed":false,
+  "authorization":"moonshot/postrelease_route_isolated_lexical_guard_v21_preregistration_v66.json","canonical_abi":"moonshot/canonical_route_isolated_lexical_guard_core_abi_v21.json","interface":"lc-direct-neural-core/21",
+  "objective":"Execute the frozen v21 construct on CPU and CUDA with signed strong- and weak-route WordPiece packages whose candidate completes a fourth repeated lexical token across a model-subtoken boundary.",
+  "training_authorized":false,"external_artifact_used":false,"english_quality_tested":false,"performance_tested":false,"receiver_training_steps":0,"receiver_calibration_runs":0,"gpu_required":true,
+  "bindings":{
+    "moonshot/canonical_route_isolated_lexical_guard_core_abi_v21.json":"ac7f49f3b7674d3139fac930a4de9b7cf002eaf8779e802928c94acb3eb7cc69",
+    "moonshot/postrelease_route_isolated_lexical_guard_v21_preregistration_v66.json":"2664771ddd9938aaaf3d4b3ebdc1ca2973928ac99282dab7390939a49e41c30e",
+    "layercake_extensions/route_isolated_lexical_guard_core_v21.py":"1b90786020e042ff129322e8e3531a3608da0e8487c83ef32da344e8baaa4277",
+    "tests/test_route_isolated_shallow_sparse_core.py":"e50788dab758afa0bbdd4a9423156ff7ca8bc286c0f651fbf50b3ac97867df4e",
+    "layercake/evaluation/route_isolated_lexical_guard_v21_construct.py":"2e42516b56174779adbcc0f2b16cd5f0428a461dbb2add928f9d9d0d4d6ebf5d",
+    "layercake_extensions/route_isolated_universal_guard_core_v20.py":"2eb35734d04b2d31a6c9ac3d19ebe459685a68f9b46f609e8fd6316106d2e8e9",
+    "layercake_extensions/route_isolated_prompt_span_core_v19.py":"d9223820a3059586e256513e9b74f3ee924ee233e4dfd6422dd64c1e2086390f",
+    "moonshot/postrelease_route_isolated_universal_guard_v20_decision_v64.json":"7e626deeec40b4c9eb376da02646aee5b7497b610a300f00de8646d6775a7cae",
+    "moonshot/postrelease_route_isolated_universal_guard_v20_seal_repair_v65.json":"541ef264d5bd783379895d0f7b72c34f6cf68b13af431788e20825312ecad6cf",
+    "moonshot/invalidation_matrix.yaml":"d443ef18a3ef619784034020ca22c9fd79320d6a6bcde85bdd2e9e18d24ccdac"
+  },
+  "decision_rule":"Pass only if all V66 rules hold, the collapsing candidate is 'FixI FixI FixI FixI', the realized output is exactly 'FixI FixI FixI' on both strong and weak routes and both devices, the generated-token list and persistent model state do not advance, v20 and missing-boundary packages fail closed, prompt-span and ordinary behavior remain intact, 14 focused tests and the complete suite pass, the unchanged sealed verifier passes, and independent recomputation is exact.",
+  "claim_boundary":"Generic v21 host construct only. No external artifact, acquisition, English quality, information minimum, physical performance, campaign-phase recertification, or ABI-superiority claim."
+}

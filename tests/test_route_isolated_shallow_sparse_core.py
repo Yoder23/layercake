@@ -55,6 +55,15 @@ from layercake_extensions.route_isolated_universal_guard_core_v20 import (
     UNIVERSAL_GUARD_FEATURE,
     UniversalGuardPromptSpanCoreHost,
 )
+from layercake_extensions.route_isolated_lexical_guard_core_v21 import (
+    ARCHITECTURE_V21_FORMAT,
+    EXACT_LEXICAL_BOUNDARY,
+    EXACT_LEXICAL_GUARD_FEATURE,
+    LexicalGuardPromptSpanCoreHost,
+    ROUTE_ISOLATED_LEXICAL_GUARD_CORE_V21_ABI_SHA256,
+    ROUTE_ISOLATED_LEXICAL_GUARD_CORE_V21_ABI_VERSION,
+    maximal_safe_lexical_prefix,
+)
 
 
 def _keys():
@@ -120,6 +129,7 @@ def _fixture(
     router_class=0,
     extra_host_features=(),
     guard_scope="weak_capabilities_only",
+    guard_boundary=None,
 ):
     torch.manual_seed(17017)
     tokenizer = Tokenizer(WordLevel({"<eos>": 0, "[UNK]": 1, "hello": 2}, unk_token="[UNK]"))
@@ -180,6 +190,8 @@ def _fixture(
             "abstention_clause": "I cannot determine that from the information given.",
         },
     }
+    if guard_boundary is not None:
+        architecture["guard"]["boundary"] = guard_boundary
     tensors = {}
     for prefix, state in (
         ("model.", model.state_dict()),
@@ -413,4 +425,84 @@ def test_v20_guard_stops_strong_and_weak_routes_before_collapse(tmp_path, weak_r
     assert host.decode_step(state) == 2
     assert host.decode_step(state) is None
     assert state["generated_ids"] == [2, 2, 2]
+    assert state["terminated_by_guard"] and state["finished"]
+
+
+def test_v21_exact_lexical_prefix_removes_partial_subtoken():
+    value = 'Please update it.FixI.FixI.FixI.FixI'
+    assert repetition_collapse(value)
+    assert maximal_safe_lexical_prefix(value) == 'Please update it.FixI.FixI.FixI.'
+
+
+def test_v21_package_requires_lexical_boundary_declaration(tmp_path):
+    package, public, signer = _fixture(
+        tmp_path / "v21",
+        abi_version=ROUTE_ISOLATED_LEXICAL_GUARD_CORE_V21_ABI_VERSION,
+        abi_hash=ROUTE_ISOLATED_LEXICAL_GUARD_CORE_V21_ABI_SHA256,
+        architecture_format=ARCHITECTURE_V21_FORMAT,
+        residual_type=ExplicitRouteResidual,
+        extra_host_features=(
+            PROMPT_SPAN_FEATURE,
+            UNIVERSAL_GUARD_FEATURE,
+            EXACT_LEXICAL_GUARD_FEATURE,
+        ),
+        guard_scope="all_capabilities",
+        guard_boundary=EXACT_LEXICAL_BOUNDARY,
+    )
+    host = LexicalGuardPromptSpanCoreHost(
+        tmp_path / "registry-v21", trust_store={signer: public}
+    )
+    assert host.activate(package)["receiver_training_steps"] == 0
+    missing, public, signer = _fixture(
+        tmp_path / "missing",
+        abi_version=ROUTE_ISOLATED_LEXICAL_GUARD_CORE_V21_ABI_VERSION,
+        abi_hash=ROUTE_ISOLATED_LEXICAL_GUARD_CORE_V21_ABI_SHA256,
+        architecture_format=ARCHITECTURE_V21_FORMAT,
+        residual_type=ExplicitRouteResidual,
+        extra_host_features=(
+            PROMPT_SPAN_FEATURE,
+            UNIVERSAL_GUARD_FEATURE,
+            EXACT_LEXICAL_GUARD_FEATURE,
+        ),
+        guard_scope="all_capabilities",
+    )
+    with pytest.raises(RouteIsolatedCoreError):
+        LexicalGuardPromptSpanCoreHost(
+            tmp_path / "registry-missing", trust_store={signer: public}
+        ).activate(missing)
+
+
+class _PartialLexicalTokenizer:
+    eos_token_id = 0
+
+    @staticmethod
+    def decode(values):
+        return {
+            0: "",
+            1: "Please update it.FixI.",
+            2: "Please update it.FixI.FixI.",
+            3: "Please update it.FixI.FixI.FixI.Fix",
+            4: "Please update it.FixI.FixI.FixI.FixI",
+        }[len(values)]
+
+
+@pytest.mark.parametrize("weak_route", [-1, 0])
+def test_v21_realizes_exact_lexical_prefix_without_advancing_state(tmp_path, weak_route):
+    host = LexicalGuardPromptSpanCoreHost(tmp_path / f"v21-{weak_route}", trust_store={})
+    host.model = _RepeatingModel()
+    host.router = object()
+    host.residual = object()
+    host.model_tokenizer = _PartialLexicalTokenizer()
+    host.router_tokenizer = object()
+    host.guard = {"abstention_markers":["cannot determine"],"abstention_clause":"I cannot determine that from the information given."}
+    logits = torch.zeros((1, 3)); logits[:, 2] = 1
+    state = {"past_key_values":object(),"task_route":torch.tensor([0]),"capability":"grammar","weak_route":weak_route,"next_logits":logits,"generated_ids":[],"terminated_by_guard":False,"finished":False,"guard_realization_override":None}
+    assert host.decode_step(state) == 2
+    assert host.decode_step(state) == 2
+    assert host.decode_step(state) == 2
+    past_before = state["past_key_values"]
+    assert host.decode_step(state) is None
+    assert state["past_key_values"] is past_before
+    assert state["generated_ids"] == [2, 2, 2]
+    assert host.realize(state) == b"Please update it.FixI.FixI.FixI."
     assert state["terminated_by_guard"] and state["finished"]
