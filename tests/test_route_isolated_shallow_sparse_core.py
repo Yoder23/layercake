@@ -48,6 +48,13 @@ from layercake_extensions.route_isolated_prompt_span_core_v19 import (
     PromptSpanRouteIsolatedShallowSparseCoreHost,
     extract_prompt_segments,
 )
+from layercake_extensions.route_isolated_universal_guard_core_v20 import (
+    ARCHITECTURE_V20_FORMAT,
+    ROUTE_ISOLATED_UNIVERSAL_GUARD_CORE_V20_ABI_SHA256,
+    ROUTE_ISOLATED_UNIVERSAL_GUARD_CORE_V20_ABI_VERSION,
+    UNIVERSAL_GUARD_FEATURE,
+    UniversalGuardPromptSpanCoreHost,
+)
 
 
 def _keys():
@@ -112,6 +119,7 @@ def _fixture(
     residual_type=RouteIsolatedResidual,
     router_class=0,
     extra_host_features=(),
+    guard_scope="weak_capabilities_only",
 ):
     torch.manual_seed(17017)
     tokenizer = Tokenizer(WordLevel({"<eos>": 0, "[UNK]": 1, "hello": 2}, unk_token="[UNK]"))
@@ -166,7 +174,7 @@ def _fixture(
         "weak_capabilities": list(WEAK_CAPABILITIES),
         "guard": {
             "predicate": "contiguous_1_to_16_token_span_repeated_4_times_or_fourgram_diversity_below_0.35_at_32_tokens",
-            "scope": "weak_capabilities_only",
+            "scope": guard_scope,
             "stop_before_collapsing_token": True,
             "abstention_markers": ["cannot determine"],
             "abstention_clause": "I cannot determine that from the information given.",
@@ -330,3 +338,79 @@ def test_v19_rejects_v18_manifest_and_falls_back_for_ordinary_prompts(tmp_path):
     host.activate(v19)
     assert host.generate("hello", maximum_tokens=2) == b""
     assert host.last_pointer_execution is None
+
+
+def test_v20_accepts_only_declared_universal_guard_package(tmp_path):
+    weak_only, public, signer = _fixture(
+        tmp_path / "weak-only",
+        abi_version=ROUTE_ISOLATED_UNIVERSAL_GUARD_CORE_V20_ABI_VERSION,
+        abi_hash=ROUTE_ISOLATED_UNIVERSAL_GUARD_CORE_V20_ABI_SHA256,
+        architecture_format=ARCHITECTURE_V20_FORMAT,
+        residual_type=ExplicitRouteResidual,
+        extra_host_features=(PROMPT_SPAN_FEATURE, UNIVERSAL_GUARD_FEATURE),
+    )
+    with pytest.raises(RouteIsolatedCoreError):
+        UniversalGuardPromptSpanCoreHost(
+            tmp_path / "registry-weak-only", trust_store={signer: public}
+        ).activate(weak_only)
+    universal, public, signer = _fixture(
+        tmp_path / "universal",
+        abi_version=ROUTE_ISOLATED_UNIVERSAL_GUARD_CORE_V20_ABI_VERSION,
+        abi_hash=ROUTE_ISOLATED_UNIVERSAL_GUARD_CORE_V20_ABI_SHA256,
+        architecture_format=ARCHITECTURE_V20_FORMAT,
+        residual_type=ExplicitRouteResidual,
+        extra_host_features=(PROMPT_SPAN_FEATURE, UNIVERSAL_GUARD_FEATURE),
+        guard_scope="all_capabilities",
+    )
+    host = UniversalGuardPromptSpanCoreHost(
+        tmp_path / "registry-universal", trust_store={signer: public}
+    )
+    assert host.activate(universal)["receiver_training_steps"] == 0
+    assert host.verify()["status"] == "PASS"
+
+
+class _RepeatingTokenizer:
+    eos_token_id = 0
+
+    @staticmethod
+    def decode(values):
+        return " ".join("loop" for _ in values)
+
+
+class _RepeatingModel:
+    class _Transformer:
+        h = []
+
+    transformer = _Transformer()
+
+    def __call__(self, token, **_kwargs):
+        logits = torch.zeros((1, 1, 3))
+        logits[..., 2] = 1
+        return {"past_key_values": object(), "logits": logits}
+
+
+@pytest.mark.parametrize("weak_route", [-1, 0])
+def test_v20_guard_stops_strong_and_weak_routes_before_collapse(tmp_path, weak_route):
+    host = UniversalGuardPromptSpanCoreHost(tmp_path / f"registry-{weak_route}", trust_store={})
+    host.model = _RepeatingModel()
+    host.router = object()
+    host.residual = object()
+    host.model_tokenizer = _RepeatingTokenizer()
+    host.router_tokenizer = object()
+    logits = torch.zeros((1, 3))
+    logits[:, 2] = 1
+    state = {
+        "past_key_values": object(),
+        "task_route": torch.tensor([0]),
+        "weak_route": weak_route,
+        "next_logits": logits,
+        "generated_ids": [],
+        "terminated_by_guard": False,
+        "finished": False,
+    }
+    assert host.decode_step(state) == 2
+    assert host.decode_step(state) == 2
+    assert host.decode_step(state) == 2
+    assert host.decode_step(state) is None
+    assert state["generated_ids"] == [2, 2, 2]
+    assert state["terminated_by_guard"] and state["finished"]

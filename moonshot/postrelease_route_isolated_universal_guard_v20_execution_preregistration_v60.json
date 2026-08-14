@@ -1,0 +1,33 @@
+{
+  "format":"layercake-postrelease-route-isolated-universal-guard-v20-construct/1",
+  "version":60,
+  "status":"PREREGISTERED_CONSTRUCT_EXECUTION",
+  "status_date":"2026-08-13",
+  "historical_evidence_changed":false,
+  "authorization":"moonshot/postrelease_route_isolated_universal_guard_v20_preregistration_v59.json",
+  "canonical_abi":"moonshot/canonical_route_isolated_universal_guard_core_abi_v20.json",
+  "interface":"lc-direct-neural-core/20",
+  "objective":"Execute the frozen v20 construct on CPU and CUDA, including actual signed-package strong-route and weak-route collapse streams, without training or external artifacts.",
+  "implementation_scope":{"new_host":"layercake_extensions/route_isolated_universal_guard_core_v20.py","new_construct_harness":"layercake/evaluation/route_isolated_universal_guard_v20_construct.py","existing_v19_runtime_changed":false,"existing_tensor_schema_changed":false,"new_parameters":0},
+  "training_authorized":false,
+  "external_artifact_used":false,
+  "english_quality_tested":false,
+  "performance_tested":false,
+  "receiver_training_steps":0,
+  "receiver_calibration_runs":0,
+  "gpu_required":true,
+  "bindings":{
+    "moonshot/canonical_route_isolated_universal_guard_core_abi_v20.json":"0f051d114583661b5ea4943ea906f688b103ee82c2bc39cb6b898b1f8198d923",
+    "moonshot/postrelease_route_isolated_universal_guard_v20_preregistration_v59.json":"88afaeb2fc278829b0bacec36e927c7867199fbab759429ad685aa0fc65ffaf9",
+    "layercake_extensions/route_isolated_universal_guard_core_v20.py":"2eb35734d04b2d31a6c9ac3d19ebe459685a68f9b46f609e8fd6316106d2e8e9",
+    "tests/test_route_isolated_shallow_sparse_core.py":"44902b2041f4357d35170ad0c92742e6fd728db2cc13b47a3312ac3618d2d700",
+    "layercake/evaluation/route_isolated_universal_guard_v20_construct.py":"4c1e6275142c8338fc2e3ffa59064821521890b666c13d9d9c5e3afc167a81a0",
+    "layercake_extensions/route_isolated_shallow_sparse_core.py":"15e05cfad0a7458d76ab2b1636ea8864fbc716fea33f57107c45696c857073b0",
+    "layercake_extensions/route_isolated_shallow_sparse_core_v18.py":"2beeb2fc3fd8bc7e40add90bf8da1595faef2782a70ba8c416b554304a238849",
+    "layercake_extensions/route_isolated_prompt_span_core_v19.py":"d9223820a3059586e256513e9b74f3ee924ee233e4dfd6422dd64c1e2086390f",
+    "moonshot/postrelease_route_isolated_prompt_span_v19_decision_v58.json":"14d4c019a15e9f22e5b12d35f265227560380f25740e5dcc72b3124991730ea1",
+    "moonshot/invalidation_matrix.yaml":"d443ef18a3ef619784034020ca22c9fd79320d6a6bcde85bdd2e9e18d24ccdac"
+  },
+  "decision_rule":"Pass only if CUDA is available; canonical ABI identity and unchanged v19 tensor bytes pass; v19 and weak-only v20 manifests are rejected; signed v20 packages on CPU and CUDA stop actual strong and weak repetition streams at three loop tokens before the fourth collapsing token; non-collapsing ordinary generation and v19 prompt-span behavior remain intact and device-identical; persistent three-layer state, task-cake selection, residual-route isolation, package identity, verification, and zero receiver learning pass; 10 focused tests and the complete repository suite pass; the unchanged sealed Phase 0-8 verifier passes; and a second independent execution reproduces the evidence exactly.",
+  "claim_boundary":"Generic v20 host construct only. No external artifact, acquisition, English quality, information minimum, physical performance, campaign-phase recertification, or ABI-superiority claim."
+}
