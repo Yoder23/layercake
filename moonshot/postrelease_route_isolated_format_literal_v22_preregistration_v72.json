@@ -1,0 +1,39 @@
+{
+  "format": "layercake-postrelease-route-isolated-format-literal-v22-construct/1",
+  "version": 72,
+  "status": "PREREGISTERED_CONSTRUCT_ONLY",
+  "status_date": "2026-08-14",
+  "historical_evidence_changed": false,
+  "authorization": "A separately governed external-artifact campaign measured a host-interface requirement for exact realization of complete prompt-supplied two-line format literals. No external code, data, outputs, evaluator logic, or evidence is imported here.",
+  "parent_interface": "lc-direct-neural-core/21",
+  "proposed_interface": "lc-direct-neural-core/22",
+  "objective": "Construct-certify one zero-parameter, v21-tensor-compatible LayerCake host successor that safely realizes an unambiguous explicit two-line format request from prompt literals while preserving all v21 behavior outside that narrow mode.",
+  "activation_contract": {
+    "router_capability": "format_control",
+    "request": "The UTF-8 prompt explicitly requests exactly two plain-text lines and no Markdown, then supplies the complete first and second line values in exactly two backtick spans.",
+    "ambiguity_policy": "Fail closed to unchanged v21 neural generation when the request is incomplete, contains extra backtick spans, contains a newline or backtick inside a literal, exceeds the declared span bound, or routes to any other capability.",
+    "realization": "Return first_literal + U+000A + second_literal after strict UTF-8 validation and maximum-token conformance.",
+    "evaluator_or_expected_answer_available": false,
+    "teacher_available": false
+  },
+  "scientific_label": "DETERMINISTIC_PROMPT_LITERAL_TRANSDUCER_FOR_EXPLICIT_FORMAT_REQUESTS",
+  "neural_generation_replacement": false,
+  "implementation_authorized": true,
+  "training_authorized": false,
+  "external_artifact_used": false,
+  "english_quality_tested": false,
+  "performance_tested": false,
+  "receiver_training_steps": 0,
+  "receiver_calibration_runs": 0,
+  "new_parameters": 0,
+  "gpu_required": true,
+  "bindings": {
+    "moonshot/canonical_route_isolated_lexical_guard_core_abi_v21.json": "ac7f49f3b7674d3139fac930a4de9b7cf002eaf8779e802928c94acb3eb7cc69",
+    "moonshot/postrelease_route_isolated_lexical_guard_v21_decision_v71.json": "473c3e7cfce1121eae9550191142af1be5111abef93e306378290e039b634174",
+    "results/moonshot/postrelease_route_isolated_lexical_guard_v21_construct_v70.json": "8dd8c18b0b8cfbdca33f276ab4a9b4da8f8a1a183a99f572514779bf47f6e0c3",
+    "layercake_extensions/route_isolated_lexical_guard_core_v21.py": "1b90786020e042ff129322e8e3531a3608da0e8487c83ef32da344e8baaa4277",
+    "moonshot/invalidation_matrix.yaml": "d443ef18a3ef619784034020ca22c9fd79320d6a6bcde85bdd2e9e18d24ccdac"
+  },
+  "decision_rule": "Pass construct certification only if v22 is a separately signed canonical interface; tensor names and values remain exact to a matched v21 fixture; v21 manifests and malformed v22 declarations fail closed; valid explicit format prompts return only their two supplied literals on CPU and CUDA; ambiguous, extra-span, wrong-capability, over-limit, and ordinary prompts preserve v21 fallback; package identity, strict UTF-8, persistent prefill state, physical route behavior, zero learning, hostile tests, complete tests, unchanged sealed campaign verification, and independent evidence recomputation pass.",
+  "claim_boundary": "Generic v22 host construct only. The narrow format path is a deterministic prompt-literal transducer and cannot replace broad neural-generation evidence. No external artifact, acquisition, English quality, information minimum, physical performance, campaign-phase recertification, or ABI-superiority claim."
+}
