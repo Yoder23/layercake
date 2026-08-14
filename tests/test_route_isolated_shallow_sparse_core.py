@@ -64,6 +64,15 @@ from layercake_extensions.route_isolated_lexical_guard_core_v21 import (
     ROUTE_ISOLATED_LEXICAL_GUARD_CORE_V21_ABI_VERSION,
     maximal_safe_lexical_prefix,
 )
+from layercake_extensions.route_isolated_format_literal_core_v22 import (
+    ARCHITECTURE_V22_FORMAT,
+    FORMAT_LITERAL_DECLARATION,
+    FORMAT_LITERAL_FEATURE,
+    ROUTE_ISOLATED_FORMAT_LITERAL_CORE_V22_ABI_SHA256,
+    ROUTE_ISOLATED_FORMAT_LITERAL_CORE_V22_ABI_VERSION,
+    FormatLiteralLexicalGuardCoreHost,
+    extract_exact_format_literals,
+)
 
 
 def _keys():
@@ -130,6 +139,7 @@ def _fixture(
     extra_host_features=(),
     guard_scope="weak_capabilities_only",
     guard_boundary=None,
+    format_literal=None,
 ):
     torch.manual_seed(17017)
     tokenizer = Tokenizer(WordLevel({"<eos>": 0, "[UNK]": 1, "hello": 2}, unk_token="[UNK]"))
@@ -192,6 +202,8 @@ def _fixture(
     }
     if guard_boundary is not None:
         architecture["guard"]["boundary"] = guard_boundary
+    if format_literal is not None:
+        architecture["format_literal"] = format_literal
     tensors = {}
     for prefix, state in (
         ("model.", model.state_dict()),
@@ -506,3 +518,110 @@ def test_v21_realizes_exact_lexical_prefix_without_advancing_state(tmp_path, wea
     assert state["generated_ids"] == [2, 2, 2]
     assert host.realize(state) == b"Please update it.FixI.FixI.FixI."
     assert state["terminated_by_guard"] and state["finished"]
+
+
+def _v22_fixture(directory, *, router_capability="format_control", declaration=True, feature=True):
+    features = [PROMPT_SPAN_FEATURE, UNIVERSAL_GUARD_FEATURE, EXACT_LEXICAL_GUARD_FEATURE]
+    if feature:
+        features.append(FORMAT_LITERAL_FEATURE)
+    return _fixture(
+        directory,
+        abi_version=ROUTE_ISOLATED_FORMAT_LITERAL_CORE_V22_ABI_VERSION,
+        abi_hash=ROUTE_ISOLATED_FORMAT_LITERAL_CORE_V22_ABI_SHA256,
+        architecture_format=ARCHITECTURE_V22_FORMAT,
+        residual_type=ExplicitRouteResidual,
+        router_class=CAPABILITIES.index(router_capability),
+        extra_host_features=tuple(features),
+        guard_scope="all_capabilities",
+        guard_boundary=EXACT_LEXICAL_BOUNDARY,
+        format_literal=FORMAT_LITERAL_DECLARATION if declaration else None,
+    )
+
+
+def test_v22_format_literal_parser_fails_closed_on_ambiguity():
+    valid = (
+        "Return exactly two plain-text lines and no Markdown. "
+        "The first line must be `item: draft` and the second line must be `code: N390UMA`."
+    )
+    assert extract_exact_format_literals(valid) == ("item: draft", "code: N390UMA")
+    assert extract_exact_format_literals(valid + " Extra `third`.") is None
+    assert extract_exact_format_literals(valid.replace("two", "three")) is None
+    assert extract_exact_format_literals(valid.replace("`code: N390UMA`", "code: N390UMA")) is None
+
+
+def test_v22_requires_new_manifest_feature_and_declaration(tmp_path):
+    valid, public, signer = _v22_fixture(tmp_path / "valid")
+    host = FormatLiteralLexicalGuardCoreHost(
+        tmp_path / "registry-valid", trust_store={signer: public}
+    )
+    assert host.activate(valid)["receiver_training_steps"] == 0
+    missing_feature, public, signer = _v22_fixture(tmp_path / "missing-feature", feature=False)
+    with pytest.raises(RouteIsolatedCoreError):
+        FormatLiteralLexicalGuardCoreHost(
+            tmp_path / "registry-missing-feature", trust_store={signer: public}
+        ).activate(missing_feature)
+    missing_declaration, public, signer = _v22_fixture(
+        tmp_path / "missing-declaration", declaration=False
+    )
+    with pytest.raises(RouteIsolatedCoreError):
+        FormatLiteralLexicalGuardCoreHost(
+            tmp_path / "registry-missing-declaration", trust_store={signer: public}
+        ).activate(missing_declaration)
+
+
+def test_v22_exact_format_literal_execution_and_fallback(tmp_path):
+    package, public, signer = _v22_fixture(tmp_path / "format")
+    host = FormatLiteralLexicalGuardCoreHost(
+        tmp_path / "registry-format", trust_store={signer: public}
+    )
+    host.activate(package)
+    prompt = (
+        "Language check: respond exactly as requested.\n"
+        "Return exactly two plain-text lines and no Markdown. "
+        "The first line must be `item: green notebook` and the second line must be `code: N390098UMA`."
+    )
+    assert host.generate(prompt, maximum_tokens=32) == b"item: green notebook\ncode: N390098UMA"
+    assert host.last_format_execution is not None
+    assert host.last_format_execution["mode"] == "deterministic_prompt_literal_transducer"
+    assert host.last_format_execution["evaluator_used"] is False
+    assert host.last_format_execution["teacher_used"] is False
+    assert host.last_format_execution["persistent_prompt_state_created"] is True
+    assert host.last_format_execution["active_residual_routes"] == 0
+    assert host.generate("hello", maximum_tokens=2) == b""
+    assert host.last_format_execution is None
+    assert host.generate(prompt + " Extra `third`.", maximum_tokens=32) == b""
+    assert host.last_format_execution is None
+    assert host.generate(prompt, maximum_tokens=1) == b""
+    assert host.last_format_execution is None
+
+
+def test_v22_wrong_capability_and_v21_manifest_fall_back_or_reject(tmp_path):
+    wrong, public, signer = _v22_fixture(tmp_path / "wrong", router_capability="grammar")
+    host = FormatLiteralLexicalGuardCoreHost(
+        tmp_path / "registry-wrong", trust_store={signer: public}
+    )
+    host.activate(wrong)
+    prompt = (
+        "Return exactly two plain-text lines and no Markdown. "
+        "The first line must be `a` and the second line must be `b`."
+    )
+    assert host.generate(prompt, maximum_tokens=8) == b""
+    assert host.last_format_execution is None
+    v21, public, signer = _fixture(
+        tmp_path / "v21-old",
+        abi_version=ROUTE_ISOLATED_LEXICAL_GUARD_CORE_V21_ABI_VERSION,
+        abi_hash=ROUTE_ISOLATED_LEXICAL_GUARD_CORE_V21_ABI_SHA256,
+        architecture_format=ARCHITECTURE_V21_FORMAT,
+        residual_type=ExplicitRouteResidual,
+        extra_host_features=(
+            PROMPT_SPAN_FEATURE,
+            UNIVERSAL_GUARD_FEATURE,
+            EXACT_LEXICAL_GUARD_FEATURE,
+        ),
+        guard_scope="all_capabilities",
+        guard_boundary=EXACT_LEXICAL_BOUNDARY,
+    )
+    with pytest.raises(Exception):
+        FormatLiteralLexicalGuardCoreHost(
+            tmp_path / "registry-v21-old", trust_store={signer: public}
+        ).activate(v21)
