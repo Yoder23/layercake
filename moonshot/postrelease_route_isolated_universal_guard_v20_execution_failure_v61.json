@@ -1,0 +1,19 @@
+{
+  "format":"layercake-postrelease-route-isolated-universal-guard-v20-execution-failure/1",
+  "version":61,
+  "status":"FAIL_REPORTER_FALSE_NEGATIVE_NO_CONSTRUCT_EVIDENCE_WRITTEN",
+  "status_date":"2026-08-13",
+  "historical_evidence_changed":false,
+  "protocol":{"path":"moonshot/postrelease_route_isolated_universal_guard_v20_execution_preregistration_v60.json"},
+  "command":"C:\\Python310\\python.exe -m layercake.evaluation.route_isolated_universal_guard_v20_construct execute --protocol moonshot/postrelease_route_isolated_universal_guard_v20_execution_preregistration_v60.json --output results/moonshot/postrelease_route_isolated_universal_guard_v20_construct_v61.json",
+  "exit_code":1,
+  "output_written":false,
+  "implementation_under_test_sha256":"2eb35734d04b2d31a6c9ac3d19ebe459685a68f9b46f609e8fd6316106d2e8e9",
+  "failed_harness_sha256":"4c1e6275142c8338fc2e3ffa59064821521890b666c13d9d9c5e3afc167a81a0",
+  "runtime_checks":{"cuda_available":true,"canonical_abi_identity":true,"v19_tensor_schema_unchanged":true,"v19_manifest_rejected":true,"weak_only_v20_guard_rejected":true,"strong_guard_actual":true,"weak_guard_actual":true,"guard_stops_before_collapse":true,"persistent_state":true,"physical_route_selection":true,"prompt_span_preserved":true,"ordinary_noncollapse_preserved":true,"cpu_cuda_identity":true,"same_signed_packages_all_devices":true,"receiver_learning_zero":true,"focused_tests_pass":true,"sealed_campaign_unchanged":true},
+  "failed_gate":"complete_tests_pass",
+  "root_cause":"The test subprocess completed successfully under check=True, but the reporter searched captured text for the substring 'error'. The passing pytest warning '[WinError 5]' therefore caused a false negative.",
+  "independent_test_confirmation":{"command":"C:\\Python310\\python.exe -m pytest -q","exit_code":0,"passed":670,"failed":0,"warnings":48,"wall_seconds":51.05},
+  "repair_boundary":"Replace only the text-substring heuristic with the authoritative subprocess return code. Preserve the failed attempt, implementation, tests, construct gates, and output path immutability.",
+  "claim_boundary":"Failed construct reporter. No v20 construct, external-artifact, quality, performance, phase, or superiority claim."
+}
