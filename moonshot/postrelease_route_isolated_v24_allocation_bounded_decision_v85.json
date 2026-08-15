@@ -1,0 +1,48 @@
+{
+  "format": "layercake-postrelease-route-isolated-v24-allocation-bounded-decision/1",
+  "version": 85,
+  "status": "PASS_CONSTRUCT_ONLY_EXTERNAL_V24_ARTIFACT_RECERTIFICATION_AUTHORIZED",
+  "status_date": "2026-08-15",
+  "historical_evidence_changed": false,
+  "protocol": {
+    "path": "moonshot/postrelease_route_isolated_v24_allocation_bounded_execution_v83.json",
+    "sha256": "8b533f3b82a444930b5921a6fc77bccb8a1771ca16835c321bd37c4aa33289be"
+  },
+  "evidence": {
+    "path": "results/moonshot/postrelease_route_isolated_v24_allocation_bounded_construct_v84.json",
+    "sha256": "6848d788c17a784424a5c1562780bd6c3234d5b657a38a7b1281e3e16536fb23",
+    "evidence_sha256": "b9b05376b44a163e253cd44081e51163327c470ad573bd32d6eaa8222a36d252"
+  },
+  "measured_external_v23_bottleneck": {
+    "candidate_peak_active_rss_delta_bytes": 676290560,
+    "optimized_transformer_peak_runner_rss_bytes": 605081600,
+    "ordinary_phase2_throughput_retention": 0.941334554884323,
+    "source_evidence": "ABI_CAPABILITY_COMPILER_PHASE4_B50_V23_CPU_RUNTIME_RESULT_V873.json"
+  },
+  "checks": {
+    "canonical_v24_abi_identity": true,
+    "sealed_shared_sources_unchanged": true,
+    "v23_tensor_schema_values_and_payload_unchanged": true,
+    "v23_manifest_rejected_before_registry_mutation": true,
+    "missing_feature_rejected_before_registry_mutation": true,
+    "one_authenticated_parse_per_activation": true,
+    "all_89_authenticated_tensors_strictly_adopted": true,
+    "six_nonpersistent_attention_buffers_deterministically_reconstructed": true,
+    "zero_meta_tensors_after_adoption": true,
+    "same_cpu_cuda_output": true,
+    "same_package_payload_and_state_hash_all_devices": true,
+    "route_reuse_and_changes": true,
+    "receiver_training_steps": 0,
+    "receiver_calibration_runs": 0,
+    "focused_tests_passed": 4,
+    "complete_repository_tests_passed": 686,
+    "complete_repository_tests_failed": 0,
+    "unchanged_sealed_campaign_verifier": "PASS_PHASES_0_THROUGH_8"
+  },
+  "decision": "The isolated lc-direct-neural-core/24 construct passes without changing the sealed installer, package loader, or V17-V23 hosts. It authenticates and parses once, creates parameterized modules on meta, strictly adopts all 89 authenticated tensor storages, reconstructs only six deterministic non-persistent causal-attention buffers, leaves no meta tensor, and preserves CPU/CUDA fixture output, package identity, route reuse, and zero receiver learning.",
+  "authorized_next_action": "ONE_INDEPENDENTLY_VALIDATED_IMMUTABLE_V23 TENSOR PAYLOAD MAY BE REPACKAGED WITH IDENTICAL TENSOR BYTES UNDER A SIGNED V24 MANIFEST, THEN UNDERGO EXACT THREE-SEED OUTPUT CONFORMANCE, CONTEMPORANEOUS PAIRED V23-V24 CPU RETENTION, PEAK RSS, AND SAME-ARTIFACT CPU GPU RUNTIME RECERTIFICATION.",
+  "external_artifact_used": false,
+  "english_quality_tested": false,
+  "performance_tested": false,
+  "claim_boundary": "Generic isolated V24 construct only. No external acquisition, English quality, information minimum, physical speed or memory, campaign-phase recertification, or ABI-superiority claim."
+}
