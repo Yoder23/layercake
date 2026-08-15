@@ -1,0 +1,43 @@
+{
+  "format": "layercake-postrelease-route-isolated-v23-runtime-residency-decision/1",
+  "version": 81,
+  "status": "PASS_CONSTRUCT_ONLY_EXTERNAL_V23_ARTIFACT_RECERTIFICATION_AUTHORIZED",
+  "status_date": "2026-08-15",
+  "historical_evidence_changed": false,
+  "protocol": {
+    "path": "moonshot/postrelease_route_isolated_v23_runtime_residency_execution_v79.json",
+    "sha256": "0f8716b4d0bb0666e6945bce8918625954b8a6d60110098d26599dae12930770"
+  },
+  "evidence": {
+    "path": "results/moonshot/postrelease_route_isolated_v23_runtime_residency_construct_v80.json",
+    "sha256": "e5471306cd47e3fe3101784799a41fee5d51dae5cbee0168891792861b9eaa19",
+    "evidence_sha256": "5fb324c2de12a75c43bcd1cc327b6e0a326e10d3c87a3a25f7df764e4034c820"
+  },
+  "preserved_negative_evidence": {
+    "path": "results/moonshot/postrelease_route_isolated_v22_runtime_residency_repair_attempt_v77.json",
+    "decision": "REJECT_SHARED_BASE_CHANGE_AND_PRESERVE_ATTEMPT"
+  },
+  "checks": {
+    "canonical_v23_abi_identity": true,
+    "sealed_shared_sources_unchanged": true,
+    "v22_tensor_schema_and_values_unchanged": true,
+    "v22_manifest_rejected_before_registry_mutation": true,
+    "missing_feature_rejected_before_registry_mutation": true,
+    "one_authenticated_parse_per_activation": true,
+    "same_cpu_cuda_output": true,
+    "same_package_and_payload_all_devices": true,
+    "route_reuse_and_changes": true,
+    "receiver_training_steps": 0,
+    "receiver_calibration_runs": 0,
+    "focused_tests_passed": 4,
+    "complete_repository_tests_passed": 682,
+    "complete_repository_tests_failed": 0,
+    "unchanged_sealed_campaign_verifier": "PASS_PHASES_0_THROUGH_8"
+  },
+  "decision": "The isolated lc-direct-neural-core/23 construct passes without changing the sealed installer or v17-v22 hosts. One signed package is authenticated and parsed once per activation, identical residual-route state is reused, changed routes/batches execute, tensor payload identity and CPU/CUDA outputs are exact, and receiver learning remains zero.",
+  "authorized_next_action": "ONE_INDEPENDENTLY_VALIDATED_IMMUTABLE_V22_TENSOR_PAYLOAD_MAY_BE_REPACKAGED_WITH_IDENTICAL_TENSOR_BYTES_UNDER_A_SIGNED_V23_MANIFEST_THEN_UNDERGO_EXACT_FULL_ROW_OUTPUT_CONFORMANCE_AND_SAME_ARTIFACT_QUALITY_CPU_GPU_SPEED_TTFT_MEMORY_AND_PRESERVATION_CERTIFICATION",
+  "external_artifact_used": false,
+  "english_quality_tested": false,
+  "performance_tested": false,
+  "claim_boundary": "Generic isolated v23 host construct only. No external acquisition, English quality, information minimum, physical speed or memory, campaign-phase recertification, or ABI-superiority claim."
+}
