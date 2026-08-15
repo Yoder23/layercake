@@ -54,10 +54,13 @@ English core. See
 `docs/POSTRELEASE_EXTERNAL_CORE_HOST_INTERFACE_AUDIT.md`. No implementation or
 claim is authorized without a new preregistration.
 
-The construct implementation is now complete and isolated under
-`layercake_extensions/`. The next governed recertification input is one real,
-independently validated external English artifact. The host construct itself
-supplies no English or performance credit.
+The current construct implementation is `lc-direct-neural-core/25`, isolated
+under `layercake_extensions/`. It adds the fifth clarification-only residual
+route required by the current external handoff while retaining V24's
+allocation-bounded execution. The next governed recertification input is one
+real, independently validated, immutable five-route English artifact. That
+same payload must earn quality, routing, collapse, CPU/GPU, memory, TTFT, and
+package-identity evidence; the host construct supplies none of that credit.
 
 ## 5. Bounded research controls
 

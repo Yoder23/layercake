@@ -2,6 +2,19 @@
 
 ## Current sealed release state
 
+Post-release update (2026-08-15): `lc-direct-neural-core/25` is the latest
+construct-certified signed route-isolated host under
+`moonshot/postrelease_route_isolated_v25_clarification_route_decision_v89.json`.
+It is a V24-compatible, allocation-bounded successor that accepts exactly five
+rank-16 residual routes, preserves the original four route tensors and mappings,
+and maps only clarification to physically isolated route 4. All other
+capabilities retain their V24 execution paths, and at most one residual route is
+active. The construct passes CPU/CUDA fixture identity, 689 tests, strict signed
+package and storage-adoption checks, and the unchanged Phase 0-8 verifier. It is
+construct-only: no external artifact, English quality, information minimum,
+speed, memory, TTFT, or ABI-superiority claim is inherited. V24 remains the
+sealed four-route allocation-bounded construct.
+
 Post-release update (2026-08-13): `lc-direct-neural-core/19` is now the latest
 construct-certified signed route-isolated shallow-sparse host under
 `moonshot/postrelease_route_isolated_prompt_span_v19_decision_v58.json`. It

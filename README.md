@@ -35,16 +35,15 @@ historical after a local UTF-8 conformance failure. See the
 [v2 construct report](docs/POSTRELEASE_UNICODE_DIRECT_NEURAL_CORE_V2.md).
 
 The latest post-release execution boundary is the construct-only
-`lc-direct-neural-core/19` signed route-isolated shallow-sparse host. It
-preserves the v18 tensor schema and ordinary neural fallback while adding a
-zero-parameter, evaluator-blind constrained mode for explicit three-span order
-requests. The frozen model scores six literal-span permutations using one
-persistent prefill and one batched scoring forward with one active residual
-route. The construct passes CPU/CUDA output identity, 667 tests, reproducible
-evidence, and the unchanged sealed verifier. It is not broad autonomous
-generation, and no real external artifact has yet passed v19 output
-conformance, English quality, or performance certification. V18 and the v17
-schema failure remain preserved.
+`lc-direct-neural-core/25` signed route-isolated host. It preserves V24's
+allocation-bounded activation and original four residual routes while adding
+exactly one physically isolated clarification route. Clarification alone maps
+to route 4; all other capability mappings remain unchanged, and no token can
+activate more than one residual route. The construct passes CPU/CUDA fixture
+identity, strict signed-package and storage-adoption checks, 689 tests, and the
+unchanged sealed verifier. No real external V25 artifact has yet earned English
+quality, information-minimum, speed, memory, or TTFT certification. Earlier
+post-release hosts and their negative evidence remain preserved.
 
 ## Certified release scope
 

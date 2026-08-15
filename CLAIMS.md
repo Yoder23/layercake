@@ -37,6 +37,15 @@ the repository and recertification boundary.
 
 ## Post-release host-interface audit
 
+The latest isolated host construct is `lc-direct-neural-core/25`, certified by
+`moonshot/postrelease_route_isolated_v25_clarification_route_decision_v89.json`.
+Its bounded claim is mechanical: one signed five-route package installs on CPU
+and CUDA, the original four routes remain tensor-exact, clarification physically
+selects route 4, all other mappings remain unchanged, storage adoption is
+allocation-bounded, and receiver learning is zero. It does not certify an
+external artifact, English quality, an information minimum, performance, or ABI
+superiority.
+
 The read-only audit in
 `docs/POSTRELEASE_EXTERNAL_CORE_HOST_INTERFACE_AUDIT.md` establishes only that
 the sealed product originally had no canonical signed direct neural English-

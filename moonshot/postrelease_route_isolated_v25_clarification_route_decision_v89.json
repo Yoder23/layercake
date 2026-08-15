@@ -1,0 +1,42 @@
+{
+  "format": "layercake-postrelease-route-isolated-v25-clarification-route-decision/1",
+  "version": 89,
+  "status": "PASS_CONSTRUCT_ONLY_EXTERNAL_V25_ARTIFACT_RECERTIFICATION_AUTHORIZED",
+  "status_date": "2026-08-15",
+  "historical_evidence_changed": false,
+  "protocol": {
+    "path": "moonshot/postrelease_route_isolated_v25_clarification_route_execution_v87.json",
+    "sha256": "2a06347fb2a8f9b8197e1ec0749383c987cd2b40d86e82fa6f66a4189e3b5777"
+  },
+  "evidence": {
+    "path": "results/moonshot/postrelease_route_isolated_v25_clarification_route_construct_v88.json",
+    "sha256": "79d12659ef341cf94ace33fe2f437d9c8c1bf4d5005c6e63390fe6fc9890e2e3",
+    "evidence_sha256": "aad38f9383fe049be3c679851c318520480371ff5620b0610920c5c4d48a78d0"
+  },
+  "checks": {
+    "canonical_v25_abi_identity": true,
+    "v24_first_four_routes_tensor_exact": true,
+    "v24_manifest_rejected_before_registry_mutation": true,
+    "missing_feature_rejected_before_registry_mutation": true,
+    "wrong_route_count_rejected_before_registry_mutation": true,
+    "all_14_capability_mappings_exact": true,
+    "clarification_physically_selects_only_route_four": true,
+    "one_active_residual_route_maximum": true,
+    "one_authenticated_parse_per_activation": true,
+    "all_89_authenticated_tensors_strictly_adopted": true,
+    "zero_meta_tensors_after_adoption": true,
+    "same_cpu_cuda_clarification_and_format_outputs": true,
+    "receiver_training_steps": 0,
+    "receiver_calibration_runs": 0,
+    "focused_tests_passed": 7,
+    "complete_repository_tests_passed": 689,
+    "complete_repository_tests_failed": 0,
+    "unchanged_sealed_campaign_verifier": "PASS_PHASES_0_THROUGH_8"
+  },
+  "decision": "The isolated lc-direct-neural-core/25 construct passes without changing the sealed installer, package loader, or V17-V24 hosts. It accepts exactly five physically isolated rank-16 residual routes, preserves routes zero through three tensor-exactly, maps only clarification to route four, retains every other capability mapping, and preserves allocation-bounded signed execution on CPU and CUDA.",
+  "authorized_next_action": "One independently validated immutable five-route English-core payload may be packaged under a signed V25 manifest and undergo full same-artifact quality, routing, collapse, CPU/GPU, memory, TTFT, and package-identity recertification.",
+  "external_artifact_used": false,
+  "english_quality_tested": false,
+  "performance_tested": false,
+  "claim_boundary": "Generic isolated V25 five-route host construct only. No external acquisition, English quality, information minimum, physical speed or memory, campaign-phase recertification, or ABI-superiority claim."
+}
