@@ -1,0 +1,47 @@
+{
+  "format": "layercake-postrelease-route-isolated-v22-runtime-residency-repair-attempt/1",
+  "version": 77,
+  "status": "FAIL_SHARED_RUNTIME_CHANGE_INVALIDATES_SEALED_PRECISION_CONTRACT",
+  "status_date": "2026-08-15",
+  "historical_evidence_changed": false,
+  "protocol": {
+    "path": "moonshot/postrelease_route_isolated_v22_runtime_residency_repair_preregistration_v76.json",
+    "sha256": "f0e82e0d916b3b227e217217fd12d4afb94649300e243f25518f73c2a1a2b38e"
+  },
+  "attempt": {
+    "scope": "shared CakeInstaller and v17-v22 route-isolated base execution",
+    "source_sha256": {
+      "layercake/cake/installer.py": "d4966d0fd7009180d8b04e4f050c19a5e585a6e89cf1557d1f2b2e4adc4490b4",
+      "layercake_extensions/route_isolated_shallow_sparse_core.py": "f6a38bf3b67a899ffaa64b0597a7199b7292d7485ea2b7a428bfb343dc76f9ef",
+      "layercake_extensions/route_isolated_prompt_span_core_v19.py": "d97951ac4ce7fb613c7889a371922db7e676ccf6056a6f700bca43d0aa798836",
+      "tests/cake/test_installer.py": "00661f1b9416005288bbd5d8270e69220f952c7aaf3f1dfed9960cfd0cdee321",
+      "tests/test_route_isolated_shallow_sparse_core.py": "1980e853e7643b300bb421751b79c11f25fa4c252ce665bd74ed623f744befda"
+    }
+  },
+  "focused_tests": {
+    "command": "C:\\Python310\\python.exe -m pytest -q tests/cake/test_installer.py tests/test_route_isolated_shallow_sparse_core.py",
+    "passed": 22,
+    "failed": 0
+  },
+  "complete_tests": {
+    "command": "C:\\Python310\\python.exe -m pytest -q --junitxml=results/moonshot/postrelease_route_isolated_v22_runtime_residency_repair_attempt_v77.xml",
+    "passed": 670,
+    "failed": 10,
+    "junit": "results/moonshot/postrelease_route_isolated_v22_runtime_residency_repair_attempt_v77.xml",
+    "junit_sha256": "aa90430595c7a4dc770b9c8c040fb4de1eab5645dd4b26e4e238c09cd6c869fb",
+    "failed_test_groups": [
+      "tests/evaluation/test_phase6_evidence.py",
+      "tests/evaluation/test_phase7_evidence.py",
+      "tests/evaluation/test_phase8_evidence.py"
+    ],
+    "common_machine_verified_failure": "precision_contract component changed after the sealed Phase 6, Phase 7, and Phase 8 freezes"
+  },
+  "functional_observation": "The focused package, lifecycle, one-parse, validator, route-state, and v17-v22 host tests pass, but that is insufficient because the shared implementation boundary invalidates sealed dependent evidence.",
+  "decision": "REJECT_SHARED_BASE_CHANGE_AND_PRESERVE_ATTEMPT",
+  "authorized_next_action": "Restore every shared sealed source and test byte, verify the original complete suite and campaign, then preregister an isolated successor interface containing the bounded residency repair without modifying the sealed precision contract.",
+  "training_performed": false,
+  "external_artifact_used": false,
+  "physical_performance_claimed": false,
+  "evidence_sha256": "7d9f4b9117f8592f9bf7d8d6c918b9ab0b0edc049dedb754815dfee8bca8ca0a",
+  "claim_boundary": "Negative governance evidence only. No runtime repair, external artifact, quality, speed, memory, phase recertification, or ABI-superiority claim."
+}
