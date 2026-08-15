@@ -1,0 +1,63 @@
+{
+  "format": "layercake-postrelease-route-isolated-v22-runtime-residency-repair/1",
+  "version": 76,
+  "status": "PREREGISTERED_PERFORMANCE_ONLY_RUNTIME_REPAIR",
+  "status_date": "2026-08-15",
+  "historical_evidence_changed": false,
+  "authorization": "The construct-certified v22 host is authorized for one separately governed performance-only runtime repair. No external acquisition code, artifact, data, output, or evidence is imported into LayerCake.",
+  "affected_interfaces": [
+    "lc-direct-neural-core/17",
+    "lc-direct-neural-core/18",
+    "lc-direct-neural-core/19",
+    "lc-direct-neural-core/20",
+    "lc-direct-neural-core/21",
+    "lc-direct-neural-core/22"
+  ],
+  "canonical_v22_interface_unchanged": true,
+  "objective": "Eliminate redundant authenticated package deserialization during route-isolated core activation and elide repeated writes of an already active identical residual-route state, while preserving package security, registry lifecycle, tensor values, FP32 numerical behavior, persistent state, output bytes, ABI identity, and every v17-v22 construct behavior.",
+  "bounded_changes": {
+    "installer": "Add an install-inspected path that accepts only a CakePackage already validated by the same installer, repeats host compatibility validation, checks dependencies, stores the content-addressed blob, and writes the identical registry record. Existing install and update APIs retain their behavior.",
+    "activation": "Inspect and authenticate the source exactly once, validate the route-isolated role, install that exact inspected object, and bind its tensors without reloading the source or registry blob.",
+    "route_state": "Cache only the exact (route, batch) assignment already written to every block and elide a repeated identical assignment. Any route or batch change still writes a new tensor before execution.",
+    "forbidden": [
+      "tensor mutation",
+      "precision change",
+      "quantization",
+      "architecture or ABI change",
+      "output change",
+      "training or calibration",
+      "package or signature relaxation"
+    ]
+  },
+  "gates": {
+    "one_authenticated_package_parse_per_activation": true,
+    "same_archive_payload_and_state_hash": true,
+    "same_cpu_output_bytes": true,
+    "same_cuda_output_bytes_when_available": true,
+    "residual_route_changes_preserved": true,
+    "install_verify_remove_reinstall_and_rollback_preserved": true,
+    "tamper_and_incompatible_host_rejection_preserved": true,
+    "receiver_training_steps": 0,
+    "receiver_calibration_runs": 0,
+    "complete_repository_tests_required": true,
+    "unchanged_sealed_campaign_verifier_required": true
+  },
+  "implementation_authorized": true,
+  "training_authorized": false,
+  "external_artifact_used": false,
+  "english_quality_tested": false,
+  "physical_performance_claimed": false,
+  "bindings": {
+    "moonshot/postrelease_route_isolated_format_literal_v22_decision_v75.json": "b03ce97308f13cc40955adfd34eba1f02823207db0c31715d2f81e53a52b43ce",
+    "moonshot/canonical_route_isolated_format_literal_core_abi_v22.json": "34038bbd682f1efa727570adfb934b0ce9d73d31121f06f4028976ba2d798d35",
+    "moonshot/invalidation_matrix.yaml": "d443ef18a3ef619784034020ca22c9fd79320d6a6bcde85bdd2e9e18d24ccdac",
+    "layercake/cake/installer.py": "8be316ed618640c9f736ad4b12c4d373090e6ffefdf902b847598d0082c962f2",
+    "layercake_extensions/route_isolated_shallow_sparse_core.py": "15e05cfad0a7458d76ab2b1636ea8864fbc716fea33f57107c45696c857073b0",
+    "layercake_extensions/route_isolated_prompt_span_core_v19.py": "d9223820a3059586e256513e9b74f3ee924ee233e4dfd6422dd64c1e2086390f",
+    "layercake_extensions/route_isolated_format_literal_core_v22.py": "88cb4cc7f212469f9f78cad9d0811fd7175f8f21f4e7b89455dc6b76c74b2f1c",
+    "tests/cake/test_installer.py": "01554120e2e17c55983f59e8e21cf572ddb24b52849a44b9dbd64b6abefff78d",
+    "tests/test_route_isolated_shallow_sparse_core.py": "f4c8ac07afe6b9f6f196f46ddfa8365591910e0ab498d094af0cbc438438186b"
+  },
+  "decision_rule": "Implement exactly the bounded change, add hostile tests proving that install-inspected cannot bypass host/dependency/signature provenance and that one activation performs one package parse, verify repeated-route elision and changed-route execution, run focused tests, the complete repository suite, and the unchanged Phase 0-8 verifier, then independently recompute the result. Any output, tensor, ABI, security, lifecycle, or verifier change fails the repair.",
+  "claim_boundary": "Generic LayerCake hosting/runtime repair only. No external artifact, ABI acquisition, English quality, information minimum, physical speed or memory, campaign-phase recertification, or ABI-superiority claim."
+}
