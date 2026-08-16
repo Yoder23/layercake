@@ -38,6 +38,15 @@ class CakePackage:
     archive_hash: str
 
 
+@dataclass(frozen=True)
+class CakePackageIntegrity:
+    path: Path
+    manifest: CakeManifest
+    signed: bool
+    signature_key_id: str | None
+    archive_hash: str
+
+
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -181,6 +190,111 @@ def _read_members(path: Path) -> tuple[dict[str, bytes], str]:
                 return {name: archive.read(name) for name in names}, archive_hash
     except (zipfile.BadZipFile, OSError) as exc:
         raise PackageError("invalid cake ZIP container") from exc
+
+
+def verify_package_integrity(
+    path: str | Path,
+    *,
+    trust_store: Mapping[str, bytes | str | Path] | None = None,
+    require_signature: bool = True,
+    allow_local_development: bool = False,
+) -> CakePackageIntegrity:
+    """Authenticate a package without deserializing its tensor payload."""
+
+    path = Path(path)
+    if path.suffix != ".cake" or not path.is_file():
+        raise PackageError("cake package path must be an existing .cake file")
+    if path.stat().st_size > MAX_PACKAGE_BYTES:
+        raise PackageError("package exceeds the configured size limit")
+    try:
+        with path.open("rb") as stream:
+            archive_digest = hashlib.sha256()
+            for block in iter(lambda: stream.read(8 * 1024 * 1024), b""):
+                archive_digest.update(block)
+            archive_hash = archive_digest.hexdigest()
+            stream.seek(0)
+            with zipfile.ZipFile(stream, "r") as archive:
+                infos = archive.infolist()
+                names = [info.filename for info in infos]
+                folded = [name.casefold() for name in names]
+                if len(names) != len(set(names)) or len(folded) != len(set(folded)):
+                    raise PackageError("duplicate or case-ambiguous archive entries")
+                allowed = {MANIFEST_NAME, TENSORS_NAME, SIGNATURE_NAME}
+                if not {MANIFEST_NAME, TENSORS_NAME} <= set(names) or not set(names) <= allowed:
+                    raise PackageError("package contains missing or unsupported entries")
+                by_name = {info.filename: info for info in infos}
+                total = 0
+                for info in infos:
+                    pure = PurePosixPath(info.filename)
+                    if pure.is_absolute() or ".." in pure.parts or len(pure.parts) != 1:
+                        raise PackageError("path traversal or nested entries are forbidden")
+                    if info.is_dir() or info.flag_bits & 0x1:
+                        raise PackageError("directories and encrypted entries are forbidden")
+                    mode = (info.external_attr >> 16) & 0o170000
+                    if mode not in {0, 0o100000}:
+                        raise PackageError("non-regular archive entries are forbidden")
+                    total += info.file_size
+                    if total > MAX_PACKAGE_BYTES:
+                        raise PackageError("expanded package exceeds the size limit")
+
+                manifest = CakeManifest.from_json(archive.read(MANIFEST_NAME))
+                canonical_manifest = manifest.canonical_bytes(blank_package_hash=True)
+                content_digest = hashlib.sha256()
+                content_digest.update(_CONTEXT)
+                encoded_manifest_name = MANIFEST_NAME.encode("ascii")
+                content_digest.update(
+                    len(encoded_manifest_name).to_bytes(4, "big")
+                )
+                content_digest.update(encoded_manifest_name)
+                content_digest.update(len(canonical_manifest).to_bytes(8, "big"))
+                content_digest.update(canonical_manifest)
+
+                encoded_tensor_name = TENSORS_NAME.encode("ascii")
+                content_digest.update(len(encoded_tensor_name).to_bytes(4, "big"))
+                content_digest.update(encoded_tensor_name)
+                content_digest.update(
+                    int(by_name[TENSORS_NAME].file_size).to_bytes(8, "big")
+                )
+                payload_digest = hashlib.sha256()
+                with archive.open(TENSORS_NAME, "r") as tensor_stream:
+                    for chunk in iter(
+                        lambda: tensor_stream.read(8 * 1024 * 1024), b""
+                    ):
+                        content_digest.update(chunk)
+                        payload_digest.update(chunk)
+                if payload_digest.hexdigest() != manifest.tensor_payload_hash:
+                    raise PackageError("tensor payload hash mismatch")
+                if content_digest.hexdigest() != manifest.package_hash:
+                    raise PackageError("authenticated package content hash mismatch")
+
+                signed = SIGNATURE_NAME in names
+                signature_key_id: str | None = None
+                if signed:
+                    envelope = SignatureEnvelope.from_bytes(
+                        archive.read(SIGNATURE_NAME)
+                    )
+                    if envelope.key_id != manifest.signature.get("key_id"):
+                        raise SignatureError(
+                            "manifest and signature key identifiers differ"
+                        )
+                    verify_hash(envelope, manifest.package_hash, trust_store or {})
+                    signature_key_id = envelope.key_id
+                elif require_signature or not allow_local_development:
+                    raise PackageError(
+                        "unsigned cake rejected; explicitly enable trusted local development"
+                    )
+                elif manifest.signature.get("algorithm") != "none":
+                    raise PackageError("missing signature envelope")
+    except (zipfile.BadZipFile, OSError, SignatureError) as exc:
+        message = str(exc) if isinstance(exc, SignatureError) else "invalid cake ZIP container"
+        raise PackageError(message) from exc
+    return CakePackageIntegrity(
+        path=path.resolve(),
+        manifest=manifest,
+        signed=signed,
+        signature_key_id=signature_key_id,
+        archive_hash=archive_hash,
+    )
 
 
 def load_package(

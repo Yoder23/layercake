@@ -29,7 +29,9 @@ def test_atomic_install_verify_remove_reinstall_and_abi_guard(tmp_path):
         incompatible.inspect(package, trusted_local=True)
 
 
-def test_verify_streams_installed_archive_hash(tmp_path, monkeypatch):
+def test_verify_streams_installed_archive_without_tensor_deserialization(
+    tmp_path, monkeypatch
+):
     model = PortableDomainDecoder(feature_width=8, hidden_width=16)
     package = build_package(tmp_path / "python.cake", manifest(model), model.state_dict())
     registry = CakeRegistry(tmp_path / "registry")
@@ -41,7 +43,11 @@ def test_verify_streams_installed_archive_hash(tmp_path, monkeypatch):
     def forbidden_read_bytes(_self):
         raise AssertionError("whole-archive Path.read_bytes is forbidden")
 
+    def forbidden_tensor_load(_payload):
+        raise AssertionError("active-host verify must not deserialize tensors")
+
     monkeypatch.setattr(Path, "read_bytes", forbidden_read_bytes)
+    monkeypatch.setattr("layercake.cake.package.load_safetensors", forbidden_tensor_load)
     assert installer.verify("python")["status"] == "PASS"
 
 
