@@ -1,0 +1,37 @@
+{
+  "format": "layercake-postrelease-sealed-tag-local-revalidation/1",
+  "status": "PREREGISTERED_LOCAL_READ_ONLY_REVALIDATION",
+  "status_date": "2026-08-16",
+  "objective": "Confirm that the immutable layercake-moonshot-final tag still verifies independently of current post-release source changes. Create a detached exact-tag worktree, expose all 19 registered external assets at their exact hashes, run the complete test suite, campaign verifier, and final Phase 8 verifier, and preserve all results. This is local revalidation, not new independent evidence or current-HEAD recertification.",
+  "source_repository_head": "662c5a9b7264a1a5478c9dfb656f35c450e2504f",
+  "sealed_tag": "layercake-moonshot-final",
+  "sealed_tag_object": "1512eb42910d2128d7a38a2f77a9d93d75adc1c0",
+  "sealed_tag_commit": "0537cbb9e93cd7ebd4ba01c0bf641414ecebb1c3",
+  "target": "C:/tmp/layercake_moonshot_final_verify_v1",
+  "external_asset_protocol": "moonshot/phase8_independent_verification_preregistration.json",
+  "external_asset_count": 19,
+  "external_asset_total_bytes": 1597715222,
+  "external_asset_source_mode": "read_only_same_volume_hardlinks_to_hash_verified_local_cache",
+  "commands": [
+    "C:\\Python310\\python.exe -m pytest -q --junitxml=results/moonshot/postrelease_local_tag_revalidation_full_v98.xml",
+    "C:\\Python310\\python.exe -m layercake.moonshot_campaign verify-all",
+    "C:\\Python310\\python.exe -m layercake.moonshot_final verify"
+  ],
+  "minimum_tests": 597,
+  "training_authorized": false,
+  "model_inference_authorized": false,
+  "artifact_mutation_authorized": false,
+  "current_head_recertification_authorized": false,
+  "execution_order": [
+    "Commit this protocol and V96 invalidation record.",
+    "Preserve preflight while the target is absent and all 19 source assets are exact.",
+    "Create the detached exact-tag worktree.",
+    "Create only read-only hardlinks for the 19 external assets and verify every target hash.",
+    "Run the complete test suite once.",
+    "Run verify-all and moonshot_final verify once each.",
+    "Copy only the resulting JUnit and command outputs back as post-release local evidence.",
+    "Issue no current-HEAD or new-independent claim."
+  ],
+  "decision_rule": "The historical tag remains locally valid only if the detached HEAD and tag identities are exact, tracked worktree diff is empty, all 19 external assets match registered hashes, at least 597 tests pass with zero failures/errors, verify-all reports completed_phases_valid=true, and moonshot_final reports status=PROVEN. Any failure is preserved without changing sealed bytes or gates.",
+  "claim_boundary": "Read-only local revalidation of the already sealed historical tag. It cannot recertify current HEAD, make post-release code part of the sealed product, replace the original independent Phase 8 evidence, or establish new hardware, performance, training, ABI, or universal claims."
+}

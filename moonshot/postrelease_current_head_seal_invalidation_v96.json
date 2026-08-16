@@ -1,0 +1,25 @@
+{
+  "format": "layercake-postrelease-current-head-seal-invalidation/1",
+  "status": "CURRENT_HEAD_NOT_SEALED_RELEASE",
+  "status_date": "2026-08-16",
+  "current_head": "662c5a9b7264a1a5478c9dfb656f35c450e2504f",
+  "sealed_tag": "layercake-moonshot-final",
+  "sealed_tag_object": "1512eb42910d2128d7a38a2f77a9d93d75adc1c0",
+  "sealed_tag_commit": "0537cbb9e93cd7ebd4ba01c0bf641414ecebb1c3",
+  "commands": {
+    "campaign": "C:\\Python310\\python.exe -m layercake.moonshot_campaign verify-all",
+    "final": "C:\\Python310\\python.exe -m layercake.moonshot_final verify"
+  },
+  "observed_failures": {
+    "campaign": "sealed Phase 6 typed evidence failed: Phase 6 dependent components changed after freeze: ['precision_contract']",
+    "final": "sealed product components changed in Phase 8: ['precision_contract']"
+  },
+  "cause": "Post-release commits 8f49fe1 and 662c5a9 changed layercake/cake/package.py and layercake/cake/installer.py. moonshot/invalidation_matrix.yaml intentionally classifies layercake/cake/** as precision_contract and invalidates from Phase 2.",
+  "sealed_historical_evidence_changed": false,
+  "invalidation_rule_changed": false,
+  "postrelease_package_changes_reverted": false,
+  "current_head_may_claim_sealed_phase_0_through_8": false,
+  "sealed_tag_claim_unchanged_pending_revalidation": true,
+  "required_documentation_correction": "Verification commands for the sealed product must run from the exact annotated tag, not current post-release HEAD. Current HEAD must be described as a post-release host lineage with an open successor recertification.",
+  "claim_boundary": "This is an honest invalidation finding. It does not invalidate historical evidence at the immutable tag, certify current HEAD, recertify the package changes, or support any new performance claim."
+}
