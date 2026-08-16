@@ -104,6 +104,10 @@ class DirectCakeOrchestrator:
         device: torch.device | str = "cpu",
         maximum_loaded_cakes: int = 2,
     ) -> None:
+        bound_profiles = tuple(profiles)
+        self._profiles = {
+            profile.cake_id: profile for profile in bound_profiles
+        }
         self.host = DirectCakeHost(
             registry_root,
             abi_version=abi_version,
@@ -127,7 +131,7 @@ class DirectCakeOrchestrator:
                 allowed_permissions=frozenset({"local-inference"}),
             ),
         )
-        self.router = CatalogProfileRouter(profiles, policy=policy)
+        self.router = CatalogProfileRouter(bound_profiles, policy=policy)
         self.refresh()
 
     def install(self, package: str | Path) -> dict[str, Any]:
@@ -168,6 +172,178 @@ class DirectCakeOrchestrator:
         return self.router.route(
             prompt,
             top_k=2 if mode in {"automatic_topk", "multidomain"} else 1,
+        )
+
+    def plan_labeled(
+        self,
+        prompt: str,
+        *,
+        destination_scope: str,
+        domain: str | None = None,
+    ) -> RouteResult:
+        """Honor an authoritative destination label without parsing prompt text.
+
+        This is the fail-closed boundary for callers that already possess a
+        provenance-bound capability label.  Prompt text can never override the
+        supplied label.  Missing selected domains do not fall through to the
+        English core.
+        """
+
+        scope = str(destination_scope).strip().casefold()
+        selected_domain = (
+            str(domain).strip().casefold() if domain is not None else None
+        )
+        if scope == "english_core":
+            if selected_domain not in {None, "", "domain_independent"}:
+                raise CatalogRoutingError(
+                    "english-core destination cannot carry a specialist domain"
+                )
+            result = self.plan(prompt, mode="core_only")
+            return RouteResult(
+                selected=result.selected,
+                candidates=result.candidates,
+                confidence=result.confidence,
+                abstained=result.abstained,
+                core_fallback=result.core_fallback,
+                escalate=result.escalate,
+                multidomain=result.multidomain,
+                reason="authoritative_english_core_label",
+                policy_version=result.policy_version,
+                route_milliseconds=result.route_milliseconds,
+                trace=(
+                    {
+                        "event": "authoritative_destination",
+                        "scope": "english_core",
+                    },
+                ),
+            )
+        if scope == "quarantine":
+            return RouteResult(
+                selected=(),
+                candidates=(),
+                confidence=1.0,
+                abstained=True,
+                core_fallback=False,
+                escalate=True,
+                multidomain=False,
+                reason="authoritative_quarantine_label",
+                policy_version=self.router.policy.version,
+                route_milliseconds=0.0,
+                trace=(
+                    {
+                        "event": "authoritative_destination",
+                        "scope": "quarantine",
+                    },
+                ),
+            )
+        if scope != "domain_cake" or not selected_domain:
+            raise CatalogRoutingError(
+                "authoritative destination must be english_core, domain_cake, or quarantine"
+            )
+        matches = tuple(
+            sorted(
+                profile.cake_id
+                for profile in self._profiles.values()
+                if selected_domain
+                in {value.casefold() for value in profile.domains}
+            )
+        )
+        if len(matches) != 1:
+            return RouteResult(
+                selected=(),
+                candidates=(),
+                confidence=0.0,
+                abstained=True,
+                core_fallback=False,
+                escalate=True,
+                multidomain=False,
+                reason="unknown_or_ambiguous_selected_domain",
+                policy_version=self.router.policy.version,
+                route_milliseconds=0.0,
+                trace=(
+                    {
+                        "event": "authoritative_destination",
+                        "scope": "domain_cake",
+                        "domain": selected_domain,
+                        "matches": list(matches),
+                    },
+                ),
+            )
+        cake_id = matches[0]
+        if cake_id not in self.router.eligible_ids:
+            return RouteResult(
+                selected=(),
+                candidates=(),
+                confidence=1.0,
+                abstained=True,
+                core_fallback=False,
+                escalate=True,
+                multidomain=False,
+                reason="selected_domain_not_installed",
+                policy_version=self.router.policy.version,
+                route_milliseconds=0.0,
+                trace=(
+                    {
+                        "event": "authoritative_destination",
+                        "scope": "domain_cake",
+                        "domain": selected_domain,
+                        "cake_id": cake_id,
+                        "installed": False,
+                    },
+                ),
+            )
+        return self.router.route(prompt, forced=(cake_id,))
+
+    def execute_labeled(
+        self,
+        prompt: str,
+        *,
+        destination_scope: str,
+        domain: str | None = None,
+        core_handler: Callable[[str], bytes | str] | None = None,
+    ) -> DirectOrchestrationResult:
+        """Execute one authoritative destination or return a fail-closed result."""
+
+        started = time.perf_counter()
+        before = self.host.telemetry()
+        route = self.plan_labeled(
+            prompt, destination_scope=destination_scope, domain=domain
+        )
+        execution_started = time.perf_counter()
+        if route.core_fallback:
+            handler = core_handler or (lambda value: f"CORE:{value}")
+            value = handler(prompt)
+            output = value.encode("utf-8") if isinstance(value, str) else value
+            path = "authoritative_english_core"
+        elif route.selected:
+            generated = self.host.generate(
+                route.selected[0], _canonical_direct_prompt(prompt)
+            )
+            output = generated.output
+            path = "authoritative_selected_domain"
+        elif route.reason == "selected_domain_not_installed":
+            output = (
+                f"The requested {str(domain).strip()} capability is not installed."
+            ).encode("utf-8")
+            path = "authoritative_domain_missing"
+        elif route.reason == "authoritative_quarantine_label":
+            output = b"The request is quarantined and cannot be executed."
+            path = "authoritative_quarantine"
+        else:
+            output = b"The requested capability is unavailable or ambiguous."
+            path = "authoritative_domain_unavailable"
+        execution_ms = (time.perf_counter() - execution_started) * 1000.0
+        end_ms = (time.perf_counter() - started) * 1000.0
+        return DirectOrchestrationResult(
+            mode="authoritative_label",
+            execution_path=path,
+            selected=route.selected,
+            output=output,
+            route=route,
+            route_milliseconds=route.route_milliseconds,
+            execution_milliseconds=execution_ms,
+            end_to_end_milliseconds=end_ms,
+            telemetry_delta=_telemetry_delta(before, self.host.telemetry()),
         )
 
     def execute(

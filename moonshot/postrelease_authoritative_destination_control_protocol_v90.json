@@ -1,0 +1,41 @@
+{
+  "format": "layercake-postrelease-authoritative-destination-control-protocol/1",
+  "protocol_id": "layercake-postrelease-authoritative-destination-control-v90",
+  "status": "PREREGISTERED_GENERIC_HOST_CONTROL_CONSTRUCT",
+  "status_date": "2026-08-16",
+  "parent_commit": "ba54fa1",
+  "objective": "Add a generic, provenance-bound destination-control path above the existing direct cake orchestrator so an authoritative English, domain, or quarantine label cannot be overridden by prompt text and a missing selected domain cannot fall through to the English core.",
+  "repository_boundary": {
+    "abi_code_or_evidence_imported": false,
+    "external_artifact_loaded": false,
+    "sealed_core_or_cake_modified": false,
+    "existing_routing_modes_modified": false,
+    "new_surface": "DirectCakeOrchestrator.plan_labeled and execute_labeled"
+  },
+  "gates": {
+    "authoritative_english_invokes_only_core_handler": true,
+    "authoritative_installed_domain_invokes_only_bound_domain_cake": true,
+    "authoritative_missing_domain_never_invokes_core": true,
+    "unknown_or_ambiguous_domain_never_invokes_core": true,
+    "quarantine_never_invokes_core_or_domain": true,
+    "prompt_text_cannot_override_authoritative_label": true,
+    "missing_and_quarantine_execution_telemetry_zero": true,
+    "existing_automatic_manual_and_multidomain_semantics_unchanged": true,
+    "focused_tests_pass": true,
+    "complete_layercake_suite_pass": true,
+    "sealed_phase_verifier_unchanged_and_passes": true
+  },
+  "bindings": {
+    "layercake/routing/direct_orchestrator.py": "052a0de7ba39f537562bb885b4c5fcbb7f39a178cdca6cd7654a47ec6bb7f44e",
+    "tests/routing/test_authoritative_destination_control.py": "e257475ee9b5f1b08b4f696287094f51a7da7c2ca33096041762f9e7da146f69",
+    "AGENTS.md": "b368ac36ebbe21a50eb500693118c25d06abf741ed3b74035ef8c831139bbd34",
+    "moonshot/phase6_orchestration_preregistration.json": "30d04dd01630123c2861d93656d2b4e07d75dba0b2c77ffead2717a0f7c6b48e"
+  },
+  "required_commands": [
+    "python -m pytest -p no:cacheprovider -q tests/routing/test_authoritative_destination_control.py tests/routing/test_catalog_router.py",
+    "python -m pytest -p no:cacheprovider -q",
+    "python -m layercake.moonshot_campaign verify-all"
+  ],
+  "decision_rule": "Construct-pass only if every focused and complete-suite test passes, the unchanged campaign verifier passes, missing/unknown/quarantined authoritative destinations never invoke the English core, installed domain labels cannot be overridden by prompt text, and existing orchestration behavior remains unchanged. Any failure preserves this construct as failed; do not weaken the gate or modify sealed core/cake artifacts.",
+  "claim_boundary": "Generic post-release LayerCake host-control construct only. No external acquisition, package quality, English quality, domain quality, information-minimum, performance, ABI, or release recertification claim is inherited."
+}
