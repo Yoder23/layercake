@@ -1,0 +1,13 @@
+{
+  "format": "layercake-postrelease-authoritative-destination-control-extension-import-failure/1",
+  "status": "FAIL_TEST_COLLECTION_EXTENSION_IMPORT_PATH",
+  "status_date": "2026-08-16",
+  "repair_protocol": "moonshot/postrelease_authoritative_destination_control_repair_protocol_v92.json",
+  "repair_commit": "cf640fe",
+  "command": "python -m pytest -p no:cacheprovider -q tests/routing/test_authoritative_destination_control.py tests/routing/test_catalog_router.py",
+  "tests_executed": 0,
+  "error": "ModuleNotFoundError: No module named 'layercake_extensions.catalog_router'",
+  "cause": "The extension relocation retained relative imports that resolved inside layercake_extensions rather than the sealed layercake.routing package.",
+  "authorized_repair": "Change only the extension import statements to absolute imports from layercake.routing.catalog_router, layercake.routing.direct_orchestrator, and layercake.routing.router. Do not change control logic, tests, sealed routing files, or gates.",
+  "historical_evidence_changed": false
+}

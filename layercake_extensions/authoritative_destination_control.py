@@ -14,14 +14,14 @@ from typing import Callable, Iterable, Mapping
 
 import torch
 
-from .catalog_router import ArchiveBoundProfile, CatalogRoutingError
-from .direct_orchestrator import (
+from layercake.routing.catalog_router import ArchiveBoundProfile, CatalogRoutingError
+from layercake.routing.direct_orchestrator import (
     DirectCakeOrchestrator,
     DirectOrchestrationResult,
     _canonical_direct_prompt,
     _telemetry_delta,
 )
-from .router import RouteResult
+from layercake.routing.router import RouteResult
 
 
 class AuthoritativeDestinationOrchestrator(DirectCakeOrchestrator):

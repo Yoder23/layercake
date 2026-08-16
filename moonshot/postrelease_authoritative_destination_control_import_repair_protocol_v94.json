@@ -1,0 +1,26 @@
+{
+  "format": "layercake-postrelease-authoritative-destination-control-import-repair-protocol/1",
+  "protocol_id": "layercake-postrelease-authoritative-destination-control-import-repair-v94",
+  "status": "PREREGISTERED_IMPORT_PATH_ONLY_REPAIR",
+  "status_date": "2026-08-16",
+  "repair_of": "moonshot/postrelease_authoritative_destination_control_extension_import_failure_v93.json",
+  "allowed_change": "Replace only three package-relative imports in the additive extension with their absolute layercake.routing equivalents.",
+  "logic_changed": false,
+  "tests_changed": false,
+  "sealed_routing_files_changed": false,
+  "gates_changed": false,
+  "bindings": {
+    "layercake/routing/direct_orchestrator.py": "fbc1be560f6c756da6c7b30bbed5478a9b3088059902282b22c78d0bdd286edf",
+    "layercake_extensions/authoritative_destination_control.py": "6db81b67329843a161aeb85522103b2dca8da8e237fe8f21a288bb29493e40d9",
+    "tests/routing/test_authoritative_destination_control.py": "a04744074e938fbb78643f0511589ca82ca12a039ae280764cbca01d1bc986a8",
+    "moonshot/postrelease_authoritative_destination_control_repair_protocol_v92.json": "db688ef7a663c4395672982eddde021d4af780724ad262b9d94cbf2cdc2866f5",
+    "moonshot/postrelease_authoritative_destination_control_extension_import_failure_v93.json": "55c43f577d69246474d77a896027d54a1f8457fa9ab8f49e0f1dc4d63b1a59c0"
+  },
+  "required_commands": [
+    "python -m pytest -p no:cacheprovider -q tests/routing/test_authoritative_destination_control.py tests/routing/test_catalog_router.py",
+    "python -m pytest -p no:cacheprovider -q",
+    "python -m layercake.moonshot_campaign verify-all"
+  ],
+  "decision_rule": "Pass only if collection succeeds, every focused and complete-suite test passes, the sealed direct orchestrator remains exact, and the unchanged campaign verifier passes.",
+  "claim_boundary": "Mechanical import-path repair for a generic additive host extension. No phase, artifact, quality, performance, or ABI claim."
+}
