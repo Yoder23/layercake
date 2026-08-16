@@ -16,9 +16,12 @@ authoritative; prose never promotes a claim by itself.
 | Phase 8 framework commit | `22501a3a4ef16c3cbb390aef565ec502391d8768` |
 | Governing Phase 8 contract | `moonshot/phase8_independent_verification_preregistration.json` |
 
-Run `C:\Python310\python.exe -m layercake.moonshot_campaign verify-all` to
-recompute the campaign-level lifecycle state. A valid release reports
-`completed_phases_valid: true`.
+Run `C:\Python310\python.exe -m layercake.moonshot_campaign verify-all` from a
+detached checkout of `layercake-moonshot-final` to recompute the sealed
+campaign-level lifecycle state. A valid release reports
+`completed_phases_valid: true`. Current post-release HEAD intentionally fails
+because its package changes trigger `precision_contract` invalidation; see V96
+and the successful exact-tag revalidation V99.
 
 ## Eight sealed phases
 

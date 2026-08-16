@@ -3,6 +3,12 @@
 The sealed moonshot release is defined by `layercake-moonshot-final`. Every row
 below is bounded by the exact release lineage and raw evidence paths.
 
+The tag remains locally revalidated by V99: 602/602 tests, all phases valid,
+and final status `PROVEN`. Current post-release HEAD is explicitly outside this
+table because `layercake/cake/**` changed and triggered the registered
+`precision_contract` invalidation. V96 is the controlling negative evidence;
+no current-HEAD successor seal exists.
+
 | Claim | Evidence anchor | Certified result |
 | --- | --- | --- |
 | Campaign completion | `moonshot/campaign.yaml`, Phase 8 seal | All eight phases sealed; `verify-all` validates the completed campaign. |

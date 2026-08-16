@@ -2,6 +2,14 @@
 
 Status date: 2026-08-13
 
+Current-host note (2026-08-16): the allocation-bounded streaming package and
+active integrity-verification changes are post-release work. They touch the
+registered `precision_contract`, so current HEAD is not the sealed LayerCake
+release and does not inherit its Phase 2-8 claims. The immutable release tag
+still verifies as `PROVEN` under V99. Any external artifact using the newer
+host requires a governed successor recertification; ABI-side evidence is not a
+substitute for a LayerCake release seal.
+
 This document defines LayerCake's boundary for externally produced capability
 artifacts. It does not import external code or evidence, and it does not expand
 the sealed LayerCake certificate.

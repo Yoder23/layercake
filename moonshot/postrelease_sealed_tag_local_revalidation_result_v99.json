@@ -1,0 +1,51 @@
+{
+  "format": "layercake-postrelease-sealed-tag-local-revalidation-result/1",
+  "status": "PASS_SEALED_TAG_LOCALLY_REVALIDATED_CURRENT_HEAD_REMAINS_UNSEALED",
+  "status_date": "2026-08-16",
+  "protocol": "moonshot/postrelease_sealed_tag_local_revalidation_protocol_v97.json",
+  "protocol_sha256": "8c47ca889f2818be42522dce5d6f57d2d9caee0a86ffb29db960e9ca58d17a96",
+  "sealed_release": {
+    "tag": "layercake-moonshot-final",
+    "tag_object": "1512eb42910d2128d7a38a2f77a9d93d75adc1c0",
+    "commit": "0537cbb9e93cd7ebd4ba01c0bf641414ecebb1c3",
+    "detached_head_exact": true,
+    "tracked_diff_files": 0,
+    "external_assets_exact": 19,
+    "external_asset_total_bytes": 1597715222,
+    "external_asset_transport": "same-volume read-only hardlinks",
+    "training_performed": false,
+    "model_inference_performed": false
+  },
+  "full_regression": {
+    "path": "results/moonshot/postrelease_local_tag_revalidation_full_v98.xml",
+    "sha256": "9fa7b873431b7214ccd5d97252789433fce3d22216f6041272cebb575f6e1660",
+    "tests": 602,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "campaign_verification": {
+    "path": "results/moonshot/postrelease_local_tag_campaign_verify_v98.json",
+    "sha256": "2341fcb1ed3491ca61f5f766effd36eeda0116067545b023a7e1f509788f6b1c",
+    "completed_phases_valid": true,
+    "phases_passed": 9,
+    "phase_8_status": "SEALED"
+  },
+  "final_verification": {
+    "path": "results/moonshot/postrelease_local_tag_final_verify_v98.json",
+    "sha256": "f5d4560755bdfc73159dec909b7692fd493f7f66546b3bf16dc580adc0cb6262",
+    "status": "PROVEN",
+    "prior_required_gate_retention": 1.0,
+    "clean_room_reproduction": 1.0,
+    "adversarial_falsification_findings_resolved": 1.0
+  },
+  "current_head": {
+    "invalidation_record": "moonshot/postrelease_current_head_seal_invalidation_v96.json",
+    "invalidation_record_sha256": "023fa45d370104f1933e1454a0cfe3b849dfda80e0818551ee29ebf4b4e0f36e",
+    "sealed_release": false,
+    "precision_contract_changed": true,
+    "successor_recertification_complete": false
+  },
+  "scientific_conclusion": "The immutable historical LayerCake moonshot tag remains locally valid and independently self-consistent. Current post-release HEAD does not inherit that seal because later package-loader changes correctly trigger the precision-contract invalidation rule.",
+  "claim_boundary": "This local run revalidates only the existing tag. It is not a new independent reproduction, current-HEAD recertification, new Phase 8 result, external-artifact certification, or new performance, training, hardware, or ABI claim."
+}

@@ -1,14 +1,25 @@
 # LayerCake Moonshot Gated Research Campaign Charter
 
-## Current sealed release state
+## Current release boundary
+
+Authoritative update (2026-08-16): `layercake-moonshot-final` remains the exact
+sealed release and passes a fresh local detached-tag revalidation with 602
+tests, all campaign phases valid, and final status `PROVEN`. Current HEAD is a
+post-release, unsealed host lineage. Its streaming package-load and active
+integrity-verification changes touch `layercake/cake/**`, so the unchanged
+invalidation matrix correctly rejects inheritance of the old
+`precision_contract` seal from Phase 2 onward. Do not run the sealed verifier
+from current HEAD and call that a release regression; check out the exact tag.
+Do not call current HEAD sealed until a governed successor recertification is
+complete. Authorities: V96 and V99.
 
 Post-release update (2026-08-16): the additive authoritative-destination
-control passes its bounded construct under
+control passed its bounded construct under
 `moonshot/postrelease_authoritative_destination_control_decision_v95.json`.
 An immutable outer label may select only its registered package; missing,
 unknown, or quarantined labels fail closed without invoking the English core,
 and prompt text cannot override the outer label. The extension passes 9
-focused tests, all 693 repository tests, and the unchanged Phase 0-8 verifier.
+focused tests, all 693 repository tests, and the then-unchanged Phase 0-8 verifier.
 The first in-place implementation and the extension import failure remain
 preserved. This is generic LayerCake hosting only: it imports no external
 acquisition code or evidence and establishes no artifact-quality, semantic-

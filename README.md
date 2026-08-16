@@ -1,11 +1,25 @@
 # LayerCake
 
-**Moonshot campaign status: SEALED.**
+**Release-tag status: SEALED. Current post-release HEAD: UNSEALED.**
 
 The eight-phase LayerCake campaign is locally sealed at the annotated Git tag
 `layercake-moonshot-final` (`0537cbb9e93cd7ebd4ba01c0bf641414ecebb1c3`).
 The tag is the release boundary. The canonical campaign state, raw evidence, and
 machine validation are under `moonshot/` and `results/moonshot/`.
+
+The immutable tag was locally revalidated again on 2026-08-16: 602/602 tests
+passed, `verify-all` reported every phase valid, and the final verifier returned
+`PROVEN`. See
+`moonshot/postrelease_sealed_tag_local_revalidation_result_v99.json`.
+
+Current HEAD is a separate post-release host lineage. Commits `8f49fe1` and
+`662c5a9` changed `layercake/cake/**`, which the frozen invalidation matrix
+classifies as the `precision_contract` from Phase 2 onward. The current tree
+therefore correctly fails the old sealed verifier and has not earned a
+successor Phase 2-8 seal. See
+`moonshot/postrelease_current_head_seal_invalidation_v96.json`. Run sealed
+verification from a detached `layercake-moonshot-final` checkout, not from
+post-release HEAD.
 
 All phase lifecycle entries are sealed. Phase 3 has the explicit disposition
 `RETIRED_BY_GOVERNANCE`: it preserved the bounded training controls and retired
@@ -100,8 +114,9 @@ the governing tags.
 
 ## Verify the release
 
-Use the declared Python 3.10 environment. These commands are read-only except
-for normal temporary test caches:
+Use the declared Python 3.10 environment from a detached checkout of
+`layercake-moonshot-final`. These commands are read-only except for normal
+temporary test caches:
 
 ```powershell
 C:\Python310\python.exe -m layercake.moonshot_campaign verify-sealed 8
@@ -109,9 +124,11 @@ C:\Python310\python.exe -m layercake.moonshot_campaign verify-all
 C:\Python310\python.exe -m layercake.moonshot_final verify
 ```
 
-`verify-all` must report `completed_phases_valid: true`. The final tag is local
-in this checkout; remote publication is intentionally not claimed by the
-verifier.
+`verify-all` must report `completed_phases_valid: true`. V99 records the latest
+such exact-tag run. Do not expect these sealed commands to pass from current
+post-release HEAD until a successor recertification closes V96. The final tag
+is local in this checkout; remote publication is intentionally not claimed by
+the verifier.
 
 Post-release external English cores may target the construct-certified
 `lc-direct-neural-core/4` interface when their declarative tokenizer requires

@@ -1,11 +1,17 @@
 # LayerCake Active Mission
 
-## Current state: Moonshot sealed
+## Current state: release tag sealed; post-release HEAD unsealed
 
 The complete eight-phase LayerCake Moonshot is sealed at the annotated tag
-`layercake-moonshot-final`. The campaign state in `moonshot/campaign.yaml` is
-authoritative. The active mission is release stewardship, not continuation of
-an open research phase.
+`layercake-moonshot-final`. A fresh detached-tag revalidation passes 602 tests,
+all campaign phases, and final status `PROVEN` under V99. The campaign state in
+`moonshot/campaign.yaml` is authoritative for that tag.
+
+Current HEAD is not that release. Later streaming package-load and active
+integrity-verification work changed the registered `precision_contract`; V96
+preserves the expected current-HEAD verifier failures. The active post-release
+mission is successor host recertification. No current-HEAD Phase 0-8 seal may
+be claimed until the invalidation matrix is satisfied without weakening it.
 
 Phase 3 is sealed with disposition `RETIRED_BY_GOVERNANCE`. It is a completed
 campaign-lifecycle decision with preserved controls and zero headline claims,
