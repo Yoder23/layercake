@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 import hashlib
-import io
 import json
 from pathlib import Path, PurePosixPath
 from typing import Mapping
@@ -41,6 +40,16 @@ class CakePackage:
 
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def sha256_file(path: str | Path) -> str:
+    """Hash a package without retaining the complete archive in process memory."""
+
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for block in iter(lambda: stream.read(8 * 1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 def tensor_specs(tensors: Mapping[str, torch.Tensor]) -> dict[str, dict]:
@@ -138,34 +147,38 @@ def build_package(
 
 
 def _read_members(path: Path) -> tuple[dict[str, bytes], str]:
-    raw = path.read_bytes()
-    if len(raw) > MAX_PACKAGE_BYTES:
+    if path.stat().st_size > MAX_PACKAGE_BYTES:
         raise PackageError("package exceeds the configured size limit")
-    archive_hash = sha256_bytes(raw)
     try:
-        with zipfile.ZipFile(io.BytesIO(raw), "r") as archive:
-            infos = archive.infolist()
-            names = [info.filename for info in infos]
-            folded = [name.casefold() for name in names]
-            if len(names) != len(set(names)) or len(folded) != len(set(folded)):
-                raise PackageError("duplicate or case-ambiguous archive entries")
-            allowed = {MANIFEST_NAME, TENSORS_NAME, SIGNATURE_NAME}
-            if not {MANIFEST_NAME, TENSORS_NAME} <= set(names) or not set(names) <= allowed:
-                raise PackageError("package contains missing or unsupported entries")
-            total = 0
-            for info in infos:
-                pure = PurePosixPath(info.filename)
-                if pure.is_absolute() or ".." in pure.parts or len(pure.parts) != 1:
-                    raise PackageError("path traversal or nested entries are forbidden")
-                if info.is_dir() or info.flag_bits & 0x1:
-                    raise PackageError("directories and encrypted entries are forbidden")
-                mode = (info.external_attr >> 16) & 0o170000
-                if mode not in {0, 0o100000}:
-                    raise PackageError("non-regular archive entries are forbidden")
-                total += info.file_size
-                if total > MAX_PACKAGE_BYTES:
-                    raise PackageError("expanded package exceeds the size limit")
-            return {name: archive.read(name) for name in names}, archive_hash
+        with path.open("rb") as stream:
+            digest = hashlib.sha256()
+            for block in iter(lambda: stream.read(8 * 1024 * 1024), b""):
+                digest.update(block)
+            archive_hash = digest.hexdigest()
+            stream.seek(0)
+            with zipfile.ZipFile(stream, "r") as archive:
+                infos = archive.infolist()
+                names = [info.filename for info in infos]
+                folded = [name.casefold() for name in names]
+                if len(names) != len(set(names)) or len(folded) != len(set(folded)):
+                    raise PackageError("duplicate or case-ambiguous archive entries")
+                allowed = {MANIFEST_NAME, TENSORS_NAME, SIGNATURE_NAME}
+                if not {MANIFEST_NAME, TENSORS_NAME} <= set(names) or not set(names) <= allowed:
+                    raise PackageError("package contains missing or unsupported entries")
+                total = 0
+                for info in infos:
+                    pure = PurePosixPath(info.filename)
+                    if pure.is_absolute() or ".." in pure.parts or len(pure.parts) != 1:
+                        raise PackageError("path traversal or nested entries are forbidden")
+                    if info.is_dir() or info.flag_bits & 0x1:
+                        raise PackageError("directories and encrypted entries are forbidden")
+                    mode = (info.external_attr >> 16) & 0o170000
+                    if mode not in {0, 0o100000}:
+                        raise PackageError("non-regular archive entries are forbidden")
+                    total += info.file_size
+                    if total > MAX_PACKAGE_BYTES:
+                        raise PackageError("expanded package exceeds the size limit")
+                return {name: archive.read(name) for name in names}, archive_hash
     except (zipfile.BadZipFile, OSError) as exc:
         raise PackageError("invalid cake ZIP container") from exc
 

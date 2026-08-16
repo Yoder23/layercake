@@ -7,7 +7,7 @@ from pathlib import Path
 import time
 from typing import Any, Mapping
 
-from .package import CakePackage, PackageError, load_package, sha256_bytes
+from .package import CakePackage, PackageError, load_package, sha256_file
 from .registry import CakeRegistry, RegistryError
 
 
@@ -117,7 +117,7 @@ class CakeInstaller:
         if record is None:
             raise InstallationError(f"cake is not installed: {cake_id}")
         blob = self.registry.blob_path(record["archive_hash"])
-        if not blob.is_file() or sha256_bytes(blob.read_bytes()) != record["archive_hash"]:
+        if not blob.is_file() or sha256_file(blob) != record["archive_hash"]:
             raise InstallationError("installed content-addressed blob is missing or corrupt")
         package = self.inspect(blob, trusted_local=bool(record.get("trusted_local")))
         if package.manifest.package_hash != record["package_hash"]:

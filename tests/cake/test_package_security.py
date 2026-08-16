@@ -49,6 +49,25 @@ def test_signed_package_authenticates_manifest_and_payload(tmp_path):
     assert set(loaded.tensors) == set(model.state_dict())
 
 
+def test_package_load_streams_archive_instead_of_calling_path_read_bytes(
+    tmp_path, monkeypatch
+):
+    model = PortableDomainDecoder(feature_width=8, hidden_width=16)
+    path = build_package(tmp_path / "python.cake", manifest(model), model.state_dict())
+
+    def forbidden_read_bytes(_self):
+        raise AssertionError("whole-archive Path.read_bytes is forbidden")
+
+    monkeypatch.setattr(Path, "read_bytes", forbidden_read_bytes)
+    loaded = load_package(
+        path,
+        require_signature=False,
+        allow_local_development=True,
+    )
+    assert loaded.archive_hash
+    assert set(loaded.tensors) == set(model.state_dict())
+
+
 def test_unsigned_requires_explicit_local_trust(tmp_path):
     model = PortableDomainDecoder(feature_width=8, hidden_width=16)
     path = build_package(tmp_path / "python.cake", manifest(model), model.state_dict())

@@ -29,6 +29,22 @@ def test_atomic_install_verify_remove_reinstall_and_abi_guard(tmp_path):
         incompatible.inspect(package, trusted_local=True)
 
 
+def test_verify_streams_installed_archive_hash(tmp_path, monkeypatch):
+    model = PortableDomainDecoder(feature_width=8, hidden_width=16)
+    package = build_package(tmp_path / "python.cake", manifest(model), model.state_dict())
+    registry = CakeRegistry(tmp_path / "registry")
+    installer = CakeInstaller(
+        registry, HostCapabilities(DEFAULT_ABI_VERSION, DEFAULT_ABI_HASH)
+    )
+    installer.install(package, trusted_local=True)
+
+    def forbidden_read_bytes(_self):
+        raise AssertionError("whole-archive Path.read_bytes is forbidden")
+
+    monkeypatch.setattr(Path, "read_bytes", forbidden_read_bytes)
+    assert installer.verify("python")["status"] == "PASS"
+
+
 def test_update_and_rollback_restore_the_complete_old_record(tmp_path):
     first_model = PortableDomainDecoder(feature_width=8, hidden_width=16)
     first_manifest = manifest(first_model)
