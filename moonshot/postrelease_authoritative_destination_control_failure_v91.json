@@ -1,0 +1,28 @@
+{
+  "format": "layercake-postrelease-authoritative-destination-control-failure/1",
+  "status": "FAIL_SEALED_ROUTING_COMPONENT_INVALIDATED",
+  "status_date": "2026-08-16",
+  "protocol": {
+    "path": "moonshot/postrelease_authoritative_destination_control_protocol_v90.json",
+    "sha256": "c1caf6e1fec3a04e531732e122d4dc6c34cc5b34d7c7bf05c761c770fe253b67"
+  },
+  "implementation_commit": "3d05683",
+  "focused_tests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "complete_suite": {
+    "passed": 683,
+    "failed": 10,
+    "warnings": 47,
+    "failure_families": [
+      "Phase 6 evidence recomputation",
+      "Phase 7 evidence recomputation",
+      "Phase 8 evidence recomputation"
+    ]
+  },
+  "machine_verified_cause": "The implementation modified layercake/routing/direct_orchestrator.py. That file is part of the routing_computation component governed by layercake/routing/**, so the sealed Phase 6-8 component hashes changed and their verifiers failed closed.",
+  "scientific_decision": "Reject the in-place implementation. Restore the sealed direct orchestrator byte-for-byte and place the identical optional control surface in a separately versioned layercake_extensions module. The extension earns no inherited release claim and must pass focused tests, the complete suite, and the unchanged campaign verifier.",
+  "historical_evidence_changed": false,
+  "sealed_phase_claims_widened": false
+}

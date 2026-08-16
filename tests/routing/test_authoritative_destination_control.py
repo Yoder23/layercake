@@ -7,11 +7,13 @@ from layercake.routing.catalog_router import (
     CatalogRoutingError,
     RoutingFeature,
 )
-from layercake.routing.direct_orchestrator import DirectCakeOrchestrator
+from layercake_extensions.authoritative_destination_control import (
+    AuthoritativeDestinationOrchestrator,
+)
 
 
 def _orchestrator(tmp_path):
-    return DirectCakeOrchestrator(
+    return AuthoritativeDestinationOrchestrator(
         tmp_path / "registry",
         abi_version="test-direct/1",
         abi_hash="a" * 64,

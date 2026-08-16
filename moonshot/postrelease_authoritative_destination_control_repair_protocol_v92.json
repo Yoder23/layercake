@@ -1,0 +1,45 @@
+{
+  "format": "layercake-postrelease-authoritative-destination-control-repair-protocol/1",
+  "protocol_id": "layercake-postrelease-authoritative-destination-control-repair-v92",
+  "status": "PREREGISTERED_ADDITIVE_EXTENSION_REPAIR",
+  "status_date": "2026-08-16",
+  "repair_of": "moonshot/postrelease_authoritative_destination_control_failure_v91.json",
+  "objective": "Preserve the validated authoritative-label semantics while restoring every sealed routing-computation byte and moving the optional surface to an isolated post-release extension.",
+  "repair_constraints": {
+    "sealed_direct_orchestrator_sha256": "fbc1be560f6c756da6c7b30bbed5478a9b3088059902282b22c78d0bdd286edf",
+    "sealed_direct_orchestrator_must_match_parent": true,
+    "extension_path": "layercake_extensions/authoritative_destination_control.py",
+    "invalidation_matrix_changed": false,
+    "core_or_cake_bytes_changed": false,
+    "existing_orchestration_semantics_changed": false,
+    "abi_code_or_evidence_imported": false
+  },
+  "gates": {
+    "authoritative_english_invokes_only_core_handler": true,
+    "authoritative_installed_domain_invokes_only_bound_domain_cake": true,
+    "authoritative_missing_domain_never_invokes_core": true,
+    "unknown_or_ambiguous_domain_never_invokes_core": true,
+    "quarantine_never_invokes_core_or_domain": true,
+    "prompt_text_cannot_override_authoritative_label": true,
+    "missing_and_quarantine_execution_telemetry_zero": true,
+    "sealed_routing_component_identity_restored": true,
+    "focused_tests_pass": true,
+    "complete_layercake_suite_pass": true,
+    "sealed_phase_verifier_unchanged_and_passes": true
+  },
+  "bindings": {
+    "layercake/routing/direct_orchestrator.py": "fbc1be560f6c756da6c7b30bbed5478a9b3088059902282b22c78d0bdd286edf",
+    "layercake_extensions/authoritative_destination_control.py": "593ea238e3c8be3f79bd414387910d78f5892b1202a16b22c98159b7f1f57726",
+    "tests/routing/test_authoritative_destination_control.py": "a04744074e938fbb78643f0511589ca82ca12a039ae280764cbca01d1bc986a8",
+    "moonshot/postrelease_authoritative_destination_control_protocol_v90.json": "c1caf6e1fec3a04e531732e122d4dc6c34cc5b34d7c7bf05c761c770fe253b67",
+    "moonshot/postrelease_authoritative_destination_control_failure_v91.json": "b558e893be38ab90582ff093767643669685a33a2bd4dd5cc7c8fcb007fe6c6d",
+    "moonshot/invalidation_matrix.yaml": "d443ef18a3ef619784034020ca22c9fd79320d6a6bcde85bdd2e9e18d24ccdac"
+  },
+  "required_commands": [
+    "python -m pytest -p no:cacheprovider -q tests/routing/test_authoritative_destination_control.py tests/routing/test_catalog_router.py",
+    "python -m pytest -p no:cacheprovider -q",
+    "python -m layercake.moonshot_campaign verify-all"
+  ],
+  "decision_rule": "Pass only if the sealed direct orchestrator is byte-identical to its parent, the optional extension passes every hostile label-control test, all pre-existing tests pass, and the unchanged campaign verifier reports no invalidation. Otherwise preserve the repair as failed.",
+  "claim_boundary": "Generic additive host-control extension construct only. It does not recertify or widen any sealed LayerCake phase and carries no ABI, external artifact, quality, or performance claim."
+}
