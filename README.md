@@ -45,6 +45,16 @@ unchanged sealed verifier. No real external V25 artifact has yet earned English
 quality, information-minimum, speed, memory, or TTFT certification. Earlier
 post-release hosts and their negative evidence remain preserved.
 
+The separately versioned authoritative-destination extension also passes its
+bounded mechanical construct: an immutable outer destination selects only its
+registered package, while missing, unknown, and quarantined destinations fail
+closed without falling through to the English core. Prompt text cannot override
+that outer label. This additive extension leaves the sealed routing component
+byte-identical, passes 9 focused and all 693 repository tests, and does not
+inherit any external acquisition, quality, semantic-purity, or performance
+claim. See
+[`postrelease_authoritative_destination_control_decision_v95.json`](moonshot/postrelease_authoritative_destination_control_decision_v95.json).
+
 ## Certified release scope
 
 The final independent clean-room verification reran the sealed Phase 7 product

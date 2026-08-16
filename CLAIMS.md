@@ -37,6 +37,15 @@ the repository and recertification boundary.
 
 ## Post-release host-interface audit
 
+The additive authoritative-destination extension is construct-certified by
+`moonshot/postrelease_authoritative_destination_control_decision_v95.json`.
+Its narrow mechanical claim is fail-closed selection from an immutable outer
+label with no core fallback and no prompt-text override. The sealed direct
+orchestrator remains byte-identical; 9 focused tests, all 693 repository tests,
+and the unchanged campaign verifier pass. This is not evidence for an external
+artifact, acquisition, English or specialist quality, semantic purity, speed,
+memory, TTFT, or superiority.
+
 The latest isolated host construct is `lc-direct-neural-core/25`, certified by
 `moonshot/postrelease_route_isolated_v25_clarification_route_decision_v89.json`.
 Its bounded claim is mechanical: one signed five-route package installs on CPU

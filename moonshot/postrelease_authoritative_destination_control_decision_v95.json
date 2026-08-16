@@ -1,0 +1,60 @@
+{
+  "format": "layercake-postrelease-authoritative-destination-control-decision/1",
+  "decision_id": "layercake-postrelease-authoritative-destination-control-v95",
+  "status": "PASS_ADDITIVE_AUTHORITATIVE_DESTINATION_CONTROL_CONSTRUCT",
+  "status_date": "2026-08-16",
+  "scope": "Generic post-release LayerCake host control for an immutable provenance-bound destination label. The control is additive and is outside the sealed Phase 0-8 product.",
+  "protocol": {
+    "path": "moonshot/postrelease_authoritative_destination_control_import_repair_protocol_v94.json",
+    "sha256": "2247c30ab83ae05d511f16485733879ed86dac776668cfa36e26aa8bc1dfa4aa"
+  },
+  "bindings": {
+    "sealed_direct_orchestrator": {
+      "path": "layercake/routing/direct_orchestrator.py",
+      "sha256": "fbc1be560f6c756da6c7b30bbed5478a9b3088059902282b22c78d0bdd286edf",
+      "changed_by_passing_construct": false
+    },
+    "additive_extension": {
+      "path": "layercake_extensions/authoritative_destination_control.py",
+      "sha256": "6db81b67329843a161aeb85522103b2dca8da8e237fe8f21a288bb29493e40d9"
+    },
+    "focused_test_source": {
+      "path": "tests/routing/test_authoritative_destination_control.py",
+      "sha256": "a04744074e938fbb78643f0511589ca82ca12a039ae280764cbca01d1bc986a8"
+    }
+  },
+  "verification": {
+    "focused_tests": {
+      "passed": 9,
+      "failed": 0,
+      "junit_path": "results/moonshot/postrelease_authoritative_destination_control_focused_v95.xml",
+      "junit_sha256": "f4a6ba06f771967ab7189a9d782fa7f1bbcf547a699fc19bab8e8cfed3535c11"
+    },
+    "complete_suite": {
+      "passed": 693,
+      "failed": 0,
+      "warnings": 47,
+      "junit_path": "results/moonshot/postrelease_authoritative_destination_control_full_v95.xml",
+      "junit_sha256": "6a7872b5af2a75c402421fd2413b4df2e45687a5347a4c7db7d46bce7d64a14a"
+    },
+    "unchanged_campaign_verifier": {
+      "command": "python -m layercake.moonshot_campaign verify-all",
+      "phases_passed": 9,
+      "phases_failed": 0,
+      "completed_phases_valid": true
+    }
+  },
+  "behavioral_boundary": {
+    "registered_destination": "May invoke only the package registered for the immutable outer destination label.",
+    "missing_or_unknown_destination": "Fails closed without invoking the English core or any package.",
+    "quarantine_destination": "Fails closed without invoking the English core or any package.",
+    "prompt_spoofing": "Destination-like text inside the prompt cannot override the authoritative outer label.",
+    "receiver_learning": false
+  },
+  "preserved_negative_evidence": [
+    "moonshot/postrelease_authoritative_destination_control_failure_v91.json",
+    "moonshot/postrelease_authoritative_destination_control_extension_import_failure_v93.json"
+  ],
+  "scientific_decision": "The additive extension passes its bounded mechanical construct and leaves the sealed product byte-stable and independently verifiable. It may be used by a separately governed external-artifact conformance campaign, which must produce its own quality, exclusion, lifecycle, sparsity, and performance evidence.",
+  "claim_boundary": "No external artifact, acquisition, English quality, specialist quality, physical performance, memory, TTFT, semantic purity, ABI compatibility, or ABI-superiority claim is established here. The historical Phase 0-8 release is unchanged."
+}

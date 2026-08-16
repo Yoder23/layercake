@@ -2,6 +2,18 @@
 
 ## Current sealed release state
 
+Post-release update (2026-08-16): the additive authoritative-destination
+control passes its bounded construct under
+`moonshot/postrelease_authoritative_destination_control_decision_v95.json`.
+An immutable outer label may select only its registered package; missing,
+unknown, or quarantined labels fail closed without invoking the English core,
+and prompt text cannot override the outer label. The extension passes 9
+focused tests, all 693 repository tests, and the unchanged Phase 0-8 verifier.
+The first in-place implementation and the extension import failure remain
+preserved. This is generic LayerCake hosting only: it imports no external
+acquisition code or evidence and establishes no artifact-quality, semantic-
+purity, speed, memory, TTFT, or superiority claim.
+
 Post-release update (2026-08-15): `lc-direct-neural-core/25` is the latest
 construct-certified signed route-isolated host under
 `moonshot/postrelease_route_isolated_v25_clarification_route_decision_v89.json`.
