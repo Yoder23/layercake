@@ -28,3 +28,20 @@ python -m layercake cake remove python
 Do not place training code, tokenizers, templates, retrieval corpora, or stored answers in
 a cake. Evaluation evidence belongs in the manifest; large reproducibility materials
 belong in a separately authenticated research release.
+
+## Field-addressed neural plans
+
+When a selected capability must copy request-specific values while keeping
+neural source positions stable, use the declarative
+`field_addressed_token_plan` architecture. Its manifest embeds only a sorted
+field schema, a fixed field width, a lossless lexeme vocabulary, and the
+portable neural plan geometry. The runtime parses fields after the exact
+`SUPPLIED MATERIAL:` boundary; missing, extra, duplicate, empty, or oversized
+fields are rejected. Instruction routing remains an outer orchestration
+responsibility and is not silently mixed into the selected plan's neural
+source.
+
+This is a representation and hosting contract, not an acquisition method.
+Every externally produced artifact needs its own provenance, quality,
+causality, portability, and performance evidence. A host construct test does
+not certify those artifact claims.

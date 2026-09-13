@@ -1,6 +1,10 @@
 from .foundation import FoundationConfig, LayerCakeFoundation, SparseOptimizerFactory
 from .foundation_v2 import FoundationV2Config, FoundationV2State, LayerCakeFoundationV2
-from .portable_decoder import load_cake_module, portable_decoder_manifest_architecture
+from .portable_decoder import (
+    field_addressed_token_plan_manifest_architecture,
+    load_cake_module,
+    portable_decoder_manifest_architecture,
+)
 from .portable_fusion import (
     PortableFusionCake,
     PortableFusionConfig,
@@ -21,5 +25,6 @@ __all__ = [
     "Top1RoutedFoundationCakes",
     "load_cake_module",
     "portable_decoder_manifest_architecture",
+    "field_addressed_token_plan_manifest_architecture",
     "portable_fusion_manifest_architecture",
 ]

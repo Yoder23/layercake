@@ -13,7 +13,9 @@ from layercake.domain_runtime import (
 )
 from layercake.portable_domain import PortableDomainDecoder
 from layercake.portable_token_plan import (
+    FIELD_ADDRESSED_TOKENIZER_FORMAT,
     TOKEN_PLAN_FORMAT,
+    FieldAddressedPointerTokenizer,
     LosslessLexemePointerTokenizer,
     PortableTokenPlan,
 )
@@ -84,6 +86,32 @@ def portable_token_plan_manifest_architecture(
     }
 
 
+def field_addressed_token_plan_manifest_architecture(
+    *, model: dict[str, Any], tokenizer: dict[str, Any],
+    tokenizer_sha256: str,
+) -> dict[str, Any]:
+    """Describe a declarative field-addressed neural plan cake."""
+
+    parsed = FieldAddressedPointerTokenizer.from_document(tokenizer)
+    if parsed.hash() != tokenizer_sha256:
+        raise ValueError("field-addressed tokenizer hash mismatch")
+    if int(model.get("fixed_vocab_size", -1)) != parsed.vocab_size:
+        raise ValueError("field-addressed model/tokenizer vocabulary mismatch")
+    if int(model.get("maximum_source_lexemes", -1)) < (
+        len(parsed.schema) * (parsed.field_width + 1)
+    ):
+        raise ValueError("field-addressed model source boundary is too small")
+    return {
+        "name": "field_addressed_token_plan",
+        "format": FIELD_ADDRESSED_TOKENIZER_FORMAT,
+        "model": model,
+        "tokenizer": tokenizer,
+        "tokenizer_sha256": tokenizer_sha256,
+        "external_input_output": "UTF-8 bytes",
+        "private_representation": "portable_token_plan_pointer_transformer",
+    }
+
+
 def load_cake_module(package: CakePackage) -> nn.Module:
     manifest = package.manifest
     architecture = manifest.architecture
@@ -146,6 +174,30 @@ def load_cake_module(package: CakePackage) -> nn.Module:
                 raise ValueError(
                     "portable token-plan tokenizer hash mismatch"
                 )
+            model = PortableTokenPlan(**architecture["model"])
+            model.bind_tokenizer(tokenizer)
+        elif architecture.get("name") == "field_addressed_token_plan":
+            allowed = {
+                "name", "format", "model", "tokenizer",
+                "tokenizer_sha256", "external_input_output",
+                "private_representation",
+            }
+            if set(architecture) != allowed:
+                raise ValueError(
+                    "field-addressed architecture metadata is incomplete or ambiguous"
+                )
+            if (
+                architecture["format"] != FIELD_ADDRESSED_TOKENIZER_FORMAT
+                or architecture["external_input_output"] != "UTF-8 bytes"
+                or architecture["private_representation"]
+                != "portable_token_plan_pointer_transformer"
+            ):
+                raise ValueError("field-addressed architecture contract mismatch")
+            tokenizer = FieldAddressedPointerTokenizer.from_document(
+                architecture["tokenizer"]
+            )
+            if tokenizer.hash() != architecture["tokenizer_sha256"]:
+                raise ValueError("field-addressed tokenizer hash mismatch")
             model = PortableTokenPlan(**architecture["model"])
             model.bind_tokenizer(tokenizer)
         elif architecture.get("name") != "portable_domain_decoder":

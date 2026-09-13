@@ -24,6 +24,7 @@ from .portable_domain import canonical_json_hash, state_dict_hash
 TOKEN_PLAN_FORMAT = "layercake-portable-token-plan/1"
 TOKENIZER_FORMAT = "layercake-lossless-python-lexeme-pointer/1"
 GENERIC_TOKENIZER_FORMAT = "layercake-lossless-lexeme-pointer/2"
+FIELD_ADDRESSED_TOKENIZER_FORMAT = "layercake-field-addressed-token-plan/1"
 LEXEME_PATTERN = (
     rb"[A-Za-z_][A-Za-z0-9_]*|\d+(?:\.\d+)?|==|!=|<=|>=|//|\*\*|->|\s+|."
 )
@@ -33,6 +34,9 @@ BOS_ID = 1
 EOS_ID = 2
 UNK_ID = 3
 SPECIAL_COUNT = 4
+SUBLEXEME_BOUNDARY = re.compile(
+    rb"(?<=[A-Za-z])(?=\d)|(?<=\d)(?=[A-Za-z])"
+)
 
 
 def _canonical_hash(payload: Any) -> str:
@@ -313,6 +317,231 @@ class LosslessLexemePointerTokenizer:
                 "token-plan fixed lexemes contain invalid hex"
             ) from error
         return cls(fixed_lexemes, format_version=str(format_version))
+
+    def hash(self) -> str:
+        return _canonical_hash(self.canonical_dict())
+
+
+class FieldAddressedPointerTokenizer:
+    """Declarative fixed-field input and lossless pointer output codec.
+
+    The instruction text is deliberately outside the neural source after an
+    orchestrator selects a cake.  Only named supplied fields enter the model,
+    each in a fixed-width block.  This keeps source positions stable while the
+    pointer actions still realize prompt-specific bytes exactly.
+    """
+
+    def __init__(
+        self,
+        schema: Iterable[str],
+        fixed_lexemes: Iterable[bytes],
+        *,
+        field_width: int = 24,
+    ) -> None:
+        fields = tuple(schema)
+        values = tuple(fixed_lexemes)
+        if (
+            not fields
+            or len(fields) != len(set(fields))
+            or tuple(sorted(fields)) != fields
+            or any(not isinstance(field, str) or not field for field in fields)
+        ):
+            raise ValueError(
+                "field-addressed schema must be non-empty, unique, and sorted"
+            )
+        if (
+            not values
+            or len(values) != len(set(values))
+            or tuple(sorted(values)) != values
+            or any(not value for value in values)
+        ):
+            raise ValueError("field-addressed fixed vocabulary is invalid")
+        if not isinstance(field_width, int) or isinstance(field_width, bool) or field_width < 1:
+            raise ValueError("field-addressed field width must be positive")
+        if len(fields) * (field_width + 1) > 128:
+            raise ValueError("field-addressed schema exceeds source boundary")
+        self.schema = fields
+        self.fixed_lexemes = values
+        self.field_width = field_width
+        self.lexeme_to_id = {
+            value: index
+            for index, value in enumerate(values, start=SPECIAL_COUNT)
+        }
+        self.id_to_lexeme = {
+            index: value
+            for index, value in enumerate(values, start=SPECIAL_COUNT)
+        }
+        missing_markers = [
+            field for field in fields
+            if self._marker(field) not in self.lexeme_to_id
+        ]
+        if missing_markers:
+            raise ValueError(
+                "field-addressed vocabulary lacks declared field markers"
+            )
+
+    @property
+    def vocab_size(self) -> int:
+        return SPECIAL_COUNT + len(self.fixed_lexemes)
+
+    @staticmethod
+    def split(value: bytes | str) -> list[bytes]:
+        pieces = LosslessLexemePointerTokenizer.split(value)
+        result: list[bytes] = []
+        for piece in pieces:
+            result.extend(
+                part for part in SUBLEXEME_BOUNDARY.split(piece) if part
+            )
+        return result
+
+    @staticmethod
+    def _marker(field: str) -> bytes:
+        return f"<FIELD:{field}>".encode("utf-8")
+
+    @staticmethod
+    def _fields(prompt: bytes | str) -> dict[str, str]:
+        if isinstance(prompt, bytes):
+            try:
+                prompt = prompt.decode("utf-8", errors="strict")
+            except UnicodeDecodeError as error:
+                raise ValueError(
+                    "field-addressed prompt is not strict UTF-8"
+                ) from error
+        if not isinstance(prompt, str):
+            raise TypeError("field-addressed prompt must be bytes or text")
+        marker = "SUPPLIED MATERIAL:\n"
+        if prompt.count(marker) != 1:
+            raise ValueError(
+                "field-addressed prompt requires one supplied-material boundary"
+            )
+        result: dict[str, str] = {}
+        for line in prompt.split(marker, 1)[1].splitlines():
+            if "=" not in line:
+                raise ValueError("supplied-material line lacks equals")
+            key, value = line.split("=", 1)
+            if not key or not value or key in result:
+                raise ValueError("supplied field is empty or duplicated")
+            result[key] = value
+        if not result:
+            raise ValueError("supplied material is empty")
+        return result
+
+    def encode_source(
+        self, prompt: bytes | str
+    ) -> tuple[list[int], list[bytes]]:
+        supplied = self._fields(prompt)
+        if tuple(sorted(supplied)) != self.schema:
+            raise ValueError("field-addressed runtime field schema changed")
+        ids: list[int] = []
+        lexemes: list[bytes] = []
+        for field in self.schema:
+            marker = self._marker(field)
+            ids.append(self.lexeme_to_id[marker])
+            lexemes.append(marker)
+            pieces = self.split(supplied[field])
+            if len(pieces) > self.field_width:
+                raise ValueError("supplied field exceeds its fixed block")
+            ids.extend(self.lexeme_to_id.get(piece, UNK_ID) for piece in pieces)
+            lexemes.extend(pieces)
+            padding = self.field_width - len(pieces)
+            ids.extend([PAD_ID] * padding)
+            lexemes.extend([b""] * padding)
+        return ids, lexemes
+
+    def decode_actions(
+        self,
+        actions: Iterable[int],
+        source_lexemes: list[bytes],
+    ) -> bytes:
+        output: list[bytes] = []
+        for raw_action in actions:
+            action = int(raw_action)
+            if action == EOS_ID:
+                break
+            if action >= self.vocab_size:
+                position = action - self.vocab_size
+                if (
+                    not 0 <= position < len(source_lexemes)
+                    or not source_lexemes[position]
+                ):
+                    raise ValueError(
+                        "pointer action is outside an available field position"
+                    )
+                output.append(source_lexemes[position])
+            elif action in self.id_to_lexeme:
+                output.append(self.id_to_lexeme[action])
+            else:
+                raise ValueError(
+                    "special action cannot be realized as output bytes"
+                )
+        return b"".join(output)
+
+    def canonical_dict(self) -> dict[str, Any]:
+        return {
+            "format": FIELD_ADDRESSED_TOKENIZER_FORMAT,
+            "schema": list(self.schema),
+            "field_width": self.field_width,
+            "fixed_lexemes_hex": [
+                value.hex() for value in self.fixed_lexemes
+            ],
+            "special_ids": {
+                "pad": PAD_ID,
+                "bos": BOS_ID,
+                "eos": EOS_ID,
+                "unknown": UNK_ID,
+            },
+            "instruction_in_neural_source": False,
+            "pointer_rule": (
+                "unique supplied-field content lexeme or integer greater than ten"
+            ),
+        }
+
+    @classmethod
+    def from_document(
+        cls, document: Mapping[str, Any]
+    ) -> "FieldAddressedPointerTokenizer":
+        allowed = {
+            "format", "schema", "field_width", "fixed_lexemes_hex",
+            "special_ids", "instruction_in_neural_source", "pointer_rule",
+        }
+        if set(document) != allowed:
+            raise ValueError(
+                "field-addressed tokenizer document is incomplete or ambiguous"
+            )
+        expected_specials = {
+            "pad": PAD_ID,
+            "bos": BOS_ID,
+            "eos": EOS_ID,
+            "unknown": UNK_ID,
+        }
+        if (
+            document.get("format") != FIELD_ADDRESSED_TOKENIZER_FORMAT
+            or document.get("special_ids") != expected_specials
+            or document.get("instruction_in_neural_source") is not False
+            or document.get("pointer_rule")
+            != "unique supplied-field content lexeme or integer greater than ten"
+        ):
+            raise ValueError("field-addressed tokenizer contract mismatch")
+        schema = document.get("schema")
+        values = document.get("fixed_lexemes_hex")
+        if (
+            not isinstance(schema, list)
+            or any(not isinstance(value, str) for value in schema)
+            or not isinstance(values, list)
+            or any(not isinstance(value, str) for value in values)
+        ):
+            raise ValueError("field-addressed tokenizer lists are invalid")
+        try:
+            fixed_lexemes = [bytes.fromhex(value) for value in values]
+        except ValueError as error:
+            raise ValueError(
+                "field-addressed fixed lexemes contain invalid hex"
+            ) from error
+        return cls(
+            schema,
+            fixed_lexemes,
+            field_width=document.get("field_width"),
+        )
 
     def hash(self) -> str:
         return _canonical_hash(self.canonical_dict())
