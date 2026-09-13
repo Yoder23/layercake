@@ -1,4 +1,4 @@
-"""Manual, sparse execution host for byte-facing direct neural cakes."""
+"""Manual, sparse execution host for byte-facing direct capability cakes."""
 
 from __future__ import annotations
 
@@ -104,7 +104,7 @@ class DirectCakeHost:
             or package.manifest.input_contract.get("mode")
             != "direct_selected_portable_decoder"
         ):
-            raise ValueError("package is not a direct neural decoder")
+            raise ValueError("package is not a direct capability decoder")
         model = load_cake_module(package).to(self.device).eval()
         self._models[cake_id] = model
         self._telemetry[cake_id]["module_load_calls"] += 1

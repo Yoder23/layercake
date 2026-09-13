@@ -18,6 +18,11 @@ from layercake.portable_token_plan import (
     PortableTokenPlan,
 )
 
+from .canonical_factual import (
+    CANONICAL_FACTUAL_FORMAT,
+    CanonicalFactualDecoder,
+    facts_sha256,
+)
 from .portable_fusion import PortableFusionCake, PortableFusionConfig
 from .routed_cakes import HostResidualCake
 
@@ -83,7 +88,30 @@ def load_cake_module(package: CakePackage) -> nn.Module:
     manifest = package.manifest
     architecture = manifest.architecture
     if manifest.cake_type == "portable_decoder":
-        if architecture.get("name") == "portable_token_plan":
+        if architecture.get("name") == "canonical_factual_table":
+            allowed = {
+                "name",
+                "format",
+                "namespace",
+                "facts",
+                "facts_sha256",
+                "external_input_output",
+            }
+            if (
+                set(architecture) != allowed
+                or architecture["format"] != CANONICAL_FACTUAL_FORMAT
+                or architecture["external_input_output"] != "UTF-8 bytes"
+                or manifest.domains != (architecture["namespace"],)
+                or facts_sha256(architecture["facts"])
+                != architecture["facts_sha256"]
+            ):
+                raise ValueError(
+                    "canonical factual architecture metadata is invalid"
+                )
+            model = CanonicalFactualDecoder(
+                str(architecture["namespace"]), architecture["facts"]
+            )
+        elif architecture.get("name") == "portable_token_plan":
             allowed = {
                 "name",
                 "format",
