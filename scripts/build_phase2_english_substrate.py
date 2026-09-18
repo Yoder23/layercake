@@ -10,7 +10,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 from pathlib import Path
 
 import pyarrow.parquet as pq
@@ -18,7 +17,7 @@ import pyarrow.parquet as pq
 
 ROOT = Path(__file__).resolve().parents[1]
 TINY_SNAPSHOT = (
-    Path(os.environ["USERPROFILE"])
+    Path.home()
     / ".cache"
     / "huggingface"
     / "hub"

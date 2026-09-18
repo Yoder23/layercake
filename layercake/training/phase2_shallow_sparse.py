@@ -6,10 +6,8 @@ from contextlib import nullcontext
 import argparse
 import hashlib
 import json
-import os
 from pathlib import Path
 import random
-import shutil
 import statistics
 import sys
 import time
@@ -37,7 +35,7 @@ from layercake.training.data import sha256_file
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = (
-    Path(os.environ["USERPROFILE"])
+    Path.home()
     / ".cache"
     / "huggingface"
     / "hub"
