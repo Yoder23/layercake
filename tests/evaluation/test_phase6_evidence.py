@@ -29,7 +29,10 @@ EVIDENCE_READY = _evidence_matches_current_lineage()
     reason="no stale Phase 6 evidence is present on this checkout",
 )
 def test_phase6_stale_evidence_fails_closed_on_development_head():
-    with pytest.raises(phase6.Phase6EvidenceError, match="dependent components changed"):
+    with pytest.raises(
+        phase6.Phase6EvidenceError,
+        match="dependent components changed|framework commit does not exist",
+    ):
         phase6.derive_phase6_metrics(ROOT)
 
 

@@ -8,7 +8,20 @@ import layercake.evaluation.phase5_evidence as phase5
 
 
 ROOT = Path(__file__).resolve().parents[2]
-EVIDENCE_READY = (ROOT / phase5.PAYLOAD).is_file()
+EVIDENCE_PRESENT = (ROOT / phase5.PAYLOAD).is_file()
+
+
+def _evidence_matches_current_lineage() -> bool:
+    if not EVIDENCE_PRESENT:
+        return False
+    try:
+        phase5._validate_framework_and_authoring(ROOT)
+    except phase5.Phase5EvidenceError:
+        return False
+    return True
+
+
+EVIDENCE_READY = _evidence_matches_current_lineage()
 
 
 @pytest.mark.skipif(

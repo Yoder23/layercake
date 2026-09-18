@@ -27,6 +27,14 @@ def sliding_causal_mask(
     )
 
 
+def _rms_norm(value: torch.Tensor, shape: tuple[int, ...]) -> torch.Tensor:
+    if hasattr(F, "rms_norm"):
+        return F.rms_norm(value, shape)
+    dimensions = tuple(range(value.ndim - len(shape), value.ndim))
+    epsilon = torch.finfo(value.dtype).eps
+    return value * torch.rsqrt(value.square().mean(dim=dimensions, keepdim=True) + epsilon)
+
+
 def canonical_brick_head(d_abi: int) -> torch.Tensor:
     generator = torch.Generator().manual_seed(20260622)
     # Generate the immutable ABI head on CPU even inside a ``torch.device``
@@ -210,8 +218,8 @@ class FusedModernCausalBlock(nn.Module):
         if not self.qk_norm:
             return query, key
         return (
-            F.rms_norm(query, (self.head_dim,)),
-            F.rms_norm(key, (self.head_dim,)),
+            _rms_norm(query, (self.head_dim,)),
+            _rms_norm(key, (self.head_dim,)),
         )
 
     def forward(self, h: torch.Tensor, mask: torch.Tensor | None = None):
@@ -576,8 +584,8 @@ class SparseStatePatchBlock(nn.Module):
         if not self.qk_norm:
             return query, key
         return (
-            F.rms_norm(query, (self.head_dim,)),
-            F.rms_norm(key, (self.head_dim,)),
+            _rms_norm(query, (self.head_dim,)),
+            _rms_norm(key, (self.head_dim,)),
         )
 
     def _token_indices(

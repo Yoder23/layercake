@@ -30,8 +30,18 @@ from layercake.causal_byte_models import (
     SelectiveStatePatchBlock,
     SparseStatePatchBlock,
     Top1RoutedCakeBlock,
+    _rms_norm,
 )
 from layercake.canonical_anchors import causal_byte_anchors, patch_context_anchors
+
+
+def test_rms_norm_fallback_matches_the_reference_formula(monkeypatch):
+    value = torch.randn(2, 3, 4)
+    monkeypatch.delattr(torch.nn.functional, "rms_norm", raising=False)
+    expected = value * torch.rsqrt(
+        value.square().mean(dim=-1, keepdim=True) + torch.finfo(value.dtype).eps
+    )
+    assert torch.allclose(_rms_norm(value, (4,)), expected)
 
 
 def test_causal_models_shapes_and_patch_context_shift():
