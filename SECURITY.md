@@ -1,31 +1,54 @@
-# Security Policy
+# Security policy
 
-## Supported Versions
+## Project security boundary
 
-The sealed Moonshot is an evidence release, not a blanket production-security
-certification. Deployments remain responsible for their own threat modeling,
-package publisher trust, key custody, runtime isolation, and incident response.
+LayerCake is an active research project. The sealed Moonshot is an evidence
+release, not a blanket production-security certification. Deployments remain
+responsible for publisher trust, private-key custody, process and network
+isolation, resource controls, monitoring, and incident response.
 
-## Reporting a Vulnerability
+The supported package path uses schema-closed, non-executable `.cake` archives,
+safetensors payloads, cryptographic hashes, Ed25519 signatures, explicit ABI
+compatibility, permissions, and content-addressed local storage. Read the
+[package threat model](docs/CAKE_THREAT_MODEL.md) and
+[registry specification](docs/CAKE_REGISTRY_SPEC.md) before deployment.
 
-If you discover a security vulnerability in this code, please report it privately:
+## Report a vulnerability
 
-- Open a GitHub Security Advisory (preferred):
-  `https://github.com/Yoder23/layercake/security/advisories/new`
-- Or email the maintainer directly (see GitHub profile).
+Report security vulnerabilities privately:
 
-Do not open a public issue for security vulnerabilities.
+- open a [GitHub Security Advisory](https://github.com/Yoder23/layercake/security/advisories/new); or
+- contact the maintainer privately through the GitHub profile.
 
-We will acknowledge your report within 72 hours and provide a fix or mitigation
-timeline within 7 days.
+Do not open a public issue containing an unpatched vulnerability, secret,
+private key, exploit payload, or restricted data.
 
-## Scope
+Please include the affected commit/tag, operating system, package or artifact
+hash, reproduction steps, impact, and any proposed mitigation. We aim to
+acknowledge reports within 72 hours and provide an initial remediation plan
+within seven days.
 
-The primary security concern for this codebase is:
+## Untrusted inputs
 
-- **Unsafe deserialization**: `torch.load` without `weights_only=True` can execute
-  arbitrary code in a malicious checkpoint file. Never load untrusted `.pt` files
-  without inspecting them first or using `torch.load(..., weights_only=True)`.
+Treat all of the following as untrusted:
 
-All `torch.load` calls in this repository use `map_location="cpu"`. For production
-use, add `weights_only=True` (requires PyTorch >= 2.0).
+- `.cake` archives and manifests;
+- catalogs and archive-bound routing profiles;
+- public keys and trust-store configuration;
+- model checkpoints and tokenizers;
+- dataset paths and imported evidence; and
+- prompts, field-addressed inputs, and declared destinations.
+
+Never bypass signature, archive-hash, tensor-shape, ABI, permission, or output
+validation to make an artifact load.
+
+## PyTorch checkpoints
+
+Legacy research workflows still read `.pt` checkpoint containers. Repository
+load sites use `weights_only=True`; this reduces Python object-deserialization
+risk but does not make an untrusted model safe. Validate provenance and hashes,
+load onto the intended device explicitly, and prefer signed safetensors-based
+packages for distributed capability artifacts.
+
+Never commit publisher private keys, credentials, restricted training data, or
+unreviewed executable payloads.

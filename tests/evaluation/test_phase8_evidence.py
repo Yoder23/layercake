@@ -8,7 +8,29 @@ import layercake.evaluation.phase8_evidence as phase8
 
 
 ROOT = Path(__file__).resolve().parents[2]
-EVIDENCE_READY = (ROOT / phase8.PAYLOAD).is_file()
+EVIDENCE_PRESENT = (ROOT / phase8.PAYLOAD).is_file()
+
+
+def _evidence_matches_current_lineage() -> bool:
+    if not EVIDENCE_PRESENT:
+        return False
+    try:
+        phase8._validate_framework(ROOT)
+    except phase8.Phase8EvidenceError:
+        return False
+    return True
+
+
+EVIDENCE_READY = _evidence_matches_current_lineage()
+
+
+@pytest.mark.skipif(
+    not EVIDENCE_PRESENT or EVIDENCE_READY,
+    reason="no stale Phase 8 evidence is present on this checkout",
+)
+def test_phase8_stale_evidence_fails_closed_on_development_head():
+    with pytest.raises(phase8.Phase8EvidenceError, match="sealed product components changed"):
+        phase8.derive_phase8_metrics(ROOT)
 
 
 @pytest.mark.skipif(

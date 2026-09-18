@@ -67,7 +67,8 @@ verify:
 	python scripts/verify_northstar_mobile.py
 
 docs-check:
-	python -c "from pathlib import Path; required=['RUBRIC.md','BYTE_PATCH_LAYERCAKE.md','BENCHMARKS.md','ORCHESTRATION.md','TOKENIZER_FREE.md','ROADMAP.md','NEXT_STEPS.md','ROLLING_TRAINING.md','MODEL_COMMITS.md','RUBRIC_TRAINING.md','SEMANTIC_CI.md','ROLLBACK.md','BRANCHING_AND_CHERRYPICK.md','PREVIEW_GUIDED_TRAINING.md','SCALING_PROTOCOL.md','DOMINANCE_GATES.md','TRANSFORMER_BASELINES.md']; assert all(Path(p).exists() for p in required)"
+	python scripts/check_docs.py
+	python -m layercake --help
 
 format:
 	python -m compileall layercake scripts

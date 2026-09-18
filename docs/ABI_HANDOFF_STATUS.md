@@ -1,6 +1,14 @@
 # External capability-artifact handoff
 
-Status date: 2026-08-13
+Status date: 2026-09-15
+
+Current documentation note (2026-09-15): the latest construct-certified
+route-isolated host is `lc-direct-neural-core/25`, not v19. It preserves the
+four V24 routes and adds one physically isolated clarification route. This is
+still construct-only: no real external English artifact has passed output
+conformance, English quality, information-minimum, speed, memory, or TTFT
+certification. The older interface notes below are retained as chronological
+handoff history.
 
 Current-host note (2026-08-16): the allocation-bounded streaming package and
 active integrity-verification changes are post-release work. They touch the
@@ -32,8 +40,8 @@ accounting.
 
 ## Acceptance rule
 
-The post-release `lc-direct-neural-core/2` interface is construct-certified as
-the current English-core handoff target. It uses Unicode-atomic fixed and
+The post-release `lc-direct-neural-core/2` interface was the first construct-
+certified Unicode-safe English-core handoff target. It uses Unicode-atomic fixed and
 pointer actions, strict UTF-8 input/output validation, signed safetensors-only
 packages, persistent incremental state, and zero receiver learning. It passed
 the same deterministic package on CPU and CUDA. The older v1 interface failed
@@ -49,8 +57,8 @@ digit-or-underscore identifiers without disabling ordinary raw-BPE
 compression. This is a generic LayerCake hosting surface only: no external
 artifact, English quality, or performance result is imported into this repo.
 
-The separately versioned `lc-direct-neural-core/18` interface is now the latest
-construct-certified target for one signed shallow-sparse English-core package.
+The separately versioned `lc-direct-neural-core/18` interface was later
+construct-certified for one signed shallow-sparse English-core package.
 It retains the model, sparse capability router, declarative tokenizers, guard,
 and persistent KV-state boundary while accepting explicit route-indexed
 `residual.down` and `residual.up` tensors and physically executing only the

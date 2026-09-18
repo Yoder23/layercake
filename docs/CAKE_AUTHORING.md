@@ -19,11 +19,14 @@ Local experiments may use `signature.algorithm=none` and install with `--trusted
 That trust decision is recorded and cannot be mistaken for a published signature.
 
 ```powershell
-python -m layercake cake install examples/python.cake --trusted-local
-python -m layercake cake verify python
-python -m layercake run --cake python "Explain a Python generator"
-python -m layercake cake remove python
+python -m layercake cake --registry .cache/demo-registry install examples/python.cake --trusted-local
+python -m layercake cake --registry .cache/demo-registry verify python
+python -m layercake cake --registry .cache/demo-registry remove python
 ```
+
+Running inference additionally requires a compatible core directory and the
+same registry path. See the
+[deployment quickstart](../DEPLOYMENT_QUICKSTART.md#run-inference-with-your-artifacts).
 
 Do not place training code, tokenizers, templates, retrieval corpora, or stored answers in
 a cake. Evaluation evidence belongs in the manifest; large reproducibility materials

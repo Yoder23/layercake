@@ -8,7 +8,29 @@ import layercake.evaluation.phase6_evidence as phase6
 
 
 ROOT = Path(__file__).resolve().parents[2]
-EVIDENCE_READY = (ROOT / phase6.PAYLOAD).is_file()
+EVIDENCE_PRESENT = (ROOT / phase6.PAYLOAD).is_file()
+
+
+def _evidence_matches_current_lineage() -> bool:
+    if not EVIDENCE_PRESENT:
+        return False
+    try:
+        phase6._validate_framework(ROOT)
+    except phase6.Phase6EvidenceError:
+        return False
+    return True
+
+
+EVIDENCE_READY = _evidence_matches_current_lineage()
+
+
+@pytest.mark.skipif(
+    not EVIDENCE_PRESENT or EVIDENCE_READY,
+    reason="no stale Phase 6 evidence is present on this checkout",
+)
+def test_phase6_stale_evidence_fails_closed_on_development_head():
+    with pytest.raises(phase6.Phase6EvidenceError, match="dependent components changed"):
+        phase6.derive_phase6_metrics(ROOT)
 
 
 @pytest.mark.skipif(

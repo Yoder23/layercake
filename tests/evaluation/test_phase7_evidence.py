@@ -8,7 +8,29 @@ import layercake.evaluation.phase7_evidence as phase7
 
 
 ROOT = Path(__file__).resolve().parents[2]
-EVIDENCE_READY = (ROOT / phase7.PAYLOAD).is_file()
+EVIDENCE_PRESENT = (ROOT / phase7.PAYLOAD).is_file()
+
+
+def _evidence_matches_current_lineage() -> bool:
+    if not EVIDENCE_PRESENT:
+        return False
+    try:
+        phase7._validate_framework(ROOT)
+    except phase7.Phase7EvidenceError:
+        return False
+    return True
+
+
+EVIDENCE_READY = _evidence_matches_current_lineage()
+
+
+@pytest.mark.skipif(
+    not EVIDENCE_PRESENT or EVIDENCE_READY,
+    reason="no stale Phase 7 evidence is present on this checkout",
+)
+def test_phase7_stale_evidence_fails_closed_on_development_head():
+    with pytest.raises(phase7.Phase7EvidenceError, match="dependent components changed"):
+        phase7.derive_phase7_metrics(ROOT)
 
 
 @pytest.mark.skipif(
@@ -66,4 +88,3 @@ def test_phase7_claim_boundaries_remain_explicit():
     assert boundaries["physical_mobile_hardware_claimed"] is False
     assert boundaries["gpu_training_dominance_claimed"] is False
     assert boundaries["latent_neural_fusion_claimed"] is False
-

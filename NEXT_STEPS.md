@@ -2,6 +2,9 @@
 
 ## Verify before changing anything
 
+Run the release commands from a detached `layercake-moonshot-final` worktree,
+not current post-release HEAD:
+
 ```powershell
 C:\Python310\python.exe -m layercake.moonshot_campaign verify-sealed 8
 C:\Python310\python.exe -m layercake.moonshot_campaign verify-all
@@ -22,9 +25,11 @@ The expected aggregate result is `completed_phases_valid: true` with Phase 8
 5. For an external English core, use the post-release host-interface audit as
    the ownership boundary; do not attach ad hoc hidden-state hooks to the
    sealed core.
-6. Accept a real external English artifact only through
-   `lc-direct-neural-core/1`, then recertify quality and systems evidence on
-   that unchanged artifact before any promotion.
+6. Evaluate a real external English artifact against the latest
+   construct-certified `lc-direct-neural-core/25` host boundary, then recertify
+   output conformance, quality, collapse, routing, CPU/GPU, memory, TTFT,
+   package identity, and hostile verification on that unchanged artifact
+   before any promotion.
 
 ## Actions that require new authority
 

@@ -31,6 +31,11 @@ jobs:
       - name: Run paste losslessness test
         run: pytest tests/test_paste_lossless.py -v
 
+      - name: Check public documentation and CLI discovery
+        run: |
+          python scripts/check_docs.py
+          python -m layercake --help
+
       - name: Run rolling-training smoke tests
         run: |
           python -m layercake.rolling.cli --help

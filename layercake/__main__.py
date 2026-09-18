@@ -8,6 +8,29 @@ import sys
 import torch
 
 
+_ROOT_HELP = """usage: layercake <command> [options]
+
+LayerCake modular language-model host
+
+commands:
+  cake         discover, install, verify, update, and remove capability packages
+  run          execute a prompt with an explicit cake or automatic routing
+  core         train a research English core from a configuration
+  benchmark    run an artifact-backed CPU/GPU comparison
+  moonshot     run legacy Moonshot workflows
+  moonshot_v2  run Moonshot v2 workflows
+
+start here:
+  layercake cake --help
+  layercake run --help
+  https://github.com/Yoder23/layercake/blob/master/DEPLOYMENT_QUICKSTART.md
+"""
+
+
+def _print_root_help(*, error: bool = False) -> None:
+    print(_ROOT_HELP, file=sys.stderr if error else sys.stdout, end="")
+
+
 def _run(argv: list[str]) -> int:
     from layercake.cake.registry import CakeRegistry
     from layercake.cake.cli import _trust_store
@@ -92,8 +115,11 @@ def _run(argv: list[str]) -> int:
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv:
-        print("usage: python -m layercake {core|moonshot|moonshot_v2|cake|benchmark|run} ...", file=sys.stderr)
+        _print_root_help(error=True)
         return 2
+    if argv[0] in {"-h", "--help", "help"}:
+        _print_root_help()
+        return 0
     command, rest = argv[0], argv[1:]
     if command == "cake":
         from layercake.cake.cli import main as cake_main
@@ -138,7 +164,8 @@ def main(argv: list[str] | None = None) -> int:
             return 0 if result["status"] == "PASS" else 1
     if command == "run":
         return _run(rest)
-    print(f"unknown layercake command: {command}", file=sys.stderr)
+    print(f"layercake: unknown command: {command}\n", file=sys.stderr)
+    _print_root_help(error=True)
     return 2
 
 

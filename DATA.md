@@ -1,5 +1,11 @@
 # Data Preparation
 
+> **Historical workflow:** this page documents the original token-array scripts
+> at the repository root. The sealed Moonshot and current package-host work use
+> artifact-specific, content-addressed data contracts. Follow the exact config,
+> manifest, and certificate named by the experiment you are reproducing. Do not
+> infer current product data requirements from this page.
+
 LayerCake training scripts expect pre-tokenized corpora stored as 1D NumPy arrays of
 integer token IDs (`.npy` files). This document explains how to prepare the data.
 

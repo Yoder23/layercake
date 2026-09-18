@@ -1,5 +1,17 @@
 # LayerCake Moonshot Gated Research Campaign Charter
 
+## Read this first
+
+- The canonical human documentation begins at `README.md` and `docs/README.md`.
+- The immutable scientific release is `layercake-moonshot-final`; current HEAD
+  is a separate unsealed post-release host lineage.
+- Current product and construct status is summarized in
+  `docs/PROJECT_STATUS.md`; older host revisions below are preserved history.
+- LayerCake owns hosting, package lifecycle, routing, and execution. Foreign-
+  teacher extraction belongs to the separate ABI repository.
+- Do not change or combine sealed claims without following the campaign,
+  invalidation, evidence, and lineage rules in this file.
+
 ## Current release boundary
 
 Authoritative update (2026-08-16): `layercake-moonshot-final` remains the exact
@@ -38,8 +50,8 @@ construct-only: no external artifact, English quality, information minimum,
 speed, memory, TTFT, or ABI-superiority claim is inherited. V24 remains the
 sealed four-route allocation-bounded construct.
 
-Post-release update (2026-08-13): `lc-direct-neural-core/19` is now the latest
-construct-certified signed route-isolated shallow-sparse host under
+Historical post-release update (2026-08-13): `lc-direct-neural-core/19` was the
+then-latest construct-certified signed route-isolated shallow-sparse host under
 `moonshot/postrelease_route_isolated_prompt_span_v19_decision_v58.json`. It
 preserves the v18 tensor schema and ordinary neural fallback while adding a
 zero-parameter, evaluator-blind constrained mode for explicit three-span order

@@ -9,12 +9,26 @@ description = "Modular language models via a fixed-dimension ABI bottleneck"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [{name = "Sam Yoder"}]
+keywords = ["machine-learning", "language-model", "modular-ai", "model-serving"]
 requires-python = ">=3.10"
 dependencies = [
     "torch>=2.0",
     "numpy>=1.24",
     "safetensors>=0.4",
     "cryptography>=42",
+    "psutil>=5.9",
+    "PyYAML>=6.0",
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
 [project.optional-dependencies]
@@ -31,6 +45,7 @@ external-tokenizer = [
 
 [project.urls]
 Homepage = "https://github.com/Yoder23/layercake"
+Documentation = "https://github.com/Yoder23/layercake/tree/master/docs"
 Issues   = "https://github.com/Yoder23/layercake/issues"
 
 [project.scripts]

@@ -3,7 +3,7 @@ name: Moonshot campaign integrity
 on:
   push:
     branches: [master]
-    tags: ["layercake-moonshot-phase*"]
+    tags: ["layercake-moonshot-final", "layercake-moonshot-successor-*"]
   pull_request:
     branches: [master]
 
@@ -20,5 +20,15 @@ jobs:
           python-version: "3.10"
           cache: pip
       - run: python -m pip install -e . pytest
+      - run: python scripts/check_docs.py
       - run: pytest -q
-      - run: python -m layercake.moonshot_campaign verify-all
+      - name: Verify an immutable release tag or report development state
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+        run: |
+          if [ "$REF_TYPE" = "tag" ]; then
+            python -m layercake.moonshot_campaign verify-all
+          else
+            python -m layercake.moonshot_campaign status
+            echo "Current master is a post-release development lineage; sealed verification runs only on an immutable release tag."
+          fi

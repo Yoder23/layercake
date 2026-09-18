@@ -1,177 +1,159 @@
 # LayerCake
 
-**Release-tag status: SEALED. Current post-release HEAD: UNSEALED.**
+LayerCake is a research implementation of a modular language-model host. A
+LayerCake deployment combines an English core with independently packaged
+capabilities called **cakes**, then loads and executes only the capabilities a
+request selects.
 
-The eight-phase LayerCake campaign is locally sealed at the annotated Git tag
-`layercake-moonshot-final` (`0537cbb9e93cd7ebd4ba01c0bf641414ecebb1c3`).
-The tag is the release boundary. The canonical campaign state, raw evidence, and
-machine validation are under `moonshot/` and `results/moonshot/`.
+[Get started](DEPLOYMENT_QUICKSTART.md) | [Documentation](docs/README.md) |
+[Architecture](ARCHITECTURE.md) | [Verified claims](CLAIMS.md) |
+[Contributing](CONTRIBUTING.md)
 
-The immutable tag was locally revalidated again on 2026-08-16: 602/602 tests
-passed, `verify-all` reported every phase valid, and the final verifier returned
-`PROVEN`. See
-`moonshot/postrelease_sealed_tag_local_revalidation_result_v99.json`.
+> **Project status:** the scientific release is the immutable local tag
+> `layercake-moonshot-final` at commit
+> `0537cbb9e93cd7ebd4ba01c0bf641414ecebb1c3`. The default branch is a newer,
+> unsealed host-development lineage. It does not inherit the release's Phase
+> 2-8 certificates. See [Project status](docs/PROJECT_STATUS.md) before using
+> benchmark numbers or making release claims.
 
-Current HEAD is a separate post-release host lineage. Commits `8f49fe1` and
-`662c5a9` changed `layercake/cake/**`, which the frozen invalidation matrix
-classifies as the `precision_contract` from Phase 2 onward. The current tree
-therefore correctly fails the old sealed verifier and has not earned a
-successor Phase 2-8 seal. See
-`moonshot/postrelease_current_head_seal_invalidation_v96.json`. Run sealed
-verification from a detached `layercake-moonshot-final` checkout, not from
-post-release HEAD.
+## Why LayerCake?
 
-All phase lifecycle entries are sealed. Phase 3 has the explicit disposition
-`RETIRED_BY_GOVERNANCE`: it preserved the bounded training controls and retired
-the original faster-training requirement with zero headline scientific claims.
-It was not skipped, but it also must not be described as a training-efficiency
-or host-certification proof.
+Traditional model extension often couples every capability to one model
+checkpoint. LayerCake instead makes the host/package boundary explicit:
 
-Full-core training speed is a separate, currently open gate. This release does
-not claim faster full-core training or training dominance.
+- cakes are immutable, content-addressed, non-executable archives;
+- installation performs no receiver training or core mutation;
+- package eligibility and automatic routing fail closed;
+- inactive installed cakes do not receive proportional neural execution;
+- request and response boundaries are UTF-8;
+- persistent incremental state avoids recomputing completed context; and
+- package identity, semantic behavior, and performance are measured as
+  separate claims.
 
-LayerCake is a capability host: an English core executes selected, signed,
-non-executable capability packages over a byte-facing interface. It is designed
-for fast CPU and GPU inference, immutable packages, persistent incremental
-state, selected-only execution, lossless package transfer, and safe dynamic
-routing. ABI extraction is a separate project and is not bundled into this
-repository or release.
+LayerCake hosts and executes capability artifacts. Extracting knowledge from a
+foreign teacher is a separate problem owned by the
+[ABI project](https://github.com/Yoder23/abi); ABI code and evidence are not
+vendored here.
 
-Foreign-teacher capability acquisition is maintained separately in the
-[ABI repository](https://github.com/Yoder23/abi). External ABI research does
-not change this sealed release; see the
-[artifact handoff boundary](docs/ABI_HANDOFF_STATUS.md).
+## What can I do from this checkout?
 
-Post-release host work has construct-certified a Unicode-safe external English-
-core interface, `lc-direct-neural-core/2`. It is not part of the sealed Phase
-0–8 product and has not accepted a real external English artifact. V1 remains
-historical after a local UTF-8 conformance failure. See the
-[v2 construct report](docs/POSTRELEASE_UNICODE_DIRECT_NEURAL_CORE_V2.md).
-
-The latest post-release execution boundary is the construct-only
-`lc-direct-neural-core/25` signed route-isolated host. It preserves V24's
-allocation-bounded activation and original four residual routes while adding
-exactly one physically isolated clarification route. Clarification alone maps
-to route 4; all other capability mappings remain unchanged, and no token can
-activate more than one residual route. The construct passes CPU/CUDA fixture
-identity, strict signed-package and storage-adoption checks, 689 tests, and the
-unchanged sealed verifier. No real external V25 artifact has yet earned English
-quality, information-minimum, speed, memory, or TTFT certification. Earlier
-post-release hosts and their negative evidence remain preserved.
-
-The separately versioned authoritative-destination extension also passes its
-bounded mechanical construct: an immutable outer destination selects only its
-registered package, while missing, unknown, and quarantined destinations fail
-closed without falling through to the English core. Prompt text cannot override
-that outer label. This additive extension leaves the sealed routing component
-byte-identical, passes 9 focused and all 693 repository tests, and does not
-inherit any external acquisition, quality, semantic-purity, or performance
-claim. See
-[`postrelease_authoritative_destination_control_decision_v95.json`](moonshot/postrelease_authoritative_destination_control_decision_v95.json).
-
-## Certified release scope
-
-The final independent clean-room verification reran the sealed Phase 7 product
-from a detached checkout and passed every Phase 8 gate.
-
-| Area | Certified result |
-| --- | --- |
-| Campaign lifecycle | Phases 0 through 8 are sealed and verify as one ordered campaign. |
-| Clean-room regression | 597 tests passed in the detached Phase 7 checkout. |
-| Functional quality suite | LayerCake passed 100/100 CPU and 100/100 GPU prompts; the locked Qwen comparator passed 23/100 and 24/100. |
-| Quality uncertainty | Paired bootstrap 95% lower bounds for the LayerCake-minus-Qwen success delta were +0.68 on CPU and +0.67 on GPU. |
-| CPU comparison | 9.91x LayerCake/Qwen output-byte throughput; LayerCake median latency ratio 0.0179x. |
-| GPU comparison | 8.25x LayerCake/Qwen output-byte throughput. |
-| CPU versus transformer GPU | 7.67x output-byte throughput; LayerCake median latency ratio 0.0222x. |
-| Domain retention | 384/384 held-out cases passed on CPU, 384/384 on GPU, with 384/384 identical outputs. |
-| Core safety | 100/100 core-only abstentions; no receiver training or calibration. |
-| Package portability | Three fresh hosts installed, verified, removed, and reinstalled identical package bytes. |
-| Routing and catalog | 1,980/1,980 routing rows passed; the management catalog exercised 500 entries. |
-| Adversarial verification | 32 hostile checks across 24 categories reached their intended boundaries and were resolved. |
-
-These are deliberately bounded claims for the exact sealed hardware, runtime,
-packages, checkpoints, data, and Qwen deployment digest. They do not establish
-physical mobile performance, calibrated energy dominance, GPU-training
-dominance, latent neural fusion, external-laboratory independence, or faster
-from-scratch English acquisition.
-
-## Phase map
-
-| Phase | Objective | Release status |
+| Goal | Starting point | Important boundary |
 | --- | --- | --- |
-| 0 | Permanent governance and campaign state | Sealed |
-| 1 | Benchmark truth | Sealed |
-| 2 | Matched-quality CPU core performance | Sealed |
-| 3 | Governed retirement of the original training-efficiency objective and preservation of its controls | Sealed as `RETIRED_BY_GOVERNANCE`; no training-efficiency or host-certification claim |
-| 4 | One useful lossless portable Python capability | Sealed |
-| 5 | Generic multi-domain extensibility | Sealed |
-| 6 | Safe routing and catalog scalability | Sealed |
-| 7 | Integrated CPU, GPU, and CPU-versus-GPU evidence | Sealed |
-| 8 | Independent hostile verification and release | Sealed at `layercake-moonshot-final` |
+| Inspect, install, verify, and remove a local cake | [Five-minute quickstart](DEPLOYMENT_QUICKSTART.md#five-minute-package-lifecycle) | Bundled example cakes are untrained lifecycle fixtures, not useful specialists. |
+| Understand the system | [Concepts](docs/CONCEPTS.md) and [architecture](ARCHITECTURE.md) | The sealed release and current development host are distinct lineages. |
+| Integrate a compatible core and cake | [Inference interface](DEPLOYMENT_QUICKSTART.md#run-inference-with-your-artifacts) | You must supply artifacts matching the selected host interface. |
+| Author a cake | [Cake authoring](docs/CAKE_AUTHORING.md) | A new cake earns no quality or portability claim automatically. |
+| Recompute the sealed campaign | [Release verification](DEPLOYMENT_QUICKSTART.md#verify-the-sealed-research-release) | Use a detached exact-tag checkout and the required retained assets. |
+| Navigate code, evidence, and historical experiments | [Repository map](docs/REPOSITORY_MAP.md) | `results/` is evidence; `artifacts/` is model/package material; neither is the library API. |
 
-See [the phase-status document](docs/PHASE_STATUS.md) for evidence anchors and
-the governing tags.
+## Five-minute package lifecycle
 
-## Verify the release
-
-Use the declared Python 3.10 environment from a detached checkout of
-`layercake-moonshot-final`. These commands are read-only except for normal
-temporary test caches:
+LayerCake requires Python 3.10 or newer. From the repository root:
 
 ```powershell
-C:\Python310\python.exe -m layercake.moonshot_campaign verify-sealed 8
-C:\Python310\python.exe -m layercake.moonshot_campaign verify-all
-C:\Python310\python.exe -m layercake.moonshot_final verify
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e .
+python -m layercake --help
 ```
 
-`verify-all` must report `completed_phases_valid: true`. V99 records the latest
-such exact-tag run. Do not expect these sealed commands to pass from current
-post-release HEAD until a successor recertification closes V96. The final tag
-is local in this checkout; remote publication is intentionally not claimed by
-the verifier.
+Exercise the package manager with the bundled untrained Python fixture:
 
-Post-release external English cores may target the construct-certified
-`lc-direct-neural-core/4` interface when their declarative tokenizer requires
-normalization and sequence decoding. V4 preserves the UTF-8 byte boundary,
-shifts external token IDs above LayerCake's four reserved actions, prohibits
-pointer actions, and performs no receiver learning. This is a hosting interface
-only; an external artifact must independently prove English quality and
-performance before LayerCake can inherit either claim.
+```powershell
+python -m layercake cake --registry .cache/demo-registry --catalog examples/catalog.json search python
+python -m layercake cake --registry .cache/demo-registry install examples/python.cake --trusted-local
+python -m layercake cake --registry .cache/demo-registry list
+python -m layercake cake --registry .cache/demo-registry verify python
+python -m layercake cake --registry .cache/demo-registry remove python
+```
 
-The construct-certified `lc-direct-neural-core/5` interface is available for
-portable token-plan cores that need raw UTF-8 BPE compression plus stable
-source-pointer boundaries around digit-or-underscore identifiers. It likewise
-inherits no quality or speed claim until the same external artifact is tested.
+These commands demonstrate discovery, compatibility checking, content-addressed
+storage, integrity verification, and removal. They do not demonstrate model
+quality. Continue with the [deployment quickstart](DEPLOYMENT_QUICKSTART.md)
+when you have a compatible core and cake.
 
 ## Architecture at a glance
 
 ```text
 UTF-8 request
-  -> sealed English host with persistent incremental state
-  -> authenticated package registry and archive-bound routing profile
-  -> core-only abstention, one selected cake, top-k, or structured multidomain plan
-  -> selected neural capability execution only
-  -> UTF-8 response and auditable execution trace
+  -> LayerCake execution host + persistent state
+  -> authenticated registry and package-bound routing policy
+  -> core-only, one selected cake, or an explicit orchestration plan
+  -> selected neural modules only
+  -> UTF-8 response + auditable execution trace
 ```
 
-The release uses a frozen direct neural-decoder attachment path for the promoted
-packages. That is a byte-facing capability-host contract, not a claim of latent
-semantic fusion. See [the architecture guide](docs/MOONSHOT_ARCHITECTURE.md)
-and [the cake registry specification](docs/CAKE_REGISTRY_SPEC.md).
+The primary implementation surfaces are:
 
-## Documentation
+- `layercake/cake/`: package schema, signing, installation, and registry;
+- `layercake/models/`: cores, portable decoders, and canonical interfaces;
+- `layercake/routing/`: policies, routers, catalogs, and orchestration;
+- `layercake/runtime/`: CPU, CUDA, native, and export paths;
+- `layercake/training/`: research and fallback training workflows; and
+- `layercake/evaluation/`: quality, portability, performance, and campaign
+  verification.
 
-- [Phase status and evidence map](docs/PHASE_STATUS.md)
-- [Verified claims and explicit limits](docs/VERIFICATION_AND_LIMITS.md)
-- [Architecture and runtime](docs/MOONSHOT_ARCHITECTURE.md)
-- [Benchmark and reproduction protocol](BENCHMARKS.md)
-- [Capability authoring](docs/CAKE_AUTHORING.md)
-- [Registry and package format](docs/CAKE_REGISTRY_SPEC.md)
-- [Threat model](docs/CAKE_THREAT_MODEL.md)
-- [Post-release operating plan](ROADMAP.md)
-- [LayerCake/ABI handoff status](docs/ABI_HANDOFF_STATUS.md)
-- [Post-release Unicode-safe external-core host](docs/POSTRELEASE_UNICODE_DIRECT_NEURAL_CORE_V2.md)
+See the [repository map](docs/REPOSITORY_MAP.md) before navigating the larger
+research and evidence surfaces.
 
-Older North Star, tokenizer, byte-patch, and V2 development documents remain in
-the repository as historical research. They are not the release source of truth
-unless a current phase certificate imports and recomputes their raw evidence.
+## Scientific release in one table
+
+The following are bounded results for the exact tagged release, artifacts,
+benchmark suite, comparator deployment, and laptop hardware named by the Phase
+8 evidence. They are not universal performance claims.
+
+| Area | Tagged-release result |
+| --- | ---: |
+| Functional suite | LayerCake 100/100 on CPU and GPU; locked Qwen comparator 23/100 CPU and 24/100 GPU |
+| CPU output-byte throughput ratio | 9.91x |
+| GPU output-byte throughput ratio | 8.25x |
+| LayerCake CPU vs comparator GPU | 7.67x |
+| Held-out domain retention | 384/384 CPU, 384/384 GPU, identical on 384/384 |
+| Routing checks | 1,980/1,980 |
+| Hostile checks | 32 attacks across 24 categories |
+
+The release does **not** establish universal language-model superiority,
+faster foundation training, physical mobile performance, calibrated energy
+dominance, arbitrary third-party host compatibility, latent multi-cake neural
+fusion, or external-laboratory independence. Read
+[Verification and limits](docs/VERIFICATION_AND_LIMITS.md) for the complete
+claim boundary.
+
+## Release tracks
+
+LayerCake currently has two intentionally separate tracks:
+
+1. **Sealed research release** - `layercake-moonshot-final`, the immutable
+   evidence lineage used for the Phase 0-8 claims.
+2. **Post-release host development** - the default branch, including newer
+   signed direct-neural-core host constructs. These constructs prove mechanical
+   host properties only until a successor campaign certifies a real artifact on
+   the same lineage.
+
+Phase 3 retired its original faster-training objective by governance. It is a
+sealed lifecycle disposition with zero training-efficiency claims, not proof of
+faster training and not a skipped phase.
+
+Full-core training speed is a separate, currently open gate. LayerCake retains
+ordinary research and fallback training, but this release makes no training-
+dominance claim.
+
+## Documentation paths
+
+- **New user:** [Deployment quickstart](DEPLOYMENT_QUICKSTART.md)
+- **Integrator:** [Concepts](docs/CONCEPTS.md), [architecture](ARCHITECTURE.md), and [registry specification](docs/CAKE_REGISTRY_SPEC.md)
+- **Cake author:** [Authoring guide](docs/CAKE_AUTHORING.md) and [threat model](docs/CAKE_THREAT_MODEL.md)
+- **Research reviewer:** [Claims](CLAIMS.md), [phase status](docs/PHASE_STATUS.md), and [verification limits](docs/VERIFICATION_AND_LIMITS.md)
+- **Contributor:** [Contributing guide](CONTRIBUTING.md) and [repository map](docs/REPOSITORY_MAP.md)
+- **ABI integrator:** [External artifact handoff](docs/ABI_HANDOFF_STATUS.md)
+
+The numerous North Star, byte-model, training, and architecture-search files at
+the repository root are preserved research history. They are indexed in the
+[repository map](docs/REPOSITORY_MAP.md) and are not the current product or
+release source of truth.
+
+## License and citation
+
+LayerCake is licensed under Apache-2.0. See [LICENSE](LICENSE). Citation
+metadata is available in [CITATION.cff](CITATION.cff).
