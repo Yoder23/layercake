@@ -1384,7 +1384,11 @@ def _train(config: dict):
     if not optimizer_params:
         raise RuntimeError("No trainable parameters are available for the optimizer")
     optimizer = torch.optim.AdamW(optimizer_params, **optimizer_kwargs)
-    scaler = torch.amp.GradScaler("cuda", enabled=device.type == "cuda")
+    if hasattr(torch.amp, "GradScaler"):
+        scaler = torch.amp.GradScaler("cuda", enabled=device.type == "cuda")
+    else:
+        # PyTorch 2.0/2.1 expose GradScaler through torch.cuda.amp.
+        scaler = torch.cuda.amp.GradScaler(enabled=device.type == "cuda")
     if resume_optimizer_state is not None:
         if parameter_filter["enabled"]:
             logger.warning(
@@ -1430,7 +1434,6 @@ def _train(config: dict):
     iterator = iter(dataloader)
 
     while global_step < steps:
-        step_started = time.perf_counter()
         current_lr = _current_lr(global_step)
         for group in optimizer.param_groups:
             group["lr"] = current_lr

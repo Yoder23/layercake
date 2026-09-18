@@ -7,6 +7,7 @@ import statistics
 import subprocess
 import sys
 
+import pytest
 import torch
 
 from scripts.benchmark_northstar_training_speed import (
@@ -18,12 +19,25 @@ from scripts.benchmark_northstar_training_speed import (
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "results" / "breakthrough_equal"
+TRANSFORMER_METRICS = (
+    ROOT
+    / "runs_experiment"
+    / "northstar_v22_fair_corrected_bpe"
+    / "training_metrics.json"
+)
+HISTORICAL_CERTIFICATE = (
+    RESULTS / "measured_equal_size_dominance_transprior_certificate.json"
+)
 
 
 def _load(name: str) -> dict:
     return json.loads((RESULTS / name).read_text(encoding="utf-8"))
 
 
+@pytest.mark.skipif(
+    not TRANSFORMER_METRICS.is_file(),
+    reason="raw transformer training metrics are not in the source checkout",
+)
 def test_training_workload_matches_raw_byte_volume() -> None:
     bytes_per_token = _bytes_per_token()
     workload = Workload(
@@ -97,6 +111,10 @@ def test_training_audit_is_valid_but_northstar_is_open() -> None:
     assert not any(audit["training_northstar_gates"].values())
 
 
+@pytest.mark.skipif(
+    not HISTORICAL_CERTIFICATE.is_file(),
+    reason="historical training certificate is not in the source checkout",
+)
 def test_training_audit_verifier_rebuilds_certificate(tmp_path: Path) -> None:
     output = tmp_path / "training_audit.json"
     completed = subprocess.run(

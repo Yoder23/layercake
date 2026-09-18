@@ -29,7 +29,12 @@ def sliding_causal_mask(
 
 def canonical_brick_head(d_abi: int) -> torch.Tensor:
     generator = torch.Generator().manual_seed(20260622)
-    return torch.randn(d_abi, 256, generator=generator) / (d_abi ** 0.5)
+    # Generate the immutable ABI head on CPU even inside a ``torch.device``
+    # context. PyTorch 2.1 cannot combine a CPU generator with meta-device
+    # random creation; callers move the registered buffer with the model.
+    return torch.randn(d_abi, 256, generator=generator, device="cpu") / (
+        d_abi ** 0.5
+    )
 
 
 class CausalConvBlock(nn.Module):
