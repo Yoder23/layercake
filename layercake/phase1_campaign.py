@@ -23,8 +23,12 @@ import sys
 import time
 from typing import Any, Iterable, Mapping, Sequence
 import urllib.request
-import winreg
 import xml.etree.ElementTree as ET
+
+if sys.platform == "win32":
+    import winreg
+else:  # pragma: no cover - exercised by Linux CI
+    winreg = None
 
 import psutil
 import torch
@@ -191,14 +195,16 @@ def _ollama_digest(endpoint: str, model: str) -> str:
 
 
 def _cpu_name() -> str:
-    try:
-        with winreg.OpenKey(
-            winreg.HKEY_LOCAL_MACHINE,
-            r"HARDWARE\DESCRIPTION\System\CentralProcessor\0",
-        ) as key:
-            return str(winreg.QueryValueEx(key, "ProcessorNameString")[0]).strip()
-    except OSError:
-        return platform.processor() or platform.machine()
+    if winreg is not None:
+        try:
+            with winreg.OpenKey(
+                winreg.HKEY_LOCAL_MACHINE,
+                r"HARDWARE\DESCRIPTION\System\CentralProcessor\0",
+            ) as key:
+                return str(winreg.QueryValueEx(key, "ProcessorNameString")[0]).strip()
+        except OSError:
+            pass
+    return platform.processor() or platform.machine()
 
 
 def _gpu_inventory() -> tuple[list[dict[str, Any]], str]:

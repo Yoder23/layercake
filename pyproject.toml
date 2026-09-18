@@ -13,7 +13,7 @@ keywords = ["machine-learning", "language-model", "modular-ai", "model-serving"]
 requires-python = ">=3.10"
 dependencies = [
     "torch>=2.0",
-    "numpy>=1.24",
+    "numpy>=1.24,<2",
     "safetensors>=0.4",
     "cryptography>=42",
     "psutil>=5.9",
@@ -35,6 +35,9 @@ classifiers = [
 dev = [
     "pytest>=7.0",
     "ruff>=0.4",
+    "sentencepiece>=0.1.99",
+    "tokenizers>=0.19",
+    "transformers>=4.38",
 ]
 tokenizer = [
     "sentencepiece>=0.1.99",

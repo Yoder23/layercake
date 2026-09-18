@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 import hashlib
-import json
 from pathlib import Path, PurePosixPath
 from typing import Mapping
 import zipfile

@@ -25,8 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu
-          pip install numpy pytest pyyaml
-          pip install -e .
+          pip install -e ".[dev]"
 
       - name: Run paste losslessness test
         run: pytest tests/test_paste_lossless.py -v
@@ -54,4 +53,5 @@ jobs:
       - name: Lint with ruff
         run: |
           pip install ruff
-          ruff check model.py data.py baseline_lm.py paste_domain.py train_core.py train_domain.py
+          ruff check layercake/__init__.py layercake/__main__.py layercake/cake \
+            layercake/routing/orchestrator.py tests/test_main_cli.py scripts/check_docs.py
