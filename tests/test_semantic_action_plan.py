@@ -98,7 +98,9 @@ def test_transition_codec_is_zero_initialized_and_uses_adjacent_states():
     with torch.no_grad():
         codec.copy_transition_output.weight.fill_(0.1)
     changed_previous = prompt.clone()
-    changed_previous[:, 1] += 3.0
+    # Perturb one coordinate. A uniform shift is deliberately removed by the
+    # transition LayerNorm and therefore does not test adjacent-state use.
+    changed_previous[:, 1, 0] += 3.0
     original = codec._realize(
         pointer_action, decoded, current, prompt
     )["residual"]
