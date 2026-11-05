@@ -11,6 +11,8 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 CANONICAL_DOCUMENTS = (
     "README.md",
+    "CHANGELOG.md",
+    "docs/VERSIONING.md",
     "DEPLOYMENT_QUICKSTART.md",
     "ARCHITECTURE.md",
     "CLAIMS.md",

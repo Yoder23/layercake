@@ -16,6 +16,9 @@ you are trying to do instead of beginning in the experiment archive.
 
 ## Canonical documents
 
+- [Versions and release boundaries](VERSIONING.md) explains package versions,
+  interface identities, review snapshots and scientific certificates.
+- [Changelog](../CHANGELOG.md) records current user-facing changes.
 - [Project status](PROJECT_STATUS.md) distinguishes the sealed release from
   current post-release development.
 - [Concepts](CONCEPTS.md) defines core, host, cake, registry, router, ABI, and

@@ -7,7 +7,7 @@ request selects.
 
 [Get started](DEPLOYMENT_QUICKSTART.md) | [Documentation](docs/README.md) |
 [Architecture](ARCHITECTURE.md) | [Verified claims](CLAIMS.md) |
-[Contributing](CONTRIBUTING.md)
+[Versions](docs/VERSIONING.md) | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 
 > **Project status:** the scientific release is the immutable local tag
 > `layercake-moonshot-final` at commit
