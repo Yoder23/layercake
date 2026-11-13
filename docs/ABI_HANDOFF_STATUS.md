@@ -1,6 +1,43 @@
 # External capability-artifact handoff
 
-Status date: 2026-09-15
+Status date: 2026-11-13
+
+## Current acceptance checklist
+
+No externally acquired English core is accepted. The latest construct remains
+`lc-direct-neural-core/25`; the chronological notes below do not supersede it.
+This update changes documentation only, not runtime, package schema or a seal.
+
+1. The producer supplies immutable payload hashes, provenance/license, declared
+   interface, imported-information accounting, and independently validated
+   autonomous English quality. Teacher-forced likelihood, tiny task fixtures,
+   and successful loading do not substitute for that quality evidence.
+2. Verify the signed non-executable package without mutating its tensors. Run
+   the same prompts through producer reference execution and LayerCake. Preserve
+   raw responses, token/action traces, persistent-state behavior and exact package
+   identities; localize any discrepancy before attributing a native host defect.
+3. Revalidate quality, grounding, adherence, repetition/collapse and teacher
+   absence on that same deployed artifact. No neutralized diagnostic model or
+   older checkpoint may supply its quality claim.
+4. Measure that artifact's CPU/GPU behavior, throughput, TTFT, memory and selected-
+   only execution under the governed benchmark contract. No speed inheritance
+   from another core. Run package identity, portability and hostile verification,
+   then all successor gates required by the invalidation matrix.
+
+Failure ownership:
+
+| Observation | What it establishes | What it does not establish |
+| --- | --- | --- |
+| Producer artifact fails quality before installation | Artifact/acquisition is not qualified | Native LayerCake runtime failure |
+| Identical artifact differs between producer and host | Integration/conformance discrepancy requiring localization | Automatic proof that either implementation alone is faulty |
+| Output conformance passes but deployed quality fails | Same-artifact product qualification failure | A speed or package test can compensate for quality |
+| Quality passes but runtime/performance gate fails | Host/deployment gate remains open | Permission to borrow measurements from a different artifact |
+
+Acquisition methods, experiments and results stay in the
+[ABI project's status page](https://github.com/Yoder23/abi/blob/master/docs/PROJECT_STATUS.md).
+This checklist is a review guide to existing gates, not a new scientific pass.
+
+## Chronological handoff history
 
 Current documentation note (2026-09-15): the latest construct-certified
 route-isolated host is `lc-direct-neural-core/25`, not v19. It preserves the

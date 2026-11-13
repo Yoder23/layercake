@@ -1,6 +1,6 @@
 # LayerCake project status
 
-Status date: 2026-11-05
+Status date: 2026-11-13
 
 LayerCake has a sealed scientific snapshot and a newer host-development branch.
 They must not be presented as one artifact lineage.
@@ -57,3 +57,11 @@ immutable external English artifact. The same final payload must then pass
 output conformance, English quality, collapse, CPU/GPU, throughput, TTFT,
 memory, package-identity, and hostile-verification gates before any successor
 release claim changes.
+
+Acquisition diagnostics do not satisfy this acceptance gate. A model can execute
+correctly yet lack the required English behavior; conversely, a capable artifact
+can expose a host integration defect. These require separate evidence. The
+[handoff checklist](ABI_HANDOFF_STATUS.md#current-acceptance-checklist) states what
+must cross the boundary and how failures are attributed. No new artifact was
+accepted in this documentation update; runtime, interface and model bytes are
+unchanged.

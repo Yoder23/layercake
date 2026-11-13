@@ -1,5 +1,13 @@
 # LayerCake changelog
 
+## 2026-11-13 — external-core acceptance clarity
+
+- Clarified the current acceptance checklist and separated acquisition quality,
+  integration conformance and same-artifact host performance failures.
+- Kept older interface notes explicitly historical and v25 construct-only.
+  No external English artifact, runtime change or new scientific pass is claimed.
+- External acquisition details remain in ABI, linked rather than copied here.
+
 ## 2026-11-05 — documentation and review snapshot
 
 - Added an explicit versioning guide separating package version, host interface,
