@@ -7,21 +7,23 @@
 | Installable Python package | `0.1.0` | Alpha API metadata; not a scientific certificate |
 | Scientific release | `layercake-moonshot-final` | Exact sealed campaign lineage at `0537cbb9e93cd7ebd4ba01c0bf641414ecebb1c3` |
 | Latest route-isolated host construct | `lc-direct-neural-core/25` | A specific compatibility contract; construct-only |
-| Documentation/review snapshot | `layercake-review-2026-11-05` | Named source snapshot; not a new certified runtime |
+| Documentation/review snapshot | `layercake-review-2026-11-14` | Documentation-only prerequisite/failure-ownership clarification |
+| Previous documentation snapshot | `layercake-review-2026-11-13` | External-core acceptance checklist; no runtime promotion |
 | Default branch | `master` | Moving development branch; unsealed |
 
 The review snapshot changes documentation only. Package and host-interface
 versions therefore stay unchanged. A tag is available only after its remote
 publication is verified; do not infer publication from this table alone.
-The [review record](REVIEW_SNAPSHOT_2026_11_05.md) contains validation scope and
-the portable-test receipt.
+The [original November 5 review record](REVIEW_SNAPSHOT_2026_11_05.md) contains
+that earlier validation scope and portable-test receipt. Later documentation-only
+updates are listed separately in the [changelog](../CHANGELOG.md).
 
 ## Reproduce an identity
 
 ```bash
 git fetch origin --tags
-git show --no-patch layercake-review-2026-11-05
-git rev-parse 'layercake-review-2026-11-05^{commit}'
+git show --no-patch layercake-review-2026-11-14
+git rev-parse 'layercake-review-2026-11-14^{commit}'
 ```
 
 Use a separate checkout of `layercake-moonshot-final` for scientific release

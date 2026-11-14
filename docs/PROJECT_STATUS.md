@@ -1,6 +1,6 @@
 # LayerCake project status
 
-Status date: 2026-11-13
+Status date: 2026-11-14
 
 LayerCake has a sealed scientific snapshot and a newer host-development branch.
 They must not be presented as one artifact lineage.
@@ -8,6 +8,8 @@ They must not be presented as one artifact lineage.
 The November review update is documentation-only. No new external English core
 has been accepted and no scientific gate is promoted. See [versioning](VERSIONING.md)
 and the [changelog](../CHANGELOG.md) for exact review identities and boundaries.
+Incomplete or resource-limited producer evaluations do not change the host's
+scientific status or supply a qualified external artifact.
 
 ## Status summary
 

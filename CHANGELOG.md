@@ -1,5 +1,14 @@
 # LayerCake changelog
 
+## 2026-11-14 — incomplete producer evidence is not host failure
+
+- Clarified that resource-limited or missing-replay producer evaluations leave
+  acceptance prerequisites unmet; they establish neither artifact-quality
+  failure nor a native LayerCake regression.
+- Updated the documentation snapshot/version map. Runtime, package interfaces,
+  checkpoints, all scientific seals and external-artifact acceptance are unchanged.
+- Acquisition details and raw results remain in the separate ABI repository.
+
 ## 2026-11-13 — external-core acceptance clarity
 
 - Clarified the current acceptance checklist and separated acquisition quality,

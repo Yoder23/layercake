@@ -1,12 +1,18 @@
 # External capability-artifact handoff
 
-Status date: 2026-11-13
+Status date: 2026-11-14
 
 ## Current acceptance checklist
 
 No externally acquired English core is accepted. The latest construct remains
 `lc-direct-neural-core/25`; the chronological notes below do not supersede it.
 This update changes documentation only, not runtime, package schema or a seal.
+
+An incomplete producer evaluation (for example, a resource-budget stop or
+missing generation replay) supplies no acceptance evidence. Keep artifact
+quality undetermined; do not relabel an unmet prerequisite as an acquisition
+quality failure or a native-host defect. Resume host acceptance only after a
+complete independently validated artifact is available.
 
 1. The producer supplies immutable payload hashes, provenance/license, declared
    interface, imported-information accounting, and independently validated
@@ -28,6 +34,7 @@ Failure ownership:
 
 | Observation | What it establishes | What it does not establish |
 | --- | --- | --- |
+| Producer evaluation is incomplete or resource-limited | Acceptance prerequisites remain unmet | Artifact quality failure or native LayerCake regression |
 | Producer artifact fails quality before installation | Artifact/acquisition is not qualified | Native LayerCake runtime failure |
 | Identical artifact differs between producer and host | Integration/conformance discrepancy requiring localization | Automatic proof that either implementation alone is faulty |
 | Output conformance passes but deployed quality fails | Same-artifact product qualification failure | A speed or package test can compensate for quality |
