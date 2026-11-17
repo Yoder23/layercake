@@ -1,6 +1,6 @@
 # LayerCake project status
 
-Status date: 2026-11-14
+Status date: 2026-11-17
 
 LayerCake has a sealed scientific snapshot and a newer host-development branch.
 They must not be presented as one artifact lineage.
@@ -10,6 +10,9 @@ has been accepted and no scientific gate is promoted. See [versioning](VERSIONIN
 and the [changelog](../CHANGELOG.md) for exact review identities and boundaries.
 Incomplete or resource-limited producer evaluations do not change the host's
 scientific status or supply a qualified external artifact.
+Likewise, qualification of an external source/control is not qualification or
+host acceptance of its recipient. Those require the actual same-artifact quality,
+conformance and performance evidence in the [handoff checklist](ABI_HANDOFF_STATUS.md).
 
 ## Status summary
 

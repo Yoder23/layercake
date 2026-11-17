@@ -1,6 +1,6 @@
 # External capability-artifact handoff
 
-Status date: 2026-11-14
+Status date: 2026-11-17
 
 ## Current acceptance checklist
 
@@ -13,6 +13,12 @@ missing generation replay) supplies no acceptance evidence. Keep artifact
 quality undetermined; do not relabel an unmet prerequisite as an acquisition
 quality failure or a native-host defect. Resume host acceptance only after a
 complete independently validated artifact is available.
+
+Completing a producer's source/control qualification is not acceptance of a
+recipient English core. The actual immutable recipient artifact must satisfy
+the quality checklist below, then pass same-artifact host conformance and
+performance gates. A changed evaluation resource budget cannot retroactively
+complete an earlier interrupted run or supply a new host certificate.
 
 1. The producer supplies immutable payload hashes, provenance/license, declared
    interface, imported-information accounting, and independently validated

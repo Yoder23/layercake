@@ -1,5 +1,13 @@
 # LayerCake changelog
 
+## 2026-11-17 — source qualification is not host acceptance
+
+- Clarified that completed external source/control evaluation does not certify
+  a recipient English artifact or its LayerCake deployment.
+- Preserved the same-artifact quality, conformance and performance gates. No
+  runtime, checkpoint, package, interface or scientific seal changed.
+- Producer research and results remain in the separate ABI repository.
+
 ## 2026-11-14 — incomplete producer evidence is not host failure
 
 - Clarified that resource-limited or missing-replay producer evaluations leave

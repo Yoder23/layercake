@@ -7,7 +7,8 @@
 | Installable Python package | `0.1.0` | Alpha API metadata; not a scientific certificate |
 | Scientific release | `layercake-moonshot-final` | Exact sealed campaign lineage at `0537cbb9e93cd7ebd4ba01c0bf641414ecebb1c3` |
 | Latest route-isolated host construct | `lc-direct-neural-core/25` | A specific compatibility contract; construct-only |
-| Documentation/review snapshot | `layercake-review-2026-11-14` | Documentation-only prerequisite/failure-ownership clarification |
+| Documentation/review snapshot | `layercake-review-2026-11-17` | Source/control qualification is not recipient or host acceptance |
+| Previous documentation snapshot | `layercake-review-2026-11-14` | Documentation-only prerequisite/failure-ownership clarification |
 | Previous documentation snapshot | `layercake-review-2026-11-13` | External-core acceptance checklist; no runtime promotion |
 | Default branch | `master` | Moving development branch; unsealed |
 
